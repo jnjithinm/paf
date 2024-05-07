@@ -5,12 +5,9 @@ import React, {useEffect, useState} from 'react';
 // import CombinedProvider from './src/context/index';
 import 'react-native-gesture-handler';
 import {AppState, Text, View} from 'react-native';
+import RootNavigator from './src/navigation/RootStack';
 
 function App() {
-  return (
-    <View>
-      <Text>Hi</Text>
-    </View>
-  );
+  return <RootNavigator />;
 }
 export default App;
