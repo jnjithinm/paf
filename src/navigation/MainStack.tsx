@@ -7,13 +7,14 @@ import Splash from '../screens/auth/Splash';
 import Login from '../screens/auth/Login';
 import SecurityQuestion from '../screens/SecurityQuestion';
 import DashboardTabNavigator from './DashboardTabStack';
+import RubricBMCTeacherEvaluation from '../screens/rubric/RubricBMCTeacherEvaluationIndicatorList';
 
 
 export type MainStackParamList = {
   Splash: undefined;
   Login: undefined;
   DashboardTabStack: undefined;
-  DrawerTabStack:undefined;
+
 };
 
 const MainStack = createStackNavigator<MainStackParamList>();
@@ -65,6 +66,7 @@ const MainStackNavigator = () => {
           name="DashboardTabStack"
           component={DashboardTabNavigator}
         />
+
      
       </MainStack.Navigator>
     );

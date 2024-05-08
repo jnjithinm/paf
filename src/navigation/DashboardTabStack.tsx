@@ -3,14 +3,17 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 
 import DashboardTabBar from '../components/DashboardTabBar';
 import TeacherDashboard from '../screens/dashboard/TeacherDashboard';
-import RubricDashboard from '../screens/dashboard/RubricDashboard';
-import RubricSubDashboard from '../screens/dashboard/RubricSubDashboard';
+import RubricDashboard from '../screens/rubric/RubricDashboard';
+
+import RubricStack from './RubricStack';
+import SampleScreen2 from '../screens/reports/SampleScreen2';
+import SampleScreen from '../screens/reports/SampleScreen';
 
 export type DashboardTabBarStackParamList = {
   TeacherDashboard: undefined;
-  ReportsDashboard: undefined;
-  RubricDashboard: undefined;
-  RubricSubDashboard: undefined;
+  SampleScreen: undefined;
+  RubricStack: undefined;
+  SampleScreen2: undefined;
 };
 
 const BorrowerTab = createBottomTabNavigator<DashboardTabBarStackParamList>();
@@ -27,15 +30,12 @@ const DashboardTabStack = () => {
         name="TeacherDashboard"
         component={TeacherDashboard}
       />
-   
-      <BorrowerTab.Screen name="RubricDashboard" component={RubricDashboard} />
+
+      <BorrowerTab.Screen name="SampleScreen" component={SampleScreen} />
+      <BorrowerTab.Screen name="RubricStack" component={RubricStack} />
       <BorrowerTab.Screen
-        name="RubricSubDashboard"
-        component={RubricSubDashboard}
-      />
-          <BorrowerTab.Screen
-        name="ReportsDashboard"
-        component={RubricSubDashboard}
+        name="SampleScreen2"
+        component={SampleScreen2}
       />
     </BorrowerTab.Navigator>
   );

@@ -11,6 +11,7 @@ import StatusBar from './StatusBar';
 import colors from '../config/colors';
 import {ColorTypes} from '../config/types';
 import Header from './Header';
+import { IconNames } from './Image';
 
 // import  usePanResponder  from 'utils/functions/AutoLogoutManager'
 // import Loading from './Loading';
@@ -32,6 +33,7 @@ interface LayoutPropsTypes extends ViewStyle {
   showsVerticalScrollIndicator?: boolean;
   dashboard?: boolean;
   title?: string;
+  icon?:IconNames
 }
 const Layout: FC<LayoutPropsTypes> = ({
   children,
@@ -49,7 +51,8 @@ const Layout: FC<LayoutPropsTypes> = ({
   onPressLogoutButton,
   showsVerticalScrollIndicator,
   dashboard,
-  title
+  title,
+  icon
 }) => {
   let backgroundStyle = backgroundColor
     ? colors[backgroundColor]
@@ -133,7 +136,7 @@ const Layout: FC<LayoutPropsTypes> = ({
         dashboard={dashboard}
         onPressBackArrow={onPressBackArrow}
         onPressLogoutButton={onPressLogoutButton}
-        title={title }
+        title={title  }
         onPressMenuIcon={onPressMenuIcon}
       />
       <ScrollView

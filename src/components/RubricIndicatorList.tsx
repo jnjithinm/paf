@@ -1,9 +1,10 @@
 import React from 'react';
 import {View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
-import Images from '../components/Image';
+import Images from './Image';
 import {FONT_SIZES, FONT_VARIANT} from '../config/themes';
+import {normaliseDesigns} from '../utils/helpers/responsiveHelpers';
 
-interface RubricListModalProps {
+interface RubricIndicatorListProps {
   title: string;
   active: boolean;
   createdBy: string;
@@ -13,7 +14,7 @@ interface RubricListModalProps {
   onPress:()=>void;
 }
 
-const RubricListModal: React.FC<RubricListModalProps> = ({
+const RubricIndicatorList: React.FC<RubricIndicatorListProps> = ({
   title,
   active,
   createdBy,
@@ -30,30 +31,6 @@ const RubricListModal: React.FC<RubricListModalProps> = ({
             {title}
           </Text>
         </View>
-        <View
-          style={{
-            width: '32%',
-            justifyContent: 'center',
-            alignItems: 'flex-end',
-          }}>
-          <View
-            style={{
-              backgroundColor: active ? '#EBF9D9' : '#FFEDED',
-              borderRadius: 15,
-              width: '90%',
-            }}>
-            <Text
-              style={[styles.status, {color: active ? '#749E35' : '#D62828'}]}>
-              <View
-                style={[
-                  styles.dot,
-                  {backgroundColor: active ? '#749E35' : '#D62828'},
-                ]}
-              />
-              {active ? ' Active' : ' Inactive'}
-            </Text>
-          </View>
-        </View>
       </View>
       <View style={styles.detailsContainer}>
         <View style={{flexDirection: 'row', width: '80%'}}>
@@ -65,16 +42,12 @@ const RubricListModal: React.FC<RubricListModalProps> = ({
             <Text style={styles.heading}>Creation Date</Text>
             <Text style={styles.subHeading}> {createdDate}</Text>
           </View>
-          <View style={styles.detailsInnerContainer}>
-            <Text style={styles.heading}>Users</Text>
-            <Text style={styles.subHeading}> {userCount}</Text>
-          </View>
         </View>
-        <View style={styles.deleteButton}>
-          <TouchableOpacity onPress={onDelete}>
+
+          <TouchableOpacity onPress={onDelete} style={styles.deleteButton}>
             <Images name="trash_icon" />
           </TouchableOpacity>
-        </View>
+
       </View>
     </TouchableOpacity>
   );
@@ -85,19 +58,24 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#F4C24A',
     borderRadius: 5,
-    padding: 10,
+    paddingHorizontal: 10,
+    // paddingVertical:8,
     marginBottom: 10,
+    height: normaliseDesigns(65),
+    justifyContent:'space-evenly'
   },
   titleContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 10,
+    // marginBottom: 10,
   },
   title: {
-    fontSize: FONT_SIZES.body2,
-    fontFamily: FONT_VARIANT.bold,
+    fontSize: FONT_SIZES.body1,
+    // fontFamily: FONT_VARIANT.bold,
     color: '#1F2933',
+    fontFamily: FONT_VARIANT.medium,
+    fontWeight: '600',
   },
   status: {
     padding: 2,
@@ -119,7 +97,7 @@ const styles = StyleSheet.create({
   },
   detailsContainer: {
     flexDirection: 'row',
-    marginBottom: 10,
+    // marginBottom: 10,
     width: '100%',
   },
   detailsInnerContainer: {
@@ -147,9 +125,9 @@ const styles = StyleSheet.create({
     //  backgroundColor: 'green'
   },
   deleteIcon: {
-    width: 18,
-    height: 18,
+    width: 15,
+    height: 15,
   },
 });
 
-export default RubricListModal;
+export default RubricIndicatorList;

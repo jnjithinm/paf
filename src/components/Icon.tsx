@@ -36,9 +36,8 @@ import drawer_icon_session_schedules from '../assets/svg/drawer_icon_session_sch
 import drawer_icon_give_feedback from '../assets/svg/drawer_icon_give_feedback.svg'
 import drawer_icon_settings from '../assets/svg/drawer_icon_settings.svg'
 import drawer_icon_home from '../assets/svg/drawer_icon_home.svg';
-
 import left_arrow_orange_icon from '../assets/svg/left_arrow_orange_icon.svg'
-
+import cross_icon from '../assets/svg/cross_icon.svg'
 
 const Icons = {
   app_logo,
@@ -75,7 +74,8 @@ const Icons = {
   drawer_icon_give_feedback,
   drawer_icon_settings,
   drawer_icon_home,
-  left_arrow_orange_icon
+  left_arrow_orange_icon,
+  cross_icon
 };
 
 export type IconTypes = keyof typeof Icons;

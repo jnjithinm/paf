@@ -1,36 +1,31 @@
-import React, { FC, useEffect, useState } from 'react';
-import { TextInput, StyleSheet, View, ViewStyle, FlatList } from 'react-native';
-import { RouteProp } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
+import React, {FC, useEffect, useState} from 'react';
+import {StyleSheet, View, FlatList} from 'react-native';
+import {RouteProp} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
 
-import { DashboardTabBarStackParamList } from '../../navigation/DashboardTabStack';
+import {DashboardTabBarStackParamList} from '../../navigation/DashboardTabStack';
 import Layout from '../../components/Layout';
 import Tab from '../../components/Tab';
-import SearchFilter from '../../components/SearchFilter';
-import Image from '../../components/Image';
-
 import RubricListModal from '../../components/RubricListModal';
-
-import Text from '../../components/Text';
+import {RubricTabBarStackParamList} from '../../navigation/RubricStack';
 
 type ObservationReportNavigationProp = StackNavigationProp<
-  DashboardTabBarStackParamList,
-  'RubricSubDashboard'
+  RubricTabBarStackParamList,
+  'RubricDashboard'
 >;
 type ObservationReportRouteProp = RouteProp<
-  DashboardTabBarStackParamList,
-  'RubricSubDashboard'
+  RubricTabBarStackParamList,
+  'RubricDashboard'
 >;
 
 interface ObservationReportScreenProps {
   navigation: ObservationReportNavigationProp;
   route: ObservationReportRouteProp;
 }
-const RubricSubDashboard: FC<ObservationReportScreenProps> = ({
+const RubricDashboard: FC<ObservationReportScreenProps> = ({
   navigation,
   route,
 }) => {
-
   const tabs: string[] = ['All', 'Active', 'Non-Active'];
   const rubricData = [
     {
@@ -39,7 +34,7 @@ const RubricSubDashboard: FC<ObservationReportScreenProps> = ({
       createdDate: '12/2/2024',
       title: 'Teacher Evaluation Rubric',
       userCount: 50,
-      onDelete: () => { }, // You can define your delete handler here
+      onDelete: () => {},
       key: '1',
     },
     {
@@ -48,7 +43,7 @@ const RubricSubDashboard: FC<ObservationReportScreenProps> = ({
       createdDate: '12/2/2024',
       title: 'Teacher Evaluation Rubric',
       userCount: 50,
-      onDelete: () => { }, // You can define your delete handler here
+      onDelete: () => {},
       key: '2',
     },
     {
@@ -57,7 +52,7 @@ const RubricSubDashboard: FC<ObservationReportScreenProps> = ({
       createdDate: '12/2/2024',
       title: 'Teacher Evaluation Rubric',
       userCount: 50,
-      onDelete: () => { }, // You can define your delete handler here
+      onDelete: () => {},
       key: '3',
     },
     {
@@ -66,60 +61,44 @@ const RubricSubDashboard: FC<ObservationReportScreenProps> = ({
       createdDate: '12/2/2024',
       title: 'Teacher Evaluation Rubric',
       userCount: 50,
-      onDelete: () => { }, // You can define your delete handler here
+      onDelete: () => {},
       key: '4',
     },
     // Add more items as needed
   ];
 
-
   const [rubricListData, setrubricListData] = useState<any[]>([]);
 
-
-
   const deleteItem = () => {
-    console.log("delete press");
-
-  }
+    console.log('delete press');
+  };
 
   const handleTabClick = (title: string) => {
-    title == 'Active' ?
-      setrubricListData(rubricData.filter(item => item.active)) :
-      title == 'Non-Active' ?
-        setrubricListData(rubricData.filter(item => item.active == false)) :
-        setrubricListData(rubricData)
+    title == 'Active'
+      ? setrubricListData(rubricData.filter(item => item.active))
+      : title == 'Non-Active'
+      ? setrubricListData(rubricData.filter(item => item.active == false))
+      : setrubricListData(rubricData);
   };
 
   useEffect(() => {
-    setrubricListData(rubricData)
-  }, [])
+    setrubricListData(rubricData);
+  }, []);
 
   return (
     <Layout
       overridePaddingHorizontal
       overridePaddingVertical
-      style={{ paddingHorizontal: 15 }}
-      title='Evaluation Rubrics'
-    >
-      <View style={{ marginVertical: 10, }}>
-        
-        <SearchFilter
-          placeholder='Search domain'
-        />
-
-        <View style={{flexDirection: 'row'}}>
-          <Image name={'list_icon'} />
-
-        </View>
-
-        <Tab tabs={tabs} onClick={(title) => handleTabClick(title)} />
+      style={{paddingHorizontal: 15}}
+      title="Evaluation Rubrics">
+      <View style={{marginVertical: 10}}>
+        <Tab tabs={tabs} onClick={title => handleTabClick(title)} />
 
         <FlatList
           data={rubricListData}
           extraData={rubricListData}
-          style={{ marginTop: 20 }}
-          renderItem={({ item }) => (
-
+          style={{marginTop: 20}}
+          renderItem={({item}) => (
             <RubricListModal
               active={item.active}
               createdBy={item.createdBy}
@@ -128,17 +107,18 @@ const RubricSubDashboard: FC<ObservationReportScreenProps> = ({
               userCount={item.userCount}
               onDelete={item.onDelete}
               key={item.key}
+              onPress={() => {
+                navigation.navigate('RubricBMCTeacherEvaluationIndicatorList',{title:item.title})
+              }}
             />
-
           )}
         />
       </View>
-
     </Layout>
   );
 };
-export default RubricSubDashboard;
+export default RubricDashboard;
 
 const styles = StyleSheet.create({
-
+  
 });

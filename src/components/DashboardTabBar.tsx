@@ -20,22 +20,22 @@ const DashboardTabBar = ({state, navigation}: BottomTabBarProps) => {
     switch (route.name) {
       case 'TeacherDashboard':
         iconName = 'tabbar_icon_home';
-        screenName = 'Dashboard';
+
         break;
-      case 'RubricDashboard':
+      case 'SampleScreen':
         iconName = 'tabbar_icon_observation';
-        screenName = 'RubricDashboard';
+
         break;
-      case 'RubricSubDashboard':
+      case 'RubricStack':
         iconName = 'tabbar_icon_rubric';
-        screenName = 'Reports';
+
         break;
-      case 'ReportsDashboard':
+      case 'SampleScreen2':
         iconName = 'tabbar_icon_graph';
-        screenName = 'Product';
+
         break;
     }
-    return {iconName, screenName};
+    return {iconName};
   };
 
   return (
@@ -86,7 +86,7 @@ const DashboardTabBar = ({state, navigation}: BottomTabBarProps) => {
             key={index}
             disabled={focused}>
             <Icon
-              name={focused?`${iconName}_focused`: iconName}
+              name={focused ? `${iconName}_focused` : iconName}
               // stroke={colors.blackColor}
               // name={iconName}
               // stroke={colors.secondaryColor}
