@@ -4,9 +4,8 @@ import {BottomTabBarProps} from '@react-navigation/bottom-tabs';
 
 import Icon, {IconTypes} from './Icon';
 import Text from './Text';
-import { normaliseDesigns } from '../utils/helpers/responsiveHelpers';
+import {normaliseDesigns} from '../utils/helpers/responsiveHelpers';
 import colors from '../config/colors';
-
 
 const DashboardTabBar = ({state, navigation}: BottomTabBarProps) => {
   const onTabPress = (routeName: string, _routeIndex: number) => {
@@ -15,28 +14,28 @@ const DashboardTabBar = ({state, navigation}: BottomTabBarProps) => {
 
   const screenOptions = (route: {name: string}) => {
     let iconName: IconTypes;
-    let comingSoon: boolean = false;
+    // let comingSoon: boolean = false;
     let screenName: string = '';
 
     switch (route.name) {
       case 'TeacherDashboard':
-        iconName = 'home_icon_tabbar';
+        iconName = 'tabbar_icon_home';
         screenName = 'Dashboard';
         break;
-      case 'Listing':
-        iconName = 'listing';
-        screenName = 'Listing';
+      case 'RubricDashboard':
+        iconName = 'tabbar_icon_observation';
+        screenName = 'RubricDashboard';
         break;
-      case 'Reports':
-        iconName = 'reports';
+      case 'RubricSubDashboard':
+        iconName = 'tabbar_icon_rubric';
         screenName = 'Reports';
         break;
-      case 'Product':
-        iconName = 'loan_product';
+      case 'ReportsDashboard':
+        iconName = 'tabbar_icon_graph';
         screenName = 'Product';
         break;
     }
-    return {iconName, screenName, comingSoon};
+    return {iconName, screenName};
   };
 
   return (
@@ -65,23 +64,34 @@ const DashboardTabBar = ({state, navigation}: BottomTabBarProps) => {
       }}>
       {state.routes.map((route, index) => {
         const focused = index === state.index ? true : false;
-        const {iconName, screenName, comingSoon} = screenOptions(route);
-        const size = focused ? 20 : 15;
+        const {iconName, screenName} = screenOptions(route);
+        const size = 22;
         const color = focused ? 'secondaryColor' : 'blackColor';
         const opacity = focused ? '1' : '0.50';
         return (
           <TouchableOpacity
-            style={{alignItems: 'center'}}
+            style={
+              focused
+                ? {
+                    alignItems: 'center',
+                    height: 40,
+                    aspectRatio: 1,
+                    backgroundColor: '#F4C24A',
+                    justifyContent: 'center',
+                    borderRadius: 8,
+                  }
+                : {alignItems: 'center'}
+            }
             onPress={() => onTabPress(route.name, index)}
             key={index}
-            disabled={focused || comingSoon}>
+            disabled={focused}>
             <Icon
-              name={focused ? `${iconName}_selected` : iconName}
+              name={focused?`${iconName}_focused`: iconName}
+              // stroke={colors.blackColor}
               // name={iconName}
               // stroke={colors.secondaryColor}
               width={size}
               height={size}
-              opacity={comingSoon ? 0.1 : undefined}
             />
           </TouchableOpacity>
         );

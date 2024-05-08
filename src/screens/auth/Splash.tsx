@@ -2,10 +2,10 @@ import React, {FC, useEffect} from 'react';
 import {View} from 'react-native';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
-import { MainStackParamList } from '../navigation/MainStack';
-import StatusBar from '../components/StatusBar';
-import colors from '../config/colors';
-import Icon from '../components/Icon';
+import { MainStackParamList } from '../../navigation/MainStack';
+import StatusBar from '../../components/StatusBar';
+import colors from '../../config/colors';
+import Icon from '../../components/Icon';
 
 
 

@@ -6,8 +6,12 @@ import eye_off from '../assets/svg/eye-off.svg'
 import checkbox from '../assets/svg/checkbox.svg'
 import security_question from '../assets/svg/security_question.svg';
 import back_button from '../assets/svg/back_button.svg'
-import home_icon_tabbar from '../assets/svg/home_icon_tabbar.svg';
-import graph_icon_tabbar from '../assets/svg/home_icon_tabbar.svg'
+import tabbar_icon_home from '../assets/svg/tabbar_icon_home.svg';
+import tabbar_icon_graph from '../assets/svg/tabbar_icon_graph.svg'
+import tabbar_icon_observation from '../assets/svg/tabbar_icon_observation.svg';
+import tabbar_icon_rubric from '../assets/svg/tabbar_icon_rubric.svg';
+import tabbar_icon_home_focused from '../assets/svg/tabbar_icon_home_focused.svg'
+import tabbar_icon_observation_focused from '../assets/svg/tabbar_icon_observation_focused.svg'
 import profile_icon from '../assets/svg/profile_icon.svg';
 import bell_icon from '../assets/svg/bell_icon.svg'
 import menu_icon from '../assets/svg/menu_icon.svg'
@@ -31,7 +35,8 @@ import drawer_icon_teaching_aids from '../assets/svg/drawer_icon_teaching_aids.s
 import drawer_icon_session_schedules from '../assets/svg/drawer_icon_session_schedules.svg'
 import drawer_icon_give_feedback from '../assets/svg/drawer_icon_give_feedback.svg'
 import drawer_icon_settings from '../assets/svg/drawer_icon_settings.svg'
-import drawer_icon_home from '../assets/svg/drawer_icon_home.svg'
+import drawer_icon_home from '../assets/svg/drawer_icon_home.svg';
+
 import left_arrow_orange_icon from '../assets/svg/left_arrow_orange_icon.svg'
 
 
@@ -41,8 +46,12 @@ const Icons = {
   checkbox,
   security_question,
   back_button,
-  home_icon_tabbar,
-  graph_icon_tabbar,
+  tabbar_icon_home,
+  tabbar_icon_graph,
+  tabbar_icon_observation,
+  tabbar_icon_rubric,
+  tabbar_icon_home_focused,
+  tabbar_icon_observation_focused,
   profile_icon,
   bell_icon,
   menu_icon,
