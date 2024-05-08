@@ -1,0 +1,86 @@
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { normaliseDesigns } from '../utils/helpers/responsiveHelpers';
+import { FONT_SIZES, FONT_VARIANT } from '../config/themes';
+import colors from '../config/colors';
+
+interface TabsProps {
+  tabs: string[];
+  onClick: (index: string) => void; 
+}
+
+const Tabs: React.FC<TabsProps> = ({ tabs , onClick}) => {
+  const [selectedTab, setSelectedTab] = useState(0);
+
+  const handleTabPress = (tabIndex: number, tabName: string) => {    
+    setSelectedTab(tabIndex);
+    onClick(tabName);
+  };
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.tabHeader}>
+        {tabs.map((title, index) => (
+          <TouchableOpacity
+            key={index}
+            style={styles.tabHeaderItem}
+            onPress={() => {console.log("mmjjjjjj");
+             handleTabPress(index, title)}}>
+            <Text
+              style={[
+                styles.tabHeaderText,
+                selectedTab === index && styles.selectedTabHeaderText,
+              ]}>
+              {title}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+      <View style={styles.tabHighlightContainer}>
+        <View
+          style={[
+            styles.tabHighlight,
+            { width: `${100 / tabs.length}%`, left: `${selectedTab * (100 / tabs.length)}%` },
+          ]}
+        />
+      </View>
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    // backgroundColor: '#f0f0f0',
+  },
+  tabHeader: {
+    flexDirection: 'row',
+    borderBottomWidth: normaliseDesigns(1),
+    borderBottomColor: '#ccc',
+  },
+  tabHeaderItem: {
+    flex: 1,
+    alignItems: 'center',
+    paddingVertical: 10,
+  },
+  tabHeaderText: {
+    fontSize: 16,
+    color: '#ABB4BD',
+  },
+  selectedTabHeaderText: {
+    color: colors.blackColor,
+    fontFamily: FONT_VARIANT.bold
+  },
+  tabHighlightContainer: {
+    position: 'relative',
+
+  },
+  tabHighlight: {
+    position: 'absolute',
+    bottom: -1,
+    height: normaliseDesigns(3),
+    backgroundColor: '#EA7804',
+    borderRadius: 4
+  },
+});
+
+export default Tabs;

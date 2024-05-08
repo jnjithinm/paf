@@ -20,6 +20,7 @@ import filter_icon from '../assets/svg/filter_icon.svg'
 import analytics_icon from '../assets/svg/analytics_icon.svg';
 import explore_icon from '../assets/svg/explore_icon.svg';
 import observation_icon from '../assets/svg/observation_icon.svg'
+import rubrics_icon from '../assets/svg/rubrics_icon.svg'
 
 const Icons = {
   app_logo,
@@ -39,7 +40,8 @@ const Icons = {
   search_icon,filter_icon,
   explore_icon,
   analytics_icon,
-  observation_icon
+  observation_icon,
+  rubrics_icon
 };
 
 export type IconTypes = keyof typeof Icons;

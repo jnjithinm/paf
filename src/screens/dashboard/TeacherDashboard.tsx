@@ -68,9 +68,9 @@ type ObservationFilterTileTypes={
   onPress:()=>void;
 }
 
-const ObservationFilterTile:FC<ObservationFilterTileTypes>=({text,count,onPress})=>(
+// const ObservationFilterTile:FC<ObservationFilterTileTypes>=({text,count,onPress})=>(
 
-)
+// )
 
 const TeacherDashboard: FC<TeacherDashboardScreenProps> = ({
   navigation,

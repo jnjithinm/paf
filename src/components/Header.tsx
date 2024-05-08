@@ -1,13 +1,15 @@
-import React, {FC, useState} from 'react';
-import {Platform, TouchableOpacity, View} from 'react-native';
+import React, { FC, useState } from 'react';
+import { Platform, TouchableOpacity, View } from 'react-native';
 
 import Text from './Text';
 import Icon from './Icon';
 
-import {useFocusEffect} from '@react-navigation/native';
+import { useFocusEffect } from '@react-navigation/native';
 import colors from '../config/colors';
-import {normaliseDesigns} from '../utils/helpers/responsiveHelpers';
-import {navigate} from '../utils/helpers/navigationHelpers';
+import { normaliseDesigns } from '../utils/helpers/responsiveHelpers';
+import { navigate } from '../utils/helpers/navigationHelpers';
+import { FONT_SIZES, FONT_VARIANT } from '../config/themes';
+import Images from '../components/Image';
 
 type HeaderPropsTypes = {
   title: string;
@@ -35,6 +37,9 @@ const Header: FC<HeaderPropsTypes> = ({
     setIsOpenTooltip(false);
     onPressLogoutButton && onPressLogoutButton();
   };
+
+  // console.log("tttt", title);
+
   return (
     <View
       style={{
@@ -53,7 +58,7 @@ const Header: FC<HeaderPropsTypes> = ({
           style={{
             flexDirection: 'row',
             justifyContent: 'space-between',
-            alignItems:'center',
+            alignItems: 'center',
             // alignItems:'flex-end',
             width: '100%',
 
@@ -62,11 +67,11 @@ const Header: FC<HeaderPropsTypes> = ({
             onPress={() => {
 
             }}
-            // style={{marginRight:20}}
-            >
+          // style={{marginRight:20}}
+          >
             <Icon name="menu_icon" />
           </TouchableOpacity>
-          <View style={{flexDirection: 'row',alignItems:'center'}}>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <TouchableOpacity
               onPress={() => {
 
@@ -83,9 +88,41 @@ const Header: FC<HeaderPropsTypes> = ({
         </View>
       )}
 
-      {/* <View style={{position: 'absolute', left: 20}}>
+      {title && (
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            // alignItems:'flex-end',
+            width: '100%',
+          }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <TouchableOpacity
+              onPress={() => {
+              }}
+            style={{marginRight:20}}
+            >
+              <Icon name="back_button" />
+            </TouchableOpacity>
+            <Text style={{fontSize: FONT_SIZES.body3, fontFamily: FONT_VARIANT.bold}}>{title}</Text>
+          </View>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+           
+            <TouchableOpacity
+              onPress={() => {
+
+              }}>
+                                        <Images name="Evaluation_icon" />
+
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
+
+      {/* <View style={{}}>
         {!avoidBackButton && (
-          <TouchableOpacity>
+          <TouchableOpacity >
             <Icon name="back_button" />
           </TouchableOpacity>
         )}

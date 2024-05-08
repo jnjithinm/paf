@@ -30,6 +30,7 @@ interface LayoutPropsTypes extends ViewStyle {
   onPressLogoutButton?: () => void;
   showsVerticalScrollIndicator?: boolean;
   dashboard?: boolean;
+  title?: string;
 }
 const Layout: FC<LayoutPropsTypes> = ({
   children,
@@ -46,6 +47,7 @@ const Layout: FC<LayoutPropsTypes> = ({
   onPressLogoutButton,
   showsVerticalScrollIndicator,
   dashboard,
+  title
 }) => {
   let backgroundStyle = backgroundColor
     ? colors[backgroundColor]
@@ -129,6 +131,7 @@ const Layout: FC<LayoutPropsTypes> = ({
         dashboard={dashboard}
         onPressBackArrow={onPressBackArrow}
         onPressLogoutButton={onPressLogoutButton}
+        title={title || ''}
       />
       <ScrollView
         nestedScrollEnabled
