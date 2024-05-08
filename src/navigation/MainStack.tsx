@@ -3,17 +3,17 @@ import {
   StackCardInterpolationProps,
   createStackNavigator,
 } from '@react-navigation/stack';
-import Splash from '../screens/Splash'
+import Splash from '../screens/Splash';
 import Login from '../screens/Login';
 import SecurityQuestion from '../screens/SecurityQuestion';
 import DashboardTabNavigator from './DashboardTabStack';
-
+import DrawerTabStack from './DrawerTabStack';
 
 export type MainStackParamList = {
   Splash: undefined;
   Login: undefined;
-  DashboardTabStack:undefined;
-
+  DashboardTabStack: undefined;
+  DrawerTabStack:undefined;
 };
 
 const MainStack = createStackNavigator<MainStackParamList>();
@@ -39,20 +39,19 @@ const MainStackNavigator = () => {
     return (
       <MainStack.Navigator
         screenOptions={({route}) => {
-        //   if (route.name !== 'DashboardTabStack') {
-        //     return {
-        //       headerShown: false,
-        //       keyboardHidesTabBar: true,
-        //       cardStyleInterpolator: customTransition,
-        //     };
-        //   } else {
-            return {
-              headerShown: false,
-              keyboardHidesTabBar: true,
-            };
-        //   }
-        }}
-        >
+          //   if (route.name !== 'DashboardTabStack') {
+          //     return {
+          //       headerShown: false,
+          //       keyboardHidesTabBar: true,
+          //       cardStyleInterpolator: customTransition,
+          //     };
+          //   } else {
+          return {
+            headerShown: false,
+            keyboardHidesTabBar: true,
+          };
+          //   }
+        }}>
         {/* <MainStack.Screen
           name="Splash"
           component={Splash}
@@ -61,11 +60,12 @@ const MainStackNavigator = () => {
           name="Login"
           component={Login}
         /> */}
-      
-      <MainStack.Screen
+
+        <MainStack.Screen
           name="DashboardTabStack"
           component={DashboardTabNavigator}
         />
+     
       </MainStack.Navigator>
     );
   }

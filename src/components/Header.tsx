@@ -1,13 +1,11 @@
 import React, {FC, useState} from 'react';
-import {Platform, TouchableOpacity, View} from 'react-native';
-
-import Text from './Text';
-import Icon from './Icon';
-
+import { TouchableOpacity, View} from 'react-native';
 import {useFocusEffect} from '@react-navigation/native';
+
+import Icon from './Icon';
 import colors from '../config/colors';
 import {normaliseDesigns} from '../utils/helpers/responsiveHelpers';
-import {navigate} from '../utils/helpers/navigationHelpers';
+
 
 type HeaderPropsTypes = {
   title: string;
@@ -60,7 +58,7 @@ const Header: FC<HeaderPropsTypes> = ({
           }}>
           <TouchableOpacity
             onPress={() => {
-
+              // navigation.openDrawer();
             }}
             // style={{marginRight:20}}
             >

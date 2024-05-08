@@ -20,6 +20,14 @@ import filter_icon from '../assets/svg/filter_icon.svg'
 import analytics_icon from '../assets/svg/analytics_icon.svg';
 import explore_icon from '../assets/svg/explore_icon.svg';
 import observation_icon from '../assets/svg/observation_icon.svg'
+import evaluation_star_icon from '../assets/svg/evaluation_star_icon.svg'
+import monitor_courses_icon from '../assets/svg/monitor_courses_icon.svg'
+import courses_1_sample from '../assets/svg/courses_1_sample.svg';
+import courses_2_sample from '../assets/svg/courses_2_sample.svg';
+import right_icon from '../assets/svg/right_icon.svg'
+import clock_icon from '../assets/svg/clock_icon.svg'
+
+
 
 const Icons = {
   app_logo,
@@ -39,7 +47,13 @@ const Icons = {
   search_icon,filter_icon,
   explore_icon,
   analytics_icon,
-  observation_icon
+  observation_icon,
+  evaluation_star_icon,
+  monitor_courses_icon,
+  courses_1_sample,
+  courses_2_sample,
+  right_icon,
+  clock_icon
 };
 
 export type IconTypes = keyof typeof Icons;

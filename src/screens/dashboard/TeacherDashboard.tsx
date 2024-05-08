@@ -1,6 +1,6 @@
 import React, {FC} from 'react';
-import {TextInput, View, ViewStyle} from 'react-native';
-import {RouteProp} from '@react-navigation/native';
+import {TextInput, TouchableOpacity, View, ViewStyle} from 'react-native';
+import {RouteProp, DrawerActions} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 
 import {DashboardTabBarStackParamList} from '../../navigation/DashboardTabStack';
@@ -8,13 +8,15 @@ import Layout from '../../components/Layout';
 import Icon, {IconTypes} from '../../components/Icon';
 import Text from '../../components/Text';
 import colors from '../../config/colors';
+import {normaliseDesigns} from '../../utils/helpers/responsiveHelpers';
+import {DrawerTabStackParamList} from '../../navigation/DrawerTabStack';
 
 type TeacherDashboardNavigationProp = StackNavigationProp<
-  DashboardTabBarStackParamList,
+ DrawerTabStackParamList,
   'TeacherDashboard'
 >;
 type TeacherDashboardRouteProp = RouteProp<
-  DashboardTabBarStackParamList,
+DrawerTabStackParamList,
   'TeacherDashboard'
 >;
 
@@ -28,7 +30,7 @@ type RenderTitleWithLinkTypes = {
   titleText: string;
   link: string;
   linkText: string;
-  style?:ViewStyle
+  style?: ViewStyle;
 };
 
 const RenderTitleWithLink: FC<RenderTitleWithLinkTypes> = ({
@@ -36,25 +38,45 @@ const RenderTitleWithLink: FC<RenderTitleWithLinkTypes> = ({
   titleText,
   link,
   linkText,
-  style
+  style,
 }) => (
-  <View style={{flexDirection: 'row',alignItems:'center',justifyContent:'space-between',...style}}>
-    <View style={{flexDirection: 'row',alignItems:'center'}}>
+  <View
+    style={{
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginVertical: 5,
+      ...style,
+    }}>
+    <View style={{flexDirection: 'row', alignItems: 'center'}}>
+      <View
+        style={{
+          height: normaliseDesigns(20),
+          aspectRatio: 1,
+          backgroundColor: '#F4C24A',
+          borderRadius: 10,
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}>
+        <Icon name={icon} />
+      </View>
+      <Text style={{marginLeft: 5}} fontVariant="bold" size="body2">
+        {titleText}
+      </Text>
+    </View>
     <View
       style={{
-        height: 30,
-        aspectRatio: 1,
-        backgroundColor: '#F4C24A',
-        borderRadius: 10,
+        flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'center',
+        borderBottomWidth: 1,
+        borderBottomColor: '#EA7804',
       }}>
-      <Icon name={icon} />
-    </View>
-    <Text style={{marginLeft:5}} fontVariant='bold' size='body3'>{titleText}</Text>
-    </View>
-    <View style={{flexDirection: 'row',alignItems:'center'}}>
-      <Text style={{borderBottomWidth: 1, borderBottomColor: '#EA7804',color:'#EA7804',marginRight:3}} size='small3'>
+      <Text
+        style={{
+          color: '#EA7804',
+          marginRight: 3,
+        }}
+        size="small3">
         {linkText}
       </Text>
       <Icon name="explore_icon" />
@@ -62,15 +84,230 @@ const RenderTitleWithLink: FC<RenderTitleWithLinkTypes> = ({
   </View>
 );
 
-type ObservationFilterTileTypes={
-  text:'All'|'By Me'|'For Me';
-  count:number;
-  onPress:()=>void;
-}
+type ObservationTileTypes = {
+  rating: string;
+  userAssisted: string;
+  image: string;
+  reportedBy: string;
+  style?: ViewStyle;
+};
 
-const ObservationFilterTile:FC<ObservationFilterTileTypes>=({text,count,onPress})=>(
+const ObservationsTile: FC<ObservationTileTypes> = ({
+  rating,
+  userAssisted,
+  image,
+  reportedBy,
+  style,
+}) => (
+  <View
+    style={{
+      width: '100%',
+      flexDirection: 'row',
+      borderWidth: 1,
+      borderColor: '#F4C24A',
+      justifyContent: 'space-between',
+      height: normaliseDesigns(50),
+      borderRadius: 10,
+      alignItems: 'center',
+      marginVertical: 5,
+      ...style,
+    }}>
+    <View
+      style={{
+        flexDirection: 'row',
+        padding: 8,
+        backgroundColor: '#EAF1FE',
+        borderRadius: 10,
+        alignSelf: 'flex-start',
+        alignItems: 'center',
+        // flex:1
+      }}>
+      <Text size="small1" fontVariant="bold">
+        {rating}
+      </Text>
+      <Icon style={{marginLeft: 5}} name="star_icon" width={10} />
+    </View>
+    <View style={{flex: 1, marginLeft: 10}}>
+      <Text size="verysmall3" opacity="0.50">
+        User Assessed
+      </Text>
+      <Text fontVariant="bold" size="small3">
+        {userAssisted}
+      </Text>
+    </View>
+    <View style={{flex: 1}}>
+      <Text size="verysmall3" opacity="0.50">
+        Reported By
+      </Text>
+      <Text size="small3"> {reportedBy}</Text>
+    </View>
+  </View>
+);
 
-)
+type ObservationFilterTileTypes = {
+  text: 'All' | 'By Me' | 'For Me';
+  color: 'green' | 'yellow' | 'orange';
+  count: number;
+  onPress: () => void;
+  navigation: any;
+};
+
+const ObservationFilterTile: FC<ObservationFilterTileTypes> = ({
+  text,
+  color,
+  count,
+  onPress,
+  navigation,
+}) => (
+  <TouchableOpacity
+    onPress={() => {
+      navigation.openDrawer();
+    }}
+    style={{
+      backgroundColor:
+        color === 'green'
+          ? '#EBF9D9'
+          : color === 'orange'
+          ? '#FDF0E3'
+          : '#FEF8EC',
+      alignItems: 'center',
+      borderWidth: 1,
+      borderColor:
+        color === 'green'
+          ? '#749E35'
+          : color === 'orange'
+          ? '#D29804'
+          : '#EA7804',
+      justifyContent: 'space-evenly',
+      flexDirection: 'row',
+      width: '30%',
+      paddingHorizontal: 10,
+      height: 40,
+      borderRadius: 10,
+    }}>
+    <Text
+      style={{
+        color:
+          color === 'green'
+            ? '#749E35'
+            : color === 'orange'
+            ? '#D29804'
+            : '#EA7804',
+      }}
+      fontVariant="bold"
+      onPress={onPress}>
+      ({count})
+    </Text>
+    <Text
+      style={{
+        color:
+          color === 'green'
+            ? '#749E35'
+            : color === 'orange'
+            ? '#D29804'
+            : '#EA7804',
+      }}
+      fontVariant="semiBold">
+      {text}
+    </Text>
+  </TouchableOpacity>
+);
+
+type CoursesInProgressTileTypes = {
+  percentage: number;
+  minutesLeft: number;
+  courseDescription: string;
+};
+
+const CourseInProgresssTile: FC<CoursesInProgressTileTypes> = ({
+  percentage,
+  minutesLeft,
+  courseDescription,
+}) => (
+  <View
+    style={{
+      flexDirection: 'row',
+      width: '100%',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      backgroundColor: '#FEF8EC',
+      borderWidth: 1,
+      borderColor: '#F4C24A',
+      height: normaliseDesigns(60),
+      borderRadius: 10,
+      paddingLeft: 10,
+      marginVertical: 5,
+      // paddingHorizontal: 10,
+    }}>
+    <View>
+      <Text fontVariant="bold">{courseDescription}</Text>
+      <View style={{flexDirection: 'row', alignItems: 'center'}}>
+        <Text size="small1">Continue Learning</Text>
+        <Icon name="right_icon" />
+      </View>
+    </View>
+    <View
+      style={{
+        flexDirection: 'row',
+        alignSelf: 'flex-start',
+        justifyContent: 'flex-end',
+        backgroundColor: '#F4C24A',
+        padding: 6,
+        paddingHorizontal: 10,
+        alignItems: 'center',
+        borderRadius: 8,
+      }}>
+      <Icon name="clock_icon" />
+      <Text size="small2" style={{left: 4}}>
+        {minutesLeft} Mins Left
+      </Text>
+    </View>
+  </View>
+);
+
+type CoursesTileTypes = {
+  courseImage: string;
+  courseTitle: string;
+  courseDuration: string;
+};
+
+const CourseTile: FC<CoursesTileTypes> = ({
+  courseTitle,
+  courseImage,
+  courseDuration,
+}) => (
+  <View
+    style={{
+      backgroundColor: '#FEF8EC',
+      borderWidth: 1,
+      borderColor: '#F4C24A',
+      width: '47%',
+      borderRadius: 10,
+      paddingBottom: 10,
+    }}>
+    <Icon width={150} height={150} name="courses_1_sample" />
+    <Text
+      fontVariant="bold"
+      size="body1"
+      style={{marginVertical: 4, marginLeft: 4}}>
+      {courseTitle}
+    </Text>
+    <View
+      style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginLeft: 8,
+        marginVertical: 6,
+      }}>
+      <Icon name="clock_icon" stroke={'#D29804'} />
+      <Text style={{color: '#D29804', marginLeft: 4}}>{courseDuration}</Text>
+    </View>
+    <View style={{flexDirection: 'row', alignItems: 'center', marginLeft: 8}}>
+      <Text size="small3">Enroll now</Text>
+      <Icon style={{marginLeft: 4}} name="right_icon" />
+    </View>
+  </View>
+);
 
 const TeacherDashboard: FC<TeacherDashboardScreenProps> = ({
   navigation,
@@ -179,14 +416,98 @@ const TeacherDashboard: FC<TeacherDashboardScreenProps> = ({
           icon="analytics_icon"
           titleText="Analytics"
           linkText="Learn More"
-          link=''
+          link=""
         />
-          <RenderTitleWithLink
-          icon='observation_icon'
+      </View>
+      <View>
+        <RenderTitleWithLink
+          icon="observation_icon"
           titleText="Observations"
           linkText="All Observations"
-          link=''
+          link=""
         />
+        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+          <ObservationFilterTile
+            count={20}
+            color="green"
+            text="All"
+            onPress={() => {}}
+            navigation={navigation}
+          />
+          <ObservationFilterTile
+            count={15}
+            color="orange"
+            text="By Me"
+            onPress={() => {}}
+          />
+          <ObservationFilterTile
+            count={41}
+            color="yellow"
+            text="For Me"
+            onPress={() => {}}
+          />
+        </View>
+        <ObservationsTile
+          rating={'4.0'}
+          userAssisted={'Mannar Mathai'}
+          image={''}
+          reportedBy={'Rishyasrinka'}
+        />
+        <ObservationsTile
+          rating={'4.0'}
+          userAssisted={'Mannar Mathai'}
+          image={''}
+          reportedBy={'Rishyasrinka'}
+        />
+        <ObservationsTile
+          rating={'4.0'}
+          userAssisted={'Mannar Mathai'}
+          image={''}
+          reportedBy={'Rishyasrinka'}
+        />
+        <ObservationsTile
+          rating={'4.0'}
+          userAssisted={'Mannar Mathai'}
+          image={''}
+          reportedBy={'Rishyasrinka'}
+        />
+      </View>
+      <View>
+        <RenderTitleWithLink
+          icon="monitor_courses_icon"
+          titleText="Courses"
+          linkText="View All"
+          style={{marginTop: 25}}
+          link=""
+        />
+        <Text size="small3" style={{marginVertical: 10}}>
+          5 in progress courses
+        </Text>
+        <CourseInProgresssTile
+          percentage={0}
+          minutesLeft={10}
+          courseDescription={'Preparing lesson plans'}
+        />
+        <CourseInProgresssTile
+          percentage={0}
+          minutesLeft={10}
+          courseDescription={'Preparing lesson plans'}
+        />
+        <Text size="small3" style={{marginTop: 20, marginBottom: 10}}>
+          12 available courses
+        </Text>
+        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+          <CourseTile
+            courseImage={''}
+            courseTitle={'Creating safe spaces'}
+            courseDuration={'4h 45 Mins'}
+          />
+          <CourseTile
+            courseImage={''}
+            courseTitle={'Student discipline'}
+            courseDuration={'4h 45 Mins'}
+          />
+        </View>
       </View>
     </Layout>
   );
