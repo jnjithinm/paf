@@ -25,6 +25,7 @@ interface LayoutPropsTypes extends ViewStyle {
   style?: ViewStyle;
   avoidBackButton?: boolean;
   isLoading?: boolean[];
+  onPressMenuIcon?:()=>void;
   onPressBackArrow?: () => void;
   onScrollToEnd?: () => void;
   onPressLogoutButton?: () => void;
@@ -40,6 +41,7 @@ const Layout: FC<LayoutPropsTypes> = ({
   avoidBackButton,
   style,
   isLoading = [false],
+  onPressMenuIcon,
   onScrollToEnd,
   //   navigateBack,
   onPressBackArrow,
@@ -129,6 +131,7 @@ const Layout: FC<LayoutPropsTypes> = ({
         dashboard={dashboard}
         onPressBackArrow={onPressBackArrow}
         onPressLogoutButton={onPressLogoutButton}
+        onPressMenuIcon={onPressMenuIcon}
       />
       <ScrollView
         nestedScrollEnabled

@@ -26,7 +26,13 @@ import courses_1_sample from '../assets/svg/courses_1_sample.svg';
 import courses_2_sample from '../assets/svg/courses_2_sample.svg';
 import right_icon from '../assets/svg/right_icon.svg'
 import clock_icon from '../assets/svg/clock_icon.svg'
-
+import drawer_icon_observation_reports from '../assets/svg/drawer_icon_observation_reports.svg'
+import drawer_icon_teaching_aids from '../assets/svg/drawer_icon_teaching_aids.svg'
+import drawer_icon_session_schedules from '../assets/svg/drawer_icon_session_schedules.svg'
+import drawer_icon_give_feedback from '../assets/svg/drawer_icon_give_feedback.svg'
+import drawer_icon_settings from '../assets/svg/drawer_icon_settings.svg'
+import drawer_icon_home from '../assets/svg/drawer_icon_home.svg'
+import left_arrow_orange_icon from '../assets/svg/left_arrow_orange_icon.svg'
 
 
 const Icons = {
@@ -53,7 +59,14 @@ const Icons = {
   courses_1_sample,
   courses_2_sample,
   right_icon,
-  clock_icon
+  clock_icon,
+  drawer_icon_observation_reports,
+  drawer_icon_teaching_aids,
+  drawer_icon_session_schedules,
+  drawer_icon_give_feedback,
+  drawer_icon_settings,
+  drawer_icon_home,
+  left_arrow_orange_icon
 };
 
 export type IconTypes = keyof typeof Icons;

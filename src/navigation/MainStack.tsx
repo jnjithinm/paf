@@ -7,7 +7,7 @@ import Splash from '../screens/Splash';
 import Login from '../screens/Login';
 import SecurityQuestion from '../screens/SecurityQuestion';
 import DashboardTabNavigator from './DashboardTabStack';
-import DrawerTabStack from './DrawerTabStack';
+
 
 export type MainStackParamList = {
   Splash: undefined;

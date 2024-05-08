@@ -8,17 +8,19 @@ import {normaliseDesigns} from '../utils/helpers/responsiveHelpers';
 
 
 type HeaderPropsTypes = {
-  title: string;
+
   avoidBackButton?: boolean;
   dashboard?: boolean;
+  onPressMenuIcon?:()=>void;
   onPressBackArrow?: () => void;
   onPressLogoutButton?: () => void;
 };
 
 const Header: FC<HeaderPropsTypes> = ({
-  title,
+
   avoidBackButton,
   dashboard,
+  onPressMenuIcon,
   onPressBackArrow,
   onPressLogoutButton,
 }) => {
@@ -57,9 +59,7 @@ const Header: FC<HeaderPropsTypes> = ({
 
           }}>
           <TouchableOpacity
-            onPress={() => {
-              // navigation.openDrawer();
-            }}
+            onPress={onPressMenuIcon}
             // style={{marginRight:20}}
             >
             <Icon name="menu_icon" />

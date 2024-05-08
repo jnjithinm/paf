@@ -4,7 +4,7 @@ import {NavigationContainer} from '@react-navigation/native';
 
 import {navigationRef} from '../utils/helpers/navigationHelpers';
 import MainStack from './MainStack';
-import DrawerTabStack from './DrawerTabStack';
+
 // import FlashMessage from 'react-native-flash-message';
 
 const RootNavigator = () => {
