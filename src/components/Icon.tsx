@@ -20,7 +20,20 @@ import filter_icon from '../assets/svg/filter_icon.svg'
 import analytics_icon from '../assets/svg/analytics_icon.svg';
 import explore_icon from '../assets/svg/explore_icon.svg';
 import observation_icon from '../assets/svg/observation_icon.svg'
-import rubrics_icon from '../assets/svg/rubrics_icon.svg'
+import evaluation_star_icon from '../assets/svg/evaluation_star_icon.svg'
+import monitor_courses_icon from '../assets/svg/monitor_courses_icon.svg'
+import courses_1_sample from '../assets/svg/courses_1_sample.svg';
+import courses_2_sample from '../assets/svg/courses_2_sample.svg';
+import right_icon from '../assets/svg/right_icon.svg'
+import clock_icon from '../assets/svg/clock_icon.svg'
+import drawer_icon_observation_reports from '../assets/svg/drawer_icon_observation_reports.svg'
+import drawer_icon_teaching_aids from '../assets/svg/drawer_icon_teaching_aids.svg'
+import drawer_icon_session_schedules from '../assets/svg/drawer_icon_session_schedules.svg'
+import drawer_icon_give_feedback from '../assets/svg/drawer_icon_give_feedback.svg'
+import drawer_icon_settings from '../assets/svg/drawer_icon_settings.svg'
+import drawer_icon_home from '../assets/svg/drawer_icon_home.svg'
+import left_arrow_orange_icon from '../assets/svg/left_arrow_orange_icon.svg'
+
 
 const Icons = {
   app_logo,
@@ -41,7 +54,19 @@ const Icons = {
   explore_icon,
   analytics_icon,
   observation_icon,
-  rubrics_icon
+  evaluation_star_icon,
+  monitor_courses_icon,
+  courses_1_sample,
+  courses_2_sample,
+  right_icon,
+  clock_icon,
+  drawer_icon_observation_reports,
+  drawer_icon_teaching_aids,
+  drawer_icon_session_schedules,
+  drawer_icon_give_feedback,
+  drawer_icon_settings,
+  drawer_icon_home,
+  left_arrow_orange_icon
 };
 
 export type IconTypes = keyof typeof Icons;

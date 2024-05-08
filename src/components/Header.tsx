@@ -1,20 +1,22 @@
-import React, { FC, useState } from 'react';
-import { Platform, TouchableOpacity, View } from 'react-native';
 
-import Text from './Text';
+import React, { FC, useState } from 'react';
+import { TouchableOpacity, View ,Text} from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
+
 import Icon from './Icon';
 
-import { useFocusEffect } from '@react-navigation/native';
 import colors from '../config/colors';
 import { normaliseDesigns } from '../utils/helpers/responsiveHelpers';
 import { navigate } from '../utils/helpers/navigationHelpers';
 import { FONT_SIZES, FONT_VARIANT } from '../config/themes';
 import Images from '../components/Image';
 
+
 type HeaderPropsTypes = {
   title: string;
   avoidBackButton?: boolean;
   dashboard?: boolean;
+  onPressMenuIcon?: () => void;
   onPressBackArrow?: () => void;
   onPressLogoutButton?: () => void;
 };
@@ -23,6 +25,7 @@ const Header: FC<HeaderPropsTypes> = ({
   title,
   avoidBackButton,
   dashboard,
+  onPressMenuIcon,
   onPressBackArrow,
   onPressLogoutButton,
 }) => {
@@ -64,9 +67,7 @@ const Header: FC<HeaderPropsTypes> = ({
 
           }}>
           <TouchableOpacity
-            onPress={() => {
-
-            }}
+            onPress={onPressMenuIcon}
           // style={{marginRight:20}}
           >
             <Icon name="menu_icon" />
@@ -101,19 +102,19 @@ const Header: FC<HeaderPropsTypes> = ({
             <TouchableOpacity
               onPress={() => {
               }}
-            style={{marginRight:20}}
+              style={{ marginRight: 20 }}
             >
               <Icon name="back_button" />
             </TouchableOpacity>
-            <Text style={{fontSize: FONT_SIZES.body3, fontFamily: FONT_VARIANT.bold}}>{title}</Text>
+            <Text style={{ fontSize: FONT_SIZES.body3, fontFamily: FONT_VARIANT.bold }}>{title}</Text>
           </View>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-           
+
             <TouchableOpacity
               onPress={() => {
 
               }}>
-                                        <Images name="Evaluation_icon" />
+              <Images name="Evaluation_icon" />
 
             </TouchableOpacity>
           </View>

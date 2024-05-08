@@ -4,6 +4,7 @@ import {NavigationContainer} from '@react-navigation/native';
 
 import {navigationRef} from '../utils/helpers/navigationHelpers';
 import MainStack from './MainStack';
+
 // import FlashMessage from 'react-native-flash-message';
 
 const RootNavigator = () => {
@@ -17,6 +18,7 @@ const RootNavigator = () => {
           navigationRef?.current?.getCurrentRoute()?.name || 'DefaultRouteName';
       }}
       >
+
       <MainStack />
       {/* <FlashMessage position="top" /> */}
     </NavigationContainer>

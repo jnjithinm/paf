@@ -27,8 +27,8 @@ const DashboardTabStack = () => {
         keyboardHidesTabBar: true,
       })}
       tabBar={props => <DashboardTabBar {...props} />}>
-      {/* <BorrowerTab.Screen name="TeacherDashboard" component={TeacherDashboard} /> */}
-      {/* <BorrowerTab.Screen name="RubricDashboard" component={RubricDashboard} /> */}
+      <BorrowerTab.Screen name="TeacherDashboard" component={TeacherDashboard} />
+      <BorrowerTab.Screen name="RubricDashboard" component={RubricDashboard} />
       <BorrowerTab.Screen name="RubricSubDashboard" component={RubricSubDashboard} />
 
 
