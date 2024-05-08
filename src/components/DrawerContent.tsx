@@ -94,7 +94,7 @@ const DrawerContent = () => {
             alignContent: 'center',
           }}>
           <Icon name="pro_pic_sample" width={50} height={50} />
-          <View style={{marginLeft: 10, justifyContent: 'center'}}>
+          <View style={{marginLeft: 10, justifyContent: 'center',top:10}}>
             <Text fontVariant="bold" size="body2">
               Hi, Swaraj
             </Text>
