@@ -1,46 +1,48 @@
 import React, { FC } from 'react';
-import { Image, StyleSheet } from 'react-native';
+import { Image as RNImage, StyleSheet } from 'react-native';
 import { normaliseDesigns } from '../utils/helpers/responsiveHelpers';
 
-import Evaluation_icon from '../assets/images/evaluation_icon.png';
+import evaluation_icon from '../assets/images/evaluation_icon.png';
 import trash_icon from '../assets/images/trash_icon.png';
 import list_icon from '../assets/images/list_icon.png';
+import search_reports_icon from '../assets/images/search_reports_icon.png'
 
-
-export type IconNames =
-  | 'Evaluation_icon'
+export type ImageIconNames =
+  | 'evaluation_icon'
   | 'trash_icon'
   | 'list_icon'
+  |'search_reports_icon'
 
 
 type IconType = {
-  name: IconNames;
+  name: ImageIconNames;
   size?: string;
 };
 
-const ImageSwitch = (param: IconNames) => {
+const ImageSwitch = (param: ImageIconNames) => {
   switch (param) {
-    case 'Evaluation_icon':
-      return { Src: Evaluation_icon, StyleConst: styles.Evaluation_icon };
+    case 'evaluation_icon':
+      return { Src: evaluation_icon, StyleConst: styles.Evaluation_icon };
     case 'trash_icon':
       return { Src: trash_icon, StyleConst: styles.trash_icon };
     case 'list_icon':
       return { Src: list_icon, StyleConst: styles.trash_icon };
-
+    case 'search_reports_icon':
+      return { Src: search_reports_icon, StyleConst: styles.search_reports_icon };
 
     default:
-      return { Src: Evaluation_icon, StyleConst: styles.trash_icon };
+      return { Src: evaluation_icon, StyleConst: styles.trash_icon };
   }
 };
 
-const Images: FC<IconType> = ({ name }) => {
+const Image: FC<IconType> = ({ name }) => {
   const { Src, StyleConst, } = ImageSwitch(name);
 
   return (
-    <Image source={Src} style={StyleConst} />
+    <RNImage source={Src} style={StyleConst} />
   )
 };
-export default Images;
+export default Image;
 const styles = StyleSheet.create({
   Evaluation_icon: {
     height: normaliseDesigns(30),
@@ -51,5 +53,9 @@ const styles = StyleSheet.create({
     width: normaliseDesigns(20),
 
   },
+  search_reports_icon:{
+    height: normaliseDesigns(40),
+    width: normaliseDesigns(40),
+  }
 
 });

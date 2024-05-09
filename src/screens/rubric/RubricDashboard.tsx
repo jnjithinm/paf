@@ -21,51 +21,55 @@ type ObservationReportRouteProp = RouteProp<
 interface ObservationReportScreenProps {
   navigation: ObservationReportNavigationProp;
   route: ObservationReportRouteProp;
+
+
 }
+
+export const tabs: string[] = ['All', 'Active', 'Non-Active'];
+export const rubricData = [
+  {
+    createdBy: 'admin',
+    active: true,
+    createdDate: '12/2/2024',
+    title: 'Teacher Evaluation Rubric',
+    userCount: 50,
+    onDelete: () => {},
+    key: '1',
+  },
+  {
+    createdBy: 'admin',
+    active: false,
+    createdDate: '12/2/2024',
+    title: 'Teacher Evaluation Rubric',
+    userCount: 50,
+    onDelete: () => {},
+    key: '2',
+  },
+  {
+    createdBy: 'admin',
+    active: true,
+    createdDate: '12/2/2024',
+    title: 'Teacher Evaluation Rubric',
+    userCount: 50,
+    onDelete: () => {},
+    key: '3',
+  },
+  {
+    createdBy: 'admin',
+    active: false,
+    createdDate: '12/2/2024',
+    title: 'Teacher Evaluation Rubric',
+    userCount: 50,
+    onDelete: () => {},
+    key: '4',
+  },
+  // Add more items as needed
+];
 const RubricDashboard: FC<ObservationReportScreenProps> = ({
   navigation,
   route,
 }) => {
-  const tabs: string[] = ['All', 'Active', 'Non-Active'];
-  const rubricData = [
-    {
-      createdBy: 'admin',
-      active: true,
-      createdDate: '12/2/2024',
-      title: 'Teacher Evaluation Rubric',
-      userCount: 50,
-      onDelete: () => {},
-      key: '1',
-    },
-    {
-      createdBy: 'admin',
-      active: false,
-      createdDate: '12/2/2024',
-      title: 'Teacher Evaluation Rubric',
-      userCount: 50,
-      onDelete: () => {},
-      key: '2',
-    },
-    {
-      createdBy: 'admin',
-      active: true,
-      createdDate: '12/2/2024',
-      title: 'Teacher Evaluation Rubric',
-      userCount: 50,
-      onDelete: () => {},
-      key: '3',
-    },
-    {
-      createdBy: 'admin',
-      active: false,
-      createdDate: '12/2/2024',
-      title: 'Teacher Evaluation Rubric',
-      userCount: 50,
-      onDelete: () => {},
-      key: '4',
-    },
-    // Add more items as needed
-  ];
+
 
   const [rubricListData, setrubricListData] = useState<any[]>([]);
 

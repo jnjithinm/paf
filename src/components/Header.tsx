@@ -1,14 +1,12 @@
 import React, {FC, useState} from 'react';
 import {TouchableOpacity, View, Text} from 'react-native';
-import {useFocusEffect} from '@react-navigation/native';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
 
 import Icon from './Icon';
-
 import colors from '../config/colors';
 import {normaliseDesigns} from '../utils/helpers/responsiveHelpers';
-import {navigate} from '../utils/helpers/navigationHelpers';
 import {FONT_SIZES, FONT_VARIANT} from '../config/themes';
-import Images, { IconNames } from '../components/Image';
+import Images, { ImageIconNames} from '../components/Image';
 
 type HeaderPropsTypes = {
   title?: string;
@@ -17,7 +15,7 @@ type HeaderPropsTypes = {
   onPressMenuIcon?: () => void;
   onPressBackArrow?: () => void;
   onPressLogoutButton?: () => void;
-  icon?:IconNames
+  icon?: ImageIconNames;
 };
 
 const Header: FC<HeaderPropsTypes> = ({
@@ -27,9 +25,11 @@ const Header: FC<HeaderPropsTypes> = ({
   onPressMenuIcon,
   onPressBackArrow,
   onPressLogoutButton,
-  icon
+  icon,
 }) => {
   const [isOpenTooltip, setIsOpenTooltip] = useState<boolean>(false);
+
+  const navigation = useNavigation();
   useFocusEffect(
     React.useCallback(() => {
       setIsOpenTooltip(false);
@@ -82,7 +82,7 @@ const Header: FC<HeaderPropsTypes> = ({
         </View>
       )}
 
-      {title && (
+
         <View
           style={{
             flexDirection: 'row',
@@ -92,26 +92,31 @@ const Header: FC<HeaderPropsTypes> = ({
             width: '100%',
           }}>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <TouchableOpacity onPress={() => {}} style={{marginRight: 20}}>
+            <TouchableOpacity
+              onPress={() => {
+                navigation.goBack();
+              }}
+              style={{marginRight: 20}}>
               <Icon name="back_button" />
             </TouchableOpacity>
+            {title && (
             <Text
               style={{
                 fontSize: FONT_SIZES.body3,
                 fontFamily: FONT_VARIANT.bold,
-                color:colors.blackColor
-              }}
-              >
+                color: colors.blackColor,
+              }}>
               {title}
             </Text>
+            )}
           </View>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
             <TouchableOpacity onPress={() => {}}>
-              <Images name={icon||"Evaluation_icon"} />
+              <Images name={icon || 'evaluation_icon'} />
             </TouchableOpacity>
           </View>
         </View>
-      )}
+    
 
       {/* <View style={{}}>
         {!avoidBackButton && (

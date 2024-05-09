@@ -22,7 +22,7 @@ const DashboardTabBar = ({state, navigation}: BottomTabBarProps) => {
         iconName = 'tabbar_icon_home';
 
         break;
-      case 'SampleScreen':
+      case 'ReportsMainPage':
         iconName = 'tabbar_icon_observation';
 
         break;

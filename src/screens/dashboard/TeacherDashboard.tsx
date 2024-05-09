@@ -2,6 +2,7 @@ import React, {FC, useState} from 'react';
 import {TextInput, TouchableOpacity, View, ViewStyle} from 'react-native';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
+import {Drawer} from 'react-native-drawer-layout';
 
 import {DashboardTabBarStackParamList} from '../../navigation/DashboardTabStack';
 import Layout from '../../components/Layout';
@@ -9,7 +10,6 @@ import Icon, {IconTypes} from '../../components/Icon';
 import Text from '../../components/Text';
 import colors from '../../config/colors';
 import {normaliseDesigns} from '../../utils/helpers/responsiveHelpers';
-import {Drawer} from 'react-native-drawer-layout';
 import DrawerContent from '../../components/DrawerContent';
 
 type TeacherDashboardNavigationProp = StackNavigationProp<

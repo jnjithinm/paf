@@ -11,7 +11,8 @@ import StatusBar from './StatusBar';
 import colors from '../config/colors';
 import {ColorTypes} from '../config/types';
 import Header from './Header';
-import { IconNames } from './Image';
+import { ImageIconNames } from './Image';
+
 
 // import  usePanResponder  from 'utils/functions/AutoLogoutManager'
 // import Loading from './Loading';
@@ -33,7 +34,7 @@ interface LayoutPropsTypes extends ViewStyle {
   showsVerticalScrollIndicator?: boolean;
   dashboard?: boolean;
   title?: string;
-  icon?:IconNames
+  icon?:ImageIconNames
 }
 const Layout: FC<LayoutPropsTypes> = ({
   children,
@@ -138,6 +139,7 @@ const Layout: FC<LayoutPropsTypes> = ({
         onPressLogoutButton={onPressLogoutButton}
         title={title  }
         onPressMenuIcon={onPressMenuIcon}
+        icon={icon}
       />
       <ScrollView
         nestedScrollEnabled
