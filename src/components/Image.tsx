@@ -6,12 +6,17 @@ import evaluation_icon from '../assets/images/evaluation_icon.png';
 import trash_icon from '../assets/images/trash_icon.png';
 import list_icon from '../assets/images/list_icon.png';
 import search_reports_icon from '../assets/images/search_reports_icon.png'
+import reports_icon from '../assets/images/reports_icon.png'
+import search_icon from '../assets/images/search_icon.png'
 
 export type ImageIconNames =
   | 'evaluation_icon'
   | 'trash_icon'
   | 'list_icon'
   |'search_reports_icon'
+  |'reports_icon'
+  | 'search_icon'
+
 
 
 type IconType = {
@@ -29,7 +34,11 @@ const ImageSwitch = (param: ImageIconNames) => {
       return { Src: list_icon, StyleConst: styles.trash_icon };
     case 'search_reports_icon':
       return { Src: search_reports_icon, StyleConst: styles.search_reports_icon };
-
+      case 'reports_icon':
+        return { Src: reports_icon, StyleConst: styles.Evaluation_icon };
+        case 'search_icon':
+          return { Src: search_icon, StyleConst: styles.search_icon };
+  
     default:
       return { Src: evaluation_icon, StyleConst: styles.trash_icon };
   }
@@ -56,6 +65,10 @@ const styles = StyleSheet.create({
   search_reports_icon:{
     height: normaliseDesigns(60),
     width: normaliseDesigns(85.5),
-  }
+  },
+  search_icon: {
+    height: normaliseDesigns(18),
+    width: normaliseDesigns(18),
+  },
 
 });

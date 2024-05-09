@@ -7,12 +7,14 @@ import TeacherDashboard from '../screens/dashboard/TeacherDashboard';
 import RubricStack from './RubricStack';
 import SampleScreen2 from '../screens/reports/SampleScreen2';
 import ReportsMainPage from '../screens/reports/ReportsMainPage';
+import AddNewObservation from '../screens/reports/AddNewObservation';
 
 export type DashboardTabBarStackParamList = {
   TeacherDashboard: undefined;
   ReportsMainPage: undefined;
   RubricStack: undefined;
   SampleScreen2: undefined;
+  AddNewObservation: undefined;
 };
 
 const BorrowerTab = createBottomTabNavigator<DashboardTabBarStackParamList>();
@@ -33,8 +35,8 @@ const DashboardTabStack = () => {
       <BorrowerTab.Screen name="ReportsMainPage" component={ReportsMainPage} />
       <BorrowerTab.Screen name="RubricStack" component={RubricStack} />
       <BorrowerTab.Screen
-        name="SampleScreen2"
-        component={SampleScreen2}
+        name="AddNewObservation"
+        component={AddNewObservation}
       />
     </BorrowerTab.Navigator>
   );
