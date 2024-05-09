@@ -111,11 +111,13 @@ const Header: FC<HeaderPropsTypes> = ({
             </Text>
           )}
         </View>
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <TouchableOpacity onPress={() => {}}>
-            <Images name={icon || 'evaluation_icon'} />
+        {icon && (
+          <TouchableOpacity
+            onPress={() => {}}
+            style={icon === 'search_reports_icon' ? {top: 35, right: 10} : {}}>
+            <Images name={icon} />
           </TouchableOpacity>
-        </View>
+        )}
       </View>
 
       {/* <View style={{}}>
