@@ -93,7 +93,7 @@ type ObservationTileTypes = {
   style?: ViewStyle;
 };
 
-const ObservationsTile: FC<ObservationTileTypes> = ({
+export const ObservationsTile: FC<ObservationTileTypes> = ({
   rating,
   userAssisted,
   image,

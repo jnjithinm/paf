@@ -9,6 +9,7 @@ import {rubricData, } from '../rubric/RubricDashboard';
 import Text from '../../components/Text';
 import Icon from '../../components/Icon';
 import colors from '../../config/colors';
+import { ObservationsTile } from '../dashboard/TeacherDashboard';
 
 type ReportsMainPageNavigationProp = StackNavigationProp<
   DashboardTabBarStackParamList,
@@ -24,7 +25,7 @@ interface ReportsMainPageScreenProps {
   route: ReportsMainPageRouteProp;
 }
 
-const tabs:string[]=['All(20)','By me(60)','For me(60)']
+const tabs:string[]=['All (20)','By me (60)','For me (60)']
 const ReportsMainPage: FC<ReportsMainPageScreenProps> = ({
   navigation,
   route,
@@ -79,6 +80,32 @@ const ReportsMainPage: FC<ReportsMainPageScreenProps> = ({
             }}>
             <Icon name="filter_icon" />
           </View>
+        </View>
+        <View style={{marginTop:10}}>
+        <ObservationsTile
+            rating={'4.0'}
+            userAssisted={'Mannar Mathai'}
+            image={''}
+            reportedBy={'Rishyasrinka'}
+          />
+          <ObservationsTile
+            rating={'4.0'}
+            userAssisted={'Mannar Mathai'}
+            image={''}
+            reportedBy={'Rishyasrinka'}
+          />
+          <ObservationsTile
+            rating={'4.0'}
+            userAssisted={'Mannar Mathai'}
+            image={''}
+            reportedBy={'Rishyasrinka'}
+          />
+          <ObservationsTile
+            rating={'4.0'}
+            userAssisted={'Mannar Mathai'}
+            image={''}
+            reportedBy={'Rishyasrinka'}
+          />
         </View>
     </Layout>
   );
