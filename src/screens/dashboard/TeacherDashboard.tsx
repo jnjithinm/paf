@@ -305,6 +305,14 @@ const CourseTile: FC<CoursesTileTypes> = ({
   </View>
 );
 
+// type RenderSearchTypes={
+
+// }
+
+// const RenderSearch:FC<RenderSearchTypes>=({})=>(
+
+// )
+
 const TeacherDashboard: FC<TeacherDashboardScreenProps> = ({
   navigation,
   route,

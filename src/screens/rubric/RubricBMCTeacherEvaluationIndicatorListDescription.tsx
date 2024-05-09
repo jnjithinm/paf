@@ -116,7 +116,8 @@ const RubricBMCTeacherEvaluation: FC<RubricBMCTeacherEvaluationScreenProps> = ({
       overridePaddingHorizontal
       overridePaddingVertical
       style={{paddingHorizontal: 15}}
-      title={title}>
+      title={title}
+      icon='evaluation_icon'>
       <View style={{marginVertical: 10}}>
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
           <Image name={'list_icon'} />

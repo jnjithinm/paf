@@ -6,7 +6,7 @@ import Icon from './Icon';
 import colors from '../config/colors';
 import {normaliseDesigns} from '../utils/helpers/responsiveHelpers';
 import {FONT_SIZES, FONT_VARIANT} from '../config/themes';
-import Images, { ImageIconNames} from '../components/Image';
+import Images, {ImageIconNames} from '../components/Image';
 
 type HeaderPropsTypes = {
   title?: string;
@@ -82,16 +82,16 @@ const Header: FC<HeaderPropsTypes> = ({
         </View>
       )}
 
-
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            // alignItems:'flex-end',
-            width: '100%',
-          }}>
-          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          // alignItems:'flex-end',
+          width: '100%',
+        }}>
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          {!avoidBackButton && (
             <TouchableOpacity
               onPress={() => {
                 navigation.goBack();
@@ -99,7 +99,8 @@ const Header: FC<HeaderPropsTypes> = ({
               style={{marginRight: 20}}>
               <Icon name="back_button" />
             </TouchableOpacity>
-            {title && (
+          )}
+          {title && (
             <Text
               style={{
                 fontSize: FONT_SIZES.body3,
@@ -108,15 +109,16 @@ const Header: FC<HeaderPropsTypes> = ({
               }}>
               {title}
             </Text>
-            )}
-          </View>
-          <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <TouchableOpacity onPress={() => {}}>
-              <Images name={icon || 'evaluation_icon'} />
-            </TouchableOpacity>
-          </View>
+          )}
         </View>
-    
+        {icon && (
+          <TouchableOpacity
+            onPress={() => {}}
+            style={icon === 'search_reports_icon' ? {top: 35, right: 10} : {}}>
+            <Images name={icon} />
+          </TouchableOpacity>
+        )}
+      </View>
 
       {/* <View style={{}}>
         {!avoidBackButton && (

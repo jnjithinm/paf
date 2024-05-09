@@ -54,8 +54,8 @@ const styles = StyleSheet.create({
 
   },
   search_reports_icon:{
-    height: normaliseDesigns(40),
-    width: normaliseDesigns(40),
+    height: normaliseDesigns(60),
+    width: normaliseDesigns(85.5),
   }
 
 });
