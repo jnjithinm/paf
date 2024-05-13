@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Image as RNImage, StyleSheet } from 'react-native';
+import { ImageProps, Image as RNImage, StyleSheet } from 'react-native';
 import { normaliseDesigns } from '../utils/helpers/responsiveHelpers';
 
 import evaluation_icon from '../assets/images/evaluation_icon.png';
@@ -14,48 +14,39 @@ export type ImageIconNames =
   |'search_reports_icon'
 
 
-type IconType = {
-  name: ImageIconNames;
-  size?: string;
-};
-
-const ImageSwitch = (param: ImageIconNames) => {
+  type ImagePropsTypes = {
+    name: ImageIconNames;
+    size?: number;
+    style?: ImageProps['style'];
+  } & Omit<React.ComponentProps<typeof RNImage>, 'source'>;
+  
+  const Image: FC<ImagePropsTypes> = ({name, size = 1, style, ...rest}) => {
+    const ImageSwitch = (param: ImageIconNames) => {
+      let width, height;
   switch (param) {
     case 'evaluation_icon':
-      return { Src: evaluation_icon, StyleConst: styles.Evaluation_icon };
+      width = 30 * size;
+      height = 45 * size;
+      return { Src: evaluation_icon, StyleConst:{width,height}};
     case 'trash_icon':
-      return { Src: trash_icon, StyleConst: styles.trash_icon };
+      width = 20 * size;
+      height = 20 * size;
+      return { Src: trash_icon, StyleConst:{width,height} };
     case 'list_icon':
-      return { Src: list_icon, StyleConst: styles.trash_icon };
+      return { Src: list_icon, StyleConst:{width,height} };
     case 'search_reports_icon':
-      return { Src: search_reports_icon, StyleConst: styles.search_reports_icon };
+      width = 85.5 * size;
+      height = 60 * size;
+      return { Src: search_reports_icon, StyleConst: {width,height}};
 
     default:
-      return { Src: evaluation_icon, StyleConst: styles.trash_icon };
+      return { Src: evaluation_icon, StyleConst:{width,height} };
   }
 };
+const {Src, StyleConst} = ImageSwitch(name);
 
-const Image: FC<IconType> = ({ name }) => {
-  const { Src, StyleConst, } = ImageSwitch(name);
+const mergedStyle = [StyleConst, style];
 
-  return (
-    <RNImage source={Src} style={StyleConst} />
-  )
+return <RNImage source={Src} style={mergedStyle} {...rest} />;
 };
 export default Image;
-const styles = StyleSheet.create({
-  Evaluation_icon: {
-    height: normaliseDesigns(30),
-    width: normaliseDesigns(45),
-  },
-  trash_icon: {
-    height: normaliseDesigns(20),
-    width: normaliseDesigns(20),
-
-  },
-  search_reports_icon:{
-    height: normaliseDesigns(60),
-    width: normaliseDesigns(85.5),
-  }
-
-});

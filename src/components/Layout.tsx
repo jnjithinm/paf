@@ -11,8 +11,7 @@ import StatusBar from './StatusBar';
 import colors from '../config/colors';
 import {ColorTypes} from '../config/types';
 import Header from './Header';
-import { ImageIconNames } from './Image';
-
+import {ImageIconNames} from './Image';
 
 // import  usePanResponder  from 'utils/functions/AutoLogoutManager'
 // import Loading from './Loading';
@@ -27,14 +26,15 @@ interface LayoutPropsTypes extends ViewStyle {
   style?: ViewStyle;
   avoidBackButton?: boolean;
   isLoading?: boolean[];
-  onPressMenuIcon?:()=>void;
+  onPressMenuIcon?: () => void;
   onPressBackArrow?: () => void;
   onScrollToEnd?: () => void;
   onPressLogoutButton?: () => void;
   showsVerticalScrollIndicator?: boolean;
   dashboard?: boolean;
   title?: string;
-  icon?:ImageIconNames
+  icon?: ImageIconNames;
+  titleTransition?: boolean;
 }
 const Layout: FC<LayoutPropsTypes> = ({
   children,
@@ -53,7 +53,8 @@ const Layout: FC<LayoutPropsTypes> = ({
   showsVerticalScrollIndicator,
   dashboard,
   title,
-  icon
+  icon,
+  titleTransition,
 }) => {
   let backgroundStyle = backgroundColor
     ? colors[backgroundColor]
@@ -74,6 +75,7 @@ const Layout: FC<LayoutPropsTypes> = ({
     paddingVertical: 25,
   };
   const [keyboardOffset, setKeyboardOffset] = useState(0);
+  const [isScrolled, setIsScrolled] = useState<boolean>(false);
 
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(
@@ -115,15 +117,20 @@ const Layout: FC<LayoutPropsTypes> = ({
 
   const handleScroll = event => {
     const {layoutMeasurement, contentOffset, contentSize} = event.nativeEvent;
-
-    // Calculate the end position
     const endOffsetY = contentSize.height - layoutMeasurement.height;
-
-    // Check if the user has scrolled to the end
-    if (endOffsetY > 0 && contentOffset.y >= endOffsetY) {
-      onScrollToEnd && onScrollToEnd();
+  
+    // // Check if the user has scrolled to the end
+    // if (endOffsetY > 0 && contentOffset.y >= endOffsetY) {
+    //   setIsScrolled(true);
+    //   onScrollToEnd && onScrollToEnd();
+    // } else 
+    if (contentOffset.y === 0) {
+      setIsScrolled(false); // Set isScrolled to false when scrolled to top
+    }else{
+      setIsScrolled(true);
     }
   };
+  
 
   return (
     <KeyboardAvoidingView
@@ -137,9 +144,11 @@ const Layout: FC<LayoutPropsTypes> = ({
         dashboard={dashboard}
         onPressBackArrow={onPressBackArrow}
         onPressLogoutButton={onPressLogoutButton}
-        title={title  }
+        title={title}
         onPressMenuIcon={onPressMenuIcon}
         icon={icon}
+        scrollTransition={titleTransition}
+        isScrolled={isScrolled}
       />
       <ScrollView
         nestedScrollEnabled
