@@ -16,6 +16,8 @@ type HeaderPropsTypes = {
   onPressBackArrow?: () => void;
   onPressLogoutButton?: () => void;
   icon?: ImageIconNames;
+  scrollTransition?: boolean;
+  isScrolled?: boolean;
 };
 
 const Header: FC<HeaderPropsTypes> = ({
@@ -26,6 +28,8 @@ const Header: FC<HeaderPropsTypes> = ({
   onPressBackArrow,
   onPressLogoutButton,
   icon,
+  scrollTransition,
+  isScrolled,
 }) => {
   const [isOpenTooltip, setIsOpenTooltip] = useState<boolean>(false);
 
@@ -54,7 +58,7 @@ const Header: FC<HeaderPropsTypes> = ({
         paddingBottom: 10,
         paddingHorizontal: 15,
         backgroundColor: colors.primaryLightColor,
-        height: normaliseDesigns(45),
+        height: normaliseDesigns(50),
       }}>
       {dashboard && (
         <View
@@ -90,7 +94,12 @@ const Header: FC<HeaderPropsTypes> = ({
           // alignItems:'flex-end',
           width: '100%',
         }}>
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            alignSelf: 'flex-end',
+          }}>
           {!avoidBackButton && (
             <TouchableOpacity
               onPress={() => {
@@ -100,7 +109,8 @@ const Header: FC<HeaderPropsTypes> = ({
               <Icon name="back_button" />
             </TouchableOpacity>
           )}
-          {title && (
+          {((title && !scrollTransition) ||
+            (title && scrollTransition && isScrolled)) && (
             <Text
               style={{
                 fontSize: FONT_SIZES.body3,
@@ -114,8 +124,16 @@ const Header: FC<HeaderPropsTypes> = ({
         {icon && (
           <TouchableOpacity
             onPress={() => {}}
-            style={icon === 'search_reports_icon' ? {top: 35, right: 10} : {}}>
-            <Images name={icon} />
+            style={
+              icon === 'search_reports_icon' &&
+              (scrollTransition && !isScrolled)
+                ? {top: 35, right: 10}
+                : {}
+            }>
+            <Images
+              name={icon}
+              size={(!scrollTransition || (scrollTransition && isScrolled)) ? 0.5 : 1}
+            />
           </TouchableOpacity>
         )}
       </View>

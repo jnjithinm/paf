@@ -1,4 +1,4 @@
-import React, {FC, useState} from 'react';
+import React, {FC, useEffect, useState} from 'react';
 import {TextInput, TouchableOpacity, View, ViewStyle} from 'react-native';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
@@ -89,61 +89,77 @@ type ObservationTileTypes = {
   rating: string;
   userAssisted: string;
   image: string;
+  onPress: () => void;
   reportedBy: string;
   style?: ViewStyle;
 };
 
-const ObservationsTile: FC<ObservationTileTypes> = ({
+export const ObservationsTile: FC<ObservationTileTypes> = ({
   rating,
   userAssisted,
   image,
+  onPress,
   reportedBy,
   style,
-}) => (
-  <View
-    style={{
-      width: '100%',
-      flexDirection: 'row',
-      borderWidth: 1,
-      borderColor: '#F4C24A',
-      justifyContent: 'space-between',
-      height: normaliseDesigns(50),
-      borderRadius: 10,
-      alignItems: 'center',
-      marginVertical: 5,
-      ...style,
-    }}>
-    <View
+}) => {
+  const [isPressed, setIsPressed] = useState(false);
+  useEffect(() => {
+    return () => {
+      setIsPressed(false);
+    };
+  }, [isPressed]);
+  
+  return (
+    <TouchableOpacity
+      onPress={() => {
+        setIsPressed(true);
+        onPress();
+      }}
       style={{
+        width: '100%',
         flexDirection: 'row',
-        padding: 8,
-        backgroundColor: '#EAF1FE',
+        borderWidth: 1,
+        borderColor: '#F4C24A',
+        justifyContent: 'space-between',
+        height: normaliseDesigns(50),
         borderRadius: 10,
-        alignSelf: 'flex-start',
         alignItems: 'center',
-        // flex:1
+        marginVertical: 5,
+        backgroundColor: isPressed ? '#FCEBC5' : colors.backgroundColor,
+        ...style,
       }}>
-      <Text size="small1" fontVariant="bold">
-        {rating}
-      </Text>
-      <Icon style={{marginLeft: 5}} name="star_icon" width={10} />
-    </View>
-    <View style={{flex: 1, marginLeft: 10}}>
-      <Text size="verysmall3" opacity="0.50">
-        User Assessed
-      </Text>
-      <Text fontVariant="bold" size="small3">
-        {userAssisted}
-      </Text>
-    </View>
-    <View style={{flex: 1}}>
-      <Text size="verysmall3" opacity="0.50">
-        Reported By
-      </Text>
-      <Text size="small3"> {reportedBy}</Text>
-    </View>
-  </View>
-);
+      <View
+        style={{
+          flexDirection: 'row',
+          padding: 8,
+          backgroundColor: '#EAF1FE',
+          borderRadius: 10,
+          alignSelf: 'flex-start',
+          alignItems: 'center',
+          // flex:1
+        }}>
+        <Text size="small1" fontVariant="bold">
+          {rating}
+        </Text>
+        <Icon style={{marginLeft: 5}} name="star_icon" width={10} />
+      </View>
+      <View style={{flex: 1, marginLeft: 10}}>
+        <Text size="verysmall3" opacity="0.50">
+          User Assessed
+        </Text>
+        <Text fontVariant="bold" size="small3">
+          {userAssisted}
+        </Text>
+      </View>
+      <View style={{flex: 1}}>
+        <Text size="verysmall3" opacity="0.50">
+          Reported By
+        </Text>
+        <Text size="small3"> {reportedBy}</Text>
+      </View>
+    </TouchableOpacity>
+  );
+};
 
 type ObservationFilterTileTypes = {
   text: 'All' | 'By Me' | 'For Me';
@@ -305,13 +321,55 @@ const CourseTile: FC<CoursesTileTypes> = ({
   </View>
 );
 
-// type RenderSearchTypes={
+type RenderSearchTypes = {
+  placeHolder?: string;
+  onTextChange: () => void;
+  style?: ViewStyle;
+};
 
-// }
-
-// const RenderSearch:FC<RenderSearchTypes>=({})=>(
-
-// )
+const RenderSearch: FC<RenderSearchTypes> = ({
+  placeHolder = 'Search',
+  onTextChange,
+  style,
+}) => (
+  <View
+    style={{
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginTop: 20,
+      ...style,
+    }}>
+    <View
+      style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        width: '85%',
+        backgroundColor: '#F5F7FA',
+        borderRadius: 10,
+        paddingHorizontal: 10,
+      }}>
+      <TextInput
+        style={{flex: 1, color: colors.blackColor, paddingVertical: 5}}
+        placeholder="Search"
+        placeholderTextColor={colors.darkGrey}
+        // onChangeText={text => {
+        //   setSearchText(text);
+        // }}
+      />
+      <Icon name="search_icon" />
+    </View>
+    <View
+      style={{
+        borderWidth: 1,
+        borderColor: colors.primaryColor,
+        padding: 8,
+        borderRadius: 10,
+      }}>
+      <Icon name="filter_icon" />
+    </View>
+  </View>
+);
 
 const TeacherDashboard: FC<TeacherDashboardScreenProps> = ({
   navigation,
@@ -388,42 +446,7 @@ const TeacherDashboard: FC<TeacherDashboardScreenProps> = ({
             style={{alignSelf: 'flex-end'}}
           />
         </View>
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            marginTop: 20,
-          }}>
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              width: '85%',
-              backgroundColor: '#F5F7FA',
-              borderRadius: 10,
-              paddingHorizontal: 10,
-            }}>
-            <TextInput
-              style={{flex: 1, color: colors.blackColor, paddingVertical: 5}}
-              placeholder="Search"
-              placeholderTextColor={colors.darkGrey}
-              // onChangeText={text => {
-              //   setSearchText(text);
-              // }}
-            />
-            <Icon name="search_icon" />
-          </View>
-          <View
-            style={{
-              borderWidth: 1,
-              borderColor: colors.primaryColor,
-              padding: 8,
-              borderRadius: 10,
-            }}>
-            <Icon name="filter_icon" />
-          </View>
-        </View>
+        <RenderSearch onTextChange={() => {}} />
         <View style={{marginTop: 40}}>
           <RenderTitleWithLink
             icon="analytics_icon"
@@ -464,24 +487,28 @@ const TeacherDashboard: FC<TeacherDashboardScreenProps> = ({
             userAssisted={'Mannar Mathai'}
             image={''}
             reportedBy={'Rishyasrinka'}
+            onPress={() => {}}
           />
           <ObservationsTile
             rating={'4.0'}
             userAssisted={'Mannar Mathai'}
             image={''}
             reportedBy={'Rishyasrinka'}
+            onPress={() => {}}
           />
           <ObservationsTile
             rating={'4.0'}
             userAssisted={'Mannar Mathai'}
             image={''}
             reportedBy={'Rishyasrinka'}
+            onPress={() => {}}
           />
           <ObservationsTile
             rating={'4.0'}
             userAssisted={'Mannar Mathai'}
             image={''}
             reportedBy={'Rishyasrinka'}
+            onPress={() => {}}
           />
         </View>
         <View>

@@ -4,7 +4,6 @@ import React, {useEffect, useState} from 'react';
 // import {queryClient} from './src/api/reactquery';
 // import CombinedProvider from './src/context/index';
 import 'react-native-gesture-handler';
-import {AppState, Text, View} from 'react-native';
 import RootNavigator from './src/navigation/RootStack';
 
 function App() {
