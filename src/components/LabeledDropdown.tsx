@@ -2,7 +2,7 @@ import React, {FC, Dispatch, SetStateAction} from 'react';
 import {View, Text, StyleSheet, ViewStyle} from 'react-native';
 
 import colors from '../config/colors';
-import {FONT_VARIANT} from '../config/themes';
+import {FONT_VARIANT, FONT_SIZES} from '../config/themes';
 
 import {Dropdown} from 'react-native-element-dropdown';
 import {normaliseFont} from '../utils/helpers/responsiveHelpers';
@@ -15,10 +15,8 @@ export type dropdownObject = {
 interface DropdownProps {
   label?: string;
   options: dropdownObject[];
-
   setSelectedValue?: Dispatch<SetStateAction<string>>;
   setSelectedItem?: Dispatch<SetStateAction<dropdownObject | undefined>>;
-
   setIsChanged?: Dispatch<SetStateAction<boolean>>;
   defaultValue: string;
   onChangeItem?: (object: dropdownObject) => void;
@@ -36,7 +34,6 @@ interface DropdownProps {
 const LabelDropdown: FC<DropdownProps> = ({
   label,
   options,
-
   setSelectedValue,
   setSelectedItem,
   defaultValue,
@@ -52,6 +49,7 @@ const LabelDropdown: FC<DropdownProps> = ({
   placeHolder,
   style,
 }) => {
+
   function isDropdownItem(item: any): item is dropdownObject {
     return typeof item === 'object' && item !== null;
   }
@@ -73,8 +71,9 @@ const LabelDropdown: FC<DropdownProps> = ({
           ...style,
         },
       ]}>
+
       {label && (
-        <View style={{flexDirection: 'row'}}>
+        <View style={{flexDirection: 'row', }}>
           <Text style={[styles.label, {color: colors.blackColor}]}>
             {label}
           </Text>
@@ -207,8 +206,25 @@ const LabelDropdown: FC<DropdownProps> = ({
             onChangeItem && onChangeItem(item);
             setIsChanged && setIsChanged(true);
             setSelectedItem && setSelectedItem(item);
+            setSelectedValue && setSelectedValue(item.value);
+
             // setIsFocus(false);
           }}
+          containerStyle={[
+            {
+              // bottom: bottom ? '30%' : upper ? '100%' : 0,
+              // marginVertical: bottom ? -2 : 0,
+              // elevation: 2,
+              backgroundColor: 'red',
+              borderColor: 'gray',
+              borderTopWidth: 0,
+              borderBottomEndRadius: 9,
+              borderBottomStartRadius: 9,
+              borderWidth: .8,
+              maxHeight: 250,
+              
+            },
+          ]}
           // renderLeftIcon={() => (
           //   <AntDesign
           //     style={styles.icon}
@@ -232,7 +248,12 @@ const styles = StyleSheet.create({
   },
   label: {
     color: colors.darkGrey,
-    fontFamily: FONT_VARIANT.regular,
+    fontFamily: FONT_VARIANT.bold,
+    fontSize: FONT_SIZES.body1,
+    // padding: 15,
+    // backgroundColor: 'red',
+    height: 20,
+
   },
   Container: {
     borderWidth: 1,
@@ -240,7 +261,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     justifyContent: 'center',
     paddingHorizontal: 10,
-    // marginTop: 10,
+    marginTop: 2,
     height: 'auto',
     paddingVertical: 7,
     backgroundColor: 'transparent',
@@ -257,9 +278,11 @@ const styles = StyleSheet.create({
     // paddingHorizontal: 5,
     color: colors.blackColor,
     textTransform: 'capitalize',
+    backgroundColor: 'pink'
   },
 
   dropdownText: {
+    backgroundColor: 'red',
     fontSize: normaliseFont(14),
     color: colors.blackColor,
     paddingVertical: 5,

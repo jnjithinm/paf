@@ -6,12 +6,17 @@ import evaluation_icon from '../assets/images/evaluation_icon.png';
 import trash_icon from '../assets/images/trash_icon.png';
 import list_icon from '../assets/images/list_icon.png';
 import search_reports_icon from '../assets/images/search_reports_icon.png'
+import reports_icon from '../assets/images/reports_icon.png'
+import search_icon from '../assets/images/search_icon.png'
 
 export type ImageIconNames =
   | 'evaluation_icon'
   | 'trash_icon'
   | 'list_icon'
   |'search_reports_icon'
+  |'reports_icon'
+  | 'search_icon'
+
 
 
   type ImagePropsTypes = {
@@ -34,6 +39,12 @@ export type ImageIconNames =
       return { Src: trash_icon, StyleConst:{width,height} };
     case 'list_icon':
       return { Src: list_icon, StyleConst:{width,height} };
+
+      case 'reports_icon':
+        return { Src: reports_icon, StyleConst: styles.Evaluation_icon };
+        case 'search_icon':
+          return { Src: search_icon, StyleConst: styles.search_icon };
+  
     case 'search_reports_icon':
       width = 85.5 * size;
       height = 60 * size;
@@ -50,3 +61,25 @@ const mergedStyle = [StyleConst, style];
 return <RNImage source={Src} style={mergedStyle} {...rest} />;
 };
 export default Image;
+
+const styles = StyleSheet.create({
+  Evaluation_icon: {
+    height: normaliseDesigns(30),
+    width: normaliseDesigns(45),
+  },
+  trash_icon: {
+    height: normaliseDesigns(20),
+    width: normaliseDesigns(20),
+
+  },
+  search_reports_icon:{
+    height: normaliseDesigns(60),
+    width: normaliseDesigns(85.5),
+  },
+  search_icon: {
+    height: normaliseDesigns(18),
+    width: normaliseDesigns(18),
+  },
+
+});
+
