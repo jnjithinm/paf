@@ -8,7 +8,7 @@ import SearchFilter from '../../components/SearchFilter';
 import Image from '../../components/Image';
 import RubricIndicatorList from '../../components/RubricIndicatorList';
 import Text from '../../components/Text';
-import { RubricTabBarStackParamList } from '../../navigation/RubricStack';
+import { RubricTabBarStackParamList } from '../../navigation/RubricTabStack';
 
 type RubricBMCTeacherEvaluationNavigationProp = StackNavigationProp<
 RubricTabBarStackParamList,

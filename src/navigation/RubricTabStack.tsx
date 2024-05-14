@@ -5,7 +5,7 @@ import {
 } from '@react-navigation/stack';
 
 import RubricDashboard from '../screens/rubric/RubricDashboard';
-import AddNewObservation from '../screens/reports/AddNewObservation';
+import AddNewObservation from '../screens/newObservation/AddNewObservation';
 import RubricBMCTeacherEvaluationIndicatorList from '../screens/rubric/RubricBMCTeacherEvaluationIndicatorList';
 import RubricBMCTeacherEvaluationIndicatorListDescription from '../screens/rubric/RubricBMCTeacherEvaluationIndicatorListDescription';
 

@@ -4,7 +4,7 @@ import React, {useEffect, useState} from 'react';
 // import {queryClient} from './src/api/reactquery';
 // import CombinedProvider from './src/context/index';
 import 'react-native-gesture-handler';
-import RootNavigator from './src/navigation/RootStack';
+import RootNavigator from './src/navigation/RootTabStack';
 
 function App() {
   return <RootNavigator />;

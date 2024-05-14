@@ -10,7 +10,7 @@ import Text from '../../components/Text';
 import Icon from '../../components/Icon';
 import colors from '../../config/colors';
 import {ObservationsTile} from '../dashboard/TeacherDashboard';
-import {ReportsTabBarStackParamList} from '../../navigation/ReportsStack';
+import {ReportsTabBarStackParamList} from '../../navigation/ReportsTabStack';
 
 type ReportsMainPageNavigationProp = StackNavigationProp<
   ReportsTabBarStackParamList,

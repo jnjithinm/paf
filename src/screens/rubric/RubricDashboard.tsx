@@ -7,7 +7,7 @@ import {DashboardTabBarStackParamList} from '../../navigation/DashboardTabStack'
 import Layout from '../../components/Layout';
 import Tab from '../../components/Tab';
 import RubricListModal from '../../components/RubricListModal';
-import {RubricTabBarStackParamList} from '../../navigation/RubricStack';
+import {RubricTabBarStackParamList} from '../../navigation/RubricTabStack';
 
 type ObservationReportNavigationProp = StackNavigationProp<
   RubricTabBarStackParamList,

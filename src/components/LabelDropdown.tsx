@@ -1,18 +1,16 @@
-import React, { Dispatch, SetStateAction, FC, useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, {Dispatch, SetStateAction, FC, useState} from 'react';
+import {View, Text, StyleSheet} from 'react-native';
 
 // import colors from 'config/Colors';
 // import useFontNormalise from 'hooks/useFontNormalise';
 // import Icon from 'components/Icon';
-
 
 import colors from '../config/colors';
 import {FONT_VARIANT, FONT_SIZES} from '../config/themes';
 
 import {Dropdown} from 'react-native-element-dropdown';
 import {normaliseFont} from '../utils/helpers/responsiveHelpers';
-import Image from '../components/Image'
-
+import Image from '../components/Image';
 
 interface DropdownItem {
   label: string | number;
@@ -22,13 +20,13 @@ interface DropdownItem {
   schemeName?: string;
   branchName?: string;
   branchCode?: string;
-  branchId?: number,
-  tenure?: string,
-  roi?: number,
-  dealerName?: string,
+  branchId?: number;
+  tenure?: string;
+  roi?: number;
+  dealerName?: string;
   dealerCode?: string;
   subDealerName?: string;
-  subDealerCode?: string
+  subDealerCode?: string;
   // ...
 }
 
@@ -48,7 +46,6 @@ interface DropdownProps {
   mandatory?: boolean;
   number?: boolean;
   placeHolder?: string;
-
 }
 
 const LabelDropdown: FC<DropdownProps> = ({
@@ -66,14 +63,13 @@ const LabelDropdown: FC<DropdownProps> = ({
   upper = false,
   mandatory,
   number = false,
-  placeHolder
+  placeHolder,
 }) => {
   const [isFocused, setIsFocused] = useState<boolean>(false);
 
   const handleDropdownChange = (item: any) => {
-    
     setSelectedOption && setSelectedOption(item.value);
-    setSelectedItem && setSelectedItem(item)
+    setSelectedItem && setSelectedItem(item);
     isChange && isChange(true);
   };
 
@@ -84,29 +80,24 @@ const LabelDropdown: FC<DropdownProps> = ({
   if (Array.isArray(options) && isDropdownItem(options[0])) {
     modifiedOptions = options;
   } else {
-    modifiedOptions = options.map((item: any) => ({ label: item, value: item }));
+    modifiedOptions = options.map((item: any) => ({label: item, value: item}));
   }
 
-
-
- 
   return (
     <View
       style={[
         styles.container,
         {
-          width: oneThird ? '30%' : halfSize ? '42%' : '90%',
-          flexDirection: leftLabeled ? 'row' : 'column',
+          width: '100%'
         },
       ]}>
-      <View style={{ flexDirection: 'row' }}>
+      <View style={{flexDirection: 'row'}}>
         <Text
           style={[
             styles.label,
-            leftLabeled && { alignSelf: 'center' },
-            isFocused && { color: colors.blackColor },
+ {color: colors.blackColor},
           ]}>
-          {`${label}${leftLabeled ? '\b:\b' : ''}`}{' '}
+          {label}
         </Text>
         {/* {mandatory && <Icon name="pointed-star" />} */}
       </View>
@@ -120,10 +111,10 @@ const LabelDropdown: FC<DropdownProps> = ({
         onFocus={() => {
           setIsFocused(true);
         }}
-      //   renderLeftIcon={() => ( // Custom render function for left icon
-      //   <Image name="search_icon" />
-      // )}
-        searchPlaceholder='Search'
+        //   renderLeftIcon={() => ( // Custom render function for left icon
+        //   <Image name="search_icon" />
+        // )}
+        searchPlaceholder="Search"
         activeColor={colors.primaryLightColor}
         iconColor={colors.blackColor}
         search
@@ -137,9 +128,12 @@ const LabelDropdown: FC<DropdownProps> = ({
         // )}
         style={[
           styles.Container,
-          { paddingHorizontal: oneThird ? 7 : 10, },
-          { borderColor: '#CBD2D9' },
-          { borderBottomStartRadius: isFocused ? 0 : 10, borderBottomEndRadius: isFocused ? 0 : 10, }
+          {paddingHorizontal: oneThird ? 7 : 10},
+          {borderColor: '#CBD2D9'},
+          {
+            borderBottomStartRadius: isFocused ? 0 : 10,
+            borderBottomEndRadius: isFocused ? 0 : 10,
+          },
         ]}
         selectedTextStyle={[
           styles.selectedTextStyle,
@@ -161,25 +155,23 @@ const LabelDropdown: FC<DropdownProps> = ({
           borderColor: 'gray',
           padding: 2,
           borderRadius: 9,
-          height: 40
+          height: 40,
         }}
         containerStyle={[
           {
             // bottom: bottom ? '30%' : upper ? '100%' : 0,
             marginVertical: bottom ? -1.5 : 0,
             // elevation: 2,
-            marginLeft: .8,
+            marginLeft: 0.8,
             borderColor: '#CBD2D9',
             borderTopWidth: 0,
             borderBottomEndRadius: 9,
             borderBottomStartRadius: 9,
-            borderWidth: .8,
+            borderWidth: 0.8,
             maxHeight: 250,
-           
           },
         ]}
-        
-        placeholderStyle={{ color: colors.borderColor }}
+        placeholderStyle={{color: colors.borderColor}}
         disable={disabled}
       />
     </View>
@@ -193,8 +185,8 @@ const styles = StyleSheet.create({
   },
   label: {
     color: colors.blackColor,
-    fontFamily: FONT_VARIANT.medium,
-    fontSize: FONT_SIZES.body2,
+    fontFamily: FONT_VARIANT.bold,
+    fontSize: FONT_SIZES.body1,
   },
   Container: {
     borderWidth: 1,
@@ -205,7 +197,6 @@ const styles = StyleSheet.create({
     height: 'auto',
     paddingVertical: 6,
     backgroundColor: 'transparent',
-
   },
 
   selectedTextStyle: {

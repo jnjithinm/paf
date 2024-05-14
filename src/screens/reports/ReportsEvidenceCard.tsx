@@ -6,7 +6,7 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import Layout from '../../components/Layout';
 import Text from '../../components/Text';
 import Icon, {IconTypes} from '../../components/Icon';
-import {ReportsTabBarStackParamList} from '../../navigation/ReportsStack';
+import {ReportsTabBarStackParamList} from '../../navigation/ReportsTabStack';
 
 type ReportsEvidenceCardNavigationProp = StackNavigationProp<
   ReportsTabBarStackParamList,

@@ -8,12 +8,14 @@ import Login from '../screens/auth/Login';
 import SecurityQuestion from '../screens/SecurityQuestion';
 import DashboardTabNavigator from './DashboardTabStack';
 import RubricBMCTeacherEvaluation from '../screens/rubric/RubricBMCTeacherEvaluationIndicatorList';
+import NewObservationStack from './NewObservationStack';
 
 
 export type MainStackParamList = {
   Splash: undefined;
   Login: undefined;
   DashboardTabStack: undefined;
+  NewObservationStack:undefined;
 
 };
 
@@ -67,7 +69,10 @@ const MainStackNavigator = () => {
           name="DashboardTabStack"
           component={DashboardTabNavigator}
         />
-
+      <MainStack.Screen
+        name="NewObservationStack"
+        component={NewObservationStack}
+      />
      
       </MainStack.Navigator>
     );

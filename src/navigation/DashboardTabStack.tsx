@@ -3,13 +3,13 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 
 import DashboardTabBar from '../components/DashboardTabBar';
 import TeacherDashboard from '../screens/dashboard/TeacherDashboard';
-import RubricStack from './RubricStack';
+import RubricStack from './RubricTabStack';
 import SampleScreen2 from '../screens/reports/SampleScreen2';
 import ReportsMainPage from '../screens/reports/ReportsMainPage';
 
-import AddNewObservation from '../screens/reports/AddNewObservation';
+import AddNewObservation from '../screens/newObservation/AddNewObservation';
 
-import ReportsStack from './ReportsStack';
+import ReportsStack from './ReportsTabStack';
 
 
 export type DashboardTabBarStackParamList = {
@@ -34,14 +34,9 @@ const DashboardTabStack = () => {
         name="TeacherDashboard"
         component={TeacherDashboard}
       />
+            <DashboardTab.Screen name="ReportsStack" component={ReportsStack} />
+   
 
-      <BorrowerTab.Screen name="ReportsMainPage" component={ReportsMainPage} />
-      <BorrowerTab.Screen name="RubricStack" component={RubricStack} />
-      <BorrowerTab.Screen
-        name="AddNewObservation"
-        component={AddNewObservation}
-
-      <DashboardTab.Screen name="ReportsStack" component={ReportsStack} />
       <DashboardTab.Screen name="RubricStack" component={RubricStack} />
       <DashboardTab.Screen
         name="SampleScreen2"

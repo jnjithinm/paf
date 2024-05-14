@@ -3,7 +3,6 @@ import {Platform, TouchableOpacity, View} from 'react-native';
 import {BottomTabBarProps} from '@react-navigation/bottom-tabs';
 
 import Icon, {IconTypes} from './Icon';
-import Text from './Text';
 import {normaliseDesigns} from '../utils/helpers/responsiveHelpers';
 import colors from '../config/colors';
 
@@ -30,7 +29,7 @@ const DashboardTabBar = ({state, navigation}: BottomTabBarProps) => {
         iconName = 'tabbar_icon_rubric';
 
         break;
-      case 'AddNewObservation':
+      case 'SampleScreen2':
         iconName = 'tabbar_icon_graph';
 
         break;

@@ -5,11 +5,13 @@ import {
 } from '@react-navigation/stack';
 import ReportsMainPage from '../screens/reports/ReportsMainPage';
 import ReportsEvidenceCard from '../screens/reports/ReportsEvidenceCard';
+import AddNewObservation from '../screens/newObservation/AddNewObservation';
 
 
 export type ReportsTabBarStackParamList = {
     ReportsMainPage: undefined;
     ReportsEvidenceCard:{userAccessed:string};
+    AddNewObservation:undefined;
 };
 
 const ReportsStackTab = createStackNavigator<ReportsTabBarStackParamList>();
@@ -47,7 +49,7 @@ const ReportsStack = () => {
         component={ReportsEvidenceCard}
       />
       
-
+  
       
     </ReportsStackTab.Navigator>
   );
