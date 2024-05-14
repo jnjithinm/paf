@@ -47,7 +47,7 @@ import evidence_card_voice_clip_icon from '../assets/svg/evidence_card_voice_cli
 import plus_icon from '../assets/svg/plus_icon.svg'
 import cross_icon_white from '../assets/svg/cross_icon_white.svg'
 import calendar_icon from '../assets/svg/calendar_icon.svg'
-
+import star_half_filled_icon from '../assets/svg/star_half_filled_icon.svg'
 
 const Icons = {
   app_logo,
@@ -94,7 +94,8 @@ const Icons = {
   evidence_card_voice_clip_icon,
   plus_icon,
   cross_icon_white,
-  calendar_icon
+  calendar_icon,
+  star_half_filled_icon
 };
 
 export type IconTypes = keyof typeof Icons;

@@ -19,19 +19,21 @@ import colors from '../../config/colors';
 import {normaliseDesigns} from '../../utils/helpers/responsiveHelpers';
 import DateTimePickerComponent from '../../components/DateTimePickerComponent';
 import Icon from '../../components/Icon';
+import { navigate } from '../../utils/helpers/navigationHelpers';
+import { NewObservationStackParamList } from '../../navigation/NewObservationStack';
 
-type ObservationReportNavigationProp = StackNavigationProp<
-  ReportsTabBarStackParamList,
+type AddNewObservationNavigationProp = StackNavigationProp<
+NewObservationStackParamList,
   'AddNewObservation'
 >;
-type ObservationReportRouteProp = RouteProp<
-  ReportsTabBarStackParamList,
+type AddNewObservationRouteProp = RouteProp<
+NewObservationStackParamList,
   'AddNewObservation'
 >;
 
-interface ObservationReportScreenProps {
-  navigation: ObservationReportNavigationProp;
-  route: ObservationReportRouteProp;
+interface AddNewObservationScreenProps {
+  navigation: AddNewObservationNavigationProp;
+  route: AddNewObservationRouteProp;
 }
 
 type FooterWithButtonsTypes = {
@@ -43,7 +45,7 @@ type FooterWithButtonsTypes = {
   style?: ViewStyle;
 };
 
-const FooterWithButtons: FC<FooterWithButtonsTypes> = ({
+export const FooterWithButtons: FC<FooterWithButtonsTypes> = ({
   onPressProceedButton,
   onPressCancelButton,
   isActiveProceedButton = false,
@@ -106,7 +108,7 @@ export const dropdownData = [
   {label: `What's your name ?`, value: ''},
   {label: `What's your pet's ?`, value: ''},
 ];
-const AddNewObservation: FC<ObservationReportScreenProps> = ({
+const AddNewObservation: FC<AddNewObservationScreenProps> = ({
   navigation,
   route,
 }) => {
@@ -114,11 +116,19 @@ const AddNewObservation: FC<ObservationReportScreenProps> = ({
   const [userGroup, setUserGroup] = useState<string>('');
   const [user, setUser] = useState<string>('');
   const [data, setDate] = useState<string>('');
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+  const [selectedDate, setSelectedDate] = useState<any>('');
   const [isCalendarOpen, setIsCalendarOpen] = useState<boolean>(false);
   const deleteItem = () => {
     console.log('delete press');
   };
+
+  const handleDateSelection = (date: Date) => {
+    setIsCalendarOpen(!isCalendarOpen);
+    console.log("dsetee",date)
+    setSelectedDate(date);
+  };
+
+  console.log('date', selectedDate);
 
   return (
     <Layout
@@ -129,10 +139,7 @@ const AddNewObservation: FC<ObservationReportScreenProps> = ({
       title="New Observation">
       <DateTimePickerComponent
         selectedDate={selectedDate}
-        onDateChange={(date: any) => {
-          setSelectedDate(date);
-          setIsCalendarOpen(false)
-        }}
+        onDateChange={handleDateSelection}
         showPicker={isCalendarOpen}
       />
       <View style={{marginVertical: 20}}>
@@ -141,7 +148,7 @@ const AddNewObservation: FC<ObservationReportScreenProps> = ({
             Select date
           </Text>
           <View>
-            <TextInput
+            <View
               style={{
                 width: '100%',
                 borderWidth: 1,
@@ -149,18 +156,27 @@ const AddNewObservation: FC<ObservationReportScreenProps> = ({
                 marginTop: 10,
                 borderRadius: 10,
                 paddingHorizontal: 10,
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems:'center',
+                height:normaliseDesigns(40)
               }}
-              editable={false}
-              placeholder="Select date"
-            />
-            {/* <Text>Select date</Text> */}
-            <TouchableOpacity
-              onPress={() => {
-                setIsCalendarOpen(!isCalendarOpen);
-              }}
-              style={{position: 'absolute', top: 27, right: 15}}>
-              <Icon name="calendar_icon" />
-            </TouchableOpacity>
+              // editable={false}
+              // placeholder="Select date"
+            >
+              <Text
+                style={{color: selectedDate ? colors.blackColor : '#ABB4BD'}}
+                size="body2">
+                {selectedDate || 'Select date'}
+              </Text>
+              <TouchableOpacity
+                onPress={() => {
+                  setIsCalendarOpen(!isCalendarOpen);
+                }}
+                style={{}}>
+                <Icon name="calendar_icon" />
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
 
@@ -198,9 +214,9 @@ const AddNewObservation: FC<ObservationReportScreenProps> = ({
         </TouchableOpacity>
 
         <FooterWithButtons
-          onPressProceedButton={() => {}}
+          onPressProceedButton={() => {navigate('NewObservationStack',{screen:''})}}
           onPressCancelButton={() => {}}
-          style={{marginTop: '95%'}}
+          style={{marginTop: '75%'}}
         />
       </View>
     </Layout>
