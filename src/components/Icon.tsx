@@ -44,6 +44,10 @@ import evidence_card_note_icon from '../assets/svg/evidence_card_note_icon.svg'
 import evidence_card_photo_icon from '../assets/svg/evidence_card_photo_icon.svg'
 import evidence_card_video_clip_icon from '../assets/svg/evidence_card_video_clip_icon.svg'
 import evidence_card_voice_clip_icon from '../assets/svg/evidence_card_voice_clip_icon.svg'
+import plus_icon from '../assets/svg/plus_icon.svg'
+import cross_icon_white from '../assets/svg/cross_icon_white.svg'
+import calendar_icon from '../assets/svg/calendar_icon.svg'
+
 
 const Icons = {
   app_logo,
@@ -87,7 +91,10 @@ const Icons = {
   evidence_card_note_icon,
   evidence_card_photo_icon,
   evidence_card_video_clip_icon,
-  evidence_card_voice_clip_icon
+  evidence_card_voice_clip_icon,
+  plus_icon,
+  cross_icon_white,
+  calendar_icon
 };
 
 export type IconTypes = keyof typeof Icons;
