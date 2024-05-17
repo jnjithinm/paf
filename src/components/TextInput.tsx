@@ -65,6 +65,7 @@ export interface TextInputPropsTypes extends TextInputProps {
   dismiss?: boolean;
   textInputStyle?: TextStyle;
   manualHeight?: boolean;
+  editable?: boolean;
 }
 
 type RenderLabelTypes = {
@@ -81,6 +82,7 @@ const TextInput: FC<TextInputPropsTypes> = ({
   mandatory,
   avoidTransform,
   style,
+  editable,
   // textInputRef,
   isShowError,
   passwordVisibility,
@@ -198,6 +200,7 @@ const TextInput: FC<TextInputPropsTypes> = ({
           ref={ref => {
             inputRef.current = ref;
           }}
+          editable={editable}
           onFocus={handleFocus}
           onBlur={handleBlur}
           onChangeText={handleOnTextChange}

@@ -11,8 +11,6 @@ import Icon, {IconTypes} from '../../components/Icon';
 import colors from '../../config/colors';
 import {ObservationsTile} from '../dashboard/TeacherDashboard';
 import {ReportsTabBarStackParamList} from '../../navigation/ReportsTabStack';
-import {FAB} from 'react-native-elements';
-import {Fab} from 'material-bread';
 import { normaliseDesigns } from '../../utils/helpers/responsiveHelpers';
 import { navigate } from '../../utils/helpers/navigationHelpers';
 

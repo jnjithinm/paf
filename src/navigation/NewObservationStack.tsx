@@ -5,12 +5,12 @@ import {
 } from '@react-navigation/stack';
 
 import AddNewObservation from '../screens/newObservation/AddNewObservation';
-import AddNewObservation2 from '../screens/newObservation/AddNewObservation2';
+import AddNewEvidenceCard from '../screens/newObservation/AddNewEvidenceCard';
 
 
 export type NewObservationStackParamList = {
   AddNewObservation:undefined;
-  AddNewObservation2:undefined;
+  AddNewEvidenceCard:undefined;
 };
 
 const NewObservationStack = createStackNavigator<NewObservationStackParamList>();
@@ -64,8 +64,8 @@ const NewObservationStackNavigator = () => {
         component={AddNewObservation}
       /> */}
           <NewObservationStack.Screen
-        name="AddNewObservation2"
-        component={AddNewObservation2}
+        name="AddNewEvidenceCard"
+        component={AddNewEvidenceCard}
       />
      
       </NewObservationStack.Navigator>
