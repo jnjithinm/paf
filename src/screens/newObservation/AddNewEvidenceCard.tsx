@@ -23,6 +23,7 @@ import Icon from '../../components/Icon';
 import { navigate } from '../../utils/helpers/navigationHelpers';
 import { NewObservationStackParamList } from '../../navigation/NewObservationStack';
 import FooterWithButtons from '../../components/FooterWithButtons';
+import FilterComponent from '../../components/FilterComponent';
 
 type AddNewObservation2NavigationProp = StackNavigationProp<
   NewObservationStackParamList,
@@ -154,6 +155,9 @@ const AddNewEvidenceCard: FC<AddNewObservation2ScreenProps> = ({
 
           <Text style={{ fontFamily: FONT_VARIANT.bold, fontSize: FONT_SIZES.body1, marginVertical: 20 }}>{"Upload Files"}</Text>
           <FileUpload />
+
+          <FilterComponent />
+
 
         </View>
       </Layout>
