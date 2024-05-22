@@ -1,25 +1,29 @@
-// components/FileUpload.js
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert, ProgressBarAndroid, Platform, ProgressViewIOS } from 'react-native';
-import DocumentPicker from 'react-native-document-picker';
-import { FONT_SIZES, FONT_VARIANT } from '../config/themes';
-// import axios from 'axios';
+import DocumentPicker, { DocumentPickerResponse } from 'react-native-document-picker';
+import Image from '../components/Image';
 
-const FileUpload = () => {
-    const [files, setFiles] = useState([]);
-    const [uploadProgress, setUploadProgress] = useState(0);
-    const [uploading, setUploading] = useState(false);
+interface FileUploadProps {
+    onFilesPicked?: (files: DocumentPickerResponse[]) => void;
+}
+
+const FileUpload: React.FC<FileUploadProps> = ({ onFilesPicked }) => {
+    const [files, setFiles] = useState<DocumentPickerResponse[]>([]);
+    const [uploadProgress, setUploadProgress] = useState<number>(80);
+    const [uploading, setUploading] = useState<boolean>(false);
 
     const pickFiles = async () => {
         try {
-
             const results = await DocumentPicker.pick({
                 allowMultiSelection: true,
-                type: [DocumentPicker.types.images, DocumentPicker.types.video, DocumentPicker.types.audio],
+                type: [DocumentPicker.types.images, DocumentPicker.types.video, DocumentPicker.types.audio, DocumentPicker.types.pdf, DocumentPicker.types.doc],
             });
-            console.log("reeeee", results);
+            // console.log("Files picked:", results);
 
             setFiles(results);
+            if (onFilesPicked) {
+                onFilesPicked(results);
+            }
         } catch (err) {
             if (DocumentPicker.isCancel(err)) {
                 console.log('User cancelled the picker');
@@ -30,64 +34,30 @@ const FileUpload = () => {
         }
     };
 
-    const uploadFiles = async () => {
-        if (files.length === 0) {
-            Alert.alert('No files selected', 'Please select files first.');
-            return;
-        }
-
-        // const formData = new FormData();
-        // files.forEach((file) => {
-        //   formData.append('files', {
-        //     uri: file.uri,
-        //     type: file.type,
-        //     name: file.name,
-        //   });
-        // });
-
-        setUploading(true);
-
-        try {
-            //   await axios.post('YOUR_UPLOAD_URL', formData, {
-            //     headers: {
-            //       'Content-Type': 'multipart/form-data',
-            //     },
-            //     onUploadProgress: (progressEvent) => {
-            //       const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-            //       setUploadProgress(progress);
-            //     },
-            //   });
-            Alert.alert('Success', 'Files uploaded successfully.');
-            setFiles([]);
-        } catch (error) {
-            console.error('File upload error: ', error);
-            Alert.alert('Error', 'An error occurred while uploading the files.');
-        } finally {
-            //   setUploading(false);
-        }
-    };
-
     return (
         <View style={styles.container}>
-            
             <TouchableOpacity style={styles.dropZone} onPress={pickFiles}>
+                <Image name='upload_icon' />
                 <Text style={styles.dropZoneText}>Drag and drop or <Text style={styles.browseText}>Browse</Text> your files</Text>
                 <Text style={styles.supportedTypes}>Supported file types: jpg, mp4, mp3</Text>
             </TouchableOpacity>
-            {uploading && (
-                <View style={styles.progressContainer}>
-                    <Text style={styles.uploadingText}>Uploaded {files.length} files</Text>
-                    {Platform.OS === 'android' ? (
-                        <ProgressBarAndroid styleAttr="Horizontal" color="#6a1b9a" indeterminate={false} progress={uploadProgress / 100} />
-                    ) : (
-                        <ProgressViewIOS progress={uploadProgress / 100} />
-                    )}
-                    <Text style={styles.progressText}>{uploadProgress} % completed</Text>
+            {/* <View style={styles.progressContainer}>
+                <View style={{ flexDirection: 'row' }}>
+                    <View>
+                        <Image name='img_upload_icon' />
+                    </View>
+                    <View>
+                        <Text style={styles.dropZoneText}>{` Uploaded ${files.length} files`}</Text>
+                        <Text style={styles.supportedTypes}>{` ${uploadProgress}% completed`}</Text>
+                    </View>
                 </View>
-            )}
-            <TouchableOpacity style={styles.uploadButton} onPress={uploadFiles}>
-                <Text style={styles.uploadButtonText}>Upload</Text>
-            </TouchableOpacity>
+
+                {Platform.OS === 'android' ? (
+                    <ProgressBarAndroid styleAttr="Horizontal" color="#749E35" indeterminate={false} progress={uploadProgress / 100} style={{ width: '100%' }} />
+                ) : (
+                    <ProgressViewIOS progress={uploadProgress / 100} />
+                )}
+            </View> */}
         </View>
     );
 };
@@ -111,6 +81,8 @@ const styles = StyleSheet.create({
     },
     browseText: {
         color: '#007bff',
+        borderBottomWidth: 1,
+        borderBottomColor: 'red'
     },
     supportedTypes: {
         fontSize: 12,
@@ -118,8 +90,11 @@ const styles = StyleSheet.create({
         marginTop: 5,
     },
     progressContainer: {
-        marginVertical: 20,
-        alignItems: 'center',
+        borderWidth: 1,
+        borderColor: '#ABB4BD',
+        borderRadius: 5,
+        padding: 10,
+        marginBottom: 20,
     },
     uploadingText: {
         fontSize: 16,

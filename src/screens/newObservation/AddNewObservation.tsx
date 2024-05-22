@@ -15,7 +15,6 @@ import FooterWithButtons from '../../components/FooterWithButtons';
 import { FONT_SIZES, FONT_VARIANT } from '../../config/themes';
 import Layout from '../../components/Layout';
 import LabelDropdown from '../../components/LabelDropdown';
-import { ReportsTabBarStackParamList } from '../../navigation/ReportsTabStack';
 import Text from '../../components/Text';
 import TextInput from '../../components/TextInput';
 import colors from '../../config/colors';
@@ -24,7 +23,8 @@ import DateTimePickerComponent from '../../components/DateTimePickerComponent';
 import Icon from '../../components/Icon';
 import { navigate } from '../../utils/helpers/navigationHelpers';
 import { NewObservationStackParamList } from '../../navigation/NewObservationStack';
-import useActive from '../../utils/helpers/useActive'
+import useActive from '../../utils/helpers/useActive';
+
 type AddNewObservationNavigationProp = StackNavigationProp<
   NewObservationStackParamList,
   'AddNewObservation'
@@ -255,7 +255,7 @@ const AddNewObservation: FC<AddNewObservationScreenProps> = ({
 
       </Layout>
       <FooterWithButtons
-        onPressProceedButton={() => { navigate('NewObservationStack', { screen: 'AddNewObservation2' }) }}
+        onPressProceedButton={() => { navigate('NewObservationStack', { screen: 'AddNewEvidenceCard' }) }}
         proceedButtonText={'Create evidence card'}
         image='edit_icon'
         isActiveProceedButton={isActive}

@@ -10,7 +10,11 @@ import reports_icon from '../assets/images/reports_icon.png'
 import search_icon from '../assets/images/search_icon.png'
 import edit_icon from '../assets/images/edit_icon.png'
 import evidence_icon from '../assets/images/evidence_icon.png'
-
+import img_upload_icon from '../assets/images/img_upload_icon.png'
+import upload_icon from '../assets/images/upload_icon.png'
+import cross_icon from '../assets/images/cross_icon.png'
+import mic_icon from '../assets/images/mic_icon.png'
+import attachment from '../assets/images/attachment.png'
 export type ImageIconNames =
   | 'evaluation_icon'
   | 'trash_icon'
@@ -20,6 +24,11 @@ export type ImageIconNames =
   | 'search_icon'
   | 'edit_icon'
   | 'evidence_icon'
+  | 'img_upload_icon'
+  | 'upload_icon'
+  | 'cross_icon'
+  | 'attachment'
+  | 'mic_icon'
 
 
 
@@ -51,8 +60,18 @@ const Image: FC<ImagePropsTypes> = ({ name, size = 1, style, ...rest }) => {
         return { Src: search_icon, StyleConst: styles.search_icon };
       case 'edit_icon':
         return { Src: edit_icon, StyleConst: styles.edit_icon };
-        case 'evidence_icon':
+      case 'evidence_icon':
         return { Src: evidence_icon, StyleConst: styles.evidence_icon };
+      case 'img_upload_icon':
+        return { Src: img_upload_icon, StyleConst: styles.img_upload_icon };
+      case 'upload_icon':
+        return { Src: upload_icon, StyleConst: styles.mic_icon };
+      case 'cross_icon':
+        return { Src: cross_icon, StyleConst: styles.cross_icon };
+        case 'attachment':
+          return { Src: attachment, StyleConst: styles.mic_icon };
+        case 'mic_icon':
+          return { Src: mic_icon, StyleConst: styles.mic_icon };
 
 
       case 'search_reports_icon':
@@ -80,7 +99,10 @@ const styles = StyleSheet.create({
   trash_icon: {
     height: normaliseDesigns(20),
     width: normaliseDesigns(20),
-
+  },
+  mic_icon: {
+    height: normaliseDesigns(18),
+    width: normaliseDesigns(18),
   },
   search_reports_icon: {
     height: normaliseDesigns(60),
@@ -98,6 +120,17 @@ const styles = StyleSheet.create({
     height: normaliseDesigns(20),
     width: normaliseDesigns(20),
     margin: normaliseDesigns(5)
+  },
+  img_upload_icon: {
+    height: normaliseDesigns(18),
+    width: normaliseDesigns(18),
+    tintColor: 'black'
+    // margin: normaliseDesigns(5)
+  },
+  cross_icon: {
+    height: normaliseDesigns(10),
+    width: normaliseDesigns(10),
+    // margin: normaliseDesigns(5)
   },
 });
 

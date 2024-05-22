@@ -1,4 +1,4 @@
-import React, {useMemo} from 'react';
+import React, { useMemo } from 'react';
 import {
   StackCardInterpolationProps,
   createStackNavigator,
@@ -6,15 +6,17 @@ import {
 
 import AddNewObservation from '../screens/newObservation/AddNewObservation';
 import AddNewEvidenceCard from '../screens/newObservation/AddNewEvidenceCard';
+import ViewEvidenceCard from '../screens/newObservation/ViewEvidenceCard';
 
 
 export type NewObservationStackParamList = {
-  AddNewObservation:undefined;
-  AddNewEvidenceCard:undefined;
+  AddNewObservation: undefined;
+  AddNewEvidenceCard: undefined;
+  ViewEvidenceCard: undefined;
 };
 
 const NewObservationStack = createStackNavigator<NewObservationStackParamList>();
-const customTransition = ({current, layouts}: StackCardInterpolationProps) => {
+const customTransition = ({ current, layouts }: StackCardInterpolationProps) => {
   return {
     cardStyle: {
       transform: [
@@ -31,24 +33,24 @@ const customTransition = ({current, layouts}: StackCardInterpolationProps) => {
 const NewObservationStackNavigator = () => {
   // const {isLoggedIn} = useAuthentication();
   // const memoizedIsLoggedIn = useMemo(() => isLoggedIn, [isLoggedIn]);
- 
-    return (
-      <NewObservationStack.Navigator
-        screenOptions={({route}) => {
-          //   if (route.name !== 'DashboardTabStack') {
-          //     return {
-          //       headerShown: false,
-          //       keyboardHidesTabBar: true,
-          //       cardStyleInterpolator: customTransition,
-          //     };
-          //   } else {
-          return {
-            headerShown: false,
-            keyboardHidesTabBar: true,
-          };
-          //   }
-        }}>
-        {/* <MainStack.Screen
+
+  return (
+    <NewObservationStack.Navigator
+      screenOptions={({ route }) => {
+        //   if (route.name !== 'DashboardTabStack') {
+        //     return {
+        //       headerShown: false,
+        //       keyboardHidesTabBar: true,
+        //       cardStyleInterpolator: customTransition,
+        //     };
+        //   } else {
+        return {
+          headerShown: false,
+          keyboardHidesTabBar: true,
+        };
+        //   }
+      }}>
+      {/* <MainStack.Screen
           name="Splash"
           component={Splash}
         />
@@ -63,14 +65,18 @@ const NewObservationStackNavigator = () => {
         name="AddNewObservation"
         component={AddNewObservation}
       /> */}
-          <NewObservationStack.Screen
+      <NewObservationStack.Screen
         name="AddNewEvidenceCard"
         component={AddNewEvidenceCard}
       />
-     
-      </NewObservationStack.Navigator>
-    );
-  
+       <NewObservationStack.Screen
+        name="ViewEvidenceCard"
+        component={ViewEvidenceCard}
+      />
+
+    </NewObservationStack.Navigator>
+  );
+
 };
 
 export default NewObservationStackNavigator;

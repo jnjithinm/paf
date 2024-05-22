@@ -48,6 +48,7 @@ const RenderEvidenceCardMultimediaCounts: FC<
     )}
   </View>
 );
+
 type EvidenceCardTypes = {
   title: string;
   description: string;

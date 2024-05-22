@@ -1,7 +1,9 @@
 import React, { FC, useState } from 'react';
 import {
+  FlatList,
   KeyboardAvoidingView,
   Platform,
+  ProgressBarAndroid,
   StyleSheet,
   TextInput,
   TouchableOpacity,
@@ -23,20 +25,21 @@ import Icon from '../../components/Icon';
 import { navigate } from '../../utils/helpers/navigationHelpers';
 import { NewObservationStackParamList } from '../../navigation/NewObservationStack';
 import FooterWithButtons from '../../components/FooterWithButtons';
-import FilterComponent from '../../components/FilterComponent';
+import { DocumentPickerResponse } from 'react-native-document-picker';
+import { color } from 'react-native-elements/dist/helpers';
 
-type AddNewObservation2NavigationProp = StackNavigationProp<
+type AddNewEvidenceCardNavigationProp = StackNavigationProp<
   NewObservationStackParamList,
   'AddNewEvidenceCard'
 >;
-type AddNewObservation2RouteProp = RouteProp<
+type AddNewEvidenceCardRouteProp = RouteProp<
   NewObservationStackParamList,
   'AddNewEvidenceCard'
 >;
 
-interface AddNewObservation2ScreenProps {
-  navigation: AddNewObservation2NavigationProp;
-  route: AddNewObservation2RouteProp;
+interface AddNewEvidenceCardScreenProps {
+  navigation: AddNewEvidenceCardNavigationProp;
+  route: AddNewEvidenceCardRouteProp;
 }
 
 type RatingInputTypes = {
@@ -102,13 +105,54 @@ const RatingInput: FC<RatingInputTypes> = ({ label, rating, onChangeRating }) =>
     </View>
   );
 };
-const AddNewEvidenceCard: FC<AddNewObservation2ScreenProps> = ({
+const AddNewEvidenceCard: FC<AddNewEvidenceCardScreenProps> = ({
   navigation,
   route,
 }) => {
   const [selectedIndicator, setSelectedIndicator] = useState<string>('');
   const [selectedDomain, setSelectedDomain] = useState<string>('');
   const [rating, setRating] = useState<number>(0);
+  const [files, setFiles] = useState<DocumentPickerResponse[]>([]);
+  const [imageFiles, setImageFiles] = useState<DocumentPickerResponse[]>([]);
+
+  const [uploadProgress, setUploadProgress] = useState<number>(80);
+
+  function mergeArrays(...arrays: DocumentPickerResponse[][]): DocumentPickerResponse[] {
+    return arrays.reduce((acc, curr) => [...acc, ...curr], []);
+  }
+
+  const handleFilesPicked = (files: DocumentPickerResponse[]) => {
+    console.log("Files picked in main page:", imageFiles, files);
+    const mergedArray: DocumentPickerResponse[] = mergeArrays(imageFiles, files);
+    console.log("mergedArray", mergedArray);
+    setImageFiles(mergedArray);
+  };
+  const ImageItem = ({ item }) => {
+    return (
+      <View style={styles.progressContainer}>
+        <View style={{ flexDirection: 'row', width: '95%' }}>
+          <View>
+            {/* Render your icons based on item.type */}
+            {/* <Image name='img_upload_icon' /> */}
+            {/* <Image name='mic_icon' /> */}
+            {/* <Image name='attachment' /> */}
+          </View>
+          <View>
+            <Text style={styles.dropZoneText}>{item.name}</Text>
+            {/* Render upload progress if needed */}
+            {/* <Text style={styles.supportedTypes}>{` ${uploadProgress}% completed`}</Text> */}
+          </View>
+        </View>
+        <TouchableOpacity style={{ alignSelf: 'center' }} onPress={onPress}>
+          {/* Render your cross icon */}
+          <Image name='cross_icon' />
+          {/* <Icon style={{ marginLeft: 3, backgroundColor: 'transparent' }} name="cross_icon" /> */}
+        </TouchableOpacity>
+        {/* Render your progress bar if needed */}
+        {/* <ProgressBarAndroid styleAttr="Horizontal" color="#749E35" indeterminate={false} progress={uploadProgress / 100} style={{ width: '100%' }} /> */}
+      </View>
+    );
+  };
 
   return (
     <KeyboardAvoidingView
@@ -128,6 +172,8 @@ const AddNewEvidenceCard: FC<AddNewObservation2ScreenProps> = ({
               {"Add new evidence cards"}</Text>
           </View>
 
+
+
           <LabelDropdown
             label="Select domain"
             placeHolder="Select domain"
@@ -145,7 +191,7 @@ const AddNewEvidenceCard: FC<AddNewObservation2ScreenProps> = ({
             bottom
           />
 
-          <View style ={{marginTop: 8}}>
+          <View style={{ marginTop: 8 }}>
             <RatingInput
               label="Average Rating"
               rating={rating}
@@ -154,15 +200,52 @@ const AddNewEvidenceCard: FC<AddNewObservation2ScreenProps> = ({
           </View>
 
           <Text style={{ fontFamily: FONT_VARIANT.bold, fontSize: FONT_SIZES.body1, marginVertical: 20 }}>{"Upload Files"}</Text>
-          <FileUpload />
+          <FileUpload onFilesPicked={handleFilesPicked} />
 
-          <FilterComponent />
+          <FlatList
+            data={imageFiles}
+            extraData={imageFiles}
+            style={{ marginVertical: 10 }}
+            renderItem={({ item }) => (
+            
+              <View style={styles.progressContainer}>
+                <View style={{ flexDirection: 'row', width: '95%', }}>
+                  <View>
+                    {
+                      item.type == 'image'
+                    }
+                    {/* <Image name='img_upload_icon' /> */}
+                    {/* <Image name='mic_icon' /> */}
+                    {/* <Image name='attachment' /> */}
+
+                  </View>
+                  <View>
+                    <Text style={styles.dropZoneText}>{item.name}</Text>
+                    {/* <Text style={styles.supportedTypes}>{` ${uploadProgress}% completed`}</Text> */}
+                  </View>
+                </View>
+                <TouchableOpacity style={{ alignSelf: 'center', }}
+                  onPress={() => {
+                    console.log("mjjjj");
+                  }}
+                >
+                  <Image name='cross_icon' />
+                  {/* <Icon style={{ marginLeft: 3, backgroundColor: 'transparent' }} name="cross_icon" /> */}
+                </TouchableOpacity>
+
+
+                {/* <ProgressBarAndroid styleAttr="Horizontal" color="#749E35" indeterminate={false} progress={uploadProgress / 100} style={{ width: '100%' }} /> */}
+
+              </View>
+
+            )}
+          />
 
 
         </View>
       </Layout>
       <FooterWithButtons
-        onPressProceedButton={() => { navigate('NewObservationStack', { screen: 'AddNewEvidenceCard' }) }}
+        onPressProceedButton={() => { navigate('NewObservationStack', { screen: 'ViewEvidenceCard' }) }}
         proceedButtonText={'Save Card'}
         isActiveProceedButton={true}
         cancelButtonText={'Cancel'}
@@ -174,4 +257,45 @@ const AddNewEvidenceCard: FC<AddNewObservation2ScreenProps> = ({
 };
 export default AddNewEvidenceCard;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  progressContainer: {
+    borderWidth: 1,
+    borderColor: '#ABB4BD',
+    borderRadius: 5,
+    padding: 8,
+    marginBottom: 20,
+    flexDirection: 'row'
+  },
+  uploadingText: {
+    fontSize: 16,
+    color: '#333',
+    marginBottom: 10,
+  },
+  progressText: {
+    fontSize: 14,
+    color: '#333',
+    marginTop: 5,
+  },
+  dropZone: {
+    borderWidth: 1,
+    borderStyle: 'dashed',
+    borderColor: '#ABB4BD',
+    borderRadius: 5,
+    padding: 20,
+    alignItems: 'center',
+    marginBottom: 20,
+
+
+  },
+  dropZoneText: {
+    fontSize: FONT_SIZES.body1,
+    fontFamily: FONT_VARIANT.semiBold,
+    color: '#1F2933',
+    marginLeft: 4
+  },
+  supportedTypes: {
+    fontSize: 12,
+    color: '#666',
+    marginTop: 5,
+  },
+});
