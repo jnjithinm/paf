@@ -59,10 +59,10 @@ const NewObservationStackNavigator = () => {
 
 
 
-      {/* <NewObservationStack.Screen
+      <NewObservationStack.Screen
         name="AddNewObservation"
         component={AddNewObservation}
-      /> */}
+      />
           <NewObservationStack.Screen
         name="AddNewEvidenceCard"
         component={AddNewEvidenceCard}

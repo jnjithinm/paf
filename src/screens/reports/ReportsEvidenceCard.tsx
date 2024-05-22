@@ -1,5 +1,5 @@
-import React, {FC,} from 'react';
-import {View, } from 'react-native';
+import React, {FC} from 'react';
+import {View} from 'react-native';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 
@@ -62,7 +62,9 @@ const EvidenceCard: FC<EvidenceCardTypes> = ({title, description}) => (
       padding: 5,
       borderRadius: 6,
     }}>
-    <Text fontVariant="bold" size='small3'>{title}</Text>
+    <Text fontVariant="bold" size="small3">
+      {title}
+    </Text>
     <Text size="small3" style={{marginTop: 5}}>
       {description}
     </Text>
@@ -101,25 +103,38 @@ const ReportsEvidenceCard: FC<ReportsEvidenceCardScreenProps> = ({
       <View style={{marginVertical: 10}}>
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
           <Icon name={'evidence_card_sample_image'} />
-          <View style={{flex: 1,justifyContent:'center',marginLeft:10}}>
+          <View style={{flex: 1, justifyContent: 'center', marginLeft: 10}}>
             <View>
-            <Text fontVariant="bold" size="body2">
-              Isha Dani (Maths)
-            </Text>
+              <Text fontVariant="bold" size="body2">
+                Isha Dani (Maths)
+              </Text>
             </View>
-            <View style={{flexDirection: 'row',alignItems:'center'}}>
+            <View style={{flexDirection: 'row', alignItems: 'center'}}>
               {Array.from({length: 4}, () => '').map(item => (
                 <Icon name="star_icon" />
               ))}
               <Icon name="star_unfilled_icon" />
-              <View style={{height:10,backgroundColor:'#E4E7EB',width:1,marginHorizontal:5}}/>
-                <Text style={{color:'#4E565F'}} size='small3'>3.2/5</Text>
+              <View
+                style={{
+                  height: 10,
+                  backgroundColor: '#E4E7EB',
+                  width: 1,
+                  marginHorizontal: 5,
+                }}
+              />
+              <Text style={{color: '#4E565F'}} size="small3">
+                3.2/5
+              </Text>
             </View>
-            
           </View>
         </View>
-        <View style={{marginVertical:20}}>
-          <View style={{flexDirection: 'row', alignItems: 'center',                marginBottom:10}}>
+        <View style={{marginVertical: 20}}>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              marginBottom: 10,
+            }}>
             <View
               style={{
                 backgroundColor: '#F4C24A',
@@ -127,7 +142,6 @@ const ReportsEvidenceCard: FC<ReportsEvidenceCardScreenProps> = ({
                 justifyContent: 'center',
                 padding: 3,
                 borderRadius: 5,
-
               }}>
               <Icon name="evidence_card_icon" />
             </View>
@@ -148,7 +162,14 @@ const ReportsEvidenceCard: FC<ReportsEvidenceCardScreenProps> = ({
             }
           />
         </View>
-            <View style={{width:'100%',backgroundColor:'#E4E7EB',height:1,marginBottom:10}}/>
+        <View
+          style={{
+            width: '100%',
+            backgroundColor: '#E4E7EB',
+            height: 1,
+            marginBottom: 10,
+          }}
+        />
         <View style={{marginVertical: 5}}>
           <Text fontVariant="bold">Feedback note for teacher</Text>
           <Text size="small3" style={{marginTop: 5}}>

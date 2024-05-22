@@ -1,5 +1,11 @@
 import React, {FC, useState} from 'react';
-import {Platform, TextInput, TouchableOpacity, View, ViewStyle} from 'react-native';
+import {
+  Platform,
+  TextInput,
+  TouchableOpacity,
+  View,
+  ViewStyle,
+} from 'react-native';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 
@@ -11,8 +17,9 @@ import Icon, {IconTypes} from '../../components/Icon';
 import colors from '../../config/colors';
 import {ObservationsTile} from '../dashboard/TeacherDashboard';
 import {ReportsTabBarStackParamList} from '../../navigation/ReportsTabStack';
-import { normaliseDesigns } from '../../utils/helpers/responsiveHelpers';
-import { navigate } from '../../utils/helpers/navigationHelpers';
+import {normaliseDesigns} from '../../utils/helpers/responsiveHelpers';
+import {navigate} from '../../utils/helpers/navigationHelpers';
+import Calendar from '../../components/Calendar';
 
 type ReportsMainPageNavigationProp = StackNavigationProp<
   ReportsTabBarStackParamList,
@@ -31,12 +38,18 @@ interface ReportsMainPageScreenProps {
 type FloatingButtonTypes = {
   text?: string;
   icon?: IconTypes;
-  iconSize?:number;
+  iconSize?: number;
   onPress: () => void;
-  style?:ViewStyle
+  style?: ViewStyle;
 };
 
-const FloatingButton: FC<FloatingButtonTypes> = ({text, icon, onPress,style,iconSize=20}) => {
+const FloatingButton: FC<FloatingButtonTypes> = ({
+  text,
+  icon,
+  onPress,
+  style,
+  iconSize = 20,
+}) => {
   return (
     <TouchableOpacity
       style={{
@@ -47,7 +60,7 @@ const FloatingButton: FC<FloatingButtonTypes> = ({text, icon, onPress,style,icon
         justifyContent: 'space-between',
         bottom: 30,
         right: 20,
-        flexDirection:"row",
+        flexDirection: 'row',
         backgroundColor: '#EA7804',
         borderRadius: 10,
         zIndex: 1,
@@ -78,6 +91,8 @@ const ReportsMainPage: FC<ReportsMainPageScreenProps> = ({
 }) => {
   const [rubricListData, setrubricListData] = useState<any[]>([]);
   const [isAddButtonPressed, setIsAddButtonPressed] = useState<boolean>(false);
+  const [isFilterOpen,setIsFilterOpen]=useState<boolean>(false);
+
   const handleTabClick = (title: string) => {
     title == 'Active'
       ? setrubricListData(rubricData.filter(item => item.active))
@@ -93,6 +108,7 @@ const ReportsMainPage: FC<ReportsMainPageScreenProps> = ({
         icon={'search_reports_icon'}
         title={'Observation Reports'}
         titleTransition>
+          <Calendar onProceed={()=>{} } onClose={()=>{} } isVisible={isFilterOpen} isOKCancelButtonsNeeded/>
         <Text size="body3" fontVariant="bold" style={{marginVertical: 10}}>
           Observation Reports
         </Text>
@@ -123,15 +139,16 @@ const ReportsMainPage: FC<ReportsMainPageScreenProps> = ({
             />
             <Icon name="search_icon" />
           </View>
-          <View
+          <TouchableOpacity
             style={{
               borderWidth: 1,
               borderColor: colors.primaryColor,
               padding: 8,
               borderRadius: 10,
-            }}>
+            }}
+            onPress={() => {setIsFilterOpen(true)}}>
             <Icon name="filter_icon" />
-          </View>
+          </TouchableOpacity>
         </View>
         <View style={{marginTop: 10}}>
           <ObservationsTile
@@ -248,7 +265,27 @@ const ReportsMainPage: FC<ReportsMainPageScreenProps> = ({
           {/* <Fab icon={'add'}/> */}
         </View>
       </Layout>
-      {!isAddButtonPressed && (
+
+      {isAddButtonPressed ? (
+        <View>
+          <FloatingButton
+            icon="plus_icon"
+            text="New observation"
+            iconSize={15}
+            onPress={() => {
+              navigate('NewObservationStack', {screen: 'AddNNewObservation'});
+            }}
+            style={{bottom: normaliseDesigns(70), width: normaliseDesigns(145)}}
+          />
+          <FloatingButton
+            icon="cross_icon_white"
+            iconSize={10}
+            onPress={() => {
+              setIsAddButtonPressed(false);
+            }}
+          />
+        </View>
+      ) : (
         <FloatingButton
           icon="plus_icon"
           onPress={() => {
@@ -257,29 +294,6 @@ const ReportsMainPage: FC<ReportsMainPageScreenProps> = ({
           iconSize={20}
         />
       )}
-      {isAddButtonPressed && (
-        <View>
-          <FloatingButton
-            icon="plus_icon"
-            text="New observation"
-            iconSize={15}
-            onPress={() => {navigate('NewObservationStack',{screen:'AddNNewObservation'})}}
-            style={{bottom:normaliseDesigns(70),width:normaliseDesigns(145)}}
-          />
-          <FloatingButton
-            icon="cross_icon_white"
-            iconSize={10}
-            onPress={() => {
-              setIsAddButtonPressed(false);
-            }}
-
-          />
-        </View>
-      )}
-      {/* <FAB
-          title="Create"
-          style={{position: 'absolute', bottom: 5, right: 5, zIndex: 100}}
-        /> */}
     </>
   );
 };
