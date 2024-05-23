@@ -108,8 +108,8 @@ const AddNewEvidenceCard: FC<AddNewObservation2ScreenProps> = ({
 
   return (
     <KeyboardAvoidingView
-      style={{flex: 1}} // Ensure the component takes up the whole screen
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'} // Adjust behavior based on platform
+      style={{flex: 1}} 
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
     >
       <Layout
         overridePaddingHorizontal

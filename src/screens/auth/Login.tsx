@@ -11,6 +11,9 @@ import TextInput from '../../components/TextInput';
 import {normaliseDesigns} from '../../utils/helpers/responsiveHelpers';
 import CheckBox from '../../components/CheckBox';
 import Button from '../../components/Button';
+import {useDispatch} from 'react-redux';
+import {AppDispatch, RootState, useAppDispatch, useAppSelector} from '../../store/store';
+import {loginUser} from '../../store/features/authSlice';
 
 type LoginNavigationProp = StackNavigationProp<MainStackParamList, 'Login'>;
 type LoginRouteProp = RouteProp<MainStackParamList, 'Login'>;
@@ -25,16 +28,19 @@ const Login: FC<LoginScreenProps> = ({navigation, route}) => {
   const [password, setPassword] = useState<string>('');
 
   const [isRememberMe, setIsRememberMe] = useState<boolean>(false);
-  //   useEffect(() => {
-  //     setTimeout(async () => {
-  //       try {
-  //       navigation.navigate('Login')
-  //       } catch (error) {
-  //         console.log('Error checking user data: ', error);
-  //       }
-  //     }, 2000);
-  //   }, []);
+  const dispatch = useAppDispatch();
+  const { isLoading, isLoggedIn, authData, isError,afxToken } =useAppSelector((state: RootState) => state.auth);
+  const onPressLogin = () => {
+    dispatch(loginUser({employeeId: 'MV81050001', password: 'Fox@4321'}));
+  };
 
+
+  useEffect(()=>{
+    if(afxToken){
+      console.log("afx",afxToken)
+    }
+
+  },[afxToken])
   return (
     <View
       style={{
@@ -97,25 +103,40 @@ const Login: FC<LoginScreenProps> = ({navigation, route}) => {
             </Text>
           </View>
           <TouchableOpacity>
-            <Text style={{textDecorationLine: 'underline',}}>
+            <Text style={{textDecorationLine: 'underline'}}>
               Forgot password?
             </Text>
           </TouchableOpacity>
         </View>
       </View>
-      <View style={{width:'100%',marginTop:'10%',alignItems:'center'}}>
-        <Button style={{width:'100%'}} text='Log In' active onPress={()=>{}}/>
-        <View style={{flexDirection:'row',alignItems:'center',marginBottom:15,marginTop:30}}>
-            <Text opacity='0.50'>Don't have an account ? </Text>
-            <TouchableOpacity>
-                <Text style={{textDecorationLine: 'underline',fontWeight:'600'}}>Sign up</Text>
-            </TouchableOpacity>
+      <View style={{width: '100%', marginTop: '10%', alignItems: 'center'}}>
+        <Button
+          style={{width: '100%'}}
+          text="Log In"
+          active
+          onPress={onPressLogin}
+        />
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            marginBottom: 15,
+            marginTop: 30,
+          }}>
+          <Text opacity="0.50">Don't have an account ? </Text>
+          <TouchableOpacity>
+            <Text style={{textDecorationLine: 'underline', fontWeight: '600'}}>
+              Sign up
+            </Text>
+          </TouchableOpacity>
         </View>
-        <View style={{flexDirection:'row',alignItems:'center'}}>
-            <Text opacity='0.50'>Can't access your account ? </Text>
-            <TouchableOpacity>
-                <Text style={{textDecorationLine: 'underline',fontWeight:'600'}}>Click her for help</Text>
-            </TouchableOpacity>
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          <Text opacity="0.50">Can't access your account ? </Text>
+          <TouchableOpacity>
+            <Text style={{textDecorationLine: 'underline', fontWeight: '600'}}>
+              Click her for help
+            </Text>
+          </TouchableOpacity>
         </View>
       </View>
     </View>

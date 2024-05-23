@@ -91,7 +91,7 @@ const ReportsMainPage: FC<ReportsMainPageScreenProps> = ({
 }) => {
   const [rubricListData, setrubricListData] = useState<any[]>([]);
   const [isAddButtonPressed, setIsAddButtonPressed] = useState<boolean>(false);
-  const [isFilterOpen,setIsFilterOpen]=useState<boolean>(false);
+  const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
 
   const handleTabClick = (title: string) => {
     title == 'Active'
@@ -108,7 +108,12 @@ const ReportsMainPage: FC<ReportsMainPageScreenProps> = ({
         icon={'search_reports_icon'}
         title={'Observation Reports'}
         titleTransition>
-          <Calendar onProceed={()=>{} } onClose={()=>{} } isVisible={isFilterOpen} isOKCancelButtonsNeeded/>
+        <Calendar
+          onProceed={() => {}}
+          onClose={() => {}}
+          isVisible={isFilterOpen}
+          isOKCancelButtonsNeeded
+        />
         <Text size="body3" fontVariant="bold" style={{marginVertical: 10}}>
           Observation Reports
         </Text>
@@ -146,7 +151,9 @@ const ReportsMainPage: FC<ReportsMainPageScreenProps> = ({
               padding: 8,
               borderRadius: 10,
             }}
-            onPress={() => {setIsFilterOpen(true)}}>
+            onPress={() => {
+              setIsFilterOpen(true);
+            }}>
             <Icon name="filter_icon" />
           </TouchableOpacity>
         </View>

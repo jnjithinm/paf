@@ -10,13 +10,11 @@ import DashboardTabNavigator from './DashboardTabStack';
 import RubricBMCTeacherEvaluation from '../screens/rubric/RubricBMCTeacherEvaluationIndicatorList';
 import NewObservationStack from './NewObservationStack';
 
-
 export type MainStackParamList = {
   Splash: undefined;
   Login: undefined;
   DashboardTabStack: undefined;
-  NewObservationStack:undefined;
-
+  NewObservationStack: undefined;
 };
 
 const MainStack = createStackNavigator<MainStackParamList>();
@@ -55,25 +53,16 @@ const MainStackNavigator = () => {
           };
           //   }
         }}>
-        {/* <MainStack.Screen
-          name="Splash"
-          component={Splash}
-        />
-         <MainStack.Screen
-          name="Login"
-          component={Login}
-        /> */}
-
-
+        {/* <MainStack.Screen name="Splash" component={Splash} />
+        <MainStack.Screen name="Login" component={Login} /> */}
         <MainStack.Screen
           name="DashboardTabStack"
           component={DashboardTabNavigator}
         />
-      <MainStack.Screen
-        name="NewObservationStack"
-        component={NewObservationStack}
-      />
-     
+        <MainStack.Screen
+          name="NewObservationStack"
+          component={NewObservationStack}
+        />
       </MainStack.Navigator>
     );
   }

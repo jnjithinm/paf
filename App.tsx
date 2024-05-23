@@ -5,8 +5,15 @@ import React, {useEffect, useState} from 'react';
 // import CombinedProvider from './src/context/index';
 import 'react-native-gesture-handler';
 import RootNavigator from './src/navigation/RootTabStack';
+import {Provider} from 'react-redux';
+import store from './src/store/store';
+
 
 function App() {
-  return <RootNavigator />;
+  return (
+    <Provider store={store}>
+      <RootNavigator />
+    </Provider>
+  );
 }
 export default App;

@@ -21,11 +21,11 @@ const generateCalendar = (
 ) => {
   const startOfMonth = moment([
     year || moment().year(),
-    month?month-1 : moment().month() - 1,
+    month ? month - 1 : moment().month() - 1,
   ]).startOf('month');
   const endOfMonth = moment([
     year || moment().year(),
-    month?month-1 : moment().month() - 1,
+    month ? month - 1 : moment().month() - 1,
   ]).endOf('month');
   const startOfCalendar = startOfMonth.startOf('week');
   const endOfCalendar = endOfMonth.endOf('week');
@@ -81,7 +81,7 @@ const RenderButtons: FC<RenderButtonsTypes> = ({
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 5,
-        padding: 5,
+        padding: 8,
         width: '47%',
       }}>
       <Text style={{color: '#EA7804'}}>{cancelButtonText}</Text>
@@ -309,7 +309,14 @@ const Modal: FC<ModalPropsTypes> = ({
               </View>
             </View>
             <View>
-            <View style={{backgroundColor:'#E4E7EB',height:1,width:'100%',marginVertical:10}}/>
+              <View
+                style={{
+                  backgroundColor: '#E4E7EB',
+                  height: 1,
+                  width: '100%',
+                  marginVertical: 10,
+                }}
+              />
               <View
                 style={{
                   flexDirection: 'row',
@@ -334,7 +341,7 @@ const Modal: FC<ModalPropsTypes> = ({
                         color:
                           selectedStartMonth !== undefined &&
                           selectedStartYear !== undefined &&
-                          day.month() === selectedStartMonth-1 &&
+                          day.month() === selectedStartMonth - 1 &&
                           day.year() === selectedStartYear
                             ? '#000'
                             : '#ABB4BD',
@@ -384,7 +391,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     alignSelf: 'flex-end',
     marginTop: 150,
-    height:'100%'
+    height: '100%',
   },
   modalContent: {
     backgroundColor: colors.backgroundColor,

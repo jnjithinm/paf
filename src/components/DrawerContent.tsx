@@ -112,6 +112,7 @@ const DrawerContent = () => {
               icon={item.icon}
               itemName={item.itemName}
               onPressItem={item.onPressItem}
+              key={item.itemName}
             />
           ))}
         </View>

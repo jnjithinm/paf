@@ -23,15 +23,15 @@ interface SplashScreenProps {
 }
 
 const Splash: FC<SplashScreenProps> = ({navigation, route}) => {
-//   useEffect(() => {
-//     setTimeout(async () => {
-//       try {
-//       navigation.navigate('Login')
-//       } catch (error) {
-//         console.log('Error checking user data: ', error);
-//       }
-//     }, 2000);
-//   }, []);
+  useEffect(() => {
+    setTimeout(async () => {
+      try {
+      navigation.navigate('Login')
+      } catch (error) {
+        console.log('Error checking user data: ', error);
+      }
+    }, 2000);
+  }, []);
 
   return (
  
