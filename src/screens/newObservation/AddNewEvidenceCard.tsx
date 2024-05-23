@@ -48,6 +48,7 @@ type RatingInputTypes = {
   onChangeRating: (rating: number) => void;
 };
 
+
 const RatingInput: FC<RatingInputTypes> = ({ label, rating, onChangeRating }) => {
   const [selectedRating, setSelectedRating] = useState(rating);
 
@@ -109,6 +110,13 @@ const AddNewEvidenceCard: FC<AddNewEvidenceCardScreenProps> = ({
   navigation,
   route,
 }) => {
+
+
+  type ImageItemProps = {
+    item: DocumentPickerResponse;
+    onRemove: (item: DocumentPickerResponse) => void;
+  };
+
   const [selectedIndicator, setSelectedIndicator] = useState<string>('');
   const [selectedDomain, setSelectedDomain] = useState<string>('');
   const [rating, setRating] = useState<number>(0);
@@ -127,29 +135,45 @@ const AddNewEvidenceCard: FC<AddNewEvidenceCardScreenProps> = ({
     console.log("mergedArray", mergedArray);
     setImageFiles(mergedArray);
   };
-  const ImageItem = ({ item }) => {
+
+  const handleRemoveItem = (item: DocumentPickerResponse) => {
+    const updatedFiles = imageFiles.filter(file => file.uri !== item.uri);
+    setImageFiles(updatedFiles);
+  };
+
+
+
+  const ImageItem: FC<ImageItemProps> = ({ item, onRemove }) => {
     return (
       <View style={styles.progressContainer}>
-        <View style={{ flexDirection: 'row', width: '95%' }}>
+        <View style={{ flexDirection: 'row', width: '90%', }}>
           <View>
-            {/* Render your icons based on item.type */}
-            {/* <Image name='img_upload_icon' /> */}
-            {/* <Image name='mic_icon' /> */}
-            {/* <Image name='attachment' /> */}
+            {
+              item.type?.startsWith('image') ? (
+                <Image name='img_upload_icon' />
+              ) :
+                item.type?.startsWith('video') ? (
+                  <Image name='video_icon' />
+                ) :
+                  item.type?.startsWith('audio') ? (
+                    <Image name='mic_icon' />
+                  ) :
+                    (
+                      <Image name='attachment' />
+                    )
+            }
           </View>
           <View>
             <Text style={styles.dropZoneText}>{item.name}</Text>
-            {/* Render upload progress if needed */}
-            {/* <Text style={styles.supportedTypes}>{` ${uploadProgress}% completed`}</Text> */}
           </View>
         </View>
-        <TouchableOpacity style={{ alignSelf: 'center' }} onPress={onPress}>
-          {/* Render your cross icon */}
-          <Image name='cross_icon' />
-          {/* <Icon style={{ marginLeft: 3, backgroundColor: 'transparent' }} name="cross_icon" /> */}
-        </TouchableOpacity>
-        {/* Render your progress bar if needed */}
-        {/* <ProgressBarAndroid styleAttr="Horizontal" color="#749E35" indeterminate={false} progress={uploadProgress / 100} style={{ width: '100%' }} /> */}
+        {/* <View style={{ width: '10%', height: '100%', justifyContent: 'center', alignItems: 'center' }}> */}
+          <TouchableOpacity style={{ alignItems: 'center',justifyContent: 'flex-end', width: '10%'}}
+            onPress={() => onRemove(item)}
+          >
+            <Image name='cross_icon' />
+          </TouchableOpacity>
+        {/* </View> */}
       </View>
     );
   };
@@ -206,39 +230,7 @@ const AddNewEvidenceCard: FC<AddNewEvidenceCardScreenProps> = ({
             data={imageFiles}
             extraData={imageFiles}
             style={{ marginVertical: 10 }}
-            renderItem={({ item }) => (
-            
-              <View style={styles.progressContainer}>
-                <View style={{ flexDirection: 'row', width: '95%', }}>
-                  <View>
-                    {
-                      item.type == 'image'
-                    }
-                    {/* <Image name='img_upload_icon' /> */}
-                    {/* <Image name='mic_icon' /> */}
-                    {/* <Image name='attachment' /> */}
-
-                  </View>
-                  <View>
-                    <Text style={styles.dropZoneText}>{item.name}</Text>
-                    {/* <Text style={styles.supportedTypes}>{` ${uploadProgress}% completed`}</Text> */}
-                  </View>
-                </View>
-                <TouchableOpacity style={{ alignSelf: 'center', }}
-                  onPress={() => {
-                    console.log("mjjjj");
-                  }}
-                >
-                  <Image name='cross_icon' />
-                  {/* <Icon style={{ marginLeft: 3, backgroundColor: 'transparent' }} name="cross_icon" /> */}
-                </TouchableOpacity>
-
-
-                {/* <ProgressBarAndroid styleAttr="Horizontal" color="#749E35" indeterminate={false} progress={uploadProgress / 100} style={{ width: '100%' }} /> */}
-
-              </View>
-
-            )}
+            renderItem={({ item }) => <ImageItem item={item} onRemove={handleRemoveItem} />}
           />
 
 

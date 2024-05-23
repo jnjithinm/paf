@@ -15,6 +15,8 @@ import upload_icon from '../assets/images/upload_icon.png'
 import cross_icon from '../assets/images/cross_icon.png'
 import mic_icon from '../assets/images/mic_icon.png'
 import attachment from '../assets/images/attachment.png'
+import video_icon from '../assets/images/video_icon.png'
+
 export type ImageIconNames =
   | 'evaluation_icon'
   | 'trash_icon'
@@ -29,6 +31,7 @@ export type ImageIconNames =
   | 'cross_icon'
   | 'attachment'
   | 'mic_icon'
+  | 'video_icon'
 
 
 
@@ -72,7 +75,8 @@ const Image: FC<ImagePropsTypes> = ({ name, size = 1, style, ...rest }) => {
           return { Src: attachment, StyleConst: styles.mic_icon };
         case 'mic_icon':
           return { Src: mic_icon, StyleConst: styles.mic_icon };
-
+          case 'video_icon':
+            return { Src: video_icon, StyleConst: styles.mic_icon };
 
       case 'search_reports_icon':
         width = 85.5 * size;
@@ -130,7 +134,7 @@ const styles = StyleSheet.create({
   cross_icon: {
     height: normaliseDesigns(10),
     width: normaliseDesigns(10),
-    // margin: normaliseDesigns(5)
+    margin: normaliseDesigns(5)
   },
 });
 
