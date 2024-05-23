@@ -2,6 +2,7 @@ import React, {FC, useEffect, useState} from 'react';
 import {TouchableOpacity, View} from 'react-native';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
+
 import {MainStackParamList} from '../../navigation/MainStack';
 import StatusBar from '../../components/StatusBar';
 import colors from '../../config/colors';
@@ -11,7 +12,7 @@ import TextInput from '../../components/TextInput';
 import {normaliseDesigns} from '../../utils/helpers/responsiveHelpers';
 import CheckBox from '../../components/CheckBox';
 import Button from '../../components/Button';
-import { useAppDispatch, useAppSelector} from '../../redux/store';
+import {useAppDispatch, useAppSelector} from '../../redux/store';
 import {loginUser} from '../../redux/slices/authSlice';
 
 type LoginNavigationProp = StackNavigationProp<MainStackParamList, 'Login'>;
@@ -28,18 +29,19 @@ const Login: FC<LoginScreenProps> = ({navigation, route}) => {
 
   const [isRememberMe, setIsRememberMe] = useState<boolean>(false);
   const dispatch = useAppDispatch();
-  const { isLoading, isLoggedIn, authData, isError,afxToken } =useAppSelector((state) => state.auth);
+  
+  const {isLoading, isLoggedIn, authData, isError, afxToken} = useAppSelector(
+    state => state.auth,
+  );
   const onPressLogin = () => {
     dispatch(loginUser({employeeId: 'MV81050001', password: 'Fox@4321'}));
   };
 
-
-  useEffect(()=>{
-    if(afxToken){
-      console.log("afx",afxToken)
+  useEffect(() => {
+    if (afxToken) {
+      console.log('afx', afxToken);
     }
-
-  },[afxToken])
+  }, [afxToken]);
   return (
     <View
       style={{

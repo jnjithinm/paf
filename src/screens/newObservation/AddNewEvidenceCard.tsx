@@ -41,7 +41,11 @@ type RatingInputTypes = {
   onChangeRating: (rating: number) => void;
 };
 
-export const RatingInput: FC<RatingInputTypes> = ({label, rating, onChangeRating}) => {
+export const RatingInput: FC<RatingInputTypes> = ({
+  label,
+  rating,
+  onChangeRating,
+}) => {
   const [selectedRating, setSelectedRating] = useState(rating);
 
   const handleStarPress = (index: number) => {
@@ -108,9 +112,8 @@ const AddNewEvidenceCard: FC<AddNewObservation2ScreenProps> = ({
 
   return (
     <KeyboardAvoidingView
-      style={{flex: 1}} 
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
-    >
+      style={{flex: 1}}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <Layout
         overridePaddingHorizontal
         overridePaddingVertical
