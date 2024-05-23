@@ -1,7 +1,6 @@
 import axios, {AxiosInstance} from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-
 const api: AxiosInstance = axios.create({
   baseURL: 'https://uatapi.muthootcap.com:9061',
   // timeout: 15000,
@@ -13,9 +12,8 @@ api.interceptors.request.use(
   async config => {
     const token = await AsyncStorage.getItem('token');
 
-
     config.headers['Accept'] = 'application/json';
-    config.headers['Content-Type'] =  'application/json';
+    config.headers['Content-Type'] = 'application/json';
     if (config.method?.toUpperCase() === 'GET') {
       console.log(
         `[API] Request: ${config.method?.toUpperCase()} ${config.url}  ${

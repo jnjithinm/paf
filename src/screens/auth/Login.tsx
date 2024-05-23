@@ -11,9 +11,8 @@ import TextInput from '../../components/TextInput';
 import {normaliseDesigns} from '../../utils/helpers/responsiveHelpers';
 import CheckBox from '../../components/CheckBox';
 import Button from '../../components/Button';
-import {useDispatch} from 'react-redux';
-import {AppDispatch, RootState, useAppDispatch, useAppSelector} from '../../store/store';
-import {loginUser} from '../../store/features/authSlice';
+import { useAppDispatch, useAppSelector} from '../../redux/store';
+import {loginUser} from '../../redux/slices/authSlice';
 
 type LoginNavigationProp = StackNavigationProp<MainStackParamList, 'Login'>;
 type LoginRouteProp = RouteProp<MainStackParamList, 'Login'>;
@@ -29,7 +28,7 @@ const Login: FC<LoginScreenProps> = ({navigation, route}) => {
 
   const [isRememberMe, setIsRememberMe] = useState<boolean>(false);
   const dispatch = useAppDispatch();
-  const { isLoading, isLoggedIn, authData, isError,afxToken } =useAppSelector((state: RootState) => state.auth);
+  const { isLoading, isLoggedIn, authData, isError,afxToken } =useAppSelector((state) => state.auth);
   const onPressLogin = () => {
     dispatch(loginUser({employeeId: 'MV81050001', password: 'Fox@4321'}));
   };
