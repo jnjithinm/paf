@@ -12,6 +12,8 @@ import colors from '../config/colors';
 import {ColorTypes} from '../config/types';
 import Header from './Header';
 import {ImageIconNames} from './Image';
+import Loading from './Loading';
+import { useAppSelector } from '../redux/store';
 
 // import  usePanResponder  from 'utils/functions/AutoLogoutManager'
 // import Loading from './Loading';
@@ -26,6 +28,7 @@ interface LayoutPropsTypes extends ViewStyle {
   style?: ViewStyle;
   avoidBackButton?: boolean;
   isLoading?: boolean[];
+  hideHeader?:boolean;
   onPressMenuIcon?: () => void;
   onPressBackArrow?: () => void;
   onScrollToEnd?: () => void;
@@ -44,7 +47,8 @@ const Layout: FC<LayoutPropsTypes> = ({
   centreAlligned,
   avoidBackButton,
   style,
-  isLoading = [false],
+  hideHeader,
+  // isLoading = [false],
   onPressMenuIcon,
   onScrollToEnd,
   //   navigateBack,
@@ -56,6 +60,10 @@ const Layout: FC<LayoutPropsTypes> = ({
   icon,
   titleTransition,
 }) => {
+    
+  const {isLoading, } = useAppSelector(
+    state => state.auth,
+  );
   let backgroundStyle = backgroundColor
     ? colors[backgroundColor]
     : colors.backgroundColor;
@@ -100,7 +108,7 @@ const Layout: FC<LayoutPropsTypes> = ({
 
   // const { panResponder } = usePanResponder();
 
-  const isLoadingFinal = Object.values(isLoading).some(value => value);
+  // const isLoadingFinal = Object.values(isLoading).some(value => value);
   const modifiedChildren = Children.map(children, child => {
     if (
       typeof child === 'undefined' ||
@@ -118,19 +126,18 @@ const Layout: FC<LayoutPropsTypes> = ({
   const handleScroll = event => {
     const {layoutMeasurement, contentOffset, contentSize} = event.nativeEvent;
     const endOffsetY = contentSize.height - layoutMeasurement.height;
-  
+
     // // Check if the user has scrolled to the end
     // if (endOffsetY > 0 && contentOffset.y >= endOffsetY) {
     //   setIsScrolled(true);
     //   onScrollToEnd && onScrollToEnd();
-    // } else 
+    // } else
     if (contentOffset.y === 0) {
       setIsScrolled(false); // Set isScrolled to false when scrolled to top
-    }else{
+    } else {
       setIsScrolled(true);
     }
   };
-  
 
   return (
     <KeyboardAvoidingView
@@ -138,7 +145,7 @@ const Layout: FC<LayoutPropsTypes> = ({
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}>
       <StatusBar backgroundColor={colors.primaryLightColor} />
-
+{!hideHeader &&
       <Header
         avoidBackButton={avoidBackButton}
         dashboard={dashboard}
@@ -150,6 +157,7 @@ const Layout: FC<LayoutPropsTypes> = ({
         scrollTransition={titleTransition}
         isScrolled={isScrolled}
       />
+}
       <ScrollView
         nestedScrollEnabled
         contentContainerStyle={[
@@ -162,6 +170,7 @@ const Layout: FC<LayoutPropsTypes> = ({
         showsVerticalScrollIndicator={showsVerticalScrollIndicator}>
         {modifiedChildren}
       </ScrollView>
+      {isLoading && <Loading />}
     </KeyboardAvoidingView>
   );
 };

@@ -1,7 +1,9 @@
 import React, {FC, useState} from 'react';
 import {
+  FlatList,
   KeyboardAvoidingView,
   Platform,
+  ProgressBarAndroid,
   StyleSheet,
   TouchableOpacity,
   View,
@@ -14,25 +16,31 @@ import Layout from '../../components/Layout';
 import LabelDropdown from '../../components/LabelDropdown';
 import Text from '../../components/Text';
 import Image from '../../components/Image';
+import colors from '../../config/colors';
+import Video from 'react-native-video';
 import FileUpload from '../../components/FileUpload';
 import Icon from '../../components/Icon';
-import {navigate} from '../../utils/helpers/navigationHelpers';
-import {NewObservationStackParamList} from '../../navigation/NewObservationStack';
+import VideoPlayer from '../../components/VideoPlayer';
+import MusicPlayer from '../../components/MusicPlayer';
+
+import { navigate } from '../../utils/helpers/navigationHelpers';
+import { NewObservationStackParamList } from '../../navigation/NewObservationStack';
 import FooterWithButtons from '../../components/FooterWithButtons';
-import FilterComponent from '../../components/FilterComponent';
+import { DocumentPickerResponse } from 'react-native-document-picker';
+import { color } from 'react-native-elements/dist/helpers';
 
-type AddNewObservation2NavigationProp = StackNavigationProp<
+type AddNewEvidenceCardNavigationProp = StackNavigationProp<
   NewObservationStackParamList,
   'AddNewEvidenceCard'
 >;
-type AddNewObservation2RouteProp = RouteProp<
+type AddNewEvidenceCardRouteProp = RouteProp<
   NewObservationStackParamList,
   'AddNewEvidenceCard'
 >;
 
-interface AddNewObservation2ScreenProps {
-  navigation: AddNewObservation2NavigationProp;
-  route: AddNewObservation2RouteProp;
+interface AddNewEvidenceCardScreenProps {
+  navigation: AddNewEvidenceCardNavigationProp;
+  route: AddNewEvidenceCardRouteProp;
 }
 
 type RatingInputTypes = {
@@ -41,11 +49,8 @@ type RatingInputTypes = {
   onChangeRating: (rating: number) => void;
 };
 
-export const RatingInput: FC<RatingInputTypes> = ({
-  label,
-  rating,
-  onChangeRating,
-}) => {
+
+const RatingInput: FC<RatingInputTypes> = ({ label, rating, onChangeRating }) => {
   const [selectedRating, setSelectedRating] = useState(rating);
 
   const handleStarPress = (index: number) => {
@@ -102,13 +107,77 @@ export const RatingInput: FC<RatingInputTypes> = ({
     </View>
   );
 };
-const AddNewEvidenceCard: FC<AddNewObservation2ScreenProps> = ({
+const AddNewEvidenceCard: FC<AddNewEvidenceCardScreenProps> = ({
   navigation,
   route,
 }) => {
+
+
+  type ImageItemProps = {
+    item: DocumentPickerResponse;
+    onRemove: (item: DocumentPickerResponse) => void;
+  };
+
   const [selectedIndicator, setSelectedIndicator] = useState<string>('');
   const [selectedDomain, setSelectedDomain] = useState<string>('');
   const [rating, setRating] = useState<number>(0);
+  const [files, setFiles] = useState<DocumentPickerResponse[]>([]);
+  const [imageFiles, setImageFiles] = useState<DocumentPickerResponse[]>([]);
+
+  const [uploadProgress, setUploadProgress] = useState<number>(80);
+
+  function mergeArrays(...arrays: DocumentPickerResponse[][]): DocumentPickerResponse[] {
+    return arrays.reduce((acc, curr) => [...acc, ...curr], []);
+  }
+
+  const handleFilesPicked = (files: DocumentPickerResponse[]) => {
+    console.log("Files picked in main page:", imageFiles, files);
+    const mergedArray: DocumentPickerResponse[] = mergeArrays(imageFiles, files);
+    console.log("mergedArray", mergedArray);
+    setImageFiles(mergedArray);
+  };
+
+  const handleRemoveItem = (item: DocumentPickerResponse) => {
+    const updatedFiles = imageFiles.filter(file => file.uri !== item.uri);
+    setImageFiles(updatedFiles);
+  };
+
+
+
+  const ImageItem: FC<ImageItemProps> = ({ item, onRemove }) => {
+    return (
+      <View style={styles.progressContainer}>
+        <View style={{ flexDirection: 'row', width: '90%', }}>
+          <View>
+            {
+              item.type?.startsWith('image') ? (
+                <Image name='img_upload_icon' />
+              ) :
+                item.type?.startsWith('video') ? (
+                  <Image name='video_icon' />
+                ) :
+                  item.type?.startsWith('audio') ? (
+                    <Image name='mic_icon' />
+                  ) :
+                    (
+                      <Image name='attachment' />
+                    )
+            }
+          </View>
+          <View>
+            <Text style={styles.dropZoneText}>{item.name}</Text>
+          </View>
+        </View>
+        {/* <View style={{ width: '10%', height: '100%', justifyContent: 'center', alignItems: 'center' }}> */}
+        <TouchableOpacity style={{ alignItems: 'center', justifyContent: 'flex-end', width: '10%' }}
+          onPress={() => onRemove(item)}
+        >
+          <Image name='cross_icon' />
+        </TouchableOpacity>
+        {/* </View> */}
+      </View>
+    );
+  };
 
   return (
     <KeyboardAvoidingView
@@ -133,6 +202,8 @@ const AddNewEvidenceCard: FC<AddNewObservation2ScreenProps> = ({
             </Text>
           </View>
 
+
+
           <LabelDropdown
             label="Select domain"
             placeHolder="Select domain"
@@ -150,7 +221,7 @@ const AddNewEvidenceCard: FC<AddNewObservation2ScreenProps> = ({
             bottom
           />
 
-          <View style={{marginTop: 8}}>
+          <View style={{ marginTop: 8 }}>
             <RatingInput
               label="Average Rating"
               rating={rating}
@@ -158,23 +229,37 @@ const AddNewEvidenceCard: FC<AddNewObservation2ScreenProps> = ({
             />
           </View>
 
-          <Text
-            style={{
-              fontFamily: FONT_VARIANT.bold,
-              fontSize: FONT_SIZES.body1,
-              marginVertical: 20,
-            }}>
-            {'Upload Files'}
-          </Text>
-          <FileUpload />
+          <Text style={{ fontFamily: FONT_VARIANT.bold, fontSize: FONT_SIZES.body1, marginVertical: 20 }}>{"Upload Files"}</Text>
+          <FileUpload onFilesPicked={handleFilesPicked} />
 
-          <FilterComponent />
+          <FlatList
+            data={imageFiles}
+            extraData={imageFiles}
+            style={{ marginVertical: 10 }}
+            renderItem={({ item }) => <ImageItem item={item} onRemove={handleRemoveItem} />}
+          />
+
+          {/* <Video
+            source={{ uri: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' }}
+            style={styles.video}
+            controls={true}
+            resizeMode="contain"
+            fullscreen
+            fullscreenAutorotate
+            fullscreenOrientation='landscape'
+          /> */}
+                {/* <VideoPlayer
+                 source={{ uri: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' }} /> */}
+
+{/* <MusicPlayer
+//  audioFile={'https://commondatastorage.googleapis.com/codeskulptor-demos/DDR_assets/Sevish_-__nbsp_.mp3'}
+  /> */}
+
+
         </View>
       </Layout>
       <FooterWithButtons
-        onPressProceedButton={() => {
-          navigate('NewObservationStack', {screen: 'AddNewEvidenceCard'});
-        }}
+        onPressProceedButton={() => { navigate('NewObservationStack', { screen: 'ViewEvidenceCard' }) }}
         proceedButtonText={'Save Card'}
         isActiveProceedButton={true}
         cancelButtonText={'Cancel'}
@@ -186,4 +271,49 @@ const AddNewEvidenceCard: FC<AddNewObservation2ScreenProps> = ({
 };
 export default AddNewEvidenceCard;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  progressContainer: {
+    borderWidth: 1,
+    borderColor: '#ABB4BD',
+    borderRadius: 5,
+    padding: 8,
+    marginBottom: 20,
+    flexDirection: 'row'
+  },
+  uploadingText: {
+    fontSize: 16,
+    color: '#333',
+    marginBottom: 10,
+  },
+  progressText: {
+    fontSize: 14,
+    color: '#333',
+    marginTop: 5,
+  },
+  dropZone: {
+    borderWidth: 1,
+    borderStyle: 'dashed',
+    borderColor: '#ABB4BD',
+    borderRadius: 5,
+    padding: 20,
+    alignItems: 'center',
+    marginBottom: 20,
+
+
+  },
+  video: {
+    width: '100%',
+    height: 200,
+  },
+  dropZoneText: {
+    fontSize: FONT_SIZES.body1,
+    fontFamily: FONT_VARIANT.semiBold,
+    color: '#1F2933',
+    marginLeft: 4
+  },
+  supportedTypes: {
+    fontSize: 12,
+    color: '#666',
+    marginTop: 5,
+  },
+});

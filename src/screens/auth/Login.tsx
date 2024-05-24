@@ -13,7 +13,8 @@ import {normaliseDesigns} from '../../utils/helpers/responsiveHelpers';
 import CheckBox from '../../components/CheckBox';
 import Button from '../../components/Button';
 import {useAppDispatch, useAppSelector} from '../../redux/store';
-import { authenticateUser } from '../../redux/features/authSlice';
+import {authenticateUser} from '../../redux/features/authSlice';
+import Layout from '../../components/Layout';
 
 type LoginNavigationProp = StackNavigationProp<MainStackParamList, 'Login'>;
 type LoginRouteProp = RouteProp<MainStackParamList, 'Login'>;
@@ -29,29 +30,26 @@ const Login: FC<LoginScreenProps> = ({navigation, route}) => {
 
   const [isRememberMe, setIsRememberMe] = useState<boolean>(false);
   const dispatch = useAppDispatch();
-  
-  const {isLoading, isLoggedIn, isError} = useAppSelector(
-    state => state.auth,
-  );
+
+  const {isLoading, isLoggedIn, isError} = useAppSelector(state => state.auth);
 
   const onPressLogin = () => {
-    dispatch(authenticateUser({username: 'teacher.2.373', password: 'Ch1$!r+$1k'}));
+    dispatch(
+      authenticateUser({username: 'teacher.2.373', password: 'Ch1$!r+$1k'}),
+    );
   };
 
-
-  
   return (
-    <View
+    <Layout
       style={{
-        // justifyContent: 'center',
         alignItems: 'center',
         height: '100%',
         width: '100%',
         backgroundColor: colors.backgroundColor,
         padding: 20,
-      }}>
+      }}
+      hideHeader>
       <StatusBar backgroundColor={colors.backgroundColor} />
-
       <Icon name="app_logo" style={{marginTop: '20%'}} />
       <Text size={'body6'} fontVariant="bold" style={{marginVertical: 10}}>
         Welcome!
@@ -138,7 +136,7 @@ const Login: FC<LoginScreenProps> = ({navigation, route}) => {
           </TouchableOpacity>
         </View>
       </View>
-    </View>
+    </Layout>
   );
 };
 export default Login;
