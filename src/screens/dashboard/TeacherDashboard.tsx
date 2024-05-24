@@ -11,6 +11,7 @@ import Text from '../../components/Text';
 import colors from '../../config/colors';
 import {normaliseDesigns} from '../../utils/helpers/responsiveHelpers';
 import DrawerContent from '../../components/DrawerContent';
+import { useAppSelector } from '../../redux/store';
 
 type TeacherDashboardNavigationProp = StackNavigationProp<
   DashboardTabBarStackParamList,
@@ -103,6 +104,7 @@ export const ObservationsTile: FC<ObservationTileTypes> = ({
   style,
 }) => {
   const [isPressed, setIsPressed] = useState(false);
+
   useEffect(() => {
     return () => {
       setIsPressed(false);
@@ -376,6 +378,11 @@ const TeacherDashboard: FC<TeacherDashboardScreenProps> = ({
   route,
 }) => {
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
+
+  const {userData} = useAppSelector(
+    state => state.auth,
+  );
+
   return (
     <Drawer
       open={isDrawerOpen}
@@ -407,7 +414,7 @@ const TeacherDashboard: FC<TeacherDashboardScreenProps> = ({
               <Icon name="pro_pic_sample" />
               <View style={{marginLeft: 10, flex: 1}}>
                 <Text fontVariant="bold" size="body4">
-                  Hi, Swaraj
+                  Hi, {userData.name}
                 </Text>
                 <Text style={{flex: 1}} size="small2">
                   Nirmala Niketan High School

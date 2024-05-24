@@ -258,7 +258,7 @@ const AddNewObservation: FC<AddNewObservationScreenProps> = ({
       </Layout>
       <FooterWithButtons
         onPressProceedButton={() => {
-          navigate('NewObservationStack', {screen: 'AddNewObservation2'});
+          navigate('NewObservationStack', {screen: 'AddNewEvidenceCard'});
         }}
         proceedButtonText={'Create evidence card'}
         image="edit_icon"

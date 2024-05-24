@@ -2,7 +2,7 @@ import axios, {AxiosInstance} from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const api: AxiosInstance = axios.create({
-  baseURL: 'https://uatapi.muthootcap.com:9061',
+  baseURL: 'http://65.1.32.205:8080',
   // timeout: 15000,
 });
 const MAX_RETRIES = 3;
@@ -11,7 +11,9 @@ const RETRY_DELAY = 1000;
 api.interceptors.request.use(
   async config => {
     const token = await AsyncStorage.getItem('token');
-
+    if(token){
+      config.headers['Authorization'] =`Bearer ${token}`;
+    }
     config.headers['Accept'] = 'application/json';
     config.headers['Content-Type'] = 'application/json';
     if (config.method?.toUpperCase() === 'GET') {

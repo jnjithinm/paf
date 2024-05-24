@@ -13,7 +13,7 @@ import {normaliseDesigns} from '../../utils/helpers/responsiveHelpers';
 import CheckBox from '../../components/CheckBox';
 import Button from '../../components/Button';
 import {useAppDispatch, useAppSelector} from '../../redux/store';
-import {loginUser} from '../../redux/slices/authSlice';
+import { authenticateUser } from '../../redux/features/authSlice';
 
 type LoginNavigationProp = StackNavigationProp<MainStackParamList, 'Login'>;
 type LoginRouteProp = RouteProp<MainStackParamList, 'Login'>;
@@ -30,18 +30,16 @@ const Login: FC<LoginScreenProps> = ({navigation, route}) => {
   const [isRememberMe, setIsRememberMe] = useState<boolean>(false);
   const dispatch = useAppDispatch();
   
-  const {isLoading, isLoggedIn, authData, isError, afxToken} = useAppSelector(
+  const {isLoading, isLoggedIn, isError} = useAppSelector(
     state => state.auth,
   );
+
   const onPressLogin = () => {
-    dispatch(loginUser({employeeId: 'MV81050001', password: 'Fox@4321'}));
+    dispatch(authenticateUser({username: 'teacher.2.373', password: 'Ch1$!r+$1k'}));
   };
 
-  useEffect(() => {
-    if (afxToken) {
-      console.log('afx', afxToken);
-    }
-  }, [afxToken]);
+
+  
   return (
     <View
       style={{

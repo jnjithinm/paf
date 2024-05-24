@@ -9,6 +9,7 @@ import SecurityQuestion from '../screens/SecurityQuestion';
 import DashboardTabNavigator from './DashboardTabStack';
 import RubricBMCTeacherEvaluation from '../screens/rubric/RubricBMCTeacherEvaluationIndicatorList';
 import NewObservationStack from './NewObservationStack';
+import {useAppSelector} from '../redux/store';
 
 export type MainStackParamList = {
   Splash: undefined;
@@ -35,8 +36,9 @@ const customTransition = ({current, layouts}: StackCardInterpolationProps) => {
 const MainStackNavigator = () => {
   // const {isLoggedIn} = useAuthentication();
   // const memoizedIsLoggedIn = useMemo(() => isLoggedIn, [isLoggedIn]);
+  const {isLoggedIn} = useAppSelector(state => state.auth);
 
-  if (true) {
+  if (isLoggedIn) {
     return (
       <MainStack.Navigator
         screenOptions={({route}) => {
@@ -53,8 +55,6 @@ const MainStackNavigator = () => {
           };
           //   }
         }}>
-        {/* <MainStack.Screen name="Splash" component={Splash} />
-        <MainStack.Screen name="Login" component={Login} /> */}
         <MainStack.Screen
           name="DashboardTabStack"
           component={DashboardTabNavigator}
@@ -65,35 +65,28 @@ const MainStackNavigator = () => {
         />
       </MainStack.Navigator>
     );
+  } else {
+    return (
+      <MainStack.Navigator
+        screenOptions={({route}) => {
+          if (route.name !== 'Login') {
+            return {
+              headerShown: false,
+              keyboardHidesTabBar: true,
+              cardStyleInterpolator: customTransition,
+            };
+          } else {
+            return {
+              headerShown: false,
+              keyboardHidesTabBar: true,
+            };
+          }
+        }}>
+        <MainStack.Screen name="Splash" component={Splash} />
+        <MainStack.Screen name="Login" component={Login} />
+      </MainStack.Navigator>
+    );
   }
-  //  else {
-  //   return (
-  //     <MainStack.Navigator
-  //       screenOptions={({route}) => {
-  //         if (route.name !== 'Login') {
-  //           return {
-  //             headerShown: false,
-  //             keyboardHidesTabBar: true,
-  //             cardStyleInterpolator: customTransition,
-  //           };
-  //         } else {
-  //           return {
-  //             headerShown: false,
-  //             keyboardHidesTabBar: true,
-  //           };
-  //         }
-  //       }}>
-  //       <MainStack.Screen name="Splash" component={Splash} />
-  //       <MainStack.Screen name="Login" component={Login} />
-  //       <MainStack.Screen
-  //         name="ChangeYourPassword"
-  //         component={ChangeYourPassword}
-  //       />
-  //       <MainStack.Screen name="ForgotPassword" component={ForgotPassword} />
-  //       <MainStack.Screen name="PasswordReset" component={PasswordReset} />
-  //     </MainStack.Navigator>
-  //   );
-  // }
 };
 
 export default MainStackNavigator;
