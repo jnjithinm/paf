@@ -19,9 +19,12 @@ import { ReportsTabBarStackParamList } from '../../navigation/ReportsTabStack';
 import Text from '../../components/Text';
 import Image from '../../components/Image';
 import colors from '../../config/colors';
-import { normaliseDesigns } from '../../utils/helpers/responsiveHelpers';
+import Video from 'react-native-video';
 import FileUpload from '../../components/FileUpload';
 import Icon from '../../components/Icon';
+import VideoPlayer from '../../components/VideoPlayer';
+import MusicPlayer from '../../components/MusicPlayer';
+
 import { navigate } from '../../utils/helpers/navigationHelpers';
 import { NewObservationStackParamList } from '../../navigation/NewObservationStack';
 import FooterWithButtons from '../../components/FooterWithButtons';
@@ -168,11 +171,11 @@ const AddNewEvidenceCard: FC<AddNewEvidenceCardScreenProps> = ({
           </View>
         </View>
         {/* <View style={{ width: '10%', height: '100%', justifyContent: 'center', alignItems: 'center' }}> */}
-          <TouchableOpacity style={{ alignItems: 'center',justifyContent: 'flex-end', width: '10%'}}
-            onPress={() => onRemove(item)}
-          >
-            <Image name='cross_icon' />
-          </TouchableOpacity>
+        <TouchableOpacity style={{ alignItems: 'center', justifyContent: 'flex-end', width: '10%' }}
+          onPress={() => onRemove(item)}
+        >
+          <Image name='cross_icon' />
+        </TouchableOpacity>
         {/* </View> */}
       </View>
     );
@@ -233,6 +236,22 @@ const AddNewEvidenceCard: FC<AddNewEvidenceCardScreenProps> = ({
             renderItem={({ item }) => <ImageItem item={item} onRemove={handleRemoveItem} />}
           />
 
+          {/* <Video
+            source={{ uri: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' }}
+            style={styles.video}
+            controls={true}
+            resizeMode="contain"
+            fullscreen
+            fullscreenAutorotate
+            fullscreenOrientation='landscape'
+          /> */}
+                {/* <VideoPlayer
+                 source={{ uri: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' }} /> */}
+
+<MusicPlayer
+//  audioFile={'https://commondatastorage.googleapis.com/codeskulptor-demos/DDR_assets/Sevish_-__nbsp_.mp3'}
+  />
+
 
         </View>
       </Layout>
@@ -278,6 +297,10 @@ const styles = StyleSheet.create({
     marginBottom: 20,
 
 
+  },
+  video: {
+    width: '100%',
+    height: 200,
   },
   dropZoneText: {
     fontSize: FONT_SIZES.body1,
