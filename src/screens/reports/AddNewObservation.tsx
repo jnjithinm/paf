@@ -1,4 +1,4 @@
-import React, {FC, useState} from 'react';
+import React, {FC, useEffect, useState} from 'react';
 import {
   Platform,
   KeyboardAvoidingView,
@@ -13,23 +13,30 @@ import moment from 'moment';
 import FooterWithButtons from '../../components/FooterWithButtons';
 import {FONT_SIZES, FONT_VARIANT} from '../../config/themes';
 import Layout from '../../components/Layout';
-import LabelDropdown from '../../components/LabelDropdown';
 import Text from '../../components/Text';
 import TextInput from '../../components/TextInput';
 import colors from '../../config/colors';
 import {normaliseDesigns} from '../../utils/helpers/responsiveHelpers';
 import DateTimePickerComponent from '../../components/DateTimePickerComponent';
 import Icon from '../../components/Icon';
-import {navigate} from '../../utils/helpers/navigationHelpers';
-import {NewObservationStackParamList} from '../../navigation/NewObservationStack';
 import useActive from '../../utils/helpers/useActive';
+import {useAppDispatch, useAppSelector} from '../../redux/store';
+import {
+  getAllUserGroups,
+  getAllUsers,
+  getUserGroups,
+} from '../../redux/features/usersSlice';
+import LabeledDropdown, {
+  DropdownObject,
+} from '../../components/LabeledDropdown';
+import { ReportsTabBarStackParamList } from '../../navigation/ReportsTabStack';
 
 type AddNewObservationNavigationProp = StackNavigationProp<
-  NewObservationStackParamList,
+ReportsTabBarStackParamList,
   'AddNewObservation'
 >;
 type AddNewObservationRouteProp = RouteProp<
-  NewObservationStackParamList,
+ReportsTabBarStackParamList,
   'AddNewObservation'
 >;
 
@@ -45,19 +52,28 @@ export const dropdownData = [
   {label: `What's your pet's ?`, value: `What's your pet's ?`},
 ];
 
+
+
 const AddNewObservation: FC<AddNewObservationScreenProps> = ({
   navigation,
   route,
 }) => {
-  const [userGroup, setUserGroup] = useState<string>('');
-  const [user, setUser] = useState<string>('');
+  const [selectedUserGroup, setSelectedUserGroup] = useState<
+    DropdownObject | undefined
+  >(undefined);
+  const [selectedUser, setSelectedUser] = useState<DropdownObject | undefined>(
+    undefined,
+  );
   const [selectedDate, setSelectedDate] = useState<any>('');
   const [feedbackNote, setFeedbackNote] = useState('');
   const [feedbackNoteEnable, setFeedbackNoteEnable] = useState<boolean>(false);
 
   const [isCalendarOpen, setIsCalendarOpen] = useState<boolean>(false);
-
-  const activeArray = [selectedDate, userGroup, user];
+  const dispatch = useAppDispatch();
+  const {GetAllUserGroupsData, GetUserGroupData} = useAppSelector(
+    state => state.users,
+  );
+  const activeArray = [selectedDate, selectedUserGroup, selectedUser];
 
   let isActive: boolean = useActive(activeArray);
 
@@ -66,6 +82,38 @@ const AddNewObservation: FC<AddNewObservationScreenProps> = ({
     console.log('dsetee', date);
     setSelectedDate(date);
   };
+
+  useEffect(() => {
+    // dispatch(
+    //   getAllUsers({
+    //     page: 0,
+    //     size: 15,
+    //     type: 'all',
+    //   }),
+    // );
+    dispatch(
+      getAllUserGroups({
+        page: 0,
+        size: 15,
+        type: 'all',
+      }),
+    );
+  }, []);
+
+  useEffect(() => {
+    if (selectedUserGroup?.value) {
+      dispatch(
+        getUserGroups([
+          Number(selectedUserGroup?.value),
+          {
+            page: 0,
+            size: 15,
+            type: 'all',
+          },
+        ]),
+      );
+    }
+  }, [selectedUserGroup?.value]);
 
   // console.log('date', isActive);
 
@@ -131,21 +179,29 @@ const AddNewObservation: FC<AddNewObservationScreenProps> = ({
             </View>
           </TouchableOpacity>
 
-          <LabelDropdown
+          <LabeledDropdown
             label="Select user group"
             placeHolder="Select user group"
-            options={dropdownData}
-            setSelectedOption={setUserGroup}
-            defaultValue={userGroup}
-            bottom
+            options={
+              GetAllUserGroupsData?.dataList.map(item => ({
+                value: item.userGroupId?.toString(),
+                label: item.groupName,
+              })) || []
+            }
+            setSelectedItem={setSelectedUserGroup}
+            defaultValue={selectedUserGroup?.value || ''}
           />
-          <LabelDropdown
+          <LabeledDropdown
             label="Select user"
             placeHolder="Select user"
-            defaultValue={user}
-            options={dropdownData}
-            setSelectedOption={setUser}
-            bottom
+            defaultValue={selectedUser?.value || ''}
+            options={
+              GetUserGroupData?.dataList.map(item => ({
+                value: item.userId?.toString(),
+                label: item.name,
+              })) || []
+            }
+            setSelectedItem={setSelectedUser}
           />
           <View
             style={{
@@ -192,11 +248,19 @@ const AddNewObservation: FC<AddNewObservationScreenProps> = ({
       </Layout>
       <FooterWithButtons
         onPressProceedButton={() => {
-          navigate('NewObservationStack', {screen: 'AddNewEvidenceCard'});
+          // navigate('NewObservationStack', {screen: 'AddNewEvidenceCard'});
+          selectedUserGroup?.value &&
+            selectedUser?.value &&
+            navigation.navigate('AddNewEvidenceCard', {
+              selectedUserGroup: selectedUserGroup,
+              selectedUser: selectedUser,
+              selectedDate,
+            });
         }}
         proceedButtonText={'Create evidence card'}
-        image="edit_icon"
-        isActiveProceedButton={isActive}
+        isActiveProceedButton={Boolean(
+          selectedDate && selectedUserGroup?.value && selectedUser?.value,
+        )}
         cancelButtonText={'Cancel'}
         onPressCancelButton={() => {}}
         style={{}}

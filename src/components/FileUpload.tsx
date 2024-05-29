@@ -1,28 +1,72 @@
-import React, {useState} from 'react';
+import React, {FC, useState} from 'react';
 import {
   View,
-  Text,
   TouchableOpacity,
   StyleSheet,
   Alert,
-  ProgressBarAndroid,
   Platform,
-  ProgressViewIOS,
 } from 'react-native';
 import DocumentPicker, {
   DocumentPickerResponse,
 } from 'react-native-document-picker';
 import Image from '../components/Image';
+import ZipArchive, {zip} from 'react-native-zip-archive';
+import {MainBundlePath, DocumentDirectoryPath,} from 'react-native-fs';
+import Text from './Text';
+import {FileObject} from '../config/types';
+import RNFS from 'react-native-fs'
+
+
+type ImageItemProps = {
+  item: DocumentPickerResponse;
+  onRemove: (item: DocumentPickerResponse) => void;
+};
+
+const ImageItem: FC<ImageItemProps> = ({item, onRemove}) => {
+  return (
+    <View style={styles.progressContainer}>
+      <View style={{flexDirection: 'row', width: '90%'}}>
+        <View>
+          {item.type?.startsWith('image') ? (
+            <Image name="img_upload_icon" />
+          ) : item.type?.startsWith('video') ? (
+            <Image name="video_icon" />
+          ) : item.type?.startsWith('audio') ? (
+            <Image name="mic_icon" />
+          ) : (
+            <Image name="attachment" />
+          )}
+        </View>
+        <View>
+          <Text style={styles.dropZoneText}>{item.name}</Text>
+        </View>
+      </View>
+      <TouchableOpacity
+        style={{
+          alignItems: 'center',
+          justifyContent: 'flex-end',
+          width: '10%',
+        }}
+        onPress={() => onRemove(item)}>
+        <Image name="cross_icon" />
+      </TouchableOpacity>
+    </View>
+  );
+};
 
 interface FileUploadProps {
-  onFilesPicked?: (files: DocumentPickerResponse[]) => void;
+  onFilesPicked?: (files: FileObject[]) => void;
 }
 
 const FileUpload: React.FC<FileUploadProps> = ({onFilesPicked}) => {
   const [files, setFiles] = useState<DocumentPickerResponse[]>([]);
   const [uploadProgress, setUploadProgress] = useState<number>(80);
   const [uploading, setUploading] = useState<boolean>(false);
-
+  const getContentUriPath = async (contentUri: any) => {
+    const fileInfo = await RNFS.stat(contentUri);
+    return fileInfo.originalFilepath || contentUri;
+  };
+  
   const pickFiles = async () => {
     try {
       const results = await DocumentPicker.pick({
@@ -35,51 +79,86 @@ const FileUpload: React.FC<FileUploadProps> = ({onFilesPicked}) => {
           DocumentPicker.types.doc,
         ],
       });
-      // console.log("Files picked:", results);
-
       setFiles(results);
-      if (onFilesPicked) {
-        onFilesPicked(results);
+
+      const filePaths = [];
+
+      // Iterate over the results and copy each file to the app directory
+      for (const result of results) {
+        const sourceUri = result.uri;
+        const fileName = result.name;
+        const destPath = `${DocumentDirectoryPath}/${fileName}`;
+        
+        await RNFS.copyFile(sourceUri, destPath);
+  
+        // Add the destination path to the filePaths array
+        filePaths.push(destPath);
       }
+  
+      // Now filePaths contains the file paths, use it to zip the files
+      const targetPath = `${DocumentDirectoryPath}/myFile.zip`;
+  
+      zip(filePaths, targetPath)
+        .then(path => {
+          if (onFilesPicked) {
+            onFilesPicked([{ uri: path, name: 'zip', type: 'application/zip' }]);
+          }
+        })
+        .catch(error => {
+          console.log("sdfsdf", error);
+        });
     } catch (err) {
-      if (DocumentPicker.isCancel(err)) {
-        console.log('User cancelled the picker');
-      } else {
-        console.log('Unknown error: ', err);
-        Alert.alert('Error', 'An error occurred while picking the files.');
-      }
+      // Handle errors
     }
+    //   const targetPath = `${DocumentDirectoryPath}/myFile.zip`;
+    //   const fileURIs = results.map(result => result.uri)?.toString()+'.jpg'
+
+    //   console.log("target pathssss",targetPath,fileURIs)
+
+      
+    //   zip(fileURIs, targetPath)
+    //     .then(path => {
+    //       if (onFilesPicked) {
+    //         onFilesPicked([{uri: path, name: 'zip', type: 'application/zip'}]);
+    //       }
+    //     })
+    //     .catch(error => {
+    //       console.log("sdfsdf",error);
+    //     });
+ 
+  
+    // } catch (err) {
+    //   if (DocumentPicker.isCancel(err)) {
+    //     console.log('User cancelled the picker');
+    //   } else {
+    //     console.log('Unknown error: ', err);
+    //   }
+    // }
+  };
+  const handleRemoveItem = (item: DocumentPickerResponse) => {
+    const updatedFiles = files.filter(file => file.uri !== item.uri);
+    setFiles(updatedFiles);
   };
 
   return (
-    <View style={styles.container}>
-      <TouchableOpacity style={styles.dropZone} onPress={pickFiles}>
-        <Image name="upload_icon" />
-        <Text style={styles.dropZoneText}>
-          Drag and drop or <Text style={styles.browseText}>Browse</Text> your
-          files
-        </Text>
-        <Text style={styles.supportedTypes}>
-          Supported file types: jpg, mp4, mp3
-        </Text>
-      </TouchableOpacity>
-      {/* <View style={styles.progressContainer}>
-                <View style={{ flexDirection: 'row' }}>
-                    <View>
-                        <Image name='img_upload_icon' />
-                    </View>
-                    <View>
-                        <Text style={styles.dropZoneText}>{` Uploaded ${files.length} files`}</Text>
-                        <Text style={styles.supportedTypes}>{` ${uploadProgress}% completed`}</Text>
-                    </View>
-                </View>
-
-                {Platform.OS === 'android' ? (
-                    <ProgressBarAndroid styleAttr="Horizontal" color="#749E35" indeterminate={false} progress={uploadProgress / 100} style={{ width: '100%' }} />
-                ) : (
-                    <ProgressViewIOS progress={uploadProgress / 100} />
-                )}
-            </View> */}
+    <View>
+      <View style={styles.container}>
+        <TouchableOpacity style={styles.dropZone} onPress={pickFiles}>
+          <Image name="upload_icon" />
+          <Text style={styles.dropZoneText}>
+            Drag and drop or <Text style={styles.browseText}>Browse</Text> your
+            files
+          </Text>
+          <Text style={styles.supportedTypes}>
+            Supported file types: jpg, mp4, mp3
+          </Text>
+        </TouchableOpacity>
+      </View>
+      <View style={{marginVertical: 10}}>
+        {files.map(item => (
+          <ImageItem item={item} onRemove={handleRemoveItem} />
+        ))}
+      </View>
     </View>
   );
 };
@@ -115,8 +194,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ABB4BD',
     borderRadius: 5,
+    flexDirection: 'row',
+    alignItems: 'center',
     padding: 10,
-    marginBottom: 20,
+    marginBottom: 10,
   },
   uploadingText: {
     fontSize: 16,

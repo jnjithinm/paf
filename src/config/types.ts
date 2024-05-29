@@ -10,6 +10,12 @@ export type CustomNumericFieldRef = {
 };
 
 
+export type FileObject = {
+  uri: string;
+  type: string;
+  name: string;
+};
+
 
 export type FontSizeValuesTypes = keyof typeof FONT_SIZES;
 export type OpacityValuesTypes = keyof typeof OPACITY;

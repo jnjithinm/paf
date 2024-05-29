@@ -13,7 +13,8 @@ import Icon from './Icon';
 import colors from '../config/colors';
 import moment from 'moment';
 import {Dropdown} from 'react-native-element-dropdown';
-import {RatingInput} from '../screens/newObservation/AddNewEvidenceCard';
+import { RatingInput } from '../screens/reports/AddNewEvidenceCard';
+
 
 const generateCalendar = (
   month: number | undefined,
@@ -71,7 +72,8 @@ const RenderButtons: FC<RenderButtonsTypes> = ({
         borderRadius: 5,
         padding: 5,
         width: '47%',
-      }}>
+      }}
+      onPress={onPressProceedButton}>
       <Text color="backgroundColor">{proceedButtonText}</Text>
     </TouchableOpacity>
     <TouchableOpacity
@@ -83,7 +85,8 @@ const RenderButtons: FC<RenderButtonsTypes> = ({
         borderRadius: 5,
         padding: 8,
         width: '47%',
-      }}>
+      }}
+      onPress={onPressCancelButton}>
       <Text style={{color: '#EA7804'}}>{cancelButtonText}</Text>
     </TouchableOpacity>
   </View>
@@ -361,8 +364,8 @@ const Modal: FC<ModalPropsTypes> = ({
             {renderButton}
             {isOKCancelButtonsNeeded && (
               <RenderButtons
-                onPressCancelButton={() => {}}
-                onPressProceedButton={() => {}}
+                onPressCancelButton={onClose}
+                onPressProceedButton={onProceed}
                 proceedButtonText="Apply"
                 style={{marginTop: 25, alignSelf: 'flex-end'}}
               />

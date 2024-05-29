@@ -1,7 +1,7 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import {View, Text, StyleSheet} from 'react-native';
 import Icon, {IconTypes} from '../components/Icon';
-import { FONT_SIZES, FONT_VARIANT } from '../config/themes';
+import {FONT_SIZES, FONT_VARIANT} from '../config/themes';
 import Image from '../components/Image';
 import colors from '../config/colors';
 
@@ -15,18 +15,23 @@ type RenderEvidenceCardMultimediaCountsTypes = {
   voiceClipCount?: number;
   videoClipCount?: number;
   noteCount?: number;
-
 };
 
-const RenderEvidenceCardMultimediaCounts: React.FC<RenderEvidenceCardMultimediaCountsTypes> = ({ icon, count, lastCount,photoCount,voiceClipCount, videoClipCount, noteCount }) => (
+const RenderEvidenceCardMultimediaCounts: React.FC<
+  RenderEvidenceCardMultimediaCountsTypes
+> = ({
+  icon,
+  count,
+  lastCount,
+  photoCount,
+  voiceClipCount,
+  videoClipCount,
+  noteCount,
+}) => (
   <View style={styles.multimediaContainer}>
-    <Icon name={icon}/>
-    <Text style={styles.countText}>
-      {count}
-    </Text>
-    {!lastCount && (
-      <View style={styles.separator} />
-    )}
+    <Icon name={icon} />
+    <Text style={styles.countText}>{count}</Text>
+    {!lastCount && <View style={styles.separator} />}
   </View>
 );
 
@@ -39,7 +44,14 @@ type EvidenceCardTypes = {
   noteCount?: number;
 };
 
-const EvidenceCard: React.FC<EvidenceCardTypes> = ({ title, description, photoCount,voiceClipCount, videoClipCount, noteCount }) => (
+const EvidenceCard: React.FC<EvidenceCardTypes> = ({
+  title,
+  description,
+  photoCount,
+  voiceClipCount,
+  videoClipCount,
+  noteCount,
+}) => (
   <View style={styles.cardContainer}>
     <Text style={styles.titleText}>{title}</Text>
     <Text style={styles.descriptionText}>{description}</Text>

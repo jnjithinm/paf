@@ -13,7 +13,7 @@ import {ColorTypes} from '../config/types';
 import Header from './Header';
 import {ImageIconNames} from './Image';
 import Loading from './Loading';
-import { useAppSelector } from '../redux/store';
+import {useAppSelector} from '../redux/store';
 
 // import  usePanResponder  from 'utils/functions/AutoLogoutManager'
 // import Loading from './Loading';
@@ -28,7 +28,7 @@ interface LayoutPropsTypes extends ViewStyle {
   style?: ViewStyle;
   avoidBackButton?: boolean;
   isLoading?: boolean[];
-  hideHeader?:boolean;
+  hideHeader?: boolean;
   onPressMenuIcon?: () => void;
   onPressBackArrow?: () => void;
   onScrollToEnd?: () => void;
@@ -60,10 +60,7 @@ const Layout: FC<LayoutPropsTypes> = ({
   icon,
   titleTransition,
 }) => {
-    
-  const {isLoading, } = useAppSelector(
-    state => state.auth,
-  );
+  const {isLoading} = useAppSelector(state => state.auth);
   let backgroundStyle = backgroundColor
     ? colors[backgroundColor]
     : colors.backgroundColor;
@@ -145,19 +142,19 @@ const Layout: FC<LayoutPropsTypes> = ({
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}>
       <StatusBar backgroundColor={colors.primaryLightColor} />
-{!hideHeader &&
-      <Header
-        avoidBackButton={avoidBackButton}
-        dashboard={dashboard}
-        onPressBackArrow={onPressBackArrow}
-        onPressLogoutButton={onPressLogoutButton}
-        title={title}
-        onPressMenuIcon={onPressMenuIcon}
-        icon={icon}
-        scrollTransition={titleTransition}
-        isScrolled={isScrolled}
-      />
-}
+      {!hideHeader && (
+        <Header
+          avoidBackButton={avoidBackButton}
+          dashboard={dashboard}
+          onPressBackArrow={onPressBackArrow}
+          onPressLogoutButton={onPressLogoutButton}
+          title={title}
+          onPressMenuIcon={onPressMenuIcon}
+          icon={icon}
+          scrollTransition={titleTransition}
+          isScrolled={isScrolled}
+        />
+      )}
       <ScrollView
         nestedScrollEnabled
         contentContainerStyle={[

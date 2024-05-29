@@ -1,4 +1,4 @@
-import React, {FC, useEffect, useState} from 'react';
+import React, {FC, useState} from 'react';
 import {TouchableOpacity, View} from 'react-native';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
@@ -12,7 +12,7 @@ import TextInput from '../../components/TextInput';
 import {normaliseDesigns} from '../../utils/helpers/responsiveHelpers';
 import CheckBox from '../../components/CheckBox';
 import Button from '../../components/Button';
-import {useAppDispatch, useAppSelector} from '../../redux/store';
+import {useAppDispatch} from '../../redux/store';
 import {authenticateUser} from '../../redux/features/authSlice';
 import Layout from '../../components/Layout';
 
@@ -31,11 +31,10 @@ const Login: FC<LoginScreenProps> = ({navigation, route}) => {
   const [isRememberMe, setIsRememberMe] = useState<boolean>(false);
   const dispatch = useAppDispatch();
 
-  const {isLoading, isLoggedIn, isError} = useAppSelector(state => state.auth);
-
   const onPressLogin = () => {
     dispatch(
       authenticateUser({username: 'teacher.2.373', password: 'Ch1$!r+$1k'}),
+      // authenticateUser({username: email, password: password}),
     );
   };
 
@@ -57,6 +56,7 @@ const Login: FC<LoginScreenProps> = ({navigation, route}) => {
       <Text opacity={'0.75'} size="body1" fontVariant="semiBold">
         Please login to your account.
       </Text>
+      <Text color="darkGrey"></Text>
       <View style={{marginTop: '5%', width: '100%'}}>
         <TextInput
           label="Email"

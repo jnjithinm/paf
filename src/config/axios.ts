@@ -1,5 +1,6 @@
 import axios, {AxiosInstance} from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import endPoints from './endPoints';
 
 const api: AxiosInstance = axios.create({
   baseURL: 'http://65.1.32.205:8080',
@@ -15,7 +16,12 @@ api.interceptors.request.use(
       config.headers['Authorization'] =`Bearer ${token}`;
     }
     config.headers['Accept'] = 'application/json';
-    config.headers['Content-Type'] = 'application/json';
+    // config.headers['Content-Type'] = 'application/json';
+    config.headers['Content-Type'] = config.url?.includes(
+      endPoints.SAVE_EVIDENCE_CARD,
+    )
+      ? 'multipart/form-data'
+      : 'application/json';
     if (config.method?.toUpperCase() === 'GET') {
       console.log(
         `[API] Request: ${config.method?.toUpperCase()} ${config.url}  ${

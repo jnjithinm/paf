@@ -5,10 +5,7 @@ import {
 } from '@react-navigation/stack';
 import Splash from '../screens/auth/Splash';
 import Login from '../screens/auth/Login';
-import SecurityQuestion from '../screens/SecurityQuestion';
 import DashboardTabNavigator from './DashboardTabStack';
-import RubricBMCTeacherEvaluation from '../screens/rubric/RubricBMCTeacherEvaluationIndicatorList';
-import NewObservationStack from './NewObservationStack';
 import {useAppSelector} from '../redux/store';
 
 export type MainStackParamList = {
@@ -42,26 +39,14 @@ const MainStackNavigator = () => {
     return (
       <MainStack.Navigator
         screenOptions={({route}) => {
-          //   if (route.name !== 'DashboardTabStack') {
-          //     return {
-          //       headerShown: false,
-          //       keyboardHidesTabBar: true,
-          //       cardStyleInterpolator: customTransition,
-          //     };
-          //   } else {
           return {
             headerShown: false,
             keyboardHidesTabBar: true,
           };
-          //   }
         }}>
         <MainStack.Screen
           name="DashboardTabStack"
           component={DashboardTabNavigator}
-        />
-        <MainStack.Screen
-          name="NewObservationStack"
-          component={NewObservationStack}
         />
       </MainStack.Navigator>
     );

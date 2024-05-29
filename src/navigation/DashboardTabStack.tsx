@@ -5,12 +5,7 @@ import DashboardTabBar from '../components/DashboardTabBar';
 import TeacherDashboard from '../screens/dashboard/TeacherDashboard';
 import RubricStack from './RubricTabStack';
 import SampleScreen2 from '../screens/reports/SampleScreen2';
-import ReportsMainPage from '../screens/reports/ReportsMainPage';
-
-import AddNewObservation from '../screens/newObservation/AddNewObservation';
-
 import ReportsStack from './ReportsTabStack';
-
 
 export type DashboardTabBarStackParamList = {
   TeacherDashboard: undefined;
@@ -34,15 +29,9 @@ const DashboardTabStack = () => {
         name="TeacherDashboard"
         component={TeacherDashboard}
       />
-            <DashboardTab.Screen name="ReportsStack" component={ReportsStack} />
-   
-
+      <DashboardTab.Screen name="ReportsStack" component={ReportsStack} />
       <DashboardTab.Screen name="RubricStack" component={RubricStack} />
-      <DashboardTab.Screen
-        name="SampleScreen2"
-        component={SampleScreen2}
-
-      />
+      <DashboardTab.Screen name="SampleScreen2" component={SampleScreen2} />
     </DashboardTab.Navigator>
   );
 };

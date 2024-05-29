@@ -7,19 +7,19 @@ import {FONT_VARIANT, FONT_SIZES} from '../config/themes';
 import {Dropdown} from 'react-native-element-dropdown';
 import {normaliseFont} from '../utils/helpers/responsiveHelpers';
 
-export type dropdownObject = {
+export type DropdownObject = {
   value: string;
   label: string;
 };
 
 interface DropdownProps {
   label?: string;
-  options: dropdownObject[];
+  options: DropdownObject[];
   setSelectedValue?: Dispatch<SetStateAction<string>>;
-  setSelectedItem?: Dispatch<SetStateAction<dropdownObject | undefined>>;
+  setSelectedItem?: Dispatch<SetStateAction<DropdownObject | undefined>>;
   setIsChanged?: Dispatch<SetStateAction<boolean>>;
   defaultValue: string;
-  onChangeItem?: (object: dropdownObject) => void;
+  onChangeItem?: (object: DropdownObject) => void;
   disabled?: boolean;
   mandatory?: boolean;
   halfSize?: boolean;
@@ -50,7 +50,7 @@ const LabelDropdown: FC<DropdownProps> = ({
   style,
 }) => {
 
-  function isDropdownItem(item: any): item is dropdownObject {
+  function isDropdownItem(item: any): item is DropdownObject {
     return typeof item === 'object' && item !== null;
   }
 
@@ -80,115 +80,12 @@ const LabelDropdown: FC<DropdownProps> = ({
           {mandatory && <Text style={{color: colors.dangerColor}}>{'*'}</Text>}
         </View>
       )}
-      {/* <> */}
-      {/* {Platform.OS === 'android' ? (
-          <DropDownPicker
-            open={open}
-            // searchable
-            value={defaultValue||''}
-            listMode='SCROLLVIEW'
-            scrollViewProps={{
-              nestedScrollEnabled: true,
-              decelerationRate: 'fast',
-            }}
-            items={modifiedOptions}
-            searchable={searchable}
-            placeholder={placeHolder}
-            setOpen={setDropdownOpen}
-            setValue={setSelectedValue || setStateDummy}
-            onSelectItem={(item: any) => {
-              if (setSelectedItem) {
-                setSelectedItem(item);
-              }
-              setIsChanged && setIsChanged(true);
-            }}
-            searchPlaceholder="Search"
-            searchContainerStyle={{
-              borderColor: 'transparent',
-              padding: 2,
-            }}
-            searchTextInputStyle={{
-              margin: 5,
-            }}
-            
-            showTickIcon={false}
-            listItemContainerStyle={{
-              height: 'auto',
-              paddingVertical: 5,
-            }}
-            selectedItemContainerStyle={
-              {
-                // backgroundColor: colors.veryLightGeryColor,
-                // opacity:0.3
-              }
-            }
-            dropDownContainerStyle={{
-              marginVertical: dropDownDirection == 'TOP' ? 0 : 11,
-              borderColor: 'gray',
-              borderTopWidth: 0,
-              backgroundColor: colors.backgroundColor,
-            }}
-            style={[
-              styles.Container,
-              {paddingHorizontal: oneThird ? 7 : 10},
-              {borderColor: open ? colors.blackColor : colors.borderColor},
-            ]}
-            containerStyle={[
-              {
-                zIndex: zIndex,
-                justifyContent: 'center',
-              },
-            ]}
-            dropDownDirection={dropDownDirection ? dropDownDirection : 'BOTTOM'}
-            textStyle={[
-              styles.dropdownText,
-              {opacity: disabled ? 0.3 : undefined},
-            ]}
-            labelStyle={styles.dropdownText}
-            placeholderStyle={{color: 'white'}}
-            disabled={disabled}
-            onOpen={() => open}
-            onClose={() => open}
-          />
-        ) : ( */}
-      <>
-        {/* <TouchableOpacity
-              style={{
-                borderRadius: 6,
-                borderTopWidth: 1,
-                borderColor: '#999999',
-                borderWidth: 1,
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                minHeight: normaliseDesigns(40),
-                paddingHorizontal: 10,
-                marginTop: 5,
-              }}
-              disabled={disabled}
-              onPress={() => setDropdownOpen(!open)}>
-              <Text style={{color: colors.blackColor}}>{defaultValue}</Text>
-              <Icon
-                name="arrowleft"
-                style={{transform: [{rotate: open ? '90deg' : '270deg'}]}}
-                width={20}
-                height={20}
-              />
-            </TouchableOpacity> */}
-        {/* <View
-          style={{
-            borderColor: colors.blackColor,
-            borderWidth: 1,
-            borderRadius: 5,
 
-            width: '100%',
-          }}> */}
+      <>
+
         <Dropdown
           style={[styles.Container]}
-          // placeholderStyle={styles.placeholderStyle}
           selectedTextStyle={styles.selectedTextStyle}
-          // inputSearchStyle={styles.inputSearchStyle}
-          // iconStyle={styles.iconStyle}
           dropdownPosition={dropDownDirection}
           itemTextStyle={styles.dropdownText}
           data={options}
@@ -197,11 +94,9 @@ const LabelDropdown: FC<DropdownProps> = ({
           maxHeight={300}
           labelField="label"
           valueField="value"
-          // placeholder={!isFocus ? 'Select item' : '...'}
+          placeholder={placeHolder}
           searchPlaceholder="Search..."
           value={defaultValue}
-          // onFocus={() => setIsFocus(true)}
-          // onBlur={() => setIsFocus(false)}
           onChange={item => {
             onChangeItem && onChangeItem(item);
             setIsChanged && setIsChanged(true);
@@ -215,26 +110,15 @@ const LabelDropdown: FC<DropdownProps> = ({
               // bottom: bottom ? '30%' : upper ? '100%' : 0,
               // marginVertical: bottom ? -2 : 0,
               // elevation: 2,
-              backgroundColor: 'red',
-              borderColor: 'gray',
-              borderTopWidth: 0,
               borderBottomEndRadius: 9,
               borderBottomStartRadius: 9,
-              borderWidth: .8,
               maxHeight: 250,
               
             },
           ]}
-          // renderLeftIcon={() => (
-          //   <AntDesign
-          //     style={styles.icon}
-          //     color={isFocus ? 'blue' : 'black'}
-          //     name="Safety"
-          //     size={20}
-          //   />
-          // )}
+
         />
-        {/* </View> */}
+
       </>
     </View>
   );
@@ -273,16 +157,15 @@ const styles = StyleSheet.create({
     height: 'auto',
   },
   selectedTextStyle: {
-    fontSize: normaliseFont(14),
+    fontSize: normaliseFont(15),
     justifyContent: 'center',
     // paddingHorizontal: 5,
     color: colors.blackColor,
     textTransform: 'capitalize',
-    backgroundColor: 'pink'
   },
 
   dropdownText: {
-    backgroundColor: 'red',
+    // backgroundColor: 'red',
     fontSize: normaliseFont(14),
     color: colors.blackColor,
     paddingVertical: 5,

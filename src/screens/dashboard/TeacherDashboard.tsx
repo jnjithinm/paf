@@ -1,6 +1,6 @@
 import React, {FC, useEffect, useState} from 'react';
 import {TextInput, TouchableOpacity, View, ViewStyle} from 'react-native';
-import {RouteProp} from '@react-navigation/native';
+import {RouteProp, useFocusEffect} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {Drawer} from 'react-native-drawer-layout';
 
@@ -11,7 +11,11 @@ import Text from '../../components/Text';
 import colors from '../../config/colors';
 import {normaliseDesigns} from '../../utils/helpers/responsiveHelpers';
 import DrawerContent from '../../components/DrawerContent';
-import { useAppSelector } from '../../redux/store';
+import {useAppDispatch, useAppSelector} from '../../redux/store';
+import {
+  getDashboardDetailsAndObservationList,
+  getIndicatorsByDomainId,
+} from '../../redux/features/observationSlice';
 
 type TeacherDashboardNavigationProp = StackNavigationProp<
   DashboardTabBarStackParamList,
@@ -110,7 +114,7 @@ export const ObservationsTile: FC<ObservationTileTypes> = ({
       setIsPressed(false);
     };
   }, [isPressed]);
-  
+
   return (
     <TouchableOpacity
       onPress={() => {
@@ -124,6 +128,7 @@ export const ObservationsTile: FC<ObservationTileTypes> = ({
         borderColor: '#F4C24A',
         justifyContent: 'space-between',
         height: normaliseDesigns(50),
+
         borderRadius: 10,
         alignItems: 'center',
         marginVertical: 5,
@@ -138,6 +143,8 @@ export const ObservationsTile: FC<ObservationTileTypes> = ({
           borderRadius: 10,
           alignSelf: 'flex-start',
           alignItems: 'center',
+          flex: 1,
+          justifyContent: 'center',
           // flex:1
         }}>
         <Text size="small1" fontVariant="bold">
@@ -145,7 +152,7 @@ export const ObservationsTile: FC<ObservationTileTypes> = ({
         </Text>
         <Icon style={{marginLeft: 5}} name="star_icon" width={10} />
       </View>
-      <View style={{flex: 1, marginLeft: 10}}>
+      <View style={{flex: 4, marginLeft: 10}}>
         <Text size="verysmall3" opacity="0.50">
           User Assessed
         </Text>
@@ -153,7 +160,7 @@ export const ObservationsTile: FC<ObservationTileTypes> = ({
           {userAssisted}
         </Text>
       </View>
-      <View style={{flex: 1}}>
+      <View style={{flex: 4}}>
         <Text size="verysmall3" opacity="0.50">
           Reported By
         </Text>
@@ -378,10 +385,17 @@ const TeacherDashboard: FC<TeacherDashboardScreenProps> = ({
   route,
 }) => {
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
+  const dispatch = useAppDispatch();
+  const {userData} = useAppSelector(state => state.auth);
+  const {dashboardDetails} = useAppSelector(state => state.observation);
 
-  const {userData} = useAppSelector(
-    state => state.auth,
+  useFocusEffect(
+    React.useCallback(() => {
+      dispatch(getDashboardDetailsAndObservationList(userData.id));
+    }, []),
   );
+
+  useEffect(() => {}, []);
 
   return (
     <Drawer
@@ -413,11 +427,11 @@ const TeacherDashboard: FC<TeacherDashboardScreenProps> = ({
             <View style={{flexDirection: 'row', justifyContent: 'center'}}>
               <Icon name="pro_pic_sample" />
               <View style={{marginLeft: 10, flex: 1}}>
-                <Text fontVariant="bold" size="body4">
+                <Text fontVariant="bold" size="body2">
                   Hi, {userData.name}
                 </Text>
                 <Text style={{flex: 1}} size="small2">
-                  Nirmala Niketan High School
+                  {dashboardDetails?.schoolName}
                 </Text>
               </View>
             </View>
@@ -432,7 +446,7 @@ const TeacherDashboard: FC<TeacherDashboardScreenProps> = ({
                 justifyContent: 'space-between',
               }}>
               <Text size="body5" fontVariant="bold">
-                4.0
+                {dashboardDetails?.averageRating}
               </Text>
               <View style={{justifyContent: 'space-around'}}>
                 <View style={{flexDirection: 'row'}}>
@@ -471,52 +485,34 @@ const TeacherDashboard: FC<TeacherDashboardScreenProps> = ({
           />
           <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
             <ObservationFilterTile
-              count={20}
+              count={Number(dashboardDetails?.total)}
               color="green"
               text="All"
               onPress={() => {}}
             />
             <ObservationFilterTile
-              count={15}
+              count={Number(dashboardDetails?.byMe)}
               color="orange"
               text="By Me"
               onPress={() => {}}
             />
             <ObservationFilterTile
-              count={41}
+              count={Number(dashboardDetails?.forMe)}
               color="yellow"
               text="For Me"
               onPress={() => {}}
             />
           </View>
-          <ObservationsTile
-            rating={'4.0'}
-            userAssisted={'Mannar Mathai'}
-            image={''}
-            reportedBy={'Rishyasrinka'}
-            onPress={() => {}}
-          />
-          <ObservationsTile
-            rating={'4.0'}
-            userAssisted={'Mannar Mathai'}
-            image={''}
-            reportedBy={'Rishyasrinka'}
-            onPress={() => {}}
-          />
-          <ObservationsTile
-            rating={'4.0'}
-            userAssisted={'Mannar Mathai'}
-            image={''}
-            reportedBy={'Rishyasrinka'}
-            onPress={() => {}}
-          />
-          <ObservationsTile
-            rating={'4.0'}
-            userAssisted={'Mannar Mathai'}
-            image={''}
-            reportedBy={'Rishyasrinka'}
-            onPress={() => {}}
-          />
+          {dashboardDetails?.observations?.slice(0, 4).map((item, index) => (
+            <ObservationsTile
+              key={index}
+              rating={item.ratings?.toString()}
+              userAssisted={item.userAssessed}
+              image={''}
+              reportedBy={item.reportedBy}
+              onPress={() => {}}
+            />
+          ))}
         </View>
         <View>
           <RenderTitleWithLink

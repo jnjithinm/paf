@@ -1,4 +1,4 @@
-import React, {FC, useState} from 'react';
+import React, {FC, useEffect, useState} from 'react';
 import {
   Platform,
   TextInput,
@@ -20,6 +20,8 @@ import {ReportsTabBarStackParamList} from '../../navigation/ReportsTabStack';
 import {normaliseDesigns} from '../../utils/helpers/responsiveHelpers';
 import {navigate} from '../../utils/helpers/navigationHelpers';
 import Calendar from '../../components/Calendar';
+import {useAppDispatch, useAppSelector} from '../../redux/store';
+import {getAllObservations} from '../../redux/features/observationSlice';
 
 type ReportsMainPageNavigationProp = StackNavigationProp<
   ReportsTabBarStackParamList,
@@ -93,6 +95,13 @@ const ReportsMainPage: FC<ReportsMainPageScreenProps> = ({
   const [isAddButtonPressed, setIsAddButtonPressed] = useState<boolean>(false);
   const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
 
+  const dispatch = useAppDispatch();
+  const {allObservations, dashboardDetails} = useAppSelector(
+    state => state.observation,
+  );
+  const {userData} = useAppSelector(
+    state => state.auth,
+  );
   const handleTabClick = (title: string) => {
     title == 'Active'
       ? setrubricListData(rubricData.filter(item => item.active))
@@ -101,6 +110,15 @@ const ReportsMainPage: FC<ReportsMainPageScreenProps> = ({
       : setrubricListData(rubricData);
   };
 
+  useEffect(() => {
+    dispatch(
+      getAllObservations([userData.id,{
+        page: 0,
+        size: 15,
+        type: 'all',
+      }]),
+    );
+  }, []);
   return (
     <>
       <Layout
@@ -110,14 +128,23 @@ const ReportsMainPage: FC<ReportsMainPageScreenProps> = ({
         titleTransition>
         <Calendar
           onProceed={() => {}}
-          onClose={() => {}}
+          onClose={() => {
+            setIsFilterOpen(false);
+          }}
           isVisible={isFilterOpen}
           isOKCancelButtonsNeeded
         />
         <Text size="body3" fontVariant="bold" style={{marginVertical: 10}}>
           Observation Reports
         </Text>
-        <Tab tabs={tabs} onClick={title => handleTabClick(title)} />
+        <Tab
+          tabs={[
+            `All (${dashboardDetails?.total})`,
+            `By me (${dashboardDetails?.byMe})`,
+            `For me (${dashboardDetails?.forMe})`,
+          ]}
+          onClick={title => handleTabClick(title)}
+        />
         <View
           style={{
             flexDirection: 'row',
@@ -158,118 +185,20 @@ const ReportsMainPage: FC<ReportsMainPageScreenProps> = ({
           </TouchableOpacity>
         </View>
         <View style={{marginTop: 10}}>
-          <ObservationsTile
-            rating={'4.0'}
-            userAssisted={'Mannar Mathai'}
-            image={''}
-            reportedBy={'Rishyasrinka'}
-            onPress={() => {
-              navigation.navigate('ReportsEvidenceCard', {
-                userAccessed: 'Mannar Mathai',
-              });
-            }}
-          />
-          <ObservationsTile
-            rating={'4.0'}
-            userAssisted={'Mannar Mathai'}
-            image={''}
-            reportedBy={'Rishyasrinka'}
-            onPress={() => {
-              navigation.navigate('ReportsEvidenceCard', {
-                userAccessed: 'Mannar Mathai',
-              });
-            }}
-          />
-          <ObservationsTile
-            rating={'4.0'}
-            userAssisted={'Mannar Mathai'}
-            image={''}
-            reportedBy={'Rishyasrinka'}
-            onPress={() => {
-              navigation.navigate('ReportsEvidenceCard', {
-                userAccessed: 'Mannar Mathai',
-              });
-            }}
-          />
-          <ObservationsTile
-            rating={'4.0'}
-            userAssisted={'Mannar Mathai'}
-            image={''}
-            reportedBy={'Rishyasrinka'}
-            onPress={() => {
-              navigation.navigate('ReportsEvidenceCard', {
-                userAccessed: 'Mannar Mathai',
-              });
-            }}
-          />
-          <ObservationsTile
-            rating={'4.0'}
-            userAssisted={'Mannar Mathai'}
-            image={''}
-            reportedBy={'Rishyasrinka'}
-            onPress={() => {
-              navigation.navigate('ReportsEvidenceCard', {
-                userAccessed: 'Mannar Mathai',
-              });
-            }}
-          />
-          <ObservationsTile
-            rating={'4.0'}
-            userAssisted={'Mannar Mathai'}
-            image={''}
-            reportedBy={'Rishyasrinka'}
-            onPress={() => {
-              navigation.navigate('ReportsEvidenceCard', {
-                userAccessed: 'Mannar Mathai',
-              });
-            }}
-          />
-          <ObservationsTile
-            rating={'4.0'}
-            userAssisted={'Mannar Mathai'}
-            image={''}
-            reportedBy={'Rishyasrinka'}
-            onPress={() => {
-              navigation.navigate('ReportsEvidenceCard', {
-                userAccessed: 'Mannar Mathai',
-              });
-            }}
-          />
-          <ObservationsTile
-            rating={'4.0'}
-            userAssisted={'Mannar Mathai'}
-            image={''}
-            reportedBy={'Rishyasrinka'}
-            onPress={() => {
-              navigation.navigate('ReportsEvidenceCard', {
-                userAccessed: 'Mannar Mathai',
-              });
-            }}
-          />
-          <ObservationsTile
-            rating={'4.0'}
-            userAssisted={'Mannar Mathai'}
-            image={''}
-            reportedBy={'Rishyasrinka'}
-            onPress={() => {
-              navigation.navigate('ReportsEvidenceCard', {
-                userAccessed: 'Mannar Mathai',
-              });
-            }}
-          />
-          <ObservationsTile
-            rating={'4.0'}
-            userAssisted={'Mannar Mathai'}
-            image={''}
-            reportedBy={'Rishyasrinka'}
-            onPress={() => {
-              navigation.navigate('ReportsEvidenceCard', {
-                userAccessed: 'Mannar Mathai',
-              });
-            }}
-          />
-
-          {/* <Fab icon={'add'}/> */}
+          {allObservations?.dataList?.map((item, index) => (
+            <ObservationsTile
+              key={index}
+              rating={item.ratings?.toString()}
+              userAssisted={item.userAssessed}
+              image={''}
+              reportedBy={item.reportedBy}
+              onPress={() => {
+                navigation.navigate('ObservationReport', {
+                  observationItem: item,
+                });
+              }}
+            />
+          ))}
         </View>
       </Layout>
 
@@ -280,7 +209,7 @@ const ReportsMainPage: FC<ReportsMainPageScreenProps> = ({
             text="New observation"
             iconSize={15}
             onPress={() => {
-              navigate('NewObservationStack', {screen: 'AddNNewObservation'});
+              navigation.navigate('AddNewObservation')
             }}
             style={{bottom: normaliseDesigns(70), width: normaliseDesigns(145)}}
           />

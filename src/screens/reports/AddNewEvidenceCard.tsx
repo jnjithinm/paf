@@ -1,4 +1,4 @@
-import React, {FC, useState} from 'react';
+import React, {FC, useEffect, useState} from 'react';
 import {
   FlatList,
   KeyboardAvoidingView,
@@ -13,28 +13,30 @@ import {StackNavigationProp} from '@react-navigation/stack';
 
 import {FONT_SIZES, FONT_VARIANT} from '../../config/themes';
 import Layout from '../../components/Layout';
-import LabelDropdown from '../../components/LabelDropdown';
 import Text from '../../components/Text';
 import Image from '../../components/Image';
-import colors from '../../config/colors';
-import Video from 'react-native-video';
 import FileUpload from '../../components/FileUpload';
 import Icon from '../../components/Icon';
-import VideoPlayer from '../../components/VideoPlayer';
-import MusicPlayer from '../../components/MusicPlayer';
-
-import { navigate } from '../../utils/helpers/navigationHelpers';
-import { NewObservationStackParamList } from '../../navigation/NewObservationStack';
 import FooterWithButtons from '../../components/FooterWithButtons';
-import { DocumentPickerResponse } from 'react-native-document-picker';
-import { color } from 'react-native-elements/dist/helpers';
+import {DocumentPickerResponse} from 'react-native-document-picker';
+import {useAppDispatch, useAppSelector} from '../../redux/store';
+import {
+  getAllDomains,
+  getIndicatorsByDomainId,
+} from '../../redux/features/masterSlice';
+import LabeledDropdown, {
+  DropdownObject,
+} from '../../components/LabeledDropdown';
+import {saveEvidenceCard} from '../../redux/features/observationSlice';
+import {FileObject} from '../../config/types';
+import { ReportsTabBarStackParamList } from '../../navigation/ReportsTabStack';
 
 type AddNewEvidenceCardNavigationProp = StackNavigationProp<
-  NewObservationStackParamList,
+ReportsTabBarStackParamList,
   'AddNewEvidenceCard'
 >;
 type AddNewEvidenceCardRouteProp = RouteProp<
-  NewObservationStackParamList,
+ReportsTabBarStackParamList,
   'AddNewEvidenceCard'
 >;
 
@@ -47,10 +49,15 @@ type RatingInputTypes = {
   label: string;
   rating: number;
   onChangeRating: (rating: number) => void;
+  size?: number;
 };
 
-
-const RatingInput: FC<RatingInputTypes> = ({ label, rating, onChangeRating }) => {
+export const RatingInput: FC<RatingInputTypes> = ({
+  label,
+  rating,
+  onChangeRating,
+  size = 20,
+}) => {
   const [selectedRating, setSelectedRating] = useState(rating);
 
   const handleStarPress = (index: number) => {
@@ -80,7 +87,7 @@ const RatingInput: FC<RatingInputTypes> = ({ label, rating, onChangeRating }) =>
               <TouchableOpacity
                 key={index}
                 onPress={() => handleStarPress(index)}>
-                <Icon key={index} name="star_icon" />
+                <Icon key={index} name="star_icon" width={size} height={size} />
               </TouchableOpacity>
             );
           } else if (index === filledStars && hasHalfStar) {
@@ -88,7 +95,12 @@ const RatingInput: FC<RatingInputTypes> = ({ label, rating, onChangeRating }) =>
               <TouchableOpacity
                 key={index}
                 onPress={() => handleStarPress(index)}>
-                <Icon key={index} name="star_half_filled_icon" />
+                <Icon
+                  key={index}
+                  name="star_half_filled_icon"
+                  width={size}
+                  height={size}
+                />
               </TouchableOpacity>
             );
           } else {
@@ -96,7 +108,12 @@ const RatingInput: FC<RatingInputTypes> = ({ label, rating, onChangeRating }) =>
               <TouchableOpacity
                 key={index}
                 onPress={() => handleStarPress(index)}>
-                <Icon key={index} name="star_unfilled_icon" />
+                <Icon
+                  key={index}
+                  name="star_unfilled_icon"
+                  width={size}
+                  height={size}
+                />
               </TouchableOpacity>
             );
           }
@@ -107,77 +124,67 @@ const RatingInput: FC<RatingInputTypes> = ({ label, rating, onChangeRating }) =>
     </View>
   );
 };
+
 const AddNewEvidenceCard: FC<AddNewEvidenceCardScreenProps> = ({
   navigation,
   route,
 }) => {
-
-
-  type ImageItemProps = {
-    item: DocumentPickerResponse;
-    onRemove: (item: DocumentPickerResponse) => void;
-  };
-
-  const [selectedIndicator, setSelectedIndicator] = useState<string>('');
-  const [selectedDomain, setSelectedDomain] = useState<string>('');
+  const [selectedIndicator, setSelectedIndicator] = useState<
+    DropdownObject | undefined
+  >(undefined);
+  const [selectedDomain, setSelectedDomain] = useState<
+    DropdownObject | undefined
+  >(undefined);
   const [rating, setRating] = useState<number>(0);
-  const [files, setFiles] = useState<DocumentPickerResponse[]>([]);
-  const [imageFiles, setImageFiles] = useState<DocumentPickerResponse[]>([]);
+  const [imageFiles, setImageFiles] = useState<FileObject[]>([]);
 
-  const [uploadProgress, setUploadProgress] = useState<number>(80);
+  const dispatch = useAppDispatch();
+  const {selectedDate, selectedUser, selectedUserGroup} = route.params;
+  const {allDomains, indicatorsByDomain} = useAppSelector(
+    state => state.master,
+  );
+  const {saveEvidenceCardResponse} = useAppSelector(state => state.observation);
+  const {userData} = useAppSelector(state => state.auth);
 
-  function mergeArrays(...arrays: DocumentPickerResponse[][]): DocumentPickerResponse[] {
+  function mergeArrays(...arrays: FileObject[][]): FileObject[] {
     return arrays.reduce((acc, curr) => [...acc, ...curr], []);
   }
 
-  const handleFilesPicked = (files: DocumentPickerResponse[]) => {
-    console.log("Files picked in main page:", imageFiles, files);
-    const mergedArray: DocumentPickerResponse[] = mergeArrays(imageFiles, files);
-    console.log("mergedArray", mergedArray);
+  const handleFilesPicked = (files: FileObject[]) => {
+    const mergedArray: FileObject[] = mergeArrays(imageFiles, files);
+    console.log(":fd",imageFiles,files)
     setImageFiles(mergedArray);
   };
 
-  const handleRemoveItem = (item: DocumentPickerResponse) => {
-    const updatedFiles = imageFiles.filter(file => file.uri !== item.uri);
-    setImageFiles(updatedFiles);
-  };
+  useEffect(() => {
+    dispatch(getAllDomains());
+  }, []);
 
+  useEffect(() => {
+    if (selectedDomain?.value) {
+      dispatch(getIndicatorsByDomainId(Number(selectedDomain.value)));
+    }
+  }, [selectedDomain?.value]);
 
-
-  const ImageItem: FC<ImageItemProps> = ({ item, onRemove }) => {
-    return (
-      <View style={styles.progressContainer}>
-        <View style={{ flexDirection: 'row', width: '90%', }}>
-          <View>
-            {
-              item.type?.startsWith('image') ? (
-                <Image name='img_upload_icon' />
-              ) :
-                item.type?.startsWith('video') ? (
-                  <Image name='video_icon' />
-                ) :
-                  item.type?.startsWith('audio') ? (
-                    <Image name='mic_icon' />
-                  ) :
-                    (
-                      <Image name='attachment' />
-                    )
-            }
-          </View>
-          <View>
-            <Text style={styles.dropZoneText}>{item.name}</Text>
-          </View>
-        </View>
-        {/* <View style={{ width: '10%', height: '100%', justifyContent: 'center', alignItems: 'center' }}> */}
-        <TouchableOpacity style={{ alignItems: 'center', justifyContent: 'flex-end', width: '10%' }}
-          onPress={() => onRemove(item)}
-        >
-          <Image name='cross_icon' />
-        </TouchableOpacity>
-        {/* </View> */}
-      </View>
+  const onPressSaveCard = () => {
+    dispatch(
+      saveEvidenceCard([
+        {
+          averageRating: rating,
+          domainId: Number(selectedDomain?.value),
+          indicatorId: Number(selectedIndicator?.value),
+          loggedInUserName: userData?.name,
+        },
+        imageFiles
+      ]),
     );
   };
+
+  useEffect(() => {
+    if (saveEvidenceCardResponse) {
+      navigation.navigate('ViewEvidenceCard');
+    }
+  }, [saveEvidenceCardResponse]);
 
   return (
     <KeyboardAvoidingView
@@ -202,26 +209,32 @@ const AddNewEvidenceCard: FC<AddNewEvidenceCardScreenProps> = ({
             </Text>
           </View>
 
-
-
-          <LabelDropdown
+          <LabeledDropdown
             label="Select domain"
             placeHolder="Select domain"
-            options={['']}
-            setSelectedOption={setSelectedDomain}
-            defaultValue={selectedDomain}
-            bottom
+            options={
+              allDomains?.payload?.map(item => ({
+                value: item.domainId?.toString(),
+                label: item.domainName,
+              })) || []
+            }
+            setSelectedItem={setSelectedDomain}
+            defaultValue={selectedDomain?.value?.toString() || ''}
           />
-          <LabelDropdown
+          <LabeledDropdown
             label="Select indicator"
             placeHolder="Select indicator"
-            defaultValue={selectedIndicator}
-            options={['']}
-            setSelectedOption={setSelectedIndicator}
-            bottom
+            defaultValue={selectedIndicator?.value || ''}
+            options={
+              indicatorsByDomain?.dataList?.map(item => ({
+                value: item.indicatorId?.toString(),
+                label: item.indicatorName,
+              })) || []
+            }
+            setSelectedItem={setSelectedIndicator}
           />
 
-          <View style={{ marginTop: 8 }}>
+          <View style={{marginTop: 8}}>
             <RatingInput
               label="Average Rating"
               rating={rating}
@@ -229,37 +242,19 @@ const AddNewEvidenceCard: FC<AddNewEvidenceCardScreenProps> = ({
             />
           </View>
 
-          <Text style={{ fontFamily: FONT_VARIANT.bold, fontSize: FONT_SIZES.body1, marginVertical: 20 }}>{"Upload Files"}</Text>
+          <Text
+            style={{
+              fontFamily: FONT_VARIANT.bold,
+              fontSize: FONT_SIZES.body1,
+              marginVertical: 20,
+            }}>
+            {'Upload Files'}
+          </Text>
           <FileUpload onFilesPicked={handleFilesPicked} />
-
-          <FlatList
-            data={imageFiles}
-            extraData={imageFiles}
-            style={{ marginVertical: 10 }}
-            renderItem={({ item }) => <ImageItem item={item} onRemove={handleRemoveItem} />}
-          />
-
-          {/* <Video
-            source={{ uri: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' }}
-            style={styles.video}
-            controls={true}
-            resizeMode="contain"
-            fullscreen
-            fullscreenAutorotate
-            fullscreenOrientation='landscape'
-          /> */}
-                {/* <VideoPlayer
-                 source={{ uri: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' }} /> */}
-
-{/* <MusicPlayer
-//  audioFile={'https://commondatastorage.googleapis.com/codeskulptor-demos/DDR_assets/Sevish_-__nbsp_.mp3'}
-  /> */}
-
-
         </View>
       </Layout>
       <FooterWithButtons
-        onPressProceedButton={() => { navigate('NewObservationStack', { screen: 'ViewEvidenceCard' }) }}
+        onPressProceedButton={onPressSaveCard}
         proceedButtonText={'Save Card'}
         isActiveProceedButton={true}
         cancelButtonText={'Cancel'}
@@ -278,7 +273,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 8,
     marginBottom: 20,
-    flexDirection: 'row'
+    flexDirection: 'row',
   },
   uploadingText: {
     fontSize: 16,
@@ -298,8 +293,6 @@ const styles = StyleSheet.create({
     padding: 20,
     alignItems: 'center',
     marginBottom: 20,
-
-
   },
   video: {
     width: '100%',
@@ -309,7 +302,7 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZES.body1,
     fontFamily: FONT_VARIANT.semiBold,
     color: '#1F2933',
-    marginLeft: 4
+    marginLeft: 4,
   },
   supportedTypes: {
     fontSize: 12,

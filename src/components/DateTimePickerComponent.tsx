@@ -4,7 +4,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 
 interface DateTimePickerProps {
   selectedDate: Date;
-  onDateChange: (date: any) => void;
+  onDateChange: (date: string) => void;
   showPicker: boolean;
   minimumDate?: Date;
   maximumDate?: Date;
@@ -18,7 +18,7 @@ const DateTimePickerComponent: FC<DateTimePickerProps> = ({
   maximumDate,
 }) => {
   const onChange = (event: any, selectedDate: Date | undefined) => {
-    onDateChange(event.type == 'set' ? selectedDate : selectedDate);
+    onDateChange( selectedDate?.toString()||'');
   };
 
   // const minDate = new Date();

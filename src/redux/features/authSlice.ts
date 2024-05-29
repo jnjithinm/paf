@@ -46,8 +46,6 @@ export const authenticateUser = createAsyncThunk<
     dispatch(
       loginUser({username: payload.username, password: payload.password}),
     );
-    // response.status===2000
-    console.log('res', response.data);
 
     return response.data as AuthenticateResponse;
   } catch (error: any) {
@@ -58,13 +56,13 @@ export const authenticateUser = createAsyncThunk<
 export const loginUser = createAsyncThunk<LoginResponse, AuthenticateRequest>(
   'auth/login',
   async (payload, {rejectWithValue}) => {
+
     try {
       const response = await api.post(endPoints.LOGIN_USER, {
         username: payload.username,
         password: payload.password,
       });
-      // response.status===2000
-      console.log('res', response.data);
+      console.log("dsf",response.data)
       return response.data as LoginResponse;
     } catch (error: any) {
       return rejectWithValue(error.response.data);
@@ -76,6 +74,7 @@ const initialState = {
   isLoading: false,
   isLoggedIn: false,
   userData: {
+    id:0,
     userName: '',
     name: '',
     role: '',
@@ -87,11 +86,15 @@ const initialState = {
   isError: false,
 };
 
+
+
 const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    // fill in primary logic here
+    setIsLoading(state, action) {
+      state.isLoading = action.payload;
+    },
   },
   extraReducers: builder => {
     builder
@@ -101,11 +104,7 @@ const authSlice = createSlice({
       })
       .addCase(authenticateUser.fulfilled, (state, action) => {
         state.isLoading = true;
-        // state.isLoggedIn = true;
         storeToken(action.payload?.payload?.token);
-
-        // state.authData = {...state.authData, ...action.payload.user};
-        // state.afxToken = action.payload.afxToken;
       })
       .addCase(authenticateUser.rejected, (state, action) => {
         state.isLoading = false;
@@ -120,9 +119,6 @@ const authSlice = createSlice({
         state.isLoading = false;
         state.isLoggedIn = true;
         state.userData={...state.userData,...action.payload.payload};
-        // storeToken(action.payload?.payload?.token);
-        // state.authData = {...state.authData, ...action.payload.user};
-        // state.afxToken = action.payload.afxToken;
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.isLoading = false;
@@ -131,5 +127,7 @@ const authSlice = createSlice({
       });
   },
 });
+
+export const { setIsLoading } = authSlice.actions;
 
 export default authSlice.reducer;
