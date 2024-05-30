@@ -29,14 +29,14 @@ import {
 import LabeledDropdown, {
   DropdownObject,
 } from '../../components/LabeledDropdown';
-import { ReportsTabBarStackParamList } from '../../navigation/ReportsTabStack';
+import {ReportsTabBarStackParamList} from '../../navigation/ReportsTabStack';
 
 type AddNewObservationNavigationProp = StackNavigationProp<
-ReportsTabBarStackParamList,
+  ReportsTabBarStackParamList,
   'AddNewObservation'
 >;
 type AddNewObservationRouteProp = RouteProp<
-ReportsTabBarStackParamList,
+  ReportsTabBarStackParamList,
   'AddNewObservation'
 >;
 
@@ -51,8 +51,6 @@ export const dropdownData = [
   {label: `What's your name ?`, value: `What's your name ?`},
   {label: `What's your pet's ?`, value: `What's your pet's ?`},
 ];
-
-
 
 const AddNewObservation: FC<AddNewObservationScreenProps> = ({
   navigation,
@@ -84,13 +82,6 @@ const AddNewObservation: FC<AddNewObservationScreenProps> = ({
   };
 
   useEffect(() => {
-    // dispatch(
-    //   getAllUsers({
-    //     page: 0,
-    //     size: 15,
-    //     type: 'all',
-    //   }),
-    // );
     dispatch(
       getAllUserGroups({
         page: 0,
@@ -119,9 +110,8 @@ const AddNewObservation: FC<AddNewObservationScreenProps> = ({
 
   return (
     <KeyboardAvoidingView
-      style={{flex: 1}} // Ensure the component takes up the whole screen
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'} // Adjust behavior based on platform
-    >
+      style={{flex: 1}}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <Layout
         overridePaddingHorizontal
         overridePaddingVertical
@@ -248,14 +238,9 @@ const AddNewObservation: FC<AddNewObservationScreenProps> = ({
       </Layout>
       <FooterWithButtons
         onPressProceedButton={() => {
-          // navigate('NewObservationStack', {screen: 'AddNewEvidenceCard'});
           selectedUserGroup?.value &&
             selectedUser?.value &&
-            navigation.navigate('AddNewEvidenceCard', {
-              selectedUserGroup: selectedUserGroup,
-              selectedUser: selectedUser,
-              selectedDate,
-            });
+            navigation.navigate('AddNewEvidenceCard',{observationStatus:'New'});
         }}
         proceedButtonText={'Create evidence card'}
         isActiveProceedButton={Boolean(

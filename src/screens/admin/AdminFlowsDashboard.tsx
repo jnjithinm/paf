@@ -1,5 +1,5 @@
 import React, {FC, useEffect, useState} from 'react';
-import { View} from 'react-native';
+import {TextInput, View} from 'react-native';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import moment from 'moment';
@@ -14,15 +14,19 @@ import {
   deleteRubric,
   getAllRubrics,
 } from '../../redux/features/rubricSlice';
-
+import {AdminTabStackTabBarStackParamList} from '../../navigation/AdminTabStack';
+import {normaliseFont} from '../../utils/helpers/responsiveHelpers';
+import colors from '../../config/colors';
+import Icon from '../../components/Icon';
+import Text from '../../components/Text';
 
 type ObservationReportNavigationProp = StackNavigationProp<
-  RubricTabBarStackParamList,
-  'RubricDashboard'
+  AdminTabStackTabBarStackParamList,
+  'AdminFlowsDashboard'
 >;
 type ObservationReportRouteProp = RouteProp<
-  RubricTabBarStackParamList,
-  'RubricDashboard'
+  AdminTabStackTabBarStackParamList,
+  'AdminFlowsDashboard'
 >;
 
 interface ObservationReportScreenProps {
@@ -30,9 +34,7 @@ interface ObservationReportScreenProps {
   route: ObservationReportRouteProp;
 }
 
-export const tabs: string[] = ['All', 'Active', 'Non-Active'];
-
-const RubricDashboard: FC<ObservationReportScreenProps> = ({
+const AdminFlowsDashboard: FC<ObservationReportScreenProps> = ({
   navigation,
   route,
 }) => {
@@ -100,9 +102,34 @@ const RubricDashboard: FC<ObservationReportScreenProps> = ({
       overridePaddingHorizontal
       overridePaddingVertical
       style={{paddingHorizontal: 15}}
-      title="Evaluation Rubrics">
+      title="Flows"
+      icon="flow_icon"
+      titleTransition>
+      <Text size="body3" fontVariant="bold" style={{marginVertical: 10}}>
+        Flows
+      </Text>
       <View style={{marginVertical: 10}}>
-        <Tab tabs={tabs} onClick={title => handleTabClick(title)} />
+        <Tab
+          tabs={['All', 'Owned by me(20)', 'Not owned by me(20)']}
+          textStyle={{fontSize: normaliseFont(12)}}
+          onClick={title => handleTabClick(title)}
+        />
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            backgroundColor: '#F5F7FA',
+            borderRadius: 10,
+            paddingHorizontal: 10,
+            marginVertical: 10,
+          }}>
+          <TextInput
+            style={{flex: 1, color: colors.blackColor, paddingVertical: 5}}
+            placeholder="Search by flow name"
+            placeholderTextColor={colors.darkGrey}
+          />
+          <Icon name="search_icon" />
+        </View>
 
         {rubricListData.map(item => (
           <RubricListModal
@@ -116,9 +143,7 @@ const RubricDashboard: FC<ObservationReportScreenProps> = ({
             }}
             key={item.rubricId}
             onPress={() => {
-              navigation.navigate('RubricEvaluationIndicatorList', {
-                rubric: item,
-              });
+              navigation.navigate('AdminFormList');
             }}
           />
         ))}
@@ -126,4 +151,4 @@ const RubricDashboard: FC<ObservationReportScreenProps> = ({
     </Layout>
   );
 };
-export default RubricDashboard;
+export default AdminFlowsDashboard;

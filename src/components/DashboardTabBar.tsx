@@ -29,7 +29,7 @@ const DashboardTabBar = ({state, navigation}: BottomTabBarProps) => {
         iconName = 'tabbar_icon_rubric';
 
         break;
-      case 'SampleScreen2':
+      case 'AdminStack':
         iconName = 'tabbar_icon_graph';
 
         break;

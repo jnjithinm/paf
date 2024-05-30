@@ -1,4 +1,4 @@
-import React, {FC, useState} from 'react';
+import React, {FC, useEffect, useState} from 'react';
 import {
   View,
   TouchableOpacity,
@@ -11,20 +11,30 @@ import DocumentPicker, {
 } from 'react-native-document-picker';
 import Image from '../components/Image';
 import ZipArchive, {zip} from 'react-native-zip-archive';
-import {MainBundlePath, DocumentDirectoryPath,} from 'react-native-fs';
+import {MainBundlePath, DocumentDirectoryPath} from 'react-native-fs';
 import Text from './Text';
 import {FileObject} from '../config/types';
-import RNFS from 'react-native-fs'
-
+import RNFS from 'react-native-fs';
 
 type ImageItemProps = {
   item: DocumentPickerResponse;
   onRemove: (item: DocumentPickerResponse) => void;
+  onPressFile: (item: FileObject) => void;
+  // disabled?: boolean;
 };
 
-const ImageItem: FC<ImageItemProps> = ({item, onRemove}) => {
+const ImageItem: FC<ImageItemProps> = ({
+  item,
+  onRemove,
+  onPressFile,
+  // disabled,
+}) => {
   return (
-    <View style={styles.progressContainer}>
+    <TouchableOpacity
+      style={styles.progressContainer}
+      onPress={()=>onPressFile({uri: item.uri, name: item.name?.toString()||'', type: item.type?.toString()||''})}
+      // disabled={disabled}
+      >
       <View style={{flexDirection: 'row', width: '90%'}}>
         <View>
           {item.type?.startsWith('image') ? (
@@ -50,15 +60,23 @@ const ImageItem: FC<ImageItemProps> = ({item, onRemove}) => {
         onPress={() => onRemove(item)}>
         <Image name="cross_icon" />
       </TouchableOpacity>
-    </View>
+    </TouchableOpacity>
   );
 };
 
 interface FileUploadProps {
   onFilesPicked?: (files: FileObject[]) => void;
+  filesArray?: FileObject[];
+  onPressFile: (item: FileObject) => void;
+  disabled?: boolean;
 }
 
-const FileUpload: React.FC<FileUploadProps> = ({onFilesPicked}) => {
+const FileUpload: React.FC<FileUploadProps> = ({
+  onFilesPicked,
+  filesArray,
+  onPressFile,
+  disabled,
+}) => {
   const [files, setFiles] = useState<DocumentPickerResponse[]>([]);
   const [uploadProgress, setUploadProgress] = useState<number>(80);
   const [uploading, setUploading] = useState<boolean>(false);
@@ -66,7 +84,7 @@ const FileUpload: React.FC<FileUploadProps> = ({onFilesPicked}) => {
     const fileInfo = await RNFS.stat(contentUri);
     return fileInfo.originalFilepath || contentUri;
   };
-  
+
   const pickFiles = async () => {
     try {
       const results = await DocumentPicker.pick({
@@ -88,24 +106,23 @@ const FileUpload: React.FC<FileUploadProps> = ({onFilesPicked}) => {
         const sourceUri = result.uri;
         const fileName = result.name;
         const destPath = `${DocumentDirectoryPath}/${fileName}`;
-        
         await RNFS.copyFile(sourceUri, destPath);
-  
-        // Add the destination path to the filePaths array
         filePaths.push(destPath);
       }
-  
+
       // Now filePaths contains the file paths, use it to zip the files
-      const targetPath = `${DocumentDirectoryPath}/myFile.zip`;
-  
+      const targetPath = `${DocumentDirectoryPath}/myFile1.zip`;
+
       zip(filePaths, targetPath)
         .then(path => {
           if (onFilesPicked) {
-            onFilesPicked([{ uri: path, name: 'zip', type: 'application/zip' }]);
+            onFilesPicked([
+              {uri: path, name: 'myFile1.zip', type: 'application/zip'},
+            ]);
           }
         })
         .catch(error => {
-          console.log("sdfsdf", error);
+          console.log('error ziping', error);
         });
     } catch (err) {
       // Handle errors
@@ -115,7 +132,6 @@ const FileUpload: React.FC<FileUploadProps> = ({onFilesPicked}) => {
 
     //   console.log("target pathssss",targetPath,fileURIs)
 
-      
     //   zip(fileURIs, targetPath)
     //     .then(path => {
     //       if (onFilesPicked) {
@@ -125,8 +141,7 @@ const FileUpload: React.FC<FileUploadProps> = ({onFilesPicked}) => {
     //     .catch(error => {
     //       console.log("sdfsdf",error);
     //     });
- 
-  
+
     // } catch (err) {
     //   if (DocumentPicker.isCancel(err)) {
     //     console.log('User cancelled the picker');
@@ -140,10 +155,19 @@ const FileUpload: React.FC<FileUploadProps> = ({onFilesPicked}) => {
     setFiles(updatedFiles);
   };
 
+  useEffect(() => {
+    if (filesArray) {
+      setFiles(filesArray);
+    }
+  }, [filesArray]);
+
   return (
     <View>
       <View style={styles.container}>
-        <TouchableOpacity style={styles.dropZone} onPress={pickFiles}>
+        <TouchableOpacity
+          style={styles.dropZone}
+          onPress={pickFiles}
+          disabled={disabled}>
           <Image name="upload_icon" />
           <Text style={styles.dropZoneText}>
             Drag and drop or <Text style={styles.browseText}>Browse</Text> your
@@ -156,7 +180,12 @@ const FileUpload: React.FC<FileUploadProps> = ({onFilesPicked}) => {
       </View>
       <View style={{marginVertical: 10}}>
         {files.map(item => (
-          <ImageItem item={item} onRemove={handleRemoveItem} />
+          <ImageItem
+            item={item}
+            onRemove={handleRemoveItem}
+            onPressFile={onPressFile}
+            // disabled={disabled}
+          />
         ))}
       </View>
     </View>
@@ -177,7 +206,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   dropZoneText: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#333',
   },
   browseText: {

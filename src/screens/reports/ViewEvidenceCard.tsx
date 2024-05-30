@@ -1,12 +1,8 @@
 import React, {FC, useEffect, useState} from 'react';
 import {
-  FlatList,
   KeyboardAvoidingView,
   Platform,
-  StyleSheet,
-  TouchableOpacity,
   View,
-  ViewStyle,
 } from 'react-native';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
@@ -18,8 +14,6 @@ import Text from '../../components/Text';
 import Image from '../../components/Image';
 import colors from '../../config/colors';
 import Icon from '../../components/Icon';
-import {navigate} from '../../utils/helpers/navigationHelpers';
-import FooterWithButtons from '../../components/FooterWithButtons';
 import EvidenceCard from '../../components/EvidenceCard';
 import {ReportsTabBarStackParamList} from '../../navigation/ReportsTabStack';
 import {useAppDispatch, useAppSelector} from '../../redux/store';
@@ -43,40 +37,12 @@ const ViewEvidenceCard: FC<ViewEvidenceCardScreenProps> = ({
   navigation,
   route,
 }) => {
-  const [evidenceCardData, setEvidenceCardData] = useState<any[]>([]);
   const [feedbackNote, setFeedbackNote] = useState('');
-  const [feedbackNoteEnable, setFeedbackNoteEnable] = useState<boolean>(false);
-
-  const {observationItem} = route.params;
   const dispatch = useAppDispatch();
   const {observationById} = useAppSelector(state => state.observation);
 
-  const EvidenceCardDetails = [
-    {
-      title: 'Evidence Card 1',
-      description: 'Teacher is able to manage all students in class very well.',
-      voiceClipCount: 10,
-      videoClipCount: 30,
-      noteCount: 5,
-      photoCount: 4,
-    },
-    {
-      title: 'Evidence Card 2',
-      description: 'Teacher is able to manage all students in class very well.',
-      voiceClipCount: 10,
-      videoClipCount: 20,
-      noteCount: 15,
-      photoCount: 14,
-    },
-  ];
 
-  useEffect(() => {
-    setEvidenceCardData(EvidenceCardDetails);
-  }, []);
 
-  useEffect(() => {
-    dispatch(getObservationById(observationItem.observationId));
-  }, []);
   return (
     <KeyboardAvoidingView
       style={{flex: 1}} // Ensure the component takes up the whole screen
@@ -87,14 +53,14 @@ const ViewEvidenceCard: FC<ViewEvidenceCardScreenProps> = ({
         overridePaddingVertical
         style={{paddingHorizontal: 15, paddingVertical: 0}}
         icon="reports_icon"
-        title="New Observation">
+        title="Evidence Card">
         <View style={{marginVertical: 20}}>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
             <Icon name={'evidence_card_sample_image'} />
             <View style={{flex: 1, justifyContent: 'center', marginLeft: 10}}>
               <View>
                 <Text fontVariant="bold" size="body2">
-                  Isha Dani (Maths)
+                  {observationById?.userName} ({observationById?.userGroup})
                 </Text>
               </View>
               <View style={{flexDirection: 'row', alignItems: 'center'}}>
@@ -125,83 +91,52 @@ const ViewEvidenceCard: FC<ViewEvidenceCardScreenProps> = ({
                 fontFamily: FONT_VARIANT.bold,
                 fontSize: FONT_SIZES.body1,
               }}>
-              {`Evidence cards ${evidenceCardData.length}`}
+              Add Evidence card
             </Text>
           </View>
 
-          <FlatList
-            data={evidenceCardData}
-            extraData={evidenceCardData}
-            style={{marginVertical: 10}}
-            renderItem={({item}) => (
-              <EvidenceCard
-                title={item?.title}
-                description={item?.description}
-                voiceClipCount={item?.voiceClipCount}
-                videoClipCount={item?.videoClipCount}
-                noteCount={item?.noteCount}
-                photoCount={item?.photoCount}
-              />
-            )}
-          />
+          {observationById?.evidenceResponseList?.map((item, index) => (
+            <EvidenceCard
+              key={index}
+              title={`Evidence Card ${index + 1}`}
+              description={item?.domainName}
+              voiceClipCount={item?.fileCount?.Audio}
+              videoClipCount={item?.fileCount?.Video}
+              noteCount={item?.fileCount?.Document}
+              photoCount={item?.fileCount?.Image}
+            />
+          ))}
 
-          <TouchableOpacity
-            onPress={() => {
-              setFeedbackNoteEnable(!feedbackNoteEnable);
-            }}
-            // disabled={!isActive}
+        
+          <View style={{marginTop: 10}}>
+          <Text
             style={{
-              alignSelf: 'flex-start',
-              borderBottomColor:
-                //   isActive ?
+              color:
                 colors.blackColor,
-              //   : '#CBD2D9',
-              borderBottomWidth: 1,
-            }}>
+                marginBottom:5
+            }}
+            fontVariant='bold'>
+            Feedback note
+          </Text>
+            <TextInput
+              label=""
+              value={observationById?.feedbackDescription?.toString() || ''}
+              setValue={setFeedbackNote}
+              multiline
+              maxLength={200}
+              editable={false}
+            />
             <Text
               style={{
-                color:
-                  // isActive ?
-                  colors.blackColor,
-                // : '#CBD2D9'
-              }}>
-              + Add feedback note
-            </Text>
-          </TouchableOpacity>
-
-          {feedbackNoteEnable && (
-            <View style={{marginTop: 15}}>
-              <TextInput
-                label=""
-                value={feedbackNote}
-                setValue={setFeedbackNote}
-                multiline
-                // style={{borderColor: '#CBD2D9', borderWidth: 1, borderRadius: 10}}
-                maxLength={200}
-              />
-              <Text
-                style={{
-                  alignSelf: 'flex-end',
-                  fontFamily: FONT_VARIANT.regular,
-                  fontSize: FONT_SIZES.small2,
-                }}>{`${feedbackNote.length}/200`}</Text>
-            </View>
-          )}
+                alignSelf: 'flex-end',
+                fontFamily: FONT_VARIANT.regular,
+                fontSize: FONT_SIZES.small2,
+                marginTop: 5,
+              }}>{`${feedbackNote.length}/200`}</Text>
+          </View>
         </View>
       </Layout>
-      <FooterWithButtons
-        onPressProceedButton={() => {
-          navigate('NewObservationStack', {screen: 'ViewEvidenceCard'});
-        }}
-        proceedButtonText={'Submit'}
-        isActiveProceedButton={true}
-        cancelButtonText={'Save as draft'}
-        onPressCancelButton={() => {}}
-        style={{}}
-      />
     </KeyboardAvoidingView>
   );
 };
 export default ViewEvidenceCard;
-
-const styles = StyleSheet.create({});

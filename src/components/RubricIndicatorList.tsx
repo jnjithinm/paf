@@ -9,7 +9,6 @@ interface RubricIndicatorListProps {
   active: boolean;
   createdBy: string;
   createdDate: string;
-  userCount: number;
   onDelete: () => void;
   onPress:()=>void;
 }
@@ -19,7 +18,6 @@ const RubricIndicatorList: React.FC<RubricIndicatorListProps> = ({
   active,
   createdBy,
   createdDate,
-  userCount,
   onDelete,
   onPress
 }) => {
@@ -60,7 +58,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     paddingHorizontal: 10,
     // paddingVertical:8,
-    marginBottom: 10,
+    marginVertical: 5,
     height: normaliseDesigns(65),
     justifyContent:'space-evenly'
   },

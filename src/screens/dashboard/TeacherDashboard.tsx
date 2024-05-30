@@ -14,7 +14,6 @@ import DrawerContent from '../../components/DrawerContent';
 import {useAppDispatch, useAppSelector} from '../../redux/store';
 import {
   getDashboardDetailsAndObservationList,
-  getIndicatorsByDomainId,
 } from '../../redux/features/observationSlice';
 
 type TeacherDashboardNavigationProp = StackNavigationProp<

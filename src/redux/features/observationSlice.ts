@@ -62,7 +62,7 @@ type FileCount = {
   Document: number;
 };
 
-type EvidenceResponse = {
+export type EvidenceResponse = {
   evidenceId: number;
   domainName: string;
   domainId: number;
@@ -82,7 +82,7 @@ type GetObservationByIdResponse = {
     userName: string;
     userGroup: string;
     feedbackDescription: string;
-    observationStatus: string;
+    observationStatus: 'Completed'|'Pending';
     observationAvgRatings: number;
     evidenceResponseList: EvidenceResponse[];
   };
@@ -95,7 +95,7 @@ export type ObservationData = {
   userAssessed: string;
   reportedBy: string;
   ratings: number;
-  observationStatus: string;
+  observationStatus: 'Completed'|'Pending';
   videoCount: number;
   audioCount: number;
   documentCount: number;
@@ -113,6 +113,31 @@ type GetAllObservationsResponse = {
 };
 
 type GetAllObservationsResponsePayload = GetAllObservationsResponse['payload'];
+
+// type AttachmentResponse = {
+//   attachmentId: number;
+//   fileName: string;
+//   fileType: string;
+//   fileUrl: string;
+//   evidenceId: number;
+// };
+
+// type EvidencePayload = {
+//   evidenceId: number;
+//   domainName: string;
+//   domainId: number;
+//   indicatorId: number;
+//   indicatorName: string;
+//   averageRating: number;
+//   attachmentResponse: AttachmentResponse[];
+//   message: string;
+// };
+
+// type EvidenceResponse = {
+//   payload: EvidencePayload;
+//   status: number;
+// };
+
 export const getDashboardDetailsAndObservationList = createAsyncThunk<
   GetDashboardDetailsAndObservationListResponse,
   number
@@ -134,6 +159,18 @@ export const getObservationById = createAsyncThunk<
   try {
     const response = await api.get(endPoints.GET_OBSERVATION_BY_ID + id);
     console.log("obserfations",response.data)
+    return response.data as GetObservationByIdResponse;
+  } catch (error: any) {
+    return rejectWithValue(error.response.data);
+  }
+});
+
+export const getEvidenceById = createAsyncThunk<
+  GetObservationByIdResponse,
+  number
+>('observation/getEvidenceById', async (id, {rejectWithValue}) => {
+  try {
+    const response = await api.get(endPoints.GET_EVIDENCE_BY_ID + id);
     return response.data as GetObservationByIdResponse;
   } catch (error: any) {
     return rejectWithValue(error.response.data);
@@ -165,7 +202,7 @@ export const saveEvidenceCard = createAsyncThunk<
         // file.forEach((f, index) => {
         //   formData.append(`file_${index}`, f);
         // });
-        formData.append('file', file);
+        formData.append('file', file[0]);
       }
       console.log('file', file);
       console.log('evi', evidenceInfo);

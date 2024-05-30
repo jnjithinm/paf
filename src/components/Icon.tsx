@@ -49,6 +49,9 @@ import cross_icon_white from '../assets/svg/cross_icon_white.svg'
 import calendar_icon from '../assets/svg/calendar_icon.svg'
 import star_half_filled_icon from '../assets/svg/star_half_filled_icon.svg'
 import up_and_down_selection from '../assets/svg/up_and_down_selection.svg';
+import admin_flows_icon from '../assets/svg/admin_flows_icon.svg'
+import form_list from '../assets/svg/form_list_icon.svg'
+
 
 const Icons = {
   app_logo,
@@ -97,7 +100,9 @@ const Icons = {
   cross_icon_white,
   calendar_icon,
   star_half_filled_icon,
-  up_and_down_selection
+  up_and_down_selection,
+  admin_flows_icon,
+  form_list
 };
 
 export type IconTypes = keyof typeof Icons;

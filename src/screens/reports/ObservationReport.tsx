@@ -1,13 +1,5 @@
 import React, {FC, useEffect, useState} from 'react';
-import {
-  FlatList,
-  KeyboardAvoidingView,
-  Platform,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-  ViewStyle,
-} from 'react-native';
+import {KeyboardAvoidingView, Platform, View} from 'react-native';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 
@@ -18,8 +10,6 @@ import Text from '../../components/Text';
 import Image from '../../components/Image';
 import colors from '../../config/colors';
 import Icon from '../../components/Icon';
-import {navigate} from '../../utils/helpers/navigationHelpers';
-import FooterWithButtons from '../../components/FooterWithButtons';
 import EvidenceCard from '../../components/EvidenceCard';
 import {ReportsTabBarStackParamList} from '../../navigation/ReportsTabStack';
 import {useAppDispatch, useAppSelector} from '../../redux/store';
@@ -43,36 +33,10 @@ const ObservationReport: FC<ObservationReportScreenProps> = ({
   navigation,
   route,
 }) => {
-  const [evidenceCardData, setEvidenceCardData] = useState<any[]>([]);
   const [feedbackNote, setFeedbackNote] = useState('');
-  const [feedbackNoteEnable, setFeedbackNoteEnable] = useState<boolean>(false);
-
   const {observationItem} = route.params;
   const dispatch = useAppDispatch();
   const {observationById} = useAppSelector(state => state.observation);
-
-  const EvidenceCardDetails = [
-    {
-      title: 'Evidence Card 1',
-      description: 'Teacher is able to manage all students in class very well.',
-      voiceClipCount: 10,
-      videoClipCount: 30,
-      noteCount: 5,
-      photoCount: 4,
-    },
-    {
-      title: 'Evidence Card 2',
-      description: 'Teacher is able to manage all students in class very well.',
-      voiceClipCount: 10,
-      videoClipCount: 20,
-      noteCount: 15,
-      photoCount: 14,
-    },
-  ];
-
-  useEffect(() => {
-    setEvidenceCardData(EvidenceCardDetails);
-  }, []);
 
   useEffect(() => {
     dispatch(getObservationById(observationItem.observationId));
@@ -130,22 +94,6 @@ const ObservationReport: FC<ObservationReportScreenProps> = ({
             </Text>
           </View>
 
-          {/* <FlatList
-            data={evidenceCardData}
-            extraData={evidenceCardData}
-            style={{marginVertical: 10}}
-            renderItem={({item}) => (
-              <EvidenceCard
-                title={item?.title}
-                description={item?.description}
-                voiceClipCount={item?.voiceClipCount}
-                videoClipCount={item?.videoClipCount}
-                noteCount={item?.noteCount}
-                photoCount={item?.photoCount}
-              />
-            )}
-          /> */}
-
           {observationById?.evidenceResponseList?.map((item, index) => (
             <EvidenceCard
               key={index}
@@ -155,50 +103,31 @@ const ObservationReport: FC<ObservationReportScreenProps> = ({
               videoClipCount={item?.fileCount?.Video}
               noteCount={item?.fileCount?.Document}
               photoCount={item?.fileCount?.Image}
+              onPressEvidenceCard={() => {
+                navigation.navigate('AddNewEvidenceCard', {
+                  observationStatus: observationById.observationStatus,
+                  evidenceCardDetails:item
+                });
+              }}
             />
           ))}
 
-          {/* <TouchableOpacity
-            onPress={() => {
-              setFeedbackNoteEnable(!feedbackNoteEnable);
-            }}
-            // disabled={!isActive}
-            style={{
-              alignSelf: 'flex-start',
-              borderBottomColor:
-                //   isActive ?
-                colors.blackColor,
-              //   : '#CBD2D9',
-              borderBottomWidth: 1,
-            }}>
+          <View style={{marginTop: 10}}>
             <Text
               style={{
-                color:
-                  // isActive ?
-                  colors.blackColor,
-                // : '#CBD2D9'
-              }}>
-              + Add feedback note
+                color: colors.blackColor,
+                marginBottom: 5,
+              }}
+              fontVariant="bold">
+              Feedback note
             </Text>
-          </TouchableOpacity> */}
-        
-          <View style={{marginTop: 10}}>
-          <Text
-            style={{
-              color:
-                colors.blackColor,
-                marginBottom:5
-            }}
-            fontVariant='bold'>
-            Feedback note
-          </Text>
             <TextInput
               label=""
               value={observationById?.feedbackDescription?.toString() || ''}
               setValue={setFeedbackNote}
               multiline
-              // style={{borderColor: '#CBD2D9', borderWidth: 1, borderRadius: 10}}
               maxLength={200}
+              editable={false}
             />
             <Text
               style={{
@@ -214,5 +143,3 @@ const ObservationReport: FC<ObservationReportScreenProps> = ({
   );
 };
 export default ObservationReport;
-
-const styles = StyleSheet.create({});

@@ -11,7 +11,7 @@ import {StackNavigationProp} from '@react-navigation/stack';
 
 import Layout from '../../components/Layout';
 import Tab from '../../components/Tab';
-import {rubricData} from '../rubric/RubricDashboard';
+
 import Text from '../../components/Text';
 import Icon, {IconTypes} from '../../components/Icon';
 import colors from '../../config/colors';
@@ -99,26 +99,44 @@ const ReportsMainPage: FC<ReportsMainPageScreenProps> = ({
   const {allObservations, dashboardDetails} = useAppSelector(
     state => state.observation,
   );
-  const {userData} = useAppSelector(
-    state => state.auth,
-  );
+  const {userData} = useAppSelector(state => state.auth);
   const handleTabClick = (title: string) => {
-    title == 'Active'
-      ? setrubricListData(rubricData.filter(item => item.active))
-      : title == 'Non-Active'
-      ? setrubricListData(rubricData.filter(item => item.active == false))
-      : setrubricListData(rubricData);
+    if (allObservations?.dataList) {
+      title == 'Active'
+        ? setrubricListData(
+            allObservations?.dataList?.filter(
+              item => item.observationStatus === 'Completed',
+            ),
+          )
+        : title == 'Non-Active'
+        ? setrubricListData(
+            allObservations?.dataList?.filter(
+              item => item.observationStatus === 'Pending',
+            ),
+          )
+        : setrubricListData(allObservations?.dataList);
+    }
   };
 
   useEffect(() => {
     dispatch(
-      getAllObservations([userData.id,{
-        page: 0,
-        size: 15,
-        type: 'all',
-      }]),
+      getAllObservations([
+        userData.id,
+        {
+          page: 0,
+          size: 15,
+          type: 'all',
+        },
+      ]),
     );
   }, []);
+
+  useEffect(() => {
+    if (allObservations) {
+      setrubricListData(allObservations?.dataList);
+    }
+  }, [allObservations]);
+
   return (
     <>
       <Layout
@@ -185,7 +203,7 @@ const ReportsMainPage: FC<ReportsMainPageScreenProps> = ({
           </TouchableOpacity>
         </View>
         <View style={{marginTop: 10}}>
-          {allObservations?.dataList?.map((item, index) => (
+          {rubricListData?.map((item, index) => (
             <ObservationsTile
               key={index}
               rating={item.ratings?.toString()}
@@ -209,7 +227,7 @@ const ReportsMainPage: FC<ReportsMainPageScreenProps> = ({
             text="New observation"
             iconSize={15}
             onPress={() => {
-              navigation.navigate('AddNewObservation')
+              navigation.navigate('AddNewObservation');
             }}
             style={{bottom: normaliseDesigns(70), width: normaliseDesigns(145)}}
           />

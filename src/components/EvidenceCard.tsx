@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Text, StyleSheet} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import Icon, {IconTypes} from '../components/Icon';
 import {FONT_SIZES, FONT_VARIANT} from '../config/themes';
 import Image from '../components/Image';
@@ -37,6 +37,7 @@ const RenderEvidenceCardMultimediaCounts: React.FC<
 
 type EvidenceCardTypes = {
   title: string;
+  onPressEvidenceCard:()=>void;
   description: string;
   photoCount?: number;
   voiceClipCount?: number;
@@ -46,13 +47,14 @@ type EvidenceCardTypes = {
 
 const EvidenceCard: React.FC<EvidenceCardTypes> = ({
   title,
+  onPressEvidenceCard,
   description,
   photoCount,
   voiceClipCount,
   videoClipCount,
   noteCount,
 }) => (
-  <View style={styles.cardContainer}>
+  <TouchableOpacity style={styles.cardContainer} onPress={onPressEvidenceCard}>
     <Text style={styles.titleText}>{title}</Text>
     <Text style={styles.descriptionText}>{description}</Text>
     <View style={styles.multimediaCountsContainer}>
@@ -74,7 +76,7 @@ const EvidenceCard: React.FC<EvidenceCardTypes> = ({
         lastCount
       />
     </View>
-  </View>
+  </TouchableOpacity>
 );
 
 const styles = StyleSheet.create({

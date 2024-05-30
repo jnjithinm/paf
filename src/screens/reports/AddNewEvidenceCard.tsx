@@ -18,7 +18,6 @@ import Image from '../../components/Image';
 import FileUpload from '../../components/FileUpload';
 import Icon from '../../components/Icon';
 import FooterWithButtons from '../../components/FooterWithButtons';
-import {DocumentPickerResponse} from 'react-native-document-picker';
 import {useAppDispatch, useAppSelector} from '../../redux/store';
 import {
   getAllDomains,
@@ -29,14 +28,14 @@ import LabeledDropdown, {
 } from '../../components/LabeledDropdown';
 import {saveEvidenceCard} from '../../redux/features/observationSlice';
 import {FileObject} from '../../config/types';
-import { ReportsTabBarStackParamList } from '../../navigation/ReportsTabStack';
+import {ReportsTabBarStackParamList} from '../../navigation/ReportsTabStack';
 
 type AddNewEvidenceCardNavigationProp = StackNavigationProp<
-ReportsTabBarStackParamList,
+  ReportsTabBarStackParamList,
   'AddNewEvidenceCard'
 >;
 type AddNewEvidenceCardRouteProp = RouteProp<
-ReportsTabBarStackParamList,
+  ReportsTabBarStackParamList,
   'AddNewEvidenceCard'
 >;
 
@@ -50,6 +49,7 @@ type RatingInputTypes = {
   rating: number;
   onChangeRating: (rating: number) => void;
   size?: number;
+  disabled?: boolean;
 };
 
 export const RatingInput: FC<RatingInputTypes> = ({
@@ -57,6 +57,7 @@ export const RatingInput: FC<RatingInputTypes> = ({
   rating,
   onChangeRating,
   size = 20,
+  disabled,
 }) => {
   const [selectedRating, setSelectedRating] = useState(rating);
 
@@ -86,7 +87,8 @@ export const RatingInput: FC<RatingInputTypes> = ({
             return (
               <TouchableOpacity
                 key={index}
-                onPress={() => handleStarPress(index)}>
+                onPress={() => handleStarPress(index)}
+                disabled={disabled}>
                 <Icon key={index} name="star_icon" width={size} height={size} />
               </TouchableOpacity>
             );
@@ -94,7 +96,8 @@ export const RatingInput: FC<RatingInputTypes> = ({
             return (
               <TouchableOpacity
                 key={index}
-                onPress={() => handleStarPress(index)}>
+                onPress={() => handleStarPress(index)}
+                disabled={disabled}>
                 <Icon
                   key={index}
                   name="star_half_filled_icon"
@@ -107,7 +110,8 @@ export const RatingInput: FC<RatingInputTypes> = ({
             return (
               <TouchableOpacity
                 key={index}
-                onPress={() => handleStarPress(index)}>
+                onPress={() => handleStarPress(index)}
+                disabled={disabled}>
                 <Icon
                   key={index}
                   name="star_unfilled_icon"
@@ -129,6 +133,7 @@ const AddNewEvidenceCard: FC<AddNewEvidenceCardScreenProps> = ({
   navigation,
   route,
 }) => {
+  const {observationStatus, evidenceCardDetails} = route.params;
   const [selectedIndicator, setSelectedIndicator] = useState<
     DropdownObject | undefined
   >(undefined);
@@ -139,7 +144,7 @@ const AddNewEvidenceCard: FC<AddNewEvidenceCardScreenProps> = ({
   const [imageFiles, setImageFiles] = useState<FileObject[]>([]);
 
   const dispatch = useAppDispatch();
-  const {selectedDate, selectedUser, selectedUserGroup} = route.params;
+
   const {allDomains, indicatorsByDomain} = useAppSelector(
     state => state.master,
   );
@@ -152,7 +157,7 @@ const AddNewEvidenceCard: FC<AddNewEvidenceCardScreenProps> = ({
 
   const handleFilesPicked = (files: FileObject[]) => {
     const mergedArray: FileObject[] = mergeArrays(imageFiles, files);
-    console.log(":fd",imageFiles,files)
+    console.log(':fd', imageFiles, files);
     setImageFiles(mergedArray);
   };
 
@@ -175,16 +180,37 @@ const AddNewEvidenceCard: FC<AddNewEvidenceCardScreenProps> = ({
           indicatorId: Number(selectedIndicator?.value),
           loggedInUserName: userData?.name,
         },
-        imageFiles
+        imageFiles,
       ]),
     );
   };
+
+  useEffect(() => {
+    if (evidenceCardDetails) {
+      setSelectedDomain({
+        value: evidenceCardDetails.domainId?.toString(),
+        label: evidenceCardDetails.domainName,
+      });
+      setSelectedIndicator({
+        value: evidenceCardDetails.indicatorId?.toString(),
+        label: evidenceCardDetails.indicatorName,
+      });
+      setRating(evidenceCardDetails.averageRating);
+      // setImageFiles(
+      //  ,
+      // );
+    }
+  }, [evidenceCardDetails]);
 
   useEffect(() => {
     if (saveEvidenceCardResponse) {
       navigation.navigate('ViewEvidenceCard');
     }
   }, [saveEvidenceCardResponse]);
+
+  let isAllFieldsEntered = Boolean(
+    selectedDomain?.value && selectedIndicator?.value && rating,
+  );
 
   return (
     <KeyboardAvoidingView
@@ -220,6 +246,7 @@ const AddNewEvidenceCard: FC<AddNewEvidenceCardScreenProps> = ({
             }
             setSelectedItem={setSelectedDomain}
             defaultValue={selectedDomain?.value?.toString() || ''}
+            disabled={observationStatus === 'Completed'}
           />
           <LabeledDropdown
             label="Select indicator"
@@ -232,6 +259,7 @@ const AddNewEvidenceCard: FC<AddNewEvidenceCardScreenProps> = ({
               })) || []
             }
             setSelectedItem={setSelectedIndicator}
+            disabled={observationStatus === 'Completed'}
           />
 
           <View style={{marginTop: 8}}>
@@ -239,6 +267,7 @@ const AddNewEvidenceCard: FC<AddNewEvidenceCardScreenProps> = ({
               label="Average Rating"
               rating={rating}
               onChangeRating={setRating}
+              disabled={observationStatus === 'Completed'}
             />
           </View>
 
@@ -250,15 +279,34 @@ const AddNewEvidenceCard: FC<AddNewEvidenceCardScreenProps> = ({
             }}>
             {'Upload Files'}
           </Text>
-          <FileUpload onFilesPicked={handleFilesPicked} />
+          <FileUpload
+            onFilesPicked={handleFilesPicked}
+            filesArray={
+              evidenceCardDetails
+                ? evidenceCardDetails.attachmentResponse.map(item => ({
+                    uri: item.fileUrl,
+                    name: item.fileName,
+                    type: item.fileType,
+                  }))
+                : []
+            }
+            disabled={observationStatus === 'Completed'}
+            onPressFile={item => {
+              navigation.navigate('PlayFile', {file: item});
+            }}
+          />
         </View>
       </Layout>
       <FooterWithButtons
         onPressProceedButton={onPressSaveCard}
         proceedButtonText={'Save Card'}
-        isActiveProceedButton={true}
+        isActiveProceedButton={
+          isAllFieldsEntered && observationStatus === 'New'
+        }
         cancelButtonText={'Cancel'}
-        onPressCancelButton={() => {}}
+        onPressCancelButton={() => {
+          navigation.navigate('ReportsMainPage');
+        }}
         style={{}}
       />
     </KeyboardAvoidingView>

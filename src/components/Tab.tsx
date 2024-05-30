@@ -1,35 +1,46 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { normaliseDesigns } from '../utils/helpers/responsiveHelpers';
-import { FONT_SIZES, FONT_VARIANT } from '../config/themes';
+import React, {useState} from 'react';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  ViewStyle,
+  TextStyle,
+} from 'react-native';
+import {normaliseDesigns} from '../utils/helpers/responsiveHelpers';
+import {FONT_SIZES, FONT_VARIANT} from '../config/themes';
 import colors from '../config/colors';
 
 interface TabsProps {
   tabs: string[];
-  onClick: (index: string) => void; 
+  onClick: (index: string) => void;
+  style?: ViewStyle;
+  textStyle?:TextStyle
 }
 
-const Tabs: React.FC<TabsProps> = ({ tabs , onClick}) => {
+const Tabs: React.FC<TabsProps> = ({tabs, onClick, style,textStyle}) => {
   const [selectedTab, setSelectedTab] = useState(0);
 
-  const handleTabPress = (tabIndex: number, tabName: string) => {    
+  const handleTabPress = (tabIndex: number, tabName: string) => {
     setSelectedTab(tabIndex);
     onClick(tabName);
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container,style]}>
       <View style={styles.tabHeader}>
         {tabs.map((title, index) => (
           <TouchableOpacity
             key={index}
             style={styles.tabHeaderItem}
-            onPress={() => {console.log("mmjjjjjj");
-             handleTabPress(index, title)}}>
+            onPress={() => {
+              handleTabPress(index, title);
+            }}>
             <Text
               style={[
                 styles.tabHeaderText,
                 selectedTab === index && styles.selectedTabHeaderText,
+                textStyle
               ]}>
               {title}
             </Text>
@@ -40,7 +51,10 @@ const Tabs: React.FC<TabsProps> = ({ tabs , onClick}) => {
         <View
           style={[
             styles.tabHighlight,
-            { width: `${100 / tabs.length}%`, left: `${selectedTab * (100 / tabs.length)}%` },
+            {
+              width: `${100 / tabs.length}%`,
+              left: `${selectedTab * (100 / tabs.length)}%`,
+            },
           ]}
         />
       </View>
@@ -68,18 +82,17 @@ const styles = StyleSheet.create({
   },
   selectedTabHeaderText: {
     color: colors.blackColor,
-    fontFamily: FONT_VARIANT.bold
+    fontFamily: FONT_VARIANT.bold,
   },
   tabHighlightContainer: {
     position: 'relative',
-
   },
   tabHighlight: {
     position: 'absolute',
     bottom: -1,
     height: normaliseDesigns(3),
     backgroundColor: '#EA7804',
-    borderRadius: 4
+    borderRadius: 4,
   },
 });
 

@@ -125,7 +125,7 @@ const Header: FC<HeaderPropsTypes> = ({
           <TouchableOpacity
             onPress={() => {}}
             style={
-              icon === 'search_reports_icon' &&
+              // icon === 'search_reports_icon' &&
               (scrollTransition && !isScrolled)
                 ? {top: 35, right: 10}
                 : {}
