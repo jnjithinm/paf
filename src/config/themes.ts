@@ -43,7 +43,7 @@ export const FONT_SIZES = {
 export const FONT_VARIANT = {
   bold: 'Lato-Bold',
   semiBold: 'Lato-SemiBold',
-  medium: 'Lato-Medium',
+  medium: 'Lato-Black',
   regular: 'Lato-Regular',
   light: 'Lato-Light',
 };

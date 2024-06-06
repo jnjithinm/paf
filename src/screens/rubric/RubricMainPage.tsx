@@ -15,34 +15,34 @@ import {
   getAllRubrics,
 } from '../../redux/features/rubricSlice';
 
-
-type ObservationReportNavigationProp = StackNavigationProp<
+type RubricMainPageNavigationProp = StackNavigationProp<
   RubricTabBarStackParamList,
-  'RubricDashboard'
+  'RubricMainPage'
 >;
-type ObservationReportRouteProp = RouteProp<
+type RubricMainPageRouteProp = RouteProp<
   RubricTabBarStackParamList,
-  'RubricDashboard'
+  'RubricMainPage'
 >;
 
-interface ObservationReportScreenProps {
-  navigation: ObservationReportNavigationProp;
-  route: ObservationReportRouteProp;
+interface RubricMainPageScreenProps {
+  navigation: RubricMainPageNavigationProp;
+  route: RubricMainPageRouteProp;
 }
 
 export const tabs: string[] = ['All', 'Active', 'Non-Active'];
 
-const RubricDashboard: FC<ObservationReportScreenProps> = ({
+const RubricMainPage: FC<RubricMainPageScreenProps> = ({
   navigation,
   route,
 }) => {
-  const [rubricListData, setrubricListData] = useState<RubricItem[]>([]);
+  const [rubricListData, setRubricListData] = useState<RubricItem[]>([]);
 
-  const {allRubrics, rubricDeletedMessage} = useAppSelector(
+  const {allRubrics, deleteSuccess} = useAppSelector(
     state => state.rubric,
   );
   const {userData} = useAppSelector(state => state.auth);
   const dispatch = useAppDispatch();
+  
   const deleteItem = () => {
     console.log('delete press');
   };
@@ -50,20 +50,20 @@ const RubricDashboard: FC<ObservationReportScreenProps> = ({
   const handleTabClick = (title: string) => {
     if (allRubrics?.dataList) {
       title == 'Active'
-        ? setrubricListData(
+        ? setRubricListData(
             allRubrics?.dataList?.filter(item => item.status === true),
           )
         : title == 'Non-Active'
-        ? setrubricListData(
+        ? setRubricListData(
             allRubrics?.dataList.filter(item => item.status === false),
           )
-        : setrubricListData(allRubrics?.dataList);
+        : setRubricListData(allRubrics?.dataList);
     }
   };
 
   useEffect(() => {
     if (allRubrics) {
-      setrubricListData(allRubrics.dataList);
+      setRubricListData(allRubrics.dataList);
     }
   }, [allRubrics]);
 
@@ -84,7 +84,7 @@ const RubricDashboard: FC<ObservationReportScreenProps> = ({
   };
 
   useEffect(() => {
-    if (rubricDeletedMessage) {
+    if (deleteSuccess) {
       dispatch(
         getAllRubrics({
           page: 0,
@@ -93,7 +93,7 @@ const RubricDashboard: FC<ObservationReportScreenProps> = ({
         }),
       );
     }
-  }, [rubricDeletedMessage]);
+  }, [deleteSuccess]);
 
   return (
     <Layout
@@ -126,4 +126,4 @@ const RubricDashboard: FC<ObservationReportScreenProps> = ({
     </Layout>
   );
 };
-export default RubricDashboard;
+export default RubricMainPage;

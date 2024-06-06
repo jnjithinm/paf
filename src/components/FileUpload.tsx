@@ -97,6 +97,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
           DocumentPicker.types.doc,
         ],
       });
+      console.log("files",results)
       setFiles(results);
 
       const filePaths = [];
@@ -155,11 +156,11 @@ const FileUpload: React.FC<FileUploadProps> = ({
     setFiles(updatedFiles);
   };
 
-  useEffect(() => {
-    if (filesArray) {
-      setFiles(filesArray);
-    }
-  }, [filesArray]);
+  // useEffect(() => {
+  //   if (filesArray) {
+  //     setFiles(filesArray);
+  //   }
+  // }, [filesArray]);
 
   return (
     <View>

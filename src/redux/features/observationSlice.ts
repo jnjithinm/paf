@@ -2,7 +2,6 @@ import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 
 import api from '../../config/axios';
 import endPoints from '../../config/endPoints';
-import store, {useAppSelector} from '../store';
 import {setIsLoading} from './authSlice';
 import {FileObject} from '../../config/types';
 import { PaginationRequest } from './usersSlice';
@@ -204,8 +203,6 @@ export const saveEvidenceCard = createAsyncThunk<
         // });
         formData.append('file', file[0]);
       }
-      console.log('file', file);
-      console.log('evi', evidenceInfo);
       const response = await api.post(endPoints.SAVE_EVIDENCE_CARD, formData);
       return response.data as SaveEvidenceCardResponse;
     } catch (error: any) {

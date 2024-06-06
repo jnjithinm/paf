@@ -51,6 +51,7 @@ const RubricIndicatorDescription: FC<RubricIndicatorDescriptionScreenProps> = ({
   navigation,
   route,
 }) => {
+
   const {indicator, title} = route.params;
 
   return (
@@ -71,7 +72,7 @@ const RubricIndicatorDescription: FC<RubricIndicatorDescriptionScreenProps> = ({
             by Admin)
           </Text>
         </View>
-        <SearchFilter placeholder="Search domain" />
+        <SearchFilter placeholder="Search domain" onSearch={()=>{}}  />
 
         <View style={{marginVertical: 5}}>
           <Text fontVariant="bold">Domain</Text>

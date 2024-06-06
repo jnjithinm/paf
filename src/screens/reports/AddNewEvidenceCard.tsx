@@ -71,9 +71,11 @@ export const RatingInput: FC<RatingInputTypes> = ({
   const hasHalfStar = rating - filledStars >= 0.5;
   return (
     <View>
-      <Text fontVariant="bold" size="body1">
-        {label}
-      </Text>
+      {label && (
+        <Text fontVariant="bold" size="body1">
+          {label}
+        </Text>
+      )}
       <View
         style={{
           flexDirection: 'row',

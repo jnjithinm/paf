@@ -1,8 +1,8 @@
 import React from 'react';
 import {View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
-import Images from './Image';
 import {FONT_SIZES, FONT_VARIANT} from '../config/themes';
 import {normaliseDesigns} from '../utils/helpers/responsiveHelpers';
+import Icon from './Icon';
 
 interface RubricIndicatorListProps {
   title: string;
@@ -43,7 +43,7 @@ const RubricIndicatorList: React.FC<RubricIndicatorListProps> = ({
         </View>
 
           <TouchableOpacity onPress={onDelete} style={styles.deleteButton}>
-            <Images name="trash_icon" />
+            <Icon name="trash_icon" />
           </TouchableOpacity>
 
       </View>

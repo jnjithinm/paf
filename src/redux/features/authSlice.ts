@@ -1,7 +1,10 @@
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 
 import api from '../../config/axios';
-import {storeToken} from '../../utils/functions/localStorageOperations';
+import {
+  removeToken,
+  storeToken,
+} from '../../utils/functions/localStorageOperations';
 import endPoints from '../../config/endPoints';
 
 interface AuthenticateRequest {
@@ -25,7 +28,7 @@ interface LoginResponse {
     roleId: number;
     roleType: string;
     isAdmin: boolean;
-    userImage: string ;
+    userImage: string;
     status: boolean;
     pageData: {
       ObservationReports: [];
@@ -39,6 +42,7 @@ export const authenticateUser = createAsyncThunk<
   AuthenticateRequest
 >('auth/authenticate', async (payload, {dispatch, rejectWithValue}) => {
   try {
+    // await removeToken();
     const response = await api.post(endPoints.AUTHENTICATE_USER, {
       username: payload.username,
       password: payload.password,
@@ -56,13 +60,12 @@ export const authenticateUser = createAsyncThunk<
 export const loginUser = createAsyncThunk<LoginResponse, AuthenticateRequest>(
   'auth/login',
   async (payload, {rejectWithValue}) => {
-
     try {
       const response = await api.post(endPoints.LOGIN_USER, {
         username: payload.username,
         password: payload.password,
       });
-      console.log("dsf",response.data)
+      console.log('dsf', response.data);
       return response.data as LoginResponse;
     } catch (error: any) {
       return rejectWithValue(error.response.data);
@@ -74,7 +77,7 @@ const initialState = {
   isLoading: false,
   isLoggedIn: false,
   userData: {
-    id:0,
+    id: 0,
     userName: '',
     name: '',
     role: '',
@@ -85,8 +88,6 @@ const initialState = {
   },
   isError: false,
 };
-
-
 
 const authSlice = createSlice({
   name: 'auth',
@@ -118,7 +119,7 @@ const authSlice = createSlice({
       .addCase(loginUser.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isLoggedIn = true;
-        state.userData={...state.userData,...action.payload.payload};
+        state.userData = {...state.userData, ...action.payload.payload};
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.isLoading = false;
@@ -128,6 +129,6 @@ const authSlice = createSlice({
   },
 });
 
-export const { setIsLoading } = authSlice.actions;
+export const {setIsLoading} = authSlice.actions;
 
 export default authSlice.reducer;

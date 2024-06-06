@@ -1,10 +1,9 @@
 import React from 'react';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import DashboardTabBar from '../components/DashboardTabBar';
 import TeacherDashboard from '../screens/dashboard/TeacherDashboard';
 import RubricStack from './RubricTabStack';
-import SampleScreen2 from '../screens/reports/SampleScreen2';
 import ReportsStack from './ReportsTabStack';
 import AdminTabStack from './AdminTabStack';
 
@@ -20,11 +19,12 @@ const DashboardTab = createBottomTabNavigator<DashboardTabBarStackParamList>();
 const DashboardTabStack = () => {
   return (
     <DashboardTab.Navigator
-      screenOptions={({route}) => ({
+      screenOptions={({ route }) => ({
         headerShown: false,
         keyboardHidesTabBar: true,
       })}
-      tabBar={props => <DashboardTabBar {...props} />}>
+      tabBar={props => <DashboardTabBar {...props} />}
+    >
       <DashboardTab.Screen
         name="TeacherDashboard"
         component={TeacherDashboard}
@@ -37,3 +37,5 @@ const DashboardTabStack = () => {
 };
 
 export default DashboardTabStack;
+
+

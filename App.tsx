@@ -4,7 +4,7 @@ import React from 'react';
 // import {queryClient} from './src/api/reactquery';
 // import CombinedProvider from './src/context/index';
 import 'react-native-gesture-handler';
-import RootNavigator from './src/navigation/RootTabStack';
+import RootNavigator from './src/navigation/RootNavigator';
 import {Provider} from 'react-redux';
 import store from './src/redux/store';
 

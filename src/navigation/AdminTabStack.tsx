@@ -4,16 +4,16 @@ import {
   createStackNavigator,
 } from '@react-navigation/stack';
 
-import AdminFlowsDashboard from '../screens/admin/AdminFlowsDashboard';
-import AdminFormList from '../screens/admin/AdminFormList';
+import AdminFormResponses from '../screens/admin/AdminFormResponses';
 
 export type AdminTabStackTabBarStackParamList = {
-    AdminFlowsDashboard: undefined;
-    AdminFormList:undefined;
-
+  AdminFlowsMainPage: undefined;
+  AdminFormList: undefined;
+  AdminFormResponses: undefined;
 };
 
-const AdminTabStackTab = createStackNavigator<AdminTabStackTabBarStackParamList>();
+const AdminTabStackTab =
+  createStackNavigator<AdminTabStackTabBarStackParamList>();
 
 const AdminTabStack = () => {
   const customTransition = ({
@@ -39,15 +39,15 @@ const AdminTabStack = () => {
         headerShown: false,
         keyboardHidesTabBar: true,
       })}>
+      {/* <AdminTabStackTab.Screen
+        name="AdminFlowsMainPage"
+        component={AdminFlowsMainPage}
+      />
+      <AdminTabStackTab.Screen name="AdminFormList" component={AdminFormList} /> */}
       <AdminTabStackTab.Screen
-        name="AdminFlowsDashboard"
-        component={AdminFlowsDashboard}
+        name="AdminFormResponses"
+        component={AdminFormResponses}
       />
-       <AdminTabStackTab.Screen
-        name="AdminFormList"
-        component={AdminFormList}
-      />
-      
     </AdminTabStackTab.Navigator>
   );
 };

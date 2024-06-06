@@ -4,8 +4,6 @@ import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 
 import Layout from '../../components/Layout';
-import Text from '../../components/Text';
-import Icon, {IconTypes} from '../../components/Icon';
 import {ReportsTabBarStackParamList} from '../../navigation/ReportsTabStack';
 import VideoPlayer from '../../components/VideoPlayer';
 

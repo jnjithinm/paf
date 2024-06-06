@@ -63,7 +63,8 @@ const DashboardTabBar = ({state, navigation}: BottomTabBarProps) => {
       }}>
       {state.routes.map((route, index) => {
         const focused = index === state.index ? true : false;
-        const {iconName, screenName} = screenOptions(route);
+        
+        const {iconName} = screenOptions(route);
         const size = 22;
         const color = focused ? 'secondaryColor' : 'blackColor';
         const opacity = focused ? '1' : '0.50';

@@ -103,7 +103,7 @@ const Header: FC<HeaderPropsTypes> = ({
           {!avoidBackButton && (
             <TouchableOpacity
               onPress={() => {
-                navigation.goBack();
+                onPressBackArrow ? onPressBackArrow() : navigation.goBack();
               }}
               style={{marginRight: 20}}>
               <Icon name="back_button" />
@@ -126,13 +126,13 @@ const Header: FC<HeaderPropsTypes> = ({
             onPress={() => {}}
             style={
               // icon === 'search_reports_icon' &&
-              (scrollTransition && !isScrolled)
-                ? {top: 35, right: 10}
-                : {}
+              scrollTransition && !isScrolled ? {top: 35, right: 10} : {}
             }>
             <Images
               name={icon}
-              size={(!scrollTransition || (scrollTransition && isScrolled)) ? 0.5 : 1}
+              size={
+                !scrollTransition || (scrollTransition && isScrolled) ? 0.5 : 1
+              }
             />
           </TouchableOpacity>
         )}

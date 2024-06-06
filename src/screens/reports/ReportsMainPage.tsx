@@ -11,14 +11,12 @@ import {StackNavigationProp} from '@react-navigation/stack';
 
 import Layout from '../../components/Layout';
 import Tab from '../../components/Tab';
-
 import Text from '../../components/Text';
 import Icon, {IconTypes} from '../../components/Icon';
 import colors from '../../config/colors';
 import {ObservationsTile} from '../dashboard/TeacherDashboard';
 import {ReportsTabBarStackParamList} from '../../navigation/ReportsTabStack';
 import {normaliseDesigns} from '../../utils/helpers/responsiveHelpers';
-import {navigate} from '../../utils/helpers/navigationHelpers';
 import Calendar from '../../components/Calendar';
 import {useAppDispatch, useAppSelector} from '../../redux/store';
 import {getAllObservations} from '../../redux/features/observationSlice';
@@ -45,7 +43,7 @@ type FloatingButtonTypes = {
   style?: ViewStyle;
 };
 
-const FloatingButton: FC<FloatingButtonTypes> = ({
+export const FloatingButton: FC<FloatingButtonTypes> = ({
   text,
   icon,
   onPress,
@@ -86,12 +84,11 @@ const FloatingButton: FC<FloatingButtonTypes> = ({
   );
 };
 
-const tabs: string[] = ['All (20)', 'By me (60)', 'For me (60)'];
 const ReportsMainPage: FC<ReportsMainPageScreenProps> = ({
   navigation,
   route,
 }) => {
-  const [rubricListData, setrubricListData] = useState<any[]>([]);
+  const [rubricListData, setRubricListData] = useState<any[]>([]);
   const [isAddButtonPressed, setIsAddButtonPressed] = useState<boolean>(false);
   const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
 
@@ -103,18 +100,18 @@ const ReportsMainPage: FC<ReportsMainPageScreenProps> = ({
   const handleTabClick = (title: string) => {
     if (allObservations?.dataList) {
       title == 'Active'
-        ? setrubricListData(
+        ? setRubricListData(
             allObservations?.dataList?.filter(
               item => item.observationStatus === 'Completed',
             ),
           )
         : title == 'Non-Active'
-        ? setrubricListData(
+        ? setRubricListData(
             allObservations?.dataList?.filter(
               item => item.observationStatus === 'Pending',
             ),
           )
-        : setrubricListData(allObservations?.dataList);
+        : setRubricListData(allObservations?.dataList);
     }
   };
 
@@ -133,7 +130,7 @@ const ReportsMainPage: FC<ReportsMainPageScreenProps> = ({
 
   useEffect(() => {
     if (allObservations) {
-      setrubricListData(allObservations?.dataList);
+      setRubricListData(allObservations?.dataList);
     }
   }, [allObservations]);
 

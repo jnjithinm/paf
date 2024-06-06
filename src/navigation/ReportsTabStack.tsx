@@ -3,6 +3,7 @@ import {
   StackCardInterpolationProps,
   createStackNavigator,
 } from '@react-navigation/stack';
+
 import ReportsMainPage from '../screens/reports/ReportsMainPage';
 import ReportsEvidenceCard from '../screens/reports/ReportsEvidenceCard';
 import AddNewObservation from '../screens/reports/AddNewObservation';
@@ -13,7 +14,7 @@ import {
   ObservationData,
 } from '../redux/features/observationSlice';
 import ObservationReport from '../screens/reports/ObservationReport';
-import { FileObject } from '../config/types';
+import {FileObject} from '../config/types';
 import PlayFile from '../screens/reports/PlayFile';
 
 export type ReportsTabBarStackParamList = {
@@ -31,7 +32,7 @@ export type ReportsTabBarStackParamList = {
   // };
   ViewEvidenceCard: {evidenceId: string};
   ObservationReport: {observationItem: ObservationData};
-  PlayFile:{file:FileObject}
+  PlayFile: {file: FileObject};
 };
 
 const ReportsStackTab = createStackNavigator<ReportsTabBarStackParamList>();
@@ -84,11 +85,7 @@ const ReportsStack = () => {
         name="ViewEvidenceCard"
         component={ViewEvidenceCard}
       />
-            <ReportsStackTab.Screen
-        name="PlayFile"
-        component={PlayFile}
-      />
-      
+      <ReportsStackTab.Screen name="PlayFile" component={PlayFile} />
     </ReportsStackTab.Navigator>
   );
 };

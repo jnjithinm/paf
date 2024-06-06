@@ -1,7 +1,7 @@
 import React from 'react';
 import {View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
-import Images from '../components/Image';
 import {FONT_SIZES, FONT_VARIANT} from '../config/themes';
+import Icon from './Icon';
 
 interface RubricListModalProps {
   title: string;
@@ -72,7 +72,7 @@ const RubricListModal: React.FC<RubricListModalProps> = ({
         </View>
         <View style={styles.deleteButton}>
           <TouchableOpacity onPress={onDelete}>
-            <Images name="trash_icon" />
+            <Icon name="trash_icon" />
           </TouchableOpacity>
         </View>
       </View>

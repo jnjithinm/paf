@@ -2,7 +2,7 @@ import React, {FC} from 'react';
 import {SvgProps} from 'react-native-svg';
 
 import app_logo from '../assets/svg/app_logo.svg'
-import eye_off from '../assets/svg/eye-off.svg'
+import eye_off from '../assets/svg/eye_off.svg'
 import checkbox from '../assets/svg/checkbox.svg'
 import security_question from '../assets/svg/security_question.svg';
 import back_button from '../assets/svg/back_button.svg'
@@ -51,6 +51,13 @@ import star_half_filled_icon from '../assets/svg/star_half_filled_icon.svg'
 import up_and_down_selection from '../assets/svg/up_and_down_selection.svg';
 import admin_flows_icon from '../assets/svg/admin_flows_icon.svg'
 import form_list from '../assets/svg/form_list_icon.svg'
+import admin_response_clock from '../assets/svg/admin_response_clock.svg'
+import trash_icon from '../assets/svg/trash_icon.svg'
+import rating_card_icon from '../assets/svg/rating_card_icon.svg';
+import arrow_narrow_right from '../assets/svg/arrow_narrow_right.svg';
+import rating_star_display from '../assets/svg/rating_star_display.svg'
+import alarm_clock from '../assets/svg/alarm_clock.svg'
+import cross_icon_thin from '../assets/svg/cross_icon_thin.svg'
 
 
 const Icons = {
@@ -102,7 +109,14 @@ const Icons = {
   star_half_filled_icon,
   up_and_down_selection,
   admin_flows_icon,
-  form_list
+  form_list,
+  admin_response_clock,
+  trash_icon,
+  rating_card_icon,
+  arrow_narrow_right,
+  rating_star_display,
+  alarm_clock,
+  cross_icon_thin
 };
 
 export type IconTypes = keyof typeof Icons;

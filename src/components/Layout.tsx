@@ -61,6 +61,7 @@ const Layout: FC<LayoutPropsTypes> = ({
   titleTransition,
 }) => {
   const {isLoading} = useAppSelector(state => state.auth);
+  // const {isLoading}=useAppSelector(state=>state.observation);
   let backgroundStyle = backgroundColor
     ? colors[backgroundColor]
     : colors.backgroundColor;
@@ -130,7 +131,7 @@ const Layout: FC<LayoutPropsTypes> = ({
     //   onScrollToEnd && onScrollToEnd();
     // } else
     if (contentOffset.y === 0) {
-      setIsScrolled(false); // Set isScrolled to false when scrolled to top
+      setIsScrolled(false);
     } else {
       setIsScrolled(true);
     }

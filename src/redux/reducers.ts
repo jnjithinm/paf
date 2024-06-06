@@ -9,8 +9,8 @@ const rootReducer = combineReducers({
   auth: authSlice,
   observation: observationSlice,
   users: usersSlice,
-  master:masterSlice,
-  rubric:rubricSlice
+  master: masterSlice,
+  rubric: rubricSlice,
 });
 
 export default rootReducer;

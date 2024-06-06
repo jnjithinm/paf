@@ -2,18 +2,11 @@ import React, {FC, useEffect, useState} from 'react';
 import {TextInput, TouchableOpacity, View} from 'react-native';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
-import moment from 'moment';
 
 import Layout from '../../components/Layout';
 import Tab from '../../components/Tab';
-import RubricListModal from '../../components/RubricListModal';
-import {RubricTabBarStackParamList} from '../../navigation/RubricTabStack';
 import {useAppDispatch, useAppSelector} from '../../redux/store';
-import {
-  RubricItem,
-  deleteRubric,
-  getAllRubrics,
-} from '../../redux/features/rubricSlice';
+import {RubricItem, getAllRubrics} from '../../redux/features/rubricSlice';
 import {AdminTabStackTabBarStackParamList} from '../../navigation/AdminTabStack';
 import {normaliseFont} from '../../utils/helpers/responsiveHelpers';
 import colors from '../../config/colors';
@@ -31,10 +24,11 @@ type AdminFormListRouteProp = RouteProp<
 
 type RenderFormItemTypes = {
   title: string;
+  onPressItem: () => void;
 };
 
-const RenderFormItem: FC<RenderFormItemTypes> = ({title}) => (
-  <View
+const RenderFormItem: FC<RenderFormItemTypes> = ({title, onPressItem}) => (
+  <TouchableOpacity
     style={{
       flexDirection: 'row',
       width: '100%',
@@ -43,12 +37,13 @@ const RenderFormItem: FC<RenderFormItemTypes> = ({title}) => (
       borderWidth: 1,
       borderColor: '#F4C24A',
       borderRadius: 10,
-    }}>
+    }}
+    onPress={onPressItem}>
     <Icon name="form_list" />
     <Text style={{marginLeft: 10}} fontVariant="bold">
       {title}
     </Text>
-  </View>
+  </TouchableOpacity>
 );
 
 interface AdminFormListScreenProps {
@@ -56,15 +51,10 @@ interface AdminFormListScreenProps {
   route: AdminFormListRouteProp;
 }
 
-const AdminFormList: FC<AdminFormListScreenProps> = ({
-  navigation,
-  route,
-}) => {
-  const [rubricListData, setrubricListData] = useState<RubricItem[]>([]);
+const AdminFormList: FC<AdminFormListScreenProps> = ({navigation, route}) => {
+  const [rubricListData, setRubricListData] = useState<RubricItem[]>([]);
   const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
-  const {allRubrics, rubricDeletedMessage} = useAppSelector(
-    state => state.rubric,
-  );
+  const {allRubrics, deleteSuccess} = useAppSelector(state => state.rubric);
   const {userData} = useAppSelector(state => state.auth);
   const dispatch = useAppDispatch();
   const deleteItem = () => {
@@ -74,20 +64,20 @@ const AdminFormList: FC<AdminFormListScreenProps> = ({
   const handleTabClick = (title: string) => {
     if (allRubrics?.dataList) {
       title == 'Active'
-        ? setrubricListData(
+        ? setRubricListData(
             allRubrics?.dataList?.filter(item => item.status === true),
           )
         : title == 'Non-Active'
-        ? setrubricListData(
+        ? setRubricListData(
             allRubrics?.dataList.filter(item => item.status === false),
           )
-        : setrubricListData(allRubrics?.dataList);
+        : setRubricListData(allRubrics?.dataList);
     }
   };
 
   useEffect(() => {
     if (allRubrics) {
-      setrubricListData(allRubrics.dataList);
+      setRubricListData(allRubrics?.dataList);
     }
   }, [allRubrics]);
 
@@ -101,10 +91,8 @@ const AdminFormList: FC<AdminFormListScreenProps> = ({
     );
   }, []);
 
-
-
   useEffect(() => {
-    if (rubricDeletedMessage) {
+    if (deleteSuccess) {
       dispatch(
         getAllRubrics({
           page: 0,
@@ -113,7 +101,7 @@ const AdminFormList: FC<AdminFormListScreenProps> = ({
         }),
       );
     }
-  }, [rubricDeletedMessage]);
+  }, [deleteSuccess]);
 
   return (
     <Layout
@@ -164,7 +152,12 @@ const AdminFormList: FC<AdminFormListScreenProps> = ({
             <Icon name="filter_icon" />
           </TouchableOpacity>
         </View>
-        <RenderFormItem title="Teacher Observation 1" />
+        <RenderFormItem
+          title="Teacher Observation 1"
+          onPressItem={() => {
+            navigation.navigate('AdminFormResponses');
+          }}
+        />
       </View>
     </Layout>
   );

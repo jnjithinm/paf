@@ -7,7 +7,6 @@ import moment from 'moment';
 import Layout from '../../components/Layout';
 import Tab from '../../components/Tab';
 import RubricListModal from '../../components/RubricListModal';
-import {RubricTabBarStackParamList} from '../../navigation/RubricTabStack';
 import {useAppDispatch, useAppSelector} from '../../redux/store';
 import {
   RubricItem,
@@ -20,52 +19,48 @@ import colors from '../../config/colors';
 import Icon from '../../components/Icon';
 import Text from '../../components/Text';
 
-type ObservationReportNavigationProp = StackNavigationProp<
+type AdminFlowsMainPageNavigationProp = StackNavigationProp<
   AdminTabStackTabBarStackParamList,
-  'AdminFlowsDashboard'
+  'AdminFlowsMainPage'
 >;
-type ObservationReportRouteProp = RouteProp<
+type AdminFlowsMainPageRouteProp = RouteProp<
   AdminTabStackTabBarStackParamList,
-  'AdminFlowsDashboard'
+  'AdminFlowsMainPage'
 >;
 
-interface ObservationReportScreenProps {
-  navigation: ObservationReportNavigationProp;
-  route: ObservationReportRouteProp;
+interface AdminFlowsMainPageScreenProps {
+  navigation: AdminFlowsMainPageNavigationProp;
+  route: AdminFlowsMainPageRouteProp;
 }
 
-const AdminFlowsDashboard: FC<ObservationReportScreenProps> = ({
+const AdminFlowsMainPage: FC<AdminFlowsMainPageScreenProps> = ({
   navigation,
   route,
 }) => {
-  const [rubricListData, setrubricListData] = useState<RubricItem[]>([]);
-
-  const {allRubrics, rubricDeletedMessage} = useAppSelector(
+  const [rubricListData, setRubricListData] = useState<RubricItem[]>([]);
+  const {allRubrics, deleteSuccess} = useAppSelector(
     state => state.rubric,
   );
   const {userData} = useAppSelector(state => state.auth);
   const dispatch = useAppDispatch();
-  const deleteItem = () => {
-    console.log('delete press');
-  };
 
   const handleTabClick = (title: string) => {
     if (allRubrics?.dataList) {
       title == 'Active'
-        ? setrubricListData(
+        ? setRubricListData(
             allRubrics?.dataList?.filter(item => item.status === true),
           )
         : title == 'Non-Active'
-        ? setrubricListData(
+        ? setRubricListData(
             allRubrics?.dataList.filter(item => item.status === false),
           )
-        : setrubricListData(allRubrics?.dataList);
+        : setRubricListData(allRubrics?.dataList);
     }
   };
 
   useEffect(() => {
     if (allRubrics) {
-      setrubricListData(allRubrics.dataList);
+      setRubricListData(allRubrics.dataList);
     }
   }, [allRubrics]);
 
@@ -86,7 +81,7 @@ const AdminFlowsDashboard: FC<ObservationReportScreenProps> = ({
   };
 
   useEffect(() => {
-    if (rubricDeletedMessage) {
+    if (deleteSuccess) {
       dispatch(
         getAllRubrics({
           page: 0,
@@ -95,7 +90,7 @@ const AdminFlowsDashboard: FC<ObservationReportScreenProps> = ({
         }),
       );
     }
-  }, [rubricDeletedMessage]);
+  }, [deleteSuccess]);
 
   return (
     <Layout
@@ -151,4 +146,4 @@ const AdminFlowsDashboard: FC<ObservationReportScreenProps> = ({
     </Layout>
   );
 };
-export default AdminFlowsDashboard;
+export default AdminFlowsMainPage;

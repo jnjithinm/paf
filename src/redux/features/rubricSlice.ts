@@ -37,34 +37,35 @@ type RubricsDeleteResponse = {
   status: number;
 };
 
-export type RubricIndicatorItem={
-    domainId: number;
-    domainName: string;
-    indicatorId: number;
-    indicatorName: string;
-    indicatorDescription: string;
-    tags: {
-        tagId: number;
-        tagName: string;
-    }[];
-    status: boolean;
-    createdBy: string;
-    createdDate: string;
-}
+export type RubricIndicatorItem = {
+  domainId: number;
+  domainName: string;
+  indicatorId: number;
+  indicatorName: string;
+  indicatorDescription: string;
+  tags: {
+    tagId: number;
+    tagName: string;
+  }[];
+  status: boolean;
+  createdBy: string;
+  createdDate: string;
+};
+
 type GetRubricResponse = {
-    payload: {
-        message: string;
-        dataList: {
-            rubricId: number;
-            rubricName: string;
-            status: boolean;
-            createdBy: string;
-            createdDate: string;
-            indicators: RubricIndicatorItem[];
-            userGroups: any[];
-        };
+  payload: {
+    message: string;
+    dataList: {
+      rubricId: number;
+      rubricName: string;
+      status: boolean;
+      createdBy: string;
+      createdDate: string;
+      indicators: RubricIndicatorItem[];
+      userGroups: any[];
     };
-    status: number;
+  };
+  status: number;
 };
 
 type GetRubricResponsePayload = GetRubricResponse['payload'];
@@ -87,39 +88,44 @@ export const deleteRubric = createAsyncThunk<
 >('rubric/deleteRubric', async (payload, {rejectWithValue}) => {
   try {
     const response = await api.delete(endPoints.DELETE_RUBRIC, {data: payload});
-    console.log("res",response.data)
     return response.data as RubricsDeleteResponse;
   } catch (error: any) {
     return rejectWithValue(error.response.data);
   }
 });
 
-export const getRubric = createAsyncThunk<
-GetRubricResponse,
-  number
->('rubric/getRubric', async (rubricId, {rejectWithValue}) => {
-  try {
-    const response = await api.get(endPoints.GET_RUBRIC+rubricId);
-    return response.data as GetRubricResponse;
-  } catch (error: any) {
-    return rejectWithValue(error.response.data);
-  }
-});
+export const getRubric = createAsyncThunk<GetRubricResponse, number>(
+  'rubric/getRubric',
+  async (rubricId, {rejectWithValue}) => {
+    try {
+      const response = await api.get(endPoints.GET_RUBRIC + rubricId);
+      return response.data as GetRubricResponse;
+    } catch (error: any) {
+      return rejectWithValue(error.response.data);
+    }
+  },
+);
 
 interface InitialState {
   allRubrics: GetAllRubricsResponsePayload | null;
-  rubricDeletedMessage: string | null;
-  rubricData:GetRubricResponsePayload|null;
+  rubricData: GetRubricResponsePayload | null;
+  deleteSuccess: boolean;
   isLoading: boolean;
-  error: string | null;
+  error: {
+    status: 'Success' | 'Failed' | null;
+    message: string;
+  };
 }
 
 const initialState: InitialState = {
   allRubrics: null,
-  rubricDeletedMessage: null,
-  rubricData:null,
+  rubricData: null,
+  deleteSuccess: false,
   isLoading: false,
-  error: null,
+  error: {
+    status: null,
+    message: '',
+  },
 };
 
 const rubricSlice = createSlice({
@@ -147,19 +153,24 @@ const rubricSlice = createSlice({
       .addCase(getRubric.fulfilled, (state, action) => {
         state.isLoading = false;
         state.rubricData = {
-            ...state.rubricData,
-            ...action.payload.payload,
-          };
+          ...state.rubricData,
+          ...action.payload.payload,
+        };
       })
       .addCase(getRubric.rejected, (state, action) => {
         state.isLoading = false;
       })
       .addCase(deleteRubric.pending, state => {
         state.isLoading = true;
+        state.deleteSuccess = false;
       })
       .addCase(deleteRubric.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.rubricDeletedMessage = action.payload.payload.message?.toString();
+        state.error = {
+          status: 'Success',
+          message: action.payload.payload.message?.toString(),
+        };
+        state.deleteSuccess = true;
       })
       .addCase(deleteRubric.rejected, (state, action) => {
         state.isLoading = false;

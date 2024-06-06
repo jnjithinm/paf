@@ -4,22 +4,22 @@ import {
   createStackNavigator,
 } from '@react-navigation/stack';
 
-import RubricDashboard from '../screens/rubric/RubricDashboard';
 import AddNewObservation from '../screens/reports/AddNewObservation';
 import {RubricIndicatorItem, RubricItem} from '../redux/features/rubricSlice';
 import RubricIndicatorDescription from '../screens/rubric/RubricIndicatorDescription';
 import RubricEvaluationIndicatorList from '../screens/rubric/RubricEvaluationIndicatorList';
+import RubricMainPage from '../screens/rubric/RubricMainPage';
 
 export type RubricTabBarStackParamList = {
-  RubricDashboard: undefined;
+  RubricMainPage: undefined;
   AddNewObservation: undefined;
   RubricEvaluationIndicatorList: {rubric: RubricItem};
-  RubricIndicatorDescription: {indicator: RubricIndicatorItem,title:string};
+  RubricIndicatorDescription: {indicator: RubricIndicatorItem; title: string};
 };
 
 const RubricStackTab = createStackNavigator<RubricTabBarStackParamList>();
 
-const RubricStack = () => {
+const RubricStack = ({}) => {
   const customTransition = ({
     current,
     layouts,
@@ -43,10 +43,7 @@ const RubricStack = () => {
         headerShown: false,
         keyboardHidesTabBar: true,
       })}>
-      <RubricStackTab.Screen
-        name="RubricDashboard"
-        component={RubricDashboard}
-      />
+      <RubricStackTab.Screen name="RubricMainPage" component={RubricMainPage} />
       <RubricStackTab.Screen
         name="AddNewObservation"
         component={AddNewObservation}

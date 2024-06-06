@@ -49,7 +49,6 @@ const LabelDropdown: FC<DropdownProps> = ({
   placeHolder,
   style,
 }) => {
-
   function isDropdownItem(item: any): item is DropdownObject {
     return typeof item === 'object' && item !== null;
   }
@@ -71,18 +70,15 @@ const LabelDropdown: FC<DropdownProps> = ({
           ...style,
         },
       ]}>
-
       {label && (
-        <View style={{flexDirection: 'row', }}>
+        <View style={{flexDirection: 'row'}}>
           <Text style={[styles.label, {color: colors.blackColor}]}>
             {label}
           </Text>
           {mandatory && <Text style={{color: colors.dangerColor}}>{'*'}</Text>}
         </View>
       )}
-
       <>
-
         <Dropdown
           style={[styles.Container]}
           selectedTextStyle={styles.selectedTextStyle}
@@ -102,23 +98,15 @@ const LabelDropdown: FC<DropdownProps> = ({
             setIsChanged && setIsChanged(true);
             setSelectedItem && setSelectedItem(item);
             setSelectedValue && setSelectedValue(item.value);
-
-            // setIsFocus(false);
           }}
           containerStyle={[
             {
-              // bottom: bottom ? '30%' : upper ? '100%' : 0,
-              // marginVertical: bottom ? -2 : 0,
-              // elevation: 2,
               borderBottomEndRadius: 9,
               borderBottomStartRadius: 9,
               maxHeight: 250,
-              
             },
           ]}
-
         />
-
       </>
     </View>
   );
@@ -137,11 +125,10 @@ const styles = StyleSheet.create({
     // padding: 15,
     // backgroundColor: 'red',
     height: 20,
-
   },
   Container: {
     borderWidth: 1,
-    borderColor:'#CBD2D9',
+    borderColor: '#CBD2D9',
     borderRadius: 10,
     justifyContent: 'center',
     paddingHorizontal: 10,

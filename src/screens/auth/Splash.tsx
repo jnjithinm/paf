@@ -17,6 +17,7 @@ interface SplashScreenProps {
 }
 
 const Splash: FC<SplashScreenProps> = ({navigation, route}) => {
+  
   useEffect(() => {
     setTimeout(async () => {
       try {

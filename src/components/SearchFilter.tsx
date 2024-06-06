@@ -4,7 +4,7 @@ import Icon, {IconTypes} from './Icon';
 import colors from '../config/colors';
 
 interface SearchFilterProps {
-  onSearch?: (text: string) => void;
+  onSearch: (text: string) => void;
   onFilter?: () => void;
   placeholder: string;
 }
