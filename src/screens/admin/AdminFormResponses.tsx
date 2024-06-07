@@ -6,7 +6,7 @@ import React, {
   useState,
   JSX,
 } from 'react';
-import {TouchableOpacity, View} from 'react-native';
+import {TextInput, TouchableOpacity, View} from 'react-native';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 
@@ -43,6 +43,8 @@ import {
 import {FloatingButton} from '../reports/ReportsMainPage';
 import Modal from '../../components/Modal';
 import {MultiSelect} from 'react-native-element-dropdown';
+import MultiSelectDropdown from '../../components/MultiSelectDropdown';
+import {DropdownObject} from '../../components/LabeledDropdown';
 
 type AdminFormResponsesNavigationProp = StackNavigationProp<
   AdminTabStackTabBarStackParamList,
@@ -121,19 +123,37 @@ type ScreenComponentType = {
   renderal: JSX.Element;
 };
 
-type RenderModalContentTypes = {};
+type RenderModalContentTypes = {
+  usersItems: DropdownObject[];
+  userGroupsItems: DropdownObject[];
+  selectedUsers: string[];
+  selectedUserGroups: string[];
+  setSelectedUsers: Dispatch<SetStateAction<string[]>>;
+  setSelectedUserGroups: Dispatch<SetStateAction<string[]>>;
+};
 
-const RenderModalContent: FC<RenderModalContentTypes> = ({}) => (
-  <MultiSelect
-    data={[
-      {label: 'dfsdf', value: 'dsfsdfsdf'},
-      {label: 'dsfds', value: 'sdsdsdssfe'},
-      {label: 'dsfds', value: 'dssde'},
-    ]}
-    labelField="label"
-    valueField="value"
-    onChange={() => {}}
-  />
+const RenderModalContent: FC<RenderModalContentTypes> = ({
+  usersItems,
+  userGroupsItems,
+  selectedUsers,
+  selectedUserGroups,
+  setSelectedUsers,
+  setSelectedUserGroups,
+}) => (
+  <View>
+    <MultiSelectDropdown
+      label="Select user"
+      options={usersItems}
+      selectedValues={selectedUsers}
+      setSelectedValues={setSelectedUsers}
+    />
+    <MultiSelectDropdown
+      label="Select user groups"
+      options={userGroupsItems}
+      selectedValues={selectedUserGroups}
+      setSelectedValues={setSelectedUserGroups}
+    />
+  </View>
 );
 
 const AdminFormResponses: FC<AdminFormResponsesScreenProps> = ({
@@ -149,6 +169,8 @@ const AdminFormResponses: FC<AdminFormResponsesScreenProps> = ({
   const [rubricWiseScreen, setRubricWiseScreen] =
     useState<ScreenSelectiontypes>('main');
 
+  const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
+  const [selectedUserGroups, setSelectedUserGroups] = useState<string[]>([]);
   const [isAccessingResponses, setIsAccessingResponses] =
     useState<boolean>(true);
 
@@ -156,6 +178,9 @@ const AdminFormResponses: FC<AdminFormResponsesScreenProps> = ({
 
   const {allRubrics, deleteSuccess} = useAppSelector(state => state.rubric);
   const {userData} = useAppSelector(state => state.auth);
+  const {GetAllUserGroupsData, GetUserGroupData} = useAppSelector(
+    state => state.users,
+  );
   const dispatch = useAppDispatch();
 
   const handleTabClick = (title: string) => {
@@ -280,7 +305,16 @@ const AdminFormResponses: FC<AdminFormResponsesScreenProps> = ({
           isVisible={isVisibleModal}
           title="Assign form"
           closeButton
-          content={<RenderModalContent />}
+          content={
+            <RenderModalContent
+              users={GetUserGroupData}
+              userGroupsItems={GetAllUserGroupsData}
+              selectedUsers={selectedUsers}
+              selectedUserGroups={selectedUserGroups}
+              setSelectedUsers={setSelectedUsers}
+              setSelectedUserGroups={setSelectedUserGroups}
+            />
+          }
         />
         {isMainPage && (
           <View

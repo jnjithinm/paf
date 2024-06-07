@@ -68,6 +68,7 @@ const AddNewObservation: FC<AddNewObservationScreenProps> = ({
 
   const [isCalendarOpen, setIsCalendarOpen] = useState<boolean>(false);
   const dispatch = useAppDispatch();
+  
   const {GetAllUserGroupsData, GetUserGroupData} = useAppSelector(
     state => state.users,
   );
