@@ -5,11 +5,16 @@ import {
 } from '@react-navigation/stack';
 
 import AdminFormResponses from '../screens/admin/AdminFormResponses';
+import AdminFlowsMainPage from '../screens/admin/AdminFlowsDashboard';
+import AdminFormList from '../screens/admin/AdminFormList';
+import {FlowDetailItem, FlowItem} from '../redux/features/flowsSlice';
+import FormFilling from '../screens/admin/FormFilling';
 
 export type AdminTabStackTabBarStackParamList = {
   AdminFlowsMainPage: undefined;
-  AdminFormList: undefined;
-  AdminFormResponses: undefined;
+  AdminFormList: {flowItem: FlowItem};
+  AdminFormResponses: {flowDetailItem: FlowDetailItem};
+  FormFilling: undefined;
 };
 
 const AdminTabStackTab =
@@ -43,11 +48,12 @@ const AdminTabStack = () => {
         name="AdminFlowsMainPage"
         component={AdminFlowsMainPage}
       />
-      <AdminTabStackTab.Screen name="AdminFormList" component={AdminFormList} /> */}
+      <AdminTabStackTab.Screen name="AdminFormList" component={AdminFormList} />
       <AdminTabStackTab.Screen
         name="AdminFormResponses"
         component={AdminFormResponses}
-      />
+      /> */}
+      <AdminTabStackTab.Screen name="FormFilling" component={FormFilling} />
     </AdminTabStackTab.Navigator>
   );
 };

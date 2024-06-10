@@ -1,4 +1,4 @@
-import {FC, SetStateAction} from 'react';
+import {FC, SetStateAction,Dispatch} from 'react';
 import {TextInput, TouchableOpacity, View, ViewStyle} from 'react-native';
 
 import Text from './Text';
@@ -6,7 +6,7 @@ import Icon from './Icon';
 import {normaliseDesigns} from '../utils/helpers/responsiveHelpers';
 import {MultiSelect} from 'react-native-element-dropdown';
 import {DropdownObject} from './LabeledDropdown';
-import {Dispatch} from '@reduxjs/toolkit';
+import colors from '../config/colors';
 
 const customSearchInput = (onSearch: (arg0: string) => void) => (
   <View style={{padding: 10}}>
@@ -30,7 +30,7 @@ type MultiSelectDropdownTypes = {
   options: DropdownObject[];
   placeHolder?: string;
   selectedValues: string[];
-  setSelectedValues: Dispatch<SetStateAction<string[]>>;
+  setSelectedValues:Dispatch<SetStateAction<string[]>>;
   onSelectItem?: () => void;
 };
 
@@ -78,15 +78,21 @@ const MultiSelectDropdown: FC<MultiSelectDropdownTypes> = ({
           }}>
           <View
             style={{
-              backgroundColor: '#EA7804',
+              backgroundColor: selectedValues.find(item => item === value)
+                ?'#EA7804'
+                : colors.backgroundColor,
               width: 15,
               height: 15,
               aspectRatio: 1,
               alignItems: 'center',
               justifyContent: 'center',
+              borderColor: '#ABB4BD',
+              borderWidth: selectedValues.find(item => item === value) ? 0 : 1,
               borderRadius: 5,
             }}>
-            <Icon name="checkbox" width={10} height={10} />
+            {selectedValues.find(item => item === value) && (
+              <Icon name="checkbox" width={10} height={10} />
+            )}
           </View>
           <Text style={{marginLeft: 8}}>{label}</Text>
         </View>

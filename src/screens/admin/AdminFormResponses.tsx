@@ -6,19 +6,14 @@ import React, {
   useState,
   JSX,
 } from 'react';
-import {TextInput, TouchableOpacity, View} from 'react-native';
-import {RouteProp} from '@react-navigation/native';
-import {StackNavigationProp} from '@react-navigation/stack';
+import { TouchableOpacity, View } from 'react-native';
+import { RouteProp } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 
 import Layout from '../../components/Layout';
 import Tab from '../../components/Tab';
-import {useAppDispatch, useAppSelector} from '../../redux/store';
-import {
-  RubricItem,
-  deleteRubric,
-  getAllRubrics,
-} from '../../redux/features/rubricSlice';
-import {AdminTabStackTabBarStackParamList} from '../../navigation/AdminTabStack';
+import { useAppDispatch, useAppSelector } from '../../redux/store';
+import { AdminTabStackTabBarStackParamList } from '../../navigation/AdminTabStack';
 import {
   normaliseDesigns,
   normaliseFont,
@@ -40,11 +35,19 @@ import {
   RubricWiseDescriptionRenderal,
   RubricWiseMainPageRenderal,
 } from './formResponsesRenderals/rubricWiseRenderals';
-import {FloatingButton} from '../reports/ReportsMainPage';
+import { FloatingButton } from '../reports/ReportsMainPage';
 import Modal from '../../components/Modal';
-import {MultiSelect} from 'react-native-element-dropdown';
+import { MultiSelect } from 'react-native-element-dropdown';
 import MultiSelectDropdown from '../../components/MultiSelectDropdown';
-import {DropdownObject} from '../../components/LabeledDropdown';
+import { DropdownObject } from '../../components/LabeledDropdown';
+import { getAllUserGroups, getAllUsers } from '../../redux/features/usersSlice';
+import Button from '../../components/Button';
+import Image from '../../components/Image';
+import {
+  IndividualResponse,
+  Question,
+  getFormById,
+} from '../../redux/features/formsSlice';
 
 type AdminFormResponsesNavigationProp = StackNavigationProp<
   AdminTabStackTabBarStackParamList,
@@ -73,8 +76,8 @@ const ResponseAccessToggle: FC<ResponseAccessToggleTypes> = ({
   setIsAccessingResponses,
   disabed = false,
 }) => (
-  <View style={{flexDirection: 'row', alignItems: 'center'}}>
-    <Text style={{color: '#4E565F', right: 5}} size="small1">
+  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+    <Text style={{ color: '#4E565F', right: 5 }} size="small1">
       {label}
     </Text>
     <TouchableOpacity
@@ -130,6 +133,7 @@ type RenderModalContentTypes = {
   selectedUserGroups: string[];
   setSelectedUsers: Dispatch<SetStateAction<string[]>>;
   setSelectedUserGroups: Dispatch<SetStateAction<string[]>>;
+  onPressAssign: () => void;
 };
 
 const RenderModalContent: FC<RenderModalContentTypes> = ({
@@ -139,6 +143,7 @@ const RenderModalContent: FC<RenderModalContentTypes> = ({
   selectedUserGroups,
   setSelectedUsers,
   setSelectedUserGroups,
+  onPressAssign,
 }) => (
   <View>
     <MultiSelectDropdown
@@ -153,6 +158,29 @@ const RenderModalContent: FC<RenderModalContentTypes> = ({
       selectedValues={selectedUserGroups}
       setSelectedValues={setSelectedUserGroups}
     />
+    <Button
+      text="Assign"
+      active={selectedUsers.length !== 0 && selectedUserGroups.length !== 0}
+      onPress={onPressAssign}
+      style={{ marginTop: normaliseDesigns(100) }}
+    />
+  </View>
+);
+
+const RenderSuccessModalContent: JSX.Element = (
+  <View
+    style={{
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingHorizontal: 30,
+    }}>
+    <Image name="success_icon" />
+    <Text size="body2" fontVariant="bold" style={{ marginVertical: 5 }}>
+      Success!
+    </Text>
+    <Text size="small2" fontVariant="bold" style={{ textAlign: 'center' }}>
+      Form assigned to selected user and user groups.
+    </Text>
   </View>
 );
 
@@ -160,7 +188,7 @@ const AdminFormResponses: FC<AdminFormResponsesScreenProps> = ({
   navigation,
   route,
 }) => {
-  const [rubricListData, setRubricListData] = useState<RubricItem[]>([]);
+  const { flowDetailItem } = route.params;
   const [selectedTab, setSelectedTab] = useState<TabTypes>('Individual');
   const [individualScreen, setIndividualScreen] =
     useState<ScreenSelectiontypes>('main');
@@ -169,44 +197,42 @@ const AdminFormResponses: FC<AdminFormResponsesScreenProps> = ({
   const [rubricWiseScreen, setRubricWiseScreen] =
     useState<ScreenSelectiontypes>('main');
 
+  const [selectedIndividual, setSelectedIndividual] =
+    useState<IndividualResponse | null>(null);
+  const [selectedQuestion, setSelectedQuestion] = useState<Question | null>(
+    null,
+  );
+
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [selectedUserGroups, setSelectedUserGroups] = useState<string[]>([]);
   const [isAccessingResponses, setIsAccessingResponses] =
     useState<boolean>(true);
 
   const [isVisibleModal, setIsVisibleModal] = useState<boolean>(false);
+  const [isVisibleSuccessModal, setIsVisibleSuccessModal] =
+    useState<boolean>(false);
 
-  const {allRubrics, deleteSuccess} = useAppSelector(state => state.rubric);
-  const {userData} = useAppSelector(state => state.auth);
-  const {GetAllUserGroupsData, GetUserGroupData} = useAppSelector(
+  const { formById } = useAppSelector(state => state.forms);
+  const { GetAllUserGroupsData, GetAllUserData } = useAppSelector(
     state => state.users,
   );
+
   const dispatch = useAppDispatch();
 
-  const handleTabClick = (title: string) => {
-    setSelectedTab(title as TabTypes);
-    if (allRubrics?.dataList) {
-      title == 'Active'
-        ? setRubricListData(
-            allRubrics?.dataList?.filter(item => item.status === true),
-          )
-        : title == 'Non-Active'
-        ? setRubricListData(
-            allRubrics?.dataList.filter(item => item.status === false),
-          )
-        : setRubricListData(allRubrics?.dataList);
+  const onPressItem = (item: IndividualResponse | Question) => {
+    if (selectedTab === 'Individual') {
+      setSelectedIndividual(item as IndividualResponse);
+    } else if (selectedTab === 'Question Wise') {
+      setSelectedQuestion(item as Question);
+    } else {
     }
+    setScreen('detailed');
   };
 
   useEffect(() => {
-    if (allRubrics) {
-      setRubricListData(allRubrics.dataList);
-    }
-  }, [allRubrics]);
-
-  useEffect(() => {
+    dispatch(getFormById(56));
     dispatch(
-      getAllRubrics({
+      getAllUsers({
         page: 0,
         size: 15,
         type: 'all',
@@ -214,37 +240,21 @@ const AdminFormResponses: FC<AdminFormResponsesScreenProps> = ({
     );
   }, []);
 
-  const onPressDeleteRubric = (item: RubricItem) => {
-    dispatch(
-      deleteRubric({ids: [item.rubricId], loggedInUserName: userData.userName}),
-    );
-  };
-
-  useEffect(() => {
-    if (deleteSuccess) {
-      dispatch(
-        getAllRubrics({
-          page: 0,
-          size: 15,
-          type: 'all',
-        }),
-      );
-    }
-  }, [deleteSuccess]);
-
-  const onPressItem = () => {
-    setScreen('detailed');
+  const handleTabClick = (title: string) => {
+    setSelectedTab(title as TabTypes);
   };
 
   const onPressBackButton = () => {
     screen === 'main' ? navigation.goBack() : setScreen('main');
-    console.log('dsffsd');
   };
 
   const selectScreenSwitch = (selectedTab: TabTypes): ScreenComponentType => {
     let screen: ScreenSelectiontypes = 'main';
     let renderal: JSX.Element = (
-      <IndividualMainPageRenderal onPress={onPressItem} />
+      <IndividualMainPageRenderal
+        onPress={onPressItem}
+        individualResponse={formById?.dataList.individualResponses || []}
+      />
     );
     let setScreen: Dispatch<SetStateAction<ScreenSelectiontypes>> =
       setIndividualScreen;
@@ -253,22 +263,41 @@ const AdminFormResponses: FC<AdminFormResponsesScreenProps> = ({
         screen = individualScreen;
         setScreen = setIndividualScreen;
         if (individualScreen === 'main') {
-          renderal = <IndividualMainPageRenderal onPress={onPressItem} />;
+          renderal = (
+            <IndividualMainPageRenderal
+              onPress={onPressItem}
+              individualResponse={formById?.dataList.individualResponses || []}
+            />
+          );
         } else {
-          renderal = <IndividualDescriptionRenderal />;
+          renderal = <IndividualDescriptionRenderal individualResponse={selectedIndividual} />;
         }
-        return {screen, setScreen, renderal};
+        return { screen, setScreen, renderal };
       case 'Question Wise':
         screen = questionWiseScreen;
         setScreen = setQuestionWiseScreen;
         if (questionWiseScreen === 'main') {
-          renderal = <QuestionWiseMainPageRenderal onPressItem={onPressItem} />;
+          renderal = (
+            <QuestionWiseMainPageRenderal
+              onPressItem={onPressItem}
+              questionList={formById?.dataList.questionList || []}
+            />
+          );
         } else {
           renderal = (
-            <QuestionWiseDescriptionRenderal onPressItem={onPressItem} />
+            <QuestionWiseDescriptionRenderal
+              question={selectedQuestion}
+              questionResponses={
+                selectedQuestion?.questionId ?
+                formById?.dataList.questionWiseResponses[
+                selectedQuestion?.questionId
+                ]
+                : []
+              }
+            />
           );
         }
-        return {screen, setScreen, renderal};
+        return { screen, setScreen, renderal };
       case 'Rubric Wise':
         screen = rubricWiseScreen;
         setScreen = setRubricWiseScreen;
@@ -276,45 +305,75 @@ const AdminFormResponses: FC<AdminFormResponsesScreenProps> = ({
           renderal = <RubricWiseMainPageRenderal onPressItem={onPressItem} />;
         } else {
           renderal = (
-            <RubricWiseDescriptionRenderal onPressItem={onPressItem} />
+            <RubricWiseDescriptionRenderal  />
           );
         }
-        return {screen, setScreen, renderal};
+        return { screen, setScreen, renderal };
       default:
-        return {screen, setScreen, renderal};
+        return { screen, setScreen, renderal };
     }
   };
 
-  const {screen, renderal, setScreen} = selectScreenSwitch(selectedTab);
+  const { renderal, screen, setScreen } = selectScreenSwitch(selectedTab);
 
   const isMainPage: boolean = Boolean(screen === 'main');
 
   const Renderal: JSX.Element = renderal;
 
+  console.log('formById?.dataList.questionList', formById);
   return (
     <>
       <Layout
         overridePaddingHorizontal
         overridePaddingVertical
-        style={{paddingHorizontal: 15}}
-        title="Teacher Evaluation Form"
+        style={{ paddingHorizontal: 15 }}
+        title={flowDetailItem.formName}
         onPressBackArrow={onPressBackButton}>
         <Modal
-          onProceed={() => {}}
-          onClose={() => {}}
+          onProceed={() => { }}
+          onClose={() => {
+            setIsVisibleModal(false);
+          }}
           isVisible={isVisibleModal}
           title="Assign form"
           closeButton
+          contentStyle={{ width: '100%' }}
+          // style={{marginTop:normaliseDesigns(150)}}
           content={
             <RenderModalContent
-              users={GetUserGroupData}
-              userGroupsItems={GetAllUserGroupsData}
+              usersItems={
+                GetAllUserData?.dataList.map(item => ({
+                  value: item.userId?.toString(),
+                  label: item.userName,
+                })) || []
+              }
+              userGroupsItems={
+                GetAllUserGroupsData?.dataList.map(item => ({
+                  value: item.userGroupId?.toString(),
+                  label: item.groupName,
+                })) || []
+              }
               selectedUsers={selectedUsers}
               selectedUserGroups={selectedUserGroups}
               setSelectedUsers={setSelectedUsers}
               setSelectedUserGroups={setSelectedUserGroups}
+              onPressAssign={() => {
+                setIsVisibleModal(false);
+                setIsVisibleSuccessModal(true);
+              }}
             />
           }
+        />
+        <Modal
+          onProceed={() => { }}
+          onClose={() => {
+            setIsVisibleSuccessModal(false);
+          }}
+          closeButton
+          content={RenderSuccessModalContent}
+          isVisible={isVisibleSuccessModal}
+          containerStyle={{ justifyContent: 'center' }}
+          contentStyle={{ width: '70%' }}
         />
         {isMainPage && (
           <View
@@ -324,18 +383,18 @@ const AdminFormResponses: FC<AdminFormResponsesScreenProps> = ({
               justifyContent: 'space-between',
               marginTop: 5,
             }}>
-            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Text
                 size="body2"
                 fontVariant="bold"
-                style={{marginVertical: 10}}>
+                style={{ marginVertical: 10 }}>
                 12/100 Responses
               </Text>
               <Icon
                 name="admin_response_clock"
                 width={20}
                 height={20}
-                style={{left: 5}}
+                style={{ left: 5 }}
               />
             </View>
             <ResponseAccessToggle
@@ -345,15 +404,15 @@ const AdminFormResponses: FC<AdminFormResponsesScreenProps> = ({
             />
           </View>
         )}
-        <View style={{marginBottom: 10}}>
+        <View style={{ marginBottom: 10 }}>
           <Tab
             tabs={['Individual', 'Question Wise', 'Rubric Wise']}
-            textStyle={{fontSize: normaliseFont(15)}}
+            textStyle={{ fontSize: normaliseFont(15) }}
             onClick={title => handleTabClick(title)}
           />
           {isMainPage && (
             <SearchFilter
-              onSearch={() => {}}
+              onSearch={() => { }}
               placeholder={'Search by user name'}
             />
           )}
@@ -373,8 +432,8 @@ const AdminFormResponses: FC<AdminFormResponsesScreenProps> = ({
         {isMainPage && (
           <FooterWithButtons
             isActiveProceedButton
-            onPressProceedButton={() => {}}
-            onPressCancelButton={() => {}}
+            onPressProceedButton={() => { }}
+            onPressCancelButton={() => { }}
             proceedButtonText={'Assign form'}
             cancelButtonText={'Preview From'}
           />

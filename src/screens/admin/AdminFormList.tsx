@@ -6,12 +6,12 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import Layout from '../../components/Layout';
 import Tab from '../../components/Tab';
 import {useAppDispatch, useAppSelector} from '../../redux/store';
-import {RubricItem, getAllRubrics} from '../../redux/features/rubricSlice';
 import {AdminTabStackTabBarStackParamList} from '../../navigation/AdminTabStack';
 import {normaliseFont} from '../../utils/helpers/responsiveHelpers';
 import colors from '../../config/colors';
 import Icon from '../../components/Icon';
 import Text from '../../components/Text';
+import {getFlowById} from '../../redux/features/flowsSlice';
 
 type AdminFormListNavigationProp = StackNavigationProp<
   AdminTabStackTabBarStackParamList,
@@ -37,6 +37,7 @@ const RenderFormItem: FC<RenderFormItemTypes> = ({title, onPressItem}) => (
       borderWidth: 1,
       borderColor: '#F4C24A',
       borderRadius: 10,
+      marginVertical:5
     }}
     onPress={onPressItem}>
     <Icon name="form_list" />
@@ -46,76 +47,83 @@ const RenderFormItem: FC<RenderFormItemTypes> = ({title, onPressItem}) => (
   </TouchableOpacity>
 );
 
+type FormListResponseTypes = {
+  label: string;
+  creationDate: string;
+  responses: string;
+};
+const FormListResponse: FC<FormListResponseTypes> = ({
+  label,
+  creationDate,
+  responses,
+}) => (
+  <TouchableOpacity
+    style={{
+      borderWidth: 1,
+      borderColor: '#F4C24A',
+      borderRadius: 5,
+      padding: 10,
+      marginBottom: 10,
+    }}>
+    <Text></Text>
+  </TouchableOpacity>
+);
+
+const tabs = ['Form list', 'Responses'] as const;
+type TabTypes = (typeof tabs)[number];
+
 interface AdminFormListScreenProps {
   navigation: AdminFormListNavigationProp;
   route: AdminFormListRouteProp;
 }
 
 const AdminFormList: FC<AdminFormListScreenProps> = ({navigation, route}) => {
-  const [rubricListData, setRubricListData] = useState<RubricItem[]>([]);
-  const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
-  const {allRubrics, deleteSuccess} = useAppSelector(state => state.rubric);
-  const {userData} = useAppSelector(state => state.auth);
+  const {flowItem} = route.params;
+  const [selectedTab, setSelectedTab] = useState<TabTypes>('Form list');
+  const {flowById} = useAppSelector(state => state.flows);
   const dispatch = useAppDispatch();
-  const deleteItem = () => {
-    console.log('delete press');
-  };
 
   const handleTabClick = (title: string) => {
-    if (allRubrics?.dataList) {
-      title == 'Active'
-        ? setRubricListData(
-            allRubrics?.dataList?.filter(item => item.status === true),
-          )
-        : title == 'Non-Active'
-        ? setRubricListData(
-            allRubrics?.dataList.filter(item => item.status === false),
-          )
-        : setRubricListData(allRubrics?.dataList);
-    }
+    setSelectedTab(title as TabTypes);
   };
-
-  useEffect(() => {
-    if (allRubrics) {
-      setRubricListData(allRubrics?.dataList);
-    }
-  }, [allRubrics]);
 
   useEffect(() => {
     dispatch(
-      getAllRubrics({
-        page: 0,
-        size: 15,
-        type: 'all',
-      }),
-    );
-  }, []);
-
-  useEffect(() => {
-    if (deleteSuccess) {
-      dispatch(
-        getAllRubrics({
+      getFlowById([
+        flowItem.flowId,
+        {
           page: 0,
           size: 15,
           type: 'all',
-        }),
-      );
-    }
-  }, [deleteSuccess]);
+        },
+      ]),
+    );
+  }, []);
+
+  // useEffect(() => {
+  //   if (deleteSuccess) {
+  //     dispatch(
+  //       getAllRubrics({
+  //         page: 0,
+  //         size: 15,
+  //         type: 'all',
+  //       }),
+  //     );
+  //   }
+  // }, [deleteSuccess]);
 
   return (
     <Layout
       overridePaddingHorizontal
       overridePaddingVertical
       style={{paddingHorizontal: 15}}
-      title="Evaluation Rubrics">
+      title={flowItem.flowName}>
       <View style={{marginVertical: 10}}>
         <Tab
           tabs={['Form list', 'Responses']}
           textStyle={{fontSize: normaliseFont(12)}}
           onClick={title => handleTabClick(title)}
         />
-
         <View
           style={{
             flexDirection: 'row',
@@ -147,17 +155,24 @@ const AdminFormList: FC<AdminFormListScreenProps> = ({navigation, route}) => {
               borderRadius: 10,
             }}
             onPress={() => {
-              setIsFilterOpen(true);
+              // setIsFilterOpen(true);
             }}>
             <Icon name="filter_icon" />
           </TouchableOpacity>
         </View>
-        <RenderFormItem
-          title="Teacher Observation 1"
-          onPressItem={() => {
-            navigation.navigate('AdminFormResponses');
-          }}
-        />
+        {selectedTab === 'Form list' ? (
+          <View>
+            {flowById?.dataList.map(item => (
+              <RenderFormItem
+                title={item.formName}
+                onPressItem={() => {navigation.navigate('AdminFormResponses',{flowDetailItem:item})}}
+                key={item.formId}
+              />
+            ))}
+          </View>
+        ) : (
+          <></>
+        )}
       </View>
     </Layout>
   );

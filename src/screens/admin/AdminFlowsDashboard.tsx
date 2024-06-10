@@ -1,12 +1,11 @@
 import React, {FC, useEffect, useState} from 'react';
-import {TextInput, View} from 'react-native';
+import {TextInput, TouchableOpacity, View} from 'react-native';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import moment from 'moment';
 
 import Layout from '../../components/Layout';
 import Tab from '../../components/Tab';
-import RubricListModal from '../../components/RubricListModal';
 import {useAppDispatch, useAppSelector} from '../../redux/store';
 import {
   RubricItem,
@@ -18,6 +17,8 @@ import {normaliseFont} from '../../utils/helpers/responsiveHelpers';
 import colors from '../../config/colors';
 import Icon from '../../components/Icon';
 import Text from '../../components/Text';
+import {getAllFlows} from '../../redux/features/flowsSlice';
+import { styles } from '../../components/RubricListModal';
 
 type AdminFlowsMainPageNavigationProp = StackNavigationProp<
   AdminTabStackTabBarStackParamList,
@@ -33,44 +34,107 @@ interface AdminFlowsMainPageScreenProps {
   route: AdminFlowsMainPageRouteProp;
 }
 
+interface FlowsItemProps {
+  title: string;
+  active: boolean;
+  createdBy: string;
+  createdDate: string;
+  userCount: number;
+  onDelete: () => void;
+  onPress:()=>void;
+}
+
+const FlowsItem: React.FC<FlowsItemProps> = ({
+  title,
+  active,
+  createdBy,
+  createdDate,
+  userCount,
+  onDelete,
+  onPress
+}) => {
+  return (
+    <TouchableOpacity style={styles.container} onPress={onPress}>
+      <View style={[styles.titleContainer]}>
+        <View style={{width: '68%'}}>
+          <Text numberOfLines={1} style={styles.title}>
+            {title}
+          </Text>
+        </View>
+        <View
+          style={{
+            width: '32%',
+            justifyContent: 'center',
+            alignItems: 'flex-end',
+          }}>
+          <View
+            style={{
+              backgroundColor: active ? '#EBF9D9' : '#FFEDED',
+              borderRadius: 15,
+              width: '90%',
+            }}>
+            <Text
+              style={[styles.status, {color: active ? '#749E35' : '#D62828'}]}>
+              <View
+                style={[
+                  styles.dot,
+                  {backgroundColor: active ? '#749E35' : '#D62828'},
+                ]}
+              />
+              {active ? ' Active' : ' Inactive'}
+            </Text>
+          </View>
+        </View>
+      </View>
+      <View style={styles.detailsContainer}>
+        <View style={{flexDirection: 'row', width: '80%'}}>
+          <View style={styles.detailsInnerContainer}>
+            <Text style={styles.heading}>Created by</Text>
+            <Text style={styles.subHeading}>{createdBy}</Text>
+          </View>
+          <View style={[styles.detailsInnerContainer, {width: '40%'}]}>
+            <Text style={styles.heading}>Creation Date</Text>
+            <Text style={styles.subHeading}> {createdDate}</Text>
+          </View>
+          <View style={styles.detailsInnerContainer}>
+            <Text style={styles.heading}>Users</Text>
+            <Text style={styles.subHeading}> {userCount}</Text>
+          </View>
+        </View>
+        <View style={styles.deleteButton}>
+          <TouchableOpacity onPress={onDelete}>
+            <Icon name="trash_icon" />
+          </TouchableOpacity>
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+};
+
 const AdminFlowsMainPage: FC<AdminFlowsMainPageScreenProps> = ({
   navigation,
   route,
 }) => {
-  const [rubricListData, setRubricListData] = useState<RubricItem[]>([]);
-  const {allRubrics, deleteSuccess} = useAppSelector(
-    state => state.rubric,
-  );
+  const {allFlows} = useAppSelector(state => state.flows);
   const {userData} = useAppSelector(state => state.auth);
   const dispatch = useAppDispatch();
 
   const handleTabClick = (title: string) => {
-    if (allRubrics?.dataList) {
-      title == 'Active'
-        ? setRubricListData(
-            allRubrics?.dataList?.filter(item => item.status === true),
-          )
-        : title == 'Non-Active'
-        ? setRubricListData(
-            allRubrics?.dataList.filter(item => item.status === false),
-          )
-        : setRubricListData(allRubrics?.dataList);
-    }
+
   };
 
-  useEffect(() => {
-    if (allRubrics) {
-      setRubricListData(allRubrics.dataList);
-    }
-  }, [allRubrics]);
+
 
   useEffect(() => {
     dispatch(
-      getAllRubrics({
-        page: 0,
-        size: 15,
-        type: 'all',
-      }),
+      getAllFlows([
+        userData.userName,
+        {
+          page: 0,
+          size: 15,
+          type: 'all',
+        },
+      ]),
     );
   }, []);
 
@@ -80,17 +144,17 @@ const AdminFlowsMainPage: FC<AdminFlowsMainPageScreenProps> = ({
     );
   };
 
-  useEffect(() => {
-    if (deleteSuccess) {
-      dispatch(
-        getAllRubrics({
-          page: 0,
-          size: 15,
-          type: 'all',
-        }),
-      );
-    }
-  }, [deleteSuccess]);
+  // useEffect(() => {
+  //   if (deleteSuccess) {
+  //     dispatch(
+  //       getAllRubrics({
+  //         page: 0,
+  //         size: 15,
+  //         type: 'all',
+  //       }),
+  //     );
+  //   }
+  // }, [deleteSuccess]);
 
   return (
     <Layout
@@ -126,19 +190,19 @@ const AdminFlowsMainPage: FC<AdminFlowsMainPageScreenProps> = ({
           <Icon name="search_icon" />
         </View>
 
-        {rubricListData.map(item => (
-          <RubricListModal
+        {allFlows?.dataList?.map(item => (
+          <FlowsItem
             active={item.status}
             createdBy={item.createdBy}
             createdDate={moment(item.createdDate).format('DD/MM/YYYY')}
-            title={item.rubricName}
-            userCount={item.groupUsers}
+            title={item.flowName}
+            userCount={55}
             onDelete={() => {
-              onPressDeleteRubric(item);
+              // onPressDeleteRubric(item);
             }}
-            key={item.rubricId}
+            key={item.flowId}
             onPress={() => {
-              navigation.navigate('AdminFormList');
+              navigation.navigate('AdminFormList',{flowItem:item});
             }}
           />
         ))}

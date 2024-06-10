@@ -17,7 +17,7 @@ import attachment from '../assets/images/attachment.png';
 import video_icon from '../assets/images/video_icon.png';
 import flow_icon from '../assets/images/flow_icon.png';
 import response_card_icon from '../assets/images/response_card_icon.png'
-
+import success_icon from '../assets/images/success_icon.jpg'
 
 export type ImageIconNames =
   | 'evaluation_icon'
@@ -34,7 +34,8 @@ export type ImageIconNames =
   | 'mic_icon'
   | 'video_icon'
   | 'flow_icon'
-  |'response_card_icon';
+  |'response_card_icon'
+  |'success_icon';
 
 type ImagePropsTypes = {
   name: ImageIconNames;
@@ -84,6 +85,11 @@ const Image: FC<ImagePropsTypes> = ({name, size = 1, style, ...rest}) => {
         width = 99 * size;
         height = 64 * size;
         return {Src: response_card_icon, StyleConst: {width, height}};
+        
+        case 'success_icon':
+          width = 114 * size;
+          height = 80 * size;
+          return {Src: success_icon, StyleConst: {width, height}};
       default:
         return {Src: evaluation_icon, StyleConst: {width, height}};
     }

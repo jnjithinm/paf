@@ -2,6 +2,9 @@ import {TouchableOpacity, View} from 'react-native';
 import Text from '../../../components/Text';
 import Icon from '../../../components/Icon';
 import {FC} from 'react';
+import { Question, QuestionWiseResponse } from '../../../redux/features/formsSlice';
+import moment from 'moment';
+
 
 type RenderQuestionsTypes = {
   index: number;
@@ -34,9 +37,9 @@ const RenderQuestions: FC<RenderQuestionsTypes> = ({
     <View
       style={{
         flexDirection: 'row',
-        flex: 2,
+        flex: 4,
         justifyContent: 'center',
-        height: '50%',
+        // height: '50%',
         alignItems: 'center',
       }}>
       <Text style={{flex: 1}}>{index}.</Text>
@@ -51,21 +54,25 @@ const RenderQuestions: FC<RenderQuestionsTypes> = ({
 );
 
 type QuestionWiseMainPageRenderalTypes = {
-  onPressItem: () => void;
+  onPressItem: (item:Question) => void;
+  questionList:Question[]
 };
 
 //IndividualMainScreenRenderals
 export const QuestionWiseMainPageRenderal: FC<
   QuestionWiseMainPageRenderalTypes
-> = ({onPressItem}) => (
+> = ({onPressItem,questionList}) => (
   <View>
-    <RenderQuestions
-      index={1}
-      question={
-        'How do you stay organised and manage your time effectively as a teacher?'
-      }
-      onPressItem={onPressItem}
-    />
+
+    {questionList.map((item)=>(
+          <RenderQuestions
+          index={item.questionId}
+          question={
+            item.questionText
+          }
+          onPressItem={()=>{onPressItem(item)}}
+        />
+    ))}
   </View>
 );
 
@@ -106,7 +113,7 @@ const QuestionResponseTile: FC<QuestionResponseTileTypes> = ({
         <Text size="small1" style={{color: '#4E565F'}}>
           Submitted By
         </Text>
-        <Text size="small3" style={{color: '#1F2933',marginTop:2}}>
+        <Text size="small3" style={{color: '#1F2933', marginTop: 2}}>
           {submittedBy}
         </Text>
       </View>
@@ -114,7 +121,7 @@ const QuestionResponseTile: FC<QuestionResponseTileTypes> = ({
         <Text size="small1" style={{color: '#4E565F'}}>
           Submitted On
         </Text>
-        <Text size="small3" style={{color: '#1F2933',marginTop:2}}>
+        <Text size="small3" style={{color: '#1F2933', marginTop: 2}}>
           {submittedOn}
         </Text>
       </View>
@@ -122,11 +129,12 @@ const QuestionResponseTile: FC<QuestionResponseTileTypes> = ({
         <Text size="small1" style={{color: '#4E565F'}}>
           Ratings
         </Text>
-        <View style={{flexDirection: 'row',alignItems:'center',marginTop:2}}>
-        <Text size="small3" style={{color: '#1F2933'}}>
-          {ratings}
-        </Text>
-        <Icon name='rating_star_display'/>
+        <View
+          style={{flexDirection: 'row', alignItems: 'center', marginTop: 2}}>
+          <Text size="small3" style={{color: '#1F2933'}}>
+            {ratings}
+          </Text>
+          <Icon name="rating_star_display" />
         </View>
       </View>
     </View>
@@ -134,18 +142,19 @@ const QuestionResponseTile: FC<QuestionResponseTileTypes> = ({
 );
 
 type QuestionWiseDescriptionRenderalTypes = {
-  // onPress: () => void;
+  question:Question|null;
+  questionResponses:QuestionWiseResponse[]|undefined;
 };
 
 //IndividualMainScreenRenderals
 export const QuestionWiseDescriptionRenderal: FC<
-  QuestionWiseMainPageRenderalTypes
-> = ({}) => (
+QuestionWiseDescriptionRenderalTypes
+> = ({question,questionResponses}) => (
   <View>
     <RenderQuestions
-      index={1}
+      index={question?.questionId||0}
       question={
-        'How do you stay organised and manage your time effectively as a teacher?'
+        question?.questionText||''
       }
       hideBorder
     />
@@ -157,23 +166,18 @@ export const QuestionWiseDescriptionRenderal: FC<
       <Icon name="rating_star_display" />
       <Text style={{color: '#4E565F'}}>)</Text>
     </View>
-    <View style={{marginTop:20}}>
-    <QuestionResponseTile
-      response={
-        'A variety of methods including formative assessments, class discussions, and individual conferences to ensure comprehensive understanding'
-      }
-      submittedBy={'Neha Gantra'}
-      submittedOn={'19/02/2024'}
-      ratings={'4.5'}
-    />
-    <QuestionResponseTile
-      response={
-        'A variety of methods including formative assessments, class discussions, and individual conferences to ensure comprehensive understanding'
-      }
-      submittedBy={'Neha Gantra'}
-      submittedOn={'19/02/2024'}
-      ratings={'4.5'}
-    />
+    <View style={{marginTop: 20}}>
+      {questionResponses?.map((item)=>(
+           <QuestionResponseTile
+           response={
+            item.responseValues
+           }
+           submittedBy={item.name}
+           submittedOn={moment(new Date(item.responseDate)).format('DD/MM/YYYY')}
+           ratings={'4.5'}
+         />
+      ))}
+   
     </View>
   </View>
 );

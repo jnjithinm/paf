@@ -206,7 +206,7 @@ const AddNewEvidenceCard: FC<AddNewEvidenceCardScreenProps> = ({
 
   useEffect(() => {
     if (saveEvidenceCardResponse) {
-      navigation.navigate('ViewEvidenceCard');
+      // navigation.navigate('ViewEvidenceCard');
     }
   }, [saveEvidenceCardResponse]);
 

@@ -100,6 +100,7 @@ export const getAllUsers = createAsyncThunk<
 >('users/getAllUsers', async (payload, {dispatch, rejectWithValue}) => {
   try {
     const response = await api.post(endPoints.GET_ALL_USERS, payload);
+    console.log("sdfsd",response.data)
     return response.data as GetAllUsersResponse;
   } catch (error: any) {
     return rejectWithValue(error.response.data);

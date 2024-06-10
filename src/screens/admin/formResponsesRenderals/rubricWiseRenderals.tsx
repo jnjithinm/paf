@@ -179,13 +179,13 @@ const RubricWiseDescriptionTile: FC<RubricWiseDescriptionTileTypes> = () => (
 );
 
 type RubricWiseDescriptionRenderalTypes = {
-  onPressItem: () => void;
+
 };
 
 //IndividualMainScreenRenderals
 export const RubricWiseDescriptionRenderal: FC<
   RubricWiseDescriptionRenderalTypes
-> = ({onPressItem}) => (
+> = ({}) => (
   <View>
     <RubricWiseDescriptionTile question={''} answerOptions={[]} />
   </View>

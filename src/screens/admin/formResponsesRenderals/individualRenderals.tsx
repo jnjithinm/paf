@@ -8,6 +8,7 @@ import Icon from '../../../components/Icon';
 import Image from '../../../components/Image';
 import {normaliseDesigns} from '../../../utils/helpers/responsiveHelpers';
 import colors from '../../../config/colors';
+import {IndividualResponse} from '../../../redux/features/formsSlice';
 
 type AdminIndividualTileTypes = {
   rating: string;
@@ -20,7 +21,7 @@ type AdminIndividualTileTypes = {
   style?: ViewStyle;
 };
 
- const AdminIndividualTile: FC<AdminIndividualTileTypes> = ({
+const AdminIndividualTile: FC<AdminIndividualTileTypes> = ({
   rating,
   name,
   image,
@@ -107,36 +108,29 @@ type AdminIndividualTileTypes = {
 };
 
 type IndividualMainPageRenderalTypes = {
-  onPress: () => void;
+  onPress: (item: IndividualResponse) => void;
+  individualResponse: IndividualResponse[];
 };
 
 //IndividualMainScreen Renderals
- export const IndividualMainPageRenderal: FC<IndividualMainPageRenderalTypes> = ({onPress}) => (
+export const IndividualMainPageRenderal: FC<
+  IndividualMainPageRenderalTypes
+> = ({onPress, individualResponse}) => (
   <View>
-    <AdminIndividualTile
-      rating={'4.2'}
-      creationDate={moment(new Date('12-04-2024')).format('DD/MM/YYYY')}
-      onPress={() => {
-        onPress();
-        // navigation.navigate('AdminFormList');
-      }}
-      name={'Rahul Mahajan'}
-      image={''}
-      questionsAnswered={'10/10'}
-      onPressDelete={() => {}}
-    />
-    <AdminIndividualTile
-      rating={'4.2'}
-      creationDate={moment(new Date('12-04-2024')).format('DD/MM/YYYY')}
-      onPress={() => {
-        onPress();
-        // navigation.navigate('AdminFormList');
-      }}
-      name={'Rahul Mahajan'}
-      image={''}
-      questionsAnswered={'10/10'}
-      onPressDelete={() => {}}
-    />
+    {individualResponse.map(item => (
+      <AdminIndividualTile
+        rating={'4.5'}
+        creationDate={moment(new Date('12-04-2024')).format('DD/MM/YYYY')}
+        onPress={() => {
+          onPress(item);
+          // navigation.navigate('AdminFormList');
+        }}
+        name={item.name}
+        image={''}
+        questionsAnswered={'10/10'}
+        onPressDelete={() => {}}
+      />
+    ))}
   </View>
 );
 
@@ -160,12 +154,12 @@ const RenderQuestionAndAnswer: FC<RenderQuestionAndAnswerTypes> = ({
       paddingVertical: 7,
     }}>
     <View style={{flexDirection: 'row'}}>
-      <Text style={{flex: 1}}>{index}.</Text>
+      <Text style={{flex: 2}}>{index}.</Text>
       <Text style={{flex: 17}} size="body1">
         {question}
       </Text>
     </View>
-    <View style={{flexDirection: 'row', marginTop: 5}}>
+    <View style={{flexDirection: 'row', marginTop: 5,alignItems:'center'}}>
       <View style={{flex: 1}}>
         <Icon name="arrow_narrow_right" />
       </View>
@@ -193,10 +187,14 @@ const RenderQuestionAndAnswer: FC<RenderQuestionAndAnswerTypes> = ({
   </View>
 );
 
-type IndividualDescriptionRenderalTypes = {};
+type IndividualDescriptionRenderalTypes = {
+  individualResponse: IndividualResponse|null;
+};
 
 //IndividualDescription Renderal
-export const IndividualDescriptionRenderal: FC<IndividualDescriptionRenderalTypes> = ({}) => (
+export const IndividualDescriptionRenderal: FC<
+  IndividualDescriptionRenderalTypes
+> = ({individualResponse}) => (
   <View>
     <View
       style={{
@@ -211,7 +209,7 @@ export const IndividualDescriptionRenderal: FC<IndividualDescriptionRenderalType
         marginBottom: 10,
       }}>
       <View style={{justifyContent: 'space-between'}}>
-        <Text fontVariant="bold">Rahul Mahajan</Text>
+        <Text fontVariant="bold">{individualResponse?.name}</Text>
         <RatingInput
           rating={3.4}
           label={''}
@@ -239,11 +237,13 @@ export const IndividualDescriptionRenderal: FC<IndividualDescriptionRenderalType
         style={{alignSelf: 'flex-end'}}
       />
     </View>
-    <RenderQuestionAndAnswer
-      index={1}
-      question={'How do you approach classroom management?'}
-      answer={'Ability to manage classroom discipline with students.'}
-      rating={'3.5'}
-    />
+    {individualResponse?.responses.map(item => (
+      <RenderQuestionAndAnswer
+        index={item.questionId}
+        question={item.questionText}
+        answer={item.responseValues}
+        rating={'3.5'}
+      />
+    ))}
   </View>
 );

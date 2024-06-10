@@ -1,4 +1,4 @@
-import React, {FC, ReactNode, useState} from 'react';
+import React, {FC, ReactNode} from 'react';
 import {
   Modal as RNModal,
   ScrollView,
@@ -10,13 +10,36 @@ import {
 
 import Text from './Text';
 import Icon from './Icon';
+import {normaliseDesigns} from '../utils/helpers/responsiveHelpers';
 import colors from '../config/colors';
-import moment from 'moment';
-import {Dropdown} from 'react-native-element-dropdown';
-import { RatingInput } from '../screens/reports/AddNewEvidenceCard';
 
+type RenderButtonTypes = {
+  type: ButtonTypes;
+  onClose: () => void;
+  onProceed: () => void;
+};
 
+type ButtonTypes = 'Cancel' | 'OK';
 
+const buttons: ButtonTypes[] = ['Cancel', 'OK'];
+
+const RenderButton: FC<RenderButtonTypes> = ({type, onClose, onProceed}) => (
+  <TouchableOpacity
+    style={{
+      width: normaliseDesigns(70),
+      height: normaliseDesigns(35),
+      alignItems: 'center',
+      justifyContent: 'center',
+      borderRadius: 10,
+    }}
+    onPress={() => {
+      type === 'OK' ? onProceed() : onClose();
+    }}>
+    <Text color="backgroundColor" fontVariant="medium">
+      {type}
+    </Text>
+  </TouchableOpacity>
+);
 
 interface ModalPropsTypes {
   onProceed: () => void;
@@ -28,6 +51,8 @@ interface ModalPropsTypes {
   isOKCancelButtonsNeeded?: boolean;
   closeButton?: boolean;
   renderButton?: ReactNode;
+  contentStyle?: ViewStyle;
+  containerStyle?: ViewStyle;
 }
 
 const Modal: FC<ModalPropsTypes> = ({
@@ -39,58 +64,47 @@ const Modal: FC<ModalPropsTypes> = ({
   isOKCancelButtonsNeeded,
   closeButton,
   renderButton,
+  contentStyle,
+  containerStyle,
 }) => {
-  const [selectedStartDate, setSelectedStartDate] = useState<
-    number | undefined
-  >();
-  const [selectedStartMonth, setSelectedStartMonth] = useState<
-    number | undefined
-  >(undefined);
-  const [selectedStartYear, setSelectedStartYear] = useState<
-    number | undefined
-  >(undefined);
-  const [selectedEndDate, setSelectedEndDate] = useState<number | undefined>();
-  const [selectedEndMonth, setSelectedEndMonth] = useState<number | undefined>(
-    undefined,
-  );
-  const [selectedEndYear, setSelectedEndYear] = useState<number | undefined>(
-    undefined,
-  );
-  const [selectedFilterByDate, setSelectedFilterByDate] = useState<
-    string | undefined
-  >(undefined);
-  const weekdays = moment.weekdays();
-  // Map through weekdays to get the first 2 letters of each day
-  const shortWeekdays = weekdays.map(day => day.slice(0, 2));
-
-  //   const handleOnChange=(item:any)=>{
-  // se
-  //   }
-  // console.log("see",selectedMonth,selectedYear)
   return (
     <RNModal visible={isVisible} animationType="slide" transparent>
       <View style={styles.modalOverlay} />
-      <View style={styles.modalContainer}>
-        <View style={styles.modalContent}>
-          {title && (
-            <View style={styles.header}>
-              <Text
-                color="blackColor"
-                style={{justifyContent: 'flex-start'}}
-                fontVariant='bold'
-                size="body2">
-                {title}
-              </Text>
-              {closeButton && (
-                <TouchableOpacity onPress={() => onClose()}>
-                  <Icon name='cross_icon_thin' width={10} height={10} />
-                </TouchableOpacity>
-              )}
-            </View>
-          )}
-          <ScrollView contentContainerStyle={styles.contentContainer}>
+      <View style={[styles.modalContainer, {...containerStyle}]}>
+        <View style={[styles.modalContent, {...contentStyle}]}>
+          <View style={styles.header}>
+            <Text
+              color="blackColor"
+              style={{justifyContent: 'flex-start'}}
+              fontVariant="semiBold"
+              size="body1">
+              {title}
+            </Text>
 
+            {closeButton && (
+              <TouchableOpacity
+                onPress={() => onClose()}
+                style={{justifyContent: 'flex-end',width:normaliseDesigns(20),height:normaliseDesigns(20)}}>
+                <Icon name="cross_icon_thin" width={10} height={10} />
+              </TouchableOpacity>
+            )}
+          </View>
+
+          <ScrollView contentContainerStyle={styles.contentContainer}>
             {content}
+            {renderButton}
+            {isOKCancelButtonsNeeded && (
+              <View style={styles.buttonsContainer}>
+                {buttons.map(item => (
+                  <RenderButton
+                    type={item}
+                    key={item}
+                    onClose={onClose}
+                    onProceed={onProceed}
+                  />
+                ))}
+              </View>
+            )}
           </ScrollView>
         </View>
       </View>
@@ -111,56 +125,33 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     flex: 1,
-    justifyContent: 'center',
+    // justifyContent: 'center',
     alignItems: 'center',
-    alignSelf: 'flex-end',
-    marginTop: 150,
-
+    justifyContent: 'flex-end',
+    // marginVertical: 80,
   },
   modalContent: {
     backgroundColor: colors.backgroundColor,
     borderRadius: 20,
-    // width: '80%',
+    width: '80%',
   },
   header: {
+    backgroundColor: colors.backgroundColor,
     paddingHorizontal: 20,
     paddingVertical: 15,
     borderTopRightRadius: 20,
     borderTopLeftRadius: 20,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems:'center',
-    width:'100%'
   },
   contentContainer: {
     paddingHorizontal: 10,
-    paddingTop: 15,
+    paddingVertical: 15,
   },
   buttonsContainer: {
     alignSelf: 'flex-end',
     flexDirection: 'row',
     marginTop: 20,
     right: 20,
-  },
-  weekdaysRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 10,
-  },
-  weekday: {
-    width: '14.28%',
-    textAlign: 'center',
-    color: '#ABB4BD',
-  },
-  daysRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginTop: 10,
-  },
-  day: {
-    width: '14.28%',
-    textAlign: 'center',
-    paddingVertical: 10,
-    alignItems: 'center',
   },
 });

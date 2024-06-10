@@ -80,7 +80,7 @@ const RubricListModal: React.FC<RubricListModalProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
+export const styles = StyleSheet.create({
   container: {
     borderWidth: 1,
     borderColor: '#F4C24A',
@@ -153,3 +153,4 @@ const styles = StyleSheet.create({
 });
 
 export default RubricListModal;
+
