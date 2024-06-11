@@ -10,7 +10,6 @@ interface VideoPlayerProps {
 }
 
 const VideoPlayer: React.FC<VideoPlayerProps> = ({ source }) => {
-  console.log("sssssourceeeee",source)
   const [isFullscreen, setIsFullscreen] = useState(false);
 
   const onEnterFullscreen = () => {

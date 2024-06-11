@@ -6,16 +6,33 @@ import Icon, {IconTypes} from './Icon';
 import {normaliseDesigns} from '../utils/helpers/responsiveHelpers';
 import colors from '../config/colors';
 
+interface StackState {
+  index: number;
+  key: string;
+  routeNames: string[];
+  routes: object[];
+  stale: boolean;
+  type: string;
+}
+
+interface Stack {
+  key: string;
+  name: string;
+  params?: any;  
+  state: StackState;
+}
+
 const DashboardTabBar = ({state, navigation}: BottomTabBarProps) => {
   const onTabPress = (routeName: string, _routeIndex: number) => {
     navigation.navigate(routeName);
   };
 
-  const screenOptions = (route: {name: string}) => {
+  const screenOptions = (route: Stack) => {
     let iconName: IconTypes;
     // let comingSoon: boolean = false;
     let screenName: string = '';
-
+    console.log("route",route,)
+    console.log("ssssssssssss","dsfd",route.state)
     switch (route.name) {
       case 'TeacherDashboard':
         iconName = 'tabbar_icon_home';
@@ -36,6 +53,7 @@ const DashboardTabBar = ({state, navigation}: BottomTabBarProps) => {
     }
     return {iconName};
   };
+
 
   return (
     <View

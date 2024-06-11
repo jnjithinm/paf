@@ -27,6 +27,7 @@ const customSearchInput = (onSearch: (arg0: string) => void) => (
 type MultiSelectDropdownTypes = {
   label?: string;
   style?: ViewStyle;
+  containerStyle?:ViewStyle;
   options: DropdownObject[];
   placeHolder?: string;
   selectedValues: string[];
@@ -37,13 +38,14 @@ type MultiSelectDropdownTypes = {
 const MultiSelectDropdown: FC<MultiSelectDropdownTypes> = ({
   label,
   style,
+  containerStyle,
   options,
   placeHolder,
   selectedValues,
   onSelectItem,
   setSelectedValues,
 }) => (
-  <View style={{...style, marginVertical: 5}}>
+  <View style={{...containerStyle, marginVertical: 5}}>
     {label && (
       <Text style={{marginBottom: 4}} fontVariant="bold">
         {label}
@@ -60,6 +62,7 @@ const MultiSelectDropdown: FC<MultiSelectDropdownTypes> = ({
         paddingVertical: 8,
         paddingHorizontal: 10,
         borderRadius: 7,
+        ...style
       }}
       search
       value={selectedValues}

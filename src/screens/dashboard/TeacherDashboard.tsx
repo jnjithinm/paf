@@ -394,8 +394,6 @@ const TeacherDashboard: FC<TeacherDashboardScreenProps> = ({
     }, []),
   );
 
-  useEffect(() => {}, []);
-
   return (
     <Drawer
       open={isDrawerOpen}
@@ -427,7 +425,7 @@ const TeacherDashboard: FC<TeacherDashboardScreenProps> = ({
               <Icon name="pro_pic_sample" />
               <View style={{marginLeft: 10, flex: 1}}>
                 <Text fontVariant="bold" size="body2">
-                  Hi, {userData.name}
+                  Hi, {userData?.name}
                 </Text>
                 <Text style={{flex: 1}} size="small2">
                   {dashboardDetails?.schoolName}

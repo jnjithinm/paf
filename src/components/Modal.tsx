@@ -1,4 +1,4 @@
-import React, {FC, ReactNode} from 'react';
+import React, {FC, ReactNode,JSX} from 'react';
 import {
   Modal as RNModal,
   ScrollView,
@@ -46,7 +46,7 @@ interface ModalPropsTypes {
   onClose: () => void;
   isVisible: boolean;
   title?: string;
-  content?: ReactNode;
+  content?: JSX.Element;
   Close?: string;
   isOKCancelButtonsNeeded?: boolean;
   closeButton?: boolean;
@@ -76,7 +76,7 @@ const Modal: FC<ModalPropsTypes> = ({
             <Text
               color="blackColor"
               style={{justifyContent: 'flex-start'}}
-              fontVariant="semiBold"
+              fontVariant='bold'
               size="body1">
               {title}
             </Text>
@@ -84,7 +84,11 @@ const Modal: FC<ModalPropsTypes> = ({
             {closeButton && (
               <TouchableOpacity
                 onPress={() => onClose()}
-                style={{justifyContent: 'flex-end',width:normaliseDesigns(20),height:normaliseDesigns(20)}}>
+                style={{
+                  justifyContent: 'flex-end',
+                  width: normaliseDesigns(20),
+                  height: normaliseDesigns(20),
+                }}>
                 <Icon name="cross_icon_thin" width={10} height={10} />
               </TouchableOpacity>
             )}
@@ -143,6 +147,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 20,
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems:'center'
   },
   contentContainer: {
     paddingHorizontal: 10,

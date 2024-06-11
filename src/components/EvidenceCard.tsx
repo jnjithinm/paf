@@ -1,11 +1,9 @@
 import React from 'react';
 import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+
 import Icon, {IconTypes} from '../components/Icon';
 import {FONT_SIZES, FONT_VARIANT} from '../config/themes';
-import Image from '../components/Image';
 import colors from '../config/colors';
-
-// Define the types for the icon prop
 
 type RenderEvidenceCardMultimediaCountsTypes = {
   icon: IconTypes;
@@ -90,7 +88,7 @@ const styles = StyleSheet.create({
   titleText: {
     fontFamily: FONT_VARIANT.bold,
     color: colors.blackColor,
-    fontSize: FONT_SIZES.small3, // Assuming 'small3' is equivalent to fontSize 12
+    fontSize: FONT_SIZES.small3,
   },
   descriptionText: {
     fontFamily: FONT_VARIANT.regular,
