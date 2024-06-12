@@ -97,7 +97,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
           DocumentPicker.types.doc,
         ],
       });
-      console.log("files",results)
+
       setFiles(results);
 
       const filePaths = [];
@@ -128,28 +128,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
     } catch (err) {
       // Handle errors
     }
-    //   const targetPath = `${DocumentDirectoryPath}/myFile.zip`;
-    //   const fileURIs = results.map(result => result.uri)?.toString()+'.jpg'
 
-    //   console.log("target pathssss",targetPath,fileURIs)
-
-    //   zip(fileURIs, targetPath)
-    //     .then(path => {
-    //       if (onFilesPicked) {
-    //         onFilesPicked([{uri: path, name: 'zip', type: 'application/zip'}]);
-    //       }
-    //     })
-    //     .catch(error => {
-    //       console.log("sdfsdf",error);
-    //     });
-
-    // } catch (err) {
-    //   if (DocumentPicker.isCancel(err)) {
-    //     console.log('User cancelled the picker');
-    //   } else {
-    //     console.log('Unknown error: ', err);
-    //   }
-    // }
   };
   const handleRemoveItem = (item: DocumentPickerResponse) => {
     const updatedFiles = files.filter(file => file.uri !== item.uri);

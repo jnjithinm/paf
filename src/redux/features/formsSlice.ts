@@ -99,7 +99,6 @@ GetFormByIdResponse,
   async (formId, {rejectWithValue}) => {
     try {
       const response = await api.get(endPoints.GET_FORM_BY_ID+formId);
-      console.log("rewr",response.data)
       return response.data as GetFormByIdResponse;
     } catch (error: any) {
       return rejectWithValue(error.response.data);

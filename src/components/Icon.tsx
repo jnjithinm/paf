@@ -58,8 +58,8 @@ import arrow_narrow_right from '../assets/svg/arrow_narrow_right.svg';
 import rating_star_display from '../assets/svg/rating_star_display.svg'
 import alarm_clock from '../assets/svg/alarm_clock.svg'
 import cross_icon_thin from '../assets/svg/cross_icon_thin.svg'
-
-
+import logout_icon from '../assets/svg/logout_icon.svg';
+import warning_icon from '../assets/svg/warning_icon.svg'
 
 const Icons = {
   app_logo,
@@ -118,6 +118,8 @@ const Icons = {
   rating_star_display,
   alarm_clock,
   cross_icon_thin,
+  logout_icon,
+  warning_icon
 };
 
 export type IconTypes = keyof typeof Icons;

@@ -4,16 +4,20 @@ import Icon, {IconTypes} from './Icon';
 import Text from './Text';
 import {FC} from 'react';
 import {normaliseDesigns} from '../utils/helpers/responsiveHelpers';
+import {initateLogout} from '../redux/features/authSlice';
+import {useAppDispatch} from '../redux/store';
+import { navigate } from '../utils/helpers/navigationHelpers';
 
 type RenderItemTypes = {
   icon: IconTypes;
   itemName: string;
   onPressItem: () => void;
 };
-const RenderItem: FC<RenderItemTypes> = ({icon, itemName,onPressItem}) => {
+const RenderItem: FC<RenderItemTypes> = ({icon, itemName, onPressItem}) => {
   return (
     <TouchableOpacity
-      style={{flexDirection: 'row', marginVertical: 8, alignItems: 'center'}} onPress={onPressItem}>
+      style={{flexDirection: 'row', marginVertical: 8, alignItems: 'center'}}
+      onPress={onPressItem}>
       <View
         style={{
           backgroundColor: '#F4C24A',
@@ -32,39 +36,58 @@ const RenderItem: FC<RenderItemTypes> = ({icon, itemName,onPressItem}) => {
   );
 };
 
-const itemsArray: RenderItemTypes[] = [
-  {
-    icon: 'drawer_icon_home',
-    itemName: 'Dashboard',
-    onPressItem: () => {},
-  },
-  {
-    icon: 'drawer_icon_observation_reports',
-    itemName: 'Observation Reports',
-    onPressItem: () => {},
-  },
-  {
-    icon: 'drawer_icon_teaching_aids',
-    itemName: 'Teaching Aids',
-    onPressItem: () => {},
-  },
-  {
-    icon: 'drawer_icon_session_schedules',
-    itemName: 'Session Schedules',
-    onPressItem: () => {},
-  },
-  {
-    icon: 'drawer_icon_give_feedback',
-    itemName: 'Give Feedback',
-    onPressItem: () => {},
-  },
-  {
-    icon: 'drawer_icon_settings',
-    itemName: 'Settings',
-    onPressItem: () => {},
-  },
-];
-const DrawerContent = () => {
+type DrawerContentTypes = {
+  closeDrawer: () => void;
+};
+
+const DrawerContent: FC<DrawerContentTypes> = ({closeDrawer}) => {
+  const dispatch = useAppDispatch();
+  const itemsArray: RenderItemTypes[] = [
+    {
+      icon: 'drawer_icon_home',
+      itemName: 'Dashboard',
+      onPressItem: () => {
+        closeDrawer();
+      },
+    },
+    {
+      icon: 'drawer_icon_observation_reports',
+      itemName: 'Observation Reports',
+      onPressItem: () => {
+        navigate('DashboardTabStack',{screen:'ReportsStack'})
+      },
+    },
+    {
+      icon: 'drawer_icon_teaching_aids',
+      itemName: 'Teaching Aids',
+      onPressItem: () => {},
+    },
+    {
+      icon: 'drawer_icon_session_schedules',
+      itemName: 'Session Schedules',
+      onPressItem: () => {},
+    },
+    {
+      icon: 'drawer_icon_give_feedback',
+      itemName: 'Give Feedback',
+      onPressItem: () => {},
+    },
+  ];
+
+  const settingsItems: RenderItemTypes[] = [
+    {
+      icon: 'drawer_icon_settings',
+      itemName: 'Settings',
+      onPressItem: () => {},
+    },
+    {
+      icon: 'logout_icon',
+      itemName: 'Logout',
+      onPressItem: () => {
+        dispatch(initateLogout());
+      },
+    },
+  ];
   return (
     <View style={{height: '100%'}}>
       <View
@@ -82,6 +105,9 @@ const DrawerContent = () => {
             borderRadius: 7,
             alignSelf: 'flex-end',
             marginTop: 20,
+          }}
+          onPress={() => {
+            closeDrawer();
           }}>
           <Icon name="left_arrow_orange_icon" />
         </TouchableOpacity>
@@ -94,7 +120,7 @@ const DrawerContent = () => {
             alignContent: 'center',
           }}>
           <Icon name="pro_pic_sample" width={50} height={50} />
-          <View style={{marginLeft: 10, justifyContent: 'center',top:10}}>
+          <View style={{marginLeft: 10, justifyContent: 'center', top: 10}}>
             <Text fontVariant="bold" size="body2">
               Hi, Swaraj
             </Text>
@@ -108,6 +134,24 @@ const DrawerContent = () => {
         />
         <View>
           {itemsArray.map(item => (
+            <RenderItem
+              icon={item.icon}
+              itemName={item.itemName}
+              onPressItem={item.onPressItem}
+              key={item.itemName}
+            />
+          ))}
+        </View>
+        <View
+          style={{
+            width: '100%',
+            backgroundColor: '#CBD2D9',
+            height: 1.5,
+            marginVertical: 5,
+          }}
+        />
+        <View>
+          {settingsItems.map(item => (
             <RenderItem
               icon={item.icon}
               itemName={item.itemName}
@@ -139,7 +183,8 @@ const DrawerContent = () => {
             Help Centre
           </Text>
         </TouchableOpacity>
-        <View style={{flexDirection: 'row',alignItems:'center',marginTop:10}}>
+        <View
+          style={{flexDirection: 'row', alignItems: 'center', marginTop: 10}}>
           <TouchableOpacity>
             <Text style={{color: '#ABB4BD'}} size="small2">
               Terms & Conditions
@@ -150,7 +195,7 @@ const DrawerContent = () => {
               height: 10,
               backgroundColor: '#ABB4BD',
               marginHorizontal: 5,
-              width:1
+              width: 1,
             }}
           />
           <TouchableOpacity>

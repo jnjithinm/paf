@@ -2,9 +2,9 @@ import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 
 import api from '../../config/axios';
 import endPoints from '../../config/endPoints';
-import {setIsLoading} from './authSlice';
+
 import {FileObject} from '../../config/types';
-import { PaginationRequest } from './usersSlice';
+import {PaginationRequest} from './usersSlice';
 
 interface Observation {
   userAssessed: string;
@@ -81,7 +81,7 @@ type GetObservationByIdResponse = {
     userName: string;
     userGroup: string;
     feedbackDescription: string;
-    observationStatus: 'Completed'|'Pending';
+    observationStatus: 'Completed' | 'Pending';
     observationAvgRatings: number;
     evidenceResponseList: EvidenceResponse[];
   };
@@ -94,7 +94,7 @@ export type ObservationData = {
   userAssessed: string;
   reportedBy: string;
   ratings: number;
-  observationStatus: 'Completed'|'Pending';
+  observationStatus: 'Completed' | 'Pending';
   videoCount: number;
   audioCount: number;
   documentCount: number;
@@ -145,6 +145,7 @@ export const getDashboardDetailsAndObservationList = createAsyncThunk<
     const response = await api.get(
       endPoints.GET_DASHBOARD_DETAILS_OBSERVATION + id,
     );
+    console.log('[API] Success:', JSON.stringify(response.data));
     return response.data as GetDashboardDetailsAndObservationListResponse;
   } catch (error: any) {
     return rejectWithValue(error.response.data);
@@ -157,7 +158,7 @@ export const getObservationById = createAsyncThunk<
 >('observation/getObservationById', async (id, {rejectWithValue}) => {
   try {
     const response = await api.get(endPoints.GET_OBSERVATION_BY_ID + id);
-    console.log("obserfations",response.data)
+    console.log('obserfations', response.data);
     return response.data as GetObservationByIdResponse;
   } catch (error: any) {
     return rejectWithValue(error.response.data);
@@ -178,15 +179,21 @@ export const getEvidenceById = createAsyncThunk<
 
 export const getAllObservations = createAsyncThunk<
   GetAllObservationsResponse,
-  [number,PaginationRequest]
->('observation/getAllObservations', async ([id,payload], {rejectWithValue}) => {
-  try {
-    const response = await api.post(endPoints.GET_ALL_OBSERVATIONS+id,payload);
-    return response.data as GetAllObservationsResponse;
-  } catch (error: any) {
-    return rejectWithValue(error.response.data);
-  }
-});
+  [number, PaginationRequest]
+>(
+  'observation/getAllObservations',
+  async ([id, payload], {rejectWithValue}) => {
+    try {
+      const response = await api.post(
+        endPoints.GET_ALL_OBSERVATIONS + id,
+        payload,
+      );
+      return response.data as GetAllObservationsResponse;
+    } catch (error: any) {
+      return rejectWithValue(error.response.data);
+    }
+  },
+);
 
 export const saveEvidenceCard = createAsyncThunk<
   SaveEvidenceCardResponse,
@@ -239,14 +246,14 @@ const observationSlice = createSlice({
     builder
 
       .addCase(getDashboardDetailsAndObservationList.pending, state => {
-        setIsLoading(true);
+
         state.isLoading = true;
       })
       .addCase(
         getDashboardDetailsAndObservationList.fulfilled,
         (state, action) => {
           state.isLoading = false;
-          setIsLoading(true);
+
           state.dashboardDetails = {
             ...state.dashboardDetails,
             ...action.payload.payload,
@@ -257,16 +264,15 @@ const observationSlice = createSlice({
         getDashboardDetailsAndObservationList.rejected,
         (state, action) => {
           state.isLoading = false;
-          setIsLoading(false);
+              
         },
       )
       .addCase(saveEvidenceCard.pending, state => {
-        setIsLoading(true);
+
         state.isLoading = true;
       })
       .addCase(saveEvidenceCard.fulfilled, (state, action) => {
         state.isLoading = false;
-        setIsLoading(true);
         state.saveEvidenceCardResponse = {
           ...state.saveEvidenceCardResponse,
           ...action.payload.payload,
@@ -274,15 +280,15 @@ const observationSlice = createSlice({
       })
       .addCase(saveEvidenceCard.rejected, (state, action) => {
         state.isLoading = false;
-        setIsLoading(false);
+
       })
       .addCase(getObservationById.pending, state => {
-        setIsLoading(true);
+
         state.isLoading = true;
       })
       .addCase(getObservationById.fulfilled, (state, action) => {
         state.isLoading = false;
-        setIsLoading(true);
+
         state.observationById = {
           ...state.observationById,
           ...action.payload.payload,
@@ -290,16 +296,15 @@ const observationSlice = createSlice({
       })
       .addCase(getObservationById.rejected, (state, action) => {
         state.isLoading = false;
-        setIsLoading(false);
+
       })
       .addCase(getAllObservations.pending, state => {
-        setIsLoading(true);
         state.isLoading = true;
       })
       .addCase(getAllObservations.fulfilled, (state, action) => {
         state.isLoading = false;
-        setIsLoading(false);
-    
+
+
         state.allObservations = {
           ...state.allObservations,
           ...action.payload.payload,
@@ -307,7 +312,7 @@ const observationSlice = createSlice({
       })
       .addCase(getAllObservations.rejected, (state, action) => {
         state.isLoading = false;
-        setIsLoading(false);
+
       });
   },
 });

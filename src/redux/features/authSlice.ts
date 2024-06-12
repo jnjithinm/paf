@@ -1,4 +1,4 @@
-import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
+import {PayloadAction, createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 
 import api from '../../config/axios';
 import {
@@ -65,7 +65,6 @@ export const loginUser = createAsyncThunk<LoginResponse, AuthenticateRequest>(
         username: payload.username,
         password: payload.password,
       });
-      console.log('dsf', response.data);
       return response.data as LoginResponse;
     } catch (error: any) {
       return rejectWithValue(error.response.data);
@@ -93,8 +92,8 @@ const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    setIsLoading(state, action) {
-      state.isLoading = action.payload;
+    initateLogout(state) {
+      state.isLoggedIn = false;
     },
   },
   extraReducers: builder => {
@@ -129,6 +128,9 @@ const authSlice = createSlice({
   },
 });
 
-export const {setIsLoading} = authSlice.actions;
+
+export const { initateLogout } = authSlice.actions;
+
+
 
 export default authSlice.reducer;

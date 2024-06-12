@@ -52,7 +52,7 @@ export interface TextInputPropsTypes extends TextInputProps {
   label?: string;
   setValue?: Dispatch<SetStateAction<string>>;
   icon?: IconTypes;
-  onChange?: (text) => void;
+  onChange?: (text: any) => void;
   // placeHolder?: string;
   mandatory?: boolean;
   avoidTransform?: boolean;
@@ -118,24 +118,6 @@ const TextInput: FC<TextInputPropsTypes> = ({
     }
   };
 
-  // const RenderLabel: FC<RenderLabelTypes> = ({isTransform}) => (
-  //   <TouchableOpacity
-  //     onPress={() => inputRef?.current?.focus()}
-  //     style={{
-  //       flexDirection: 'row',
-  //       width: '100%',
-  //       left: isTransform || icon ? null : 10,
-  //       alignSelf: manualHeight && !isTransform ? 'flex-start' : undefined,
-  //       top: manualHeight && !isTransform ? 10 : undefined,
-  //     }}
-  //     disabled={rest.editable == false}>
-  //     <Text size='body1' fontVariant="regular">
-  //       {placeHolder || label}
-  //     </Text>
-  //     {mandatory && <Text style={{color: colors.dangerColor}}>{'*'}</Text>}
-  //   </TouchableOpacity>
-  // );
-
   const handleOnTextChange = (text: string) => {
     if (setValue) {
       setValue(text);
@@ -156,13 +138,13 @@ const TextInput: FC<TextInputPropsTypes> = ({
 
   return (
     <View style={{...style, minHeight: 65, width: '100%'}}>
-      {label &&
-      <Text
-        style={{alignSelf: 'flex-start', marginBottom: 3, fontWeight: '700'}}
-        size="body1">
-        {label}
-      </Text>
-}
+      {label && (
+        <Text
+          style={{alignSelf: 'flex-start', marginBottom: 3, fontWeight: '700'}}
+          size="body1">
+          {label}
+        </Text>
+      )}
       <View
         style={{
           borderRadius: 10,
@@ -175,7 +157,6 @@ const TextInput: FC<TextInputPropsTypes> = ({
           ...textInputStyle,
           // ...style,
         }}>
-
         {icon && (
           <Icon
             name={icon}
@@ -189,9 +170,9 @@ const TextInput: FC<TextInputPropsTypes> = ({
         <RNTextInput
           style={{
             color: colors.blackColor,
-            opacity: rest.editable !== false ? undefined : 0.3,
+            opacity: editable !== false ? undefined : 0.3,
             paddingLeft: icon ? 5 : 15,
-            fontFamily: FONT_VARIANT.medium,
+            fontFamily: FONT_VARIANT.regular,
             // flex: 1,
             width: '100%',
             ...textInputStyle,
@@ -219,9 +200,12 @@ const TextInput: FC<TextInputPropsTypes> = ({
         <RenderWaringMessage warningMessage={warningMessage} />
       )}
       {errorMessage && isShowError && (
+        <View style={{flexDirection:'row',alignItems:'center',marginTop:2}}>
+          <Icon name='warning_icon' style={{marginRight:4}}/>
         <Text size="verysmall3" color="dangerColor">
           {errorMessage}
         </Text>
+        </View>
       )}
     </View>
   );

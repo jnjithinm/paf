@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {Platform, TouchableOpacity, View} from 'react-native';
 import {BottomTabBarProps} from '@react-navigation/bottom-tabs';
 
@@ -23,16 +23,19 @@ interface Stack {
 }
 
 const DashboardTabBar = ({state, navigation}: BottomTabBarProps) => {
+
+  const [screen,setScreen]=useState<string>('');
+
   const onTabPress = (routeName: string, _routeIndex: number) => {
     navigation.navigate(routeName);
   };
+
 
   const screenOptions = (route: Stack) => {
     let iconName: IconTypes;
     // let comingSoon: boolean = false;
     let screenName: string = '';
-    console.log("route",route,)
-    console.log("ssssssssssss","dsfd",route.state)
+
     switch (route.name) {
       case 'TeacherDashboard':
         iconName = 'tabbar_icon_home';

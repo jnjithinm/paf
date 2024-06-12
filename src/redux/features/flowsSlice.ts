@@ -67,7 +67,6 @@ export const getFlowById = createAsyncThunk<
 >('flows/getFlowById', async ([flowId, payload], {rejectWithValue}) => {
   try {
     const response = await api.post(endPoints.GET_FLOW_BY_ID + flowId, payload);
-    console.log('reee', response.data);
     return response.data as GetFlowByIdResponse;
   } catch (error: any) {
     return rejectWithValue(error.response.data);

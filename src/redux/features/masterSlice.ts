@@ -39,7 +39,7 @@ export const getAllDomains = createAsyncThunk<GetDomainsResponse, void>(
   async (_, { rejectWithValue}) => {
     try {
       const response = await api.get(endPoints.GET_ALL_DOMAINS);
-      console.log("reee",response.data)
+
       return response.data as GetDomainsResponse;
     } catch (error: any) {
       return rejectWithValue(error.response.data);

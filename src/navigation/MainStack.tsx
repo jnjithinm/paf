@@ -12,7 +12,6 @@ export type MainStackParamList = {
   Splash: undefined;
   Login: undefined;
   DashboardTabStack: undefined;
-  NewObservationStack: undefined;
 };
 
 const MainStack = createStackNavigator<MainStackParamList>();
@@ -42,6 +41,7 @@ const MainStackNavigator = () => {
           return {
             headerShown: false,
             keyboardHidesTabBar: true,
+            tabBarVisible:false,
           };
         }}>
         <MainStack.Screen

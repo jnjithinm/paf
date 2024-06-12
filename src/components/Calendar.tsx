@@ -191,10 +191,6 @@ const Modal: FC<ModalPropsTypes> = ({
   // Map through weekdays to get the first 2 letters of each day
   const shortWeekdays = weekdays.map(day => day.slice(0, 2));
 
-  //   const handleOnChange=(item:any)=>{
-  // se
-  //   }
-  // console.log("see",selectedMonth,selectedYear)
   return (
     <RNModal visible={isVisible} animationType="slide" transparent>
       <View style={styles.modalOverlay} />

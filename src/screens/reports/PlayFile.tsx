@@ -20,7 +20,7 @@ interface PlayFileScreenProps {
 
 const PlayFile: FC<PlayFileScreenProps> = ({navigation, route}) => {
   const {file} = route.params;
-  console.log("ur",file)
+
   return (
     <Layout
       overridePaddingHorizontal

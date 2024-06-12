@@ -26,6 +26,6 @@ export type ColorTypes = keyof typeof colors;
 
 
 export type UserCredentialTypes={
-  employeeId:string;
+  emailId:string;
   password:string
 }

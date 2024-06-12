@@ -12,9 +12,7 @@ import colors from '../../config/colors';
 import {normaliseDesigns} from '../../utils/helpers/responsiveHelpers';
 import DrawerContent from '../../components/DrawerContent';
 import {useAppDispatch, useAppSelector} from '../../redux/store';
-import {
-  getDashboardDetailsAndObservationList,
-} from '../../redux/features/observationSlice';
+import {getDashboardDetailsAndObservationList} from '../../redux/features/observationSlice';
 
 type TeacherDashboardNavigationProp = StackNavigationProp<
   DashboardTabBarStackParamList,
@@ -33,7 +31,7 @@ interface TeacherDashboardScreenProps {
 type RenderTitleWithLinkTypes = {
   icon: IconTypes;
   titleText: string;
-  link: string;
+  onPress: () => void;
   linkText: string;
   style?: ViewStyle;
 };
@@ -41,7 +39,7 @@ type RenderTitleWithLinkTypes = {
 const RenderTitleWithLink: FC<RenderTitleWithLinkTypes> = ({
   icon,
   titleText,
-  link,
+  onPress,
   linkText,
   style,
 }) => (
@@ -69,13 +67,14 @@ const RenderTitleWithLink: FC<RenderTitleWithLinkTypes> = ({
         {titleText}
       </Text>
     </View>
-    <View
+    <TouchableOpacity
       style={{
         flexDirection: 'row',
         alignItems: 'center',
         borderBottomWidth: 1,
         borderBottomColor: '#EA7804',
-      }}>
+      }}
+      onPress={onPress}>
       <Text
         style={{
           color: '#EA7804',
@@ -85,7 +84,7 @@ const RenderTitleWithLink: FC<RenderTitleWithLinkTypes> = ({
         {linkText}
       </Text>
       <Icon name="explore_icon" />
-    </View>
+    </TouchableOpacity>
   </View>
 );
 
@@ -394,12 +393,15 @@ const TeacherDashboard: FC<TeacherDashboardScreenProps> = ({
     }, []),
   );
 
+  const closeDrawer = () => {
+    setIsDrawerOpen(false);
+  };
   return (
     <Drawer
       open={isDrawerOpen}
       onOpen={() => setIsDrawerOpen(true)}
       onClose={() => setIsDrawerOpen(false)}
-      renderDrawerContent={() => <DrawerContent />}>
+      renderDrawerContent={() => <DrawerContent closeDrawer={closeDrawer} />}>
       <Layout
         overridePaddingHorizontal
         overridePaddingVertical
@@ -470,7 +472,7 @@ const TeacherDashboard: FC<TeacherDashboardScreenProps> = ({
             icon="analytics_icon"
             titleText="Analytics"
             linkText="Learn More"
-            link=""
+            onPress={() => {}}
           />
         </View>
         <View>
@@ -478,7 +480,9 @@ const TeacherDashboard: FC<TeacherDashboardScreenProps> = ({
             icon="observation_icon"
             titleText="Observations"
             linkText="All Observations"
-            link=""
+            onPress={() => {
+              navigation.navigate('ReportsStack');
+            }}
           />
           <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
             <ObservationFilterTile
@@ -517,7 +521,7 @@ const TeacherDashboard: FC<TeacherDashboardScreenProps> = ({
             titleText="Courses"
             linkText="View All"
             style={{marginTop: 25}}
-            link=""
+            onPress={() => {}}
           />
           <Text size="small3" style={{marginVertical: 10}}>
             5 in progress courses

@@ -65,20 +65,16 @@ const PlayerScreen: React.FC<PlayerScreenProps> = ({ navigation }) => {
     };
 
     const play = async () => {
-        console.log("mmmmmmmm",sound);
+
         
         if (sound) {
-            console.log("mjjjjj");
             
             sound.play(playComplete);
             setPlayState('playing');
         } else {
             const filepath = 'https://commondatastorage.googleapis.com/codeskulptor-demos/DDR_assets/Sevish_-__nbsp_.mp3';
             let dirpath = '';
-            // if (navigation.state.params.dirpath) {
-            //     dirpath = navigation.state.params.dirpath;
-            // }
-            // console.log('[Play]', filepath);
+
 
             sound = new Sound(filepath, dirpath, (error) => {
                 if (error) {

@@ -21,10 +21,7 @@ const DateTimePickerComponent: FC<DateTimePickerProps> = ({
     onDateChange( selectedDate?.toString()||'');
   };
 
-  // const minDate = new Date();
-  // minDate.setDate(minDate.getDate() - 3);
 
-  // console.log("fffff",new Date(), minDate);
 
   return (
     <View>
