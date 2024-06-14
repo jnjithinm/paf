@@ -20,6 +20,7 @@ import {
   storeUserCredentials,
 } from '../../utils/functions/localStorageOperations';
 import useValidation from '../../utils/hooks/useValidation';
+import { navigate } from '../../utils/helpers/navigationHelpers';
 
 type LoginNavigationProp = StackNavigationProp<MainStackParamList, 'Login'>;
 type LoginRouteProp = RouteProp<MainStackParamList, 'Login'>;
@@ -59,6 +60,7 @@ const Login: FC<LoginScreenProps> = ({navigation, route}) => {
           authenticateUser({username: email, password: password}),
         );
       } else {
+        
         await  dispatch(authenticateUser({username: email, password: password}));
       }
     }
@@ -160,7 +162,6 @@ const Login: FC<LoginScreenProps> = ({navigation, route}) => {
               }}
               size={10}
               style={{
-                //   right: 10,
                 height: normaliseDesigns(16),
                 width: normaliseDesigns(16),
               }}

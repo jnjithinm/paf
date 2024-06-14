@@ -55,16 +55,17 @@ export const authenticateUser = createAsyncThunk<
   AuthenticateRequest
 >('auth/authenticate', async (payload, {dispatch, rejectWithValue}) => {
   try {
+    removeToken();
     const response = await api.post(endPoints.AUTHENTICATE_USER, {
       username: payload.username,
       password: payload.password,
     });
+    storeToken(response.data.payload.token)
     return response.data as AuthenticateResponse;
   } catch (error: any) {
-    console.log('res', error);
     return rejectWithValue(error.response.data);
   } finally {
-    dispatch(
+    await dispatch(
       loginUser({username: payload.username, password: payload.password}),
     );
   }
@@ -81,7 +82,10 @@ export const loginUser = createAsyncThunk<LoginResponse, AuthenticateRequest>(
       return response.data as LoginResponse;
     } catch (error: any) {
       return rejectWithValue(error.response.data);
-    }
+    } 
+    // finally{
+    //   setLoading(false);
+    // }
   },
 );
 
@@ -124,8 +128,8 @@ const authSlice = createSlice({
         state.isError = false;
       })
       .addCase(authenticateUser.fulfilled, (state, action) => {
-        state.isLoading=true;
         storeToken(action.payload?.payload?.token);
+        state.isLoading = true;
       })
       .addCase(authenticateUser.rejected, (state, action) => {
         state.isLoading = false;
@@ -134,11 +138,11 @@ const authSlice = createSlice({
       })
       .addCase(loginUser.pending, state => {
         state.isLoading = true;
-        state.isLoading=false;
+        state.isLoading = false;
         state.isError = false;
       })
       .addCase(loginUser.fulfilled, (state, action) => {
-        state.isLoading = true;
+        state.isLoading = false;
         state.isLoggedIn = true;
         state.userData = {...state.userData, ...action.payload.payload};
       })
@@ -150,6 +154,5 @@ const authSlice = createSlice({
   },
 });
 
-// export const { initateLogout } = authSlice.actions;
 
 export default authSlice.reducer;

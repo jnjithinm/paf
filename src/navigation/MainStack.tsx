@@ -5,13 +5,14 @@ import {
 } from '@react-navigation/stack';
 import Splash from '../screens/auth/Splash';
 import Login from '../screens/auth/Login';
-import DashboardTabNavigator from './DashboardTabStack';
+import DashboardTabNavigator, { DashboardTabBarStackParamList } from './DashboardTabStack';
 import {useAppSelector} from '../redux/store';
+import { NavigatorScreenParams } from '@react-navigation/native';
 
 export type MainStackParamList = {
   Splash: undefined;
   Login: undefined;
-  DashboardTabStack: undefined;
+  DashboardTabStack:  NavigatorScreenParams<DashboardTabBarStackParamList>;
 };
 
 const MainStack = createStackNavigator<MainStackParamList>();
@@ -41,7 +42,6 @@ const MainStackNavigator = () => {
           return {
             headerShown: false,
             keyboardHidesTabBar: true,
-            tabBarVisible:false,
           };
         }}>
         <MainStack.Screen

@@ -387,10 +387,10 @@ const RenderSearch: FC<RenderSearchTypes> = ({
     </View>
   </View>
 );type RatingProps = {
-  rating: number; // Pass the rating as a prop
+  rating: number;
 };
 
-const RatingStars: React.FC<RatingProps> = ({ rating }) => {
+const RatingStars: FC<RatingProps> = ({ rating }) => {
   const renderStars = () => {
     const stars = [];
     const maxStars = 5;
@@ -404,13 +404,24 @@ const RatingStars: React.FC<RatingProps> = ({ rating }) => {
         stars.push(<Icon key={i} name="star_unfilled_icon" />);
       }
     }
-
     return stars;
   };
 
   return <View style={{ flexDirection: 'row' }}>{renderStars()}</View>;
 };
 
+type RenderProfileIconTypes={
+name:string;
+size?:number
+}
+
+const RenderProfileIcon:FC<RenderProfileIconTypes>=({name,size})=>{
+  return(
+    <View>
+
+    </View>
+  )
+}
 
 
 const TeacherDashboard: FC<TeacherDashboardScreenProps> = ({
@@ -520,7 +531,7 @@ const TeacherDashboard: FC<TeacherDashboardScreenProps> = ({
             titleText="Observations"
             linkText="All Observations"
             onPress={() => {
-              navigation.navigate('ReportsStack');
+              // navigation.navigate('ReportsStack');
             }}
           />
           <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
@@ -543,7 +554,7 @@ const TeacherDashboard: FC<TeacherDashboardScreenProps> = ({
               onPress={() => {}}
             />
           </View>
-          {dashboardDetails?.observations?.slice(0, 4).map((item, index) => (
+          {dashboardDetails?.observations?.slice(0, 4)?.map((item, index) => (
             <ObservationsTile
               key={index}
               rating={item.ratings?.toString()}
