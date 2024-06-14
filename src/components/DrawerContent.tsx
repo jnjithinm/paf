@@ -1,38 +1,79 @@
-import {TouchableOpacity, View} from 'react-native';
+import {Image, TouchableOpacity, View} from 'react-native';
 import colors from '../config/colors';
 import Icon, {IconTypes} from './Icon';
 import Text from './Text';
-import {FC} from 'react';
+import {FC, useState} from 'react';
 import {normaliseDesigns} from '../utils/helpers/responsiveHelpers';
-import {initateLogout} from '../redux/features/authSlice';
-import {useAppDispatch} from '../redux/store';
-import { navigate } from '../utils/helpers/navigationHelpers';
+import {logoutAndclearToken} from '../redux/features/authSlice';
+import {useAppDispatch, useAppSelector} from '../redux/store';
+import {navigate} from '../utils/helpers/navigationHelpers';
 
 type RenderItemTypes = {
-  icon: IconTypes;
+  icon?: IconTypes;
   itemName: string;
+  expandItem?: RenderItemTypes;
   onPressItem: () => void;
 };
-const RenderItem: FC<RenderItemTypes> = ({icon, itemName, onPressItem}) => {
+const RenderItem: FC<RenderItemTypes> = ({
+  icon,
+  itemName,
+  onPressItem,
+  expandItem,
+}) => {
+  const [isExpanded, setIsExpanded] = useState<boolean>(false);
+
+  const onPress = () => {
+    if (expandItem) {
+      setIsExpanded(!isExpanded);
+    } else {
+      onPressItem();
+    }
+  };
   return (
-    <TouchableOpacity
-      style={{flexDirection: 'row', marginVertical: 8, alignItems: 'center'}}
-      onPress={onPressItem}>
-      <View
+    <>
+      <TouchableOpacity
         style={{
-          backgroundColor: '#F4C24A',
-          aspectRatio: 1,
-          height: 25,
+          flexDirection: 'row',
+          marginVertical: 8,
           alignItems: 'center',
-          justifyContent: 'center',
-          borderRadius: 10,
-        }}>
-        <Icon name={icon} />
-      </View>
-      <Text fontVariant="bold" style={{marginLeft: 7}} size="body2">
-        {itemName}
-      </Text>
-    </TouchableOpacity>
+          justifyContent: 'space-between',
+        }}
+        onPress={onPress}>
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          <View
+            style={{
+              backgroundColor: '#F4C24A',
+              aspectRatio: 1,
+              height: normaliseDesigns(22),
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: 10,
+            }}>
+            {icon && <Icon name={icon} />}
+          </View>
+          <Text fontVariant="bold" style={{marginLeft: 7}} size="body1">
+            {itemName}
+          </Text>
+        </View>
+        {expandItem && (
+          <View>
+            <Icon
+              name="chevron_up_black_icon"
+              style={{transform: [{rotate: isExpanded ? '0deg' : '180deg'}]}}
+            />
+          </View>
+        )}
+      </TouchableOpacity>
+      {isExpanded && (
+        <TouchableOpacity
+          style={{marginLeft: '15%', marginVertical: 5}}
+          onPress={expandItem?.onPressItem}>
+          <Text fontVariant="bold" size="body1">
+            {expandItem?.itemName}
+          </Text>
+        </TouchableOpacity>
+      )}
+    </>
   );
 };
 
@@ -42,6 +83,8 @@ type DrawerContentTypes = {
 
 const DrawerContent: FC<DrawerContentTypes> = ({closeDrawer}) => {
   const dispatch = useAppDispatch();
+
+  const {userData} = useAppSelector(state => state.auth);
   const itemsArray: RenderItemTypes[] = [
     {
       icon: 'drawer_icon_home',
@@ -54,13 +97,17 @@ const DrawerContent: FC<DrawerContentTypes> = ({closeDrawer}) => {
       icon: 'drawer_icon_observation_reports',
       itemName: 'Observation Reports',
       onPressItem: () => {
-        navigate('DashboardTabStack',{screen:'ReportsStack'})
+        navigate('DashboardTabStack', {screen: 'ReportsStack'});
       },
     },
     {
       icon: 'drawer_icon_teaching_aids',
       itemName: 'Teaching Aids',
       onPressItem: () => {},
+      expandItem: {
+        itemName: 'Resources',
+        onPressItem: () => {},
+      },
     },
     {
       icon: 'drawer_icon_session_schedules',
@@ -84,7 +131,7 @@ const DrawerContent: FC<DrawerContentTypes> = ({closeDrawer}) => {
       icon: 'logout_icon',
       itemName: 'Logout',
       onPressItem: () => {
-        dispatch(initateLogout());
+        dispatch(logoutAndclearToken());
       },
     },
   ];
@@ -119,7 +166,14 @@ const DrawerContent: FC<DrawerContentTypes> = ({closeDrawer}) => {
             alignItems: 'center',
             alignContent: 'center',
           }}>
-          <Icon name="pro_pic_sample" width={50} height={50} />
+          <Image
+            source={{uri: `data:image/jpeg;base64,${userData?.userImage}`}}
+            style={{
+              width: normaliseDesigns(50),
+              height: normaliseDesigns(50),
+              borderRadius: 40,
+            }}
+          />
           <View style={{marginLeft: 10, justifyContent: 'center', top: 10}}>
             <Text fontVariant="bold" size="body2">
               Hi, Swaraj
@@ -139,6 +193,7 @@ const DrawerContent: FC<DrawerContentTypes> = ({closeDrawer}) => {
               itemName={item.itemName}
               onPressItem={item.onPressItem}
               key={item.itemName}
+              expandItem={item.expandItem}
             />
           ))}
         </View>
@@ -157,6 +212,7 @@ const DrawerContent: FC<DrawerContentTypes> = ({closeDrawer}) => {
               itemName={item.itemName}
               onPressItem={item.onPressItem}
               key={item.itemName}
+              expandItem={item.expandItem}
             />
           ))}
         </View>

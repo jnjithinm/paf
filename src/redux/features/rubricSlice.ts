@@ -3,6 +3,7 @@ import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import api from '../../config/axios';
 import endPoints from '../../config/endPoints';
 import {PaginationRequest} from './usersSlice';
+import {setLoading} from './authSlice';
 
 export type RubricItem = {
   rubricId: number;
@@ -73,35 +74,44 @@ type GetRubricResponsePayload = GetRubricResponse['payload'];
 export const getAllRubrics = createAsyncThunk<
   GetAllRubricsResponse,
   PaginationRequest
->('rubric/getAllRubrics', async (payload, {rejectWithValue}) => {
+>('rubric/getAllRubrics', async (payload, {dispatch,rejectWithValue}) => {
   try {
+    dispatch(setLoading(true));
     const response = await api.post(endPoints.GET_ALL_RUBRICS, payload);
     return response.data as GetAllRubricsResponse;
   } catch (error: any) {
     return rejectWithValue(error.response.data);
+  } finally {
+    dispatch(setLoading(false));
   }
 });
 
 export const deleteRubric = createAsyncThunk<
   RubricsDeleteResponse,
   DeleteRubricRequest
->('rubric/deleteRubric', async (payload, {rejectWithValue}) => {
+>('rubric/deleteRubric', async (payload, {dispatch,rejectWithValue}) => {
   try {
+    dispatch(setLoading(true));
     const response = await api.delete(endPoints.DELETE_RUBRIC, {data: payload});
     return response.data as RubricsDeleteResponse;
   } catch (error: any) {
     return rejectWithValue(error.response.data);
+  } finally {
+    dispatch(setLoading(false));
   }
 });
 
 export const getRubric = createAsyncThunk<GetRubricResponse, number>(
   'rubric/getRubric',
-  async (rubricId, {rejectWithValue}) => {
+  async (rubricId, {dispatch,rejectWithValue}) => {
     try {
+      dispatch(setLoading(true));
       const response = await api.get(endPoints.GET_RUBRIC + rubricId);
       return response.data as GetRubricResponse;
     } catch (error: any) {
       return rejectWithValue(error.response.data);
+    } finally {
+      dispatch(setLoading(false));
     }
   },
 );
@@ -110,7 +120,7 @@ interface InitialState {
   allRubrics: GetAllRubricsResponsePayload | null;
   rubricData: GetRubricResponsePayload | null;
   deleteSuccess: boolean;
-  isLoading: boolean;
+
   error: {
     status: 'Success' | 'Failed' | null;
     message: string;
@@ -121,7 +131,6 @@ const initialState: InitialState = {
   allRubrics: null,
   rubricData: null,
   deleteSuccess: false,
-  isLoading: false,
   error: {
     status: null,
     message: '',
@@ -135,37 +144,37 @@ const rubricSlice = createSlice({
   extraReducers: builder => {
     builder
       .addCase(getAllRubrics.pending, state => {
-        state.isLoading = true;
+        // state.isLoading = true;
       })
       .addCase(getAllRubrics.fulfilled, (state, action) => {
-        state.isLoading = false;
+        // state.isLoading = false;
         state.allRubrics = {
           ...state.allRubrics,
           ...action.payload.payload,
         };
       })
       .addCase(getAllRubrics.rejected, (state, action) => {
-        state.isLoading = false;
+        // state.isLoading = false;
       })
       .addCase(getRubric.pending, state => {
-        state.isLoading = true;
+        // state.isLoading = true;
       })
       .addCase(getRubric.fulfilled, (state, action) => {
-        state.isLoading = false;
+        // state.isLoading = false;
         state.rubricData = {
           ...state.rubricData,
           ...action.payload.payload,
         };
       })
       .addCase(getRubric.rejected, (state, action) => {
-        state.isLoading = false;
+        // state.isLoading = false;
       })
       .addCase(deleteRubric.pending, state => {
-        state.isLoading = true;
+        // state.isLoading = true;
         state.deleteSuccess = false;
       })
       .addCase(deleteRubric.fulfilled, (state, action) => {
-        state.isLoading = false;
+        // state.isLoading = false;
         state.error = {
           status: 'Success',
           message: action.payload.payload.message?.toString(),
@@ -173,7 +182,7 @@ const rubricSlice = createSlice({
         state.deleteSuccess = true;
       })
       .addCase(deleteRubric.rejected, (state, action) => {
-        state.isLoading = false;
+        // state.isLoading = false;
       });
   },
 });

@@ -5,10 +5,13 @@ import endPoints from '../../config/endPoints';
 
 import {FileObject} from '../../config/types';
 import {PaginationRequest} from './usersSlice';
+import { setLoading } from './authSlice';
 
 interface Observation {
   userAssessed: string;
+  userImage:string;
   reportedBy: string;
+  reportedByImage:string;
   ratings: number;
 }
 
@@ -140,8 +143,9 @@ type GetAllObservationsResponsePayload = GetAllObservationsResponse['payload'];
 export const getDashboardDetailsAndObservationList = createAsyncThunk<
   GetDashboardDetailsAndObservationListResponse,
   number
->('observation/dashboard', async (id, {rejectWithValue}) => {
+>('observation/dashboard', async (id, {dispatch,rejectWithValue}) => {
   try {
+    dispatch(setLoading(true));
     const response = await api.get(
       endPoints.GET_DASHBOARD_DETAILS_OBSERVATION + id,
     );
@@ -149,31 +153,38 @@ export const getDashboardDetailsAndObservationList = createAsyncThunk<
     return response.data as GetDashboardDetailsAndObservationListResponse;
   } catch (error: any) {
     return rejectWithValue(error.response.data);
+  } finally{
+    dispatch(setLoading(false));
   }
 });
 
 export const getObservationById = createAsyncThunk<
   GetObservationByIdResponse,
   number
->('observation/getObservationById', async (id, {rejectWithValue}) => {
+>('observation/getObservationById', async (id, {dispatch,rejectWithValue}) => {
   try {
+    dispatch(setLoading(true));
     const response = await api.get(endPoints.GET_OBSERVATION_BY_ID + id);
-    console.log('obserfations', response.data);
     return response.data as GetObservationByIdResponse;
   } catch (error: any) {
     return rejectWithValue(error.response.data);
+  } finally{
+    dispatch(setLoading(false));
   }
 });
 
 export const getEvidenceById = createAsyncThunk<
   GetObservationByIdResponse,
   number
->('observation/getEvidenceById', async (id, {rejectWithValue}) => {
+>('observation/getEvidenceById', async (id, {dispatch,rejectWithValue}) => {
   try {
+    dispatch(setLoading(true));
     const response = await api.get(endPoints.GET_EVIDENCE_BY_ID + id);
     return response.data as GetObservationByIdResponse;
   } catch (error: any) {
     return rejectWithValue(error.response.data);
+  } finally{
+    dispatch(setLoading(false));
   }
 });
 
@@ -182,8 +193,9 @@ export const getAllObservations = createAsyncThunk<
   [number, PaginationRequest]
 >(
   'observation/getAllObservations',
-  async ([id, payload], {rejectWithValue}) => {
+  async ([id, payload], {dispatch,rejectWithValue}) => {
     try {
+      dispatch(setLoading(true));
       const response = await api.post(
         endPoints.GET_ALL_OBSERVATIONS + id,
         payload,
@@ -191,6 +203,8 @@ export const getAllObservations = createAsyncThunk<
       return response.data as GetAllObservationsResponse;
     } catch (error: any) {
       return rejectWithValue(error.response.data);
+    } finally{
+      dispatch(setLoading(false));
     }
   },
 );
@@ -200,8 +214,9 @@ export const saveEvidenceCard = createAsyncThunk<
   [SaveEvidenceCardEvidenceInfoRequest, FileObject[]?]
 >(
   'observation/saveEvidenceCard',
-  async ([evidenceInfo, file], {rejectWithValue}) => {
+  async ([evidenceInfo, file], {dispatch,rejectWithValue}) => {
     try {
+      dispatch(setLoading(true));
       const formData = new FormData();
       formData.append('evidenceInfo', evidenceInfo);
       if (file && file?.length > 0) {
@@ -214,6 +229,8 @@ export const saveEvidenceCard = createAsyncThunk<
       return response.data as SaveEvidenceCardResponse;
     } catch (error: any) {
       return rejectWithValue(error.response.data);
+    } finally{
+      dispatch(setLoading(false));
     }
   },
 );
@@ -223,12 +240,12 @@ interface InitialState {
   saveEvidenceCardResponse: SaveEvidenceCardResponsePayload | null;
   observationById: GetObservationByIdResponsePayload | null;
   allObservations: GetAllObservationsResponsePayload | null;
-  isLoading: boolean;
+  // isLoading: boolean;
   error: string | null;
 }
 
 const initialState: InitialState = {
-  isLoading: false,
+  // isLoading: false,
   saveEvidenceCardResponse: null,
   dashboardDetails: null,
   observationById: null,
@@ -247,12 +264,12 @@ const observationSlice = createSlice({
 
       .addCase(getDashboardDetailsAndObservationList.pending, state => {
 
-        state.isLoading = true;
+        // state.isLoading = true;
       })
       .addCase(
         getDashboardDetailsAndObservationList.fulfilled,
         (state, action) => {
-          state.isLoading = false;
+          // state.isLoading = false;
 
           state.dashboardDetails = {
             ...state.dashboardDetails,
@@ -263,31 +280,31 @@ const observationSlice = createSlice({
       .addCase(
         getDashboardDetailsAndObservationList.rejected,
         (state, action) => {
-          state.isLoading = false;
+          // state.isLoading = false;
               
         },
       )
       .addCase(saveEvidenceCard.pending, state => {
 
-        state.isLoading = true;
+        // state.isLoading = true;
       })
       .addCase(saveEvidenceCard.fulfilled, (state, action) => {
-        state.isLoading = false;
+        // state.isLoading = false;
         state.saveEvidenceCardResponse = {
           ...state.saveEvidenceCardResponse,
           ...action.payload.payload,
         };
       })
       .addCase(saveEvidenceCard.rejected, (state, action) => {
-        state.isLoading = false;
+        // state.isLoading = false;
 
       })
       .addCase(getObservationById.pending, state => {
 
-        state.isLoading = true;
+        // state.isLoading = true;
       })
       .addCase(getObservationById.fulfilled, (state, action) => {
-        state.isLoading = false;
+        // state.isLoading = false;
 
         state.observationById = {
           ...state.observationById,
@@ -295,14 +312,14 @@ const observationSlice = createSlice({
         };
       })
       .addCase(getObservationById.rejected, (state, action) => {
-        state.isLoading = false;
+        // state.isLoading = false;
 
       })
       .addCase(getAllObservations.pending, state => {
-        state.isLoading = true;
+        // state.isLoading = true;
       })
       .addCase(getAllObservations.fulfilled, (state, action) => {
-        state.isLoading = false;
+        // state.isLoading = false;
 
 
         state.allObservations = {
@@ -311,7 +328,7 @@ const observationSlice = createSlice({
         };
       })
       .addCase(getAllObservations.rejected, (state, action) => {
-        state.isLoading = false;
+        // state.isLoading = false;
 
       });
   },

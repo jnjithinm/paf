@@ -1,4 +1,9 @@
-import {PayloadAction, createAsyncThunk, createSlice} from '@reduxjs/toolkit';
+import {
+  PayloadAction,
+  createAction,
+  createAsyncThunk,
+  createSlice,
+} from '@reduxjs/toolkit';
 
 import api from '../../config/axios';
 import {
@@ -37,29 +42,37 @@ interface LoginResponse {
   };
 }
 
+export const logoutAndclearToken = createAction<void>('LOGOUT_AND_CLEAR_TOKEN');
+
+export const changeBottomTabBarVisibility = createAction<boolean>(
+  'CHANGE_BOTTOM_TAB_BAR_VISIBILITY',
+);
+
+export const setLoading = createAction<boolean>('SET_LOADING');
+
 export const authenticateUser = createAsyncThunk<
   AuthenticateResponse,
   AuthenticateRequest
 >('auth/authenticate', async (payload, {dispatch, rejectWithValue}) => {
   try {
-    // await removeToken();
     const response = await api.post(endPoints.AUTHENTICATE_USER, {
       username: payload.username,
       password: payload.password,
     });
+    return response.data as AuthenticateResponse;
+  } catch (error: any) {
+    console.log('res', error);
+    return rejectWithValue(error.response.data);
+  } finally {
     dispatch(
       loginUser({username: payload.username, password: payload.password}),
     );
-
-    return response.data as AuthenticateResponse;
-  } catch (error: any) {
-    return rejectWithValue(error.response.data);
   }
 });
 
 export const loginUser = createAsyncThunk<LoginResponse, AuthenticateRequest>(
   'auth/login',
-  async (payload, {rejectWithValue}) => {
+  async (payload, {dispatch, rejectWithValue}) => {
     try {
       const response = await api.post(endPoints.LOGIN_USER, {
         username: payload.username,
@@ -86,6 +99,7 @@ const initialState = {
     userImage: '',
   },
   isError: false,
+  isBottomTabBarVisible: false,
 };
 
 const authSlice = createSlice({
@@ -98,12 +112,19 @@ const authSlice = createSlice({
   },
   extraReducers: builder => {
     builder
+      .addCase(logoutAndclearToken, () => {
+        removeToken();
+        return initialState;
+      })
+      .addCase(setLoading, (state, action) => {
+        state.isLoading = action.payload;
+      })
       .addCase(authenticateUser.pending, state => {
         state.isLoading = true;
         state.isError = false;
       })
       .addCase(authenticateUser.fulfilled, (state, action) => {
-        state.isLoading = true;
+        state.isLoading=true;
         storeToken(action.payload?.payload?.token);
       })
       .addCase(authenticateUser.rejected, (state, action) => {
@@ -113,10 +134,11 @@ const authSlice = createSlice({
       })
       .addCase(loginUser.pending, state => {
         state.isLoading = true;
+        state.isLoading=false;
         state.isError = false;
       })
       .addCase(loginUser.fulfilled, (state, action) => {
-        state.isLoading = false;
+        state.isLoading = true;
         state.isLoggedIn = true;
         state.userData = {...state.userData, ...action.payload.payload};
       })
@@ -128,9 +150,6 @@ const authSlice = createSlice({
   },
 });
 
-
-export const { initateLogout } = authSlice.actions;
-
-
+// export const { initateLogout } = authSlice.actions;
 
 export default authSlice.reducer;

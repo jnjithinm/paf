@@ -3,6 +3,7 @@ import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import api from '../../config/axios';
 import endPoints from '../../config/endPoints';
 import {PaginationRequest} from './usersSlice';
+import { setLoading } from './authSlice';
 
 interface Indicator {
     domainId: number;
@@ -91,31 +92,106 @@ export interface Question {
 
   type GetAllFlowsResponsePayload = GetFormByIdResponse['payload'];
 
+
+  interface QuestionOption {
+    optionMappingId: number;
+    optionText: string;
+  }
+
+  interface Indicator {
+    // 
+  }
+
+  interface QuestionPreviewForm {
+    questionOptionId: number;
+    questionId: number;
+    questionText: string;
+    questionDescription: string;
+    isRequired: boolean;
+    questionOptions: QuestionOption[];
+    indicators: Indicator[];
+  }
+  
+  interface Section {
+    sectionId: number;
+    sectionName: string;
+    sectionDescription: string;
+    sectionOrder: number;
+    questions: QuestionPreviewForm[];
+  }
+
+  interface DataList {
+    formId: number;
+    formName: string;
+    formText: string;
+    formDescription: string;
+    isDraft: boolean;
+    status: boolean;
+    acceptingResponse: boolean;
+    sections: Section[];
+  }
+
+  
+
+
+  interface GetPreviewFormResponse {
+    payload: {
+    message: string;
+    dataList: DataList;
+  };
+    status: number;
+  }
+    
+  type GetPreviewFormResponsePayload = GetPreviewFormResponse['payload'];
+
 export const getFormById = createAsyncThunk<
 GetFormByIdResponse,
   number
 >(
   'forms/getFormById',
-  async (formId, {rejectWithValue}) => {
+  async (formId, {rejectWithValue,dispatch}) => {
     try {
+      dispatch(setLoading(true));
       const response = await api.get(endPoints.GET_FORM_BY_ID+formId);
       return response.data as GetFormByIdResponse;
     } catch (error: any) {
       return rejectWithValue(error.response.data);
+    } finally{
+      dispatch(setLoading(false));
     }
   },
 );
 
 
+export const getPreviewForm = createAsyncThunk<
+GetPreviewFormResponse,
+  number
+>(
+  'forms/getPreviewForm',
+  async (formId, {dispatch,rejectWithValue}) => {
+    try {
+      dispatch(setLoading(true));
+      const response = await api.get(endPoints.GET_PREVIEW_FORM+formId);
+      return response.data as GetPreviewFormResponse;
+    } catch (error: any) {
+      return rejectWithValue(error.response.data);
+    } finally{
+      dispatch(setLoading(false));
+    }
+  },
+);
+
+
+
 interface InitialState {
   formById: GetAllFlowsResponsePayload | null;
-  isLoading: boolean;
+  previewForm:GetPreviewFormResponsePayload|null;
   error: string | null;
 }
 
 const initialState: InitialState = {
     formById: null,
-  isLoading: false,
+    previewForm:null,
   error: null,
 };
 
@@ -126,17 +202,30 @@ const formsSlice = createSlice({
   extraReducers: builder => {
     builder
       .addCase(getFormById.pending, state => {
-        state.isLoading = true;
+        // state.isLoading = true;
       })
       .addCase(getFormById.fulfilled, (state, action) => {
-        state.isLoading = false;
+        // state.isLoading = false;
         state.formById = {
           ...state.formById,
           ...action.payload.payload,
         };
       })
       .addCase(getFormById.rejected, (state, action) => {
-        state.isLoading = false;
+        // state.isLoading = false;
+      })
+      .addCase(getPreviewForm.pending, state => {
+        // state.isLoading = true;
+      })
+      .addCase(getPreviewForm.fulfilled, (state, action) => {
+        // state.isLoading = false;
+        state.previewForm = {
+          ...state.previewForm,
+          ...action.payload.payload,
+        };
+      })
+      .addCase(getPreviewForm.rejected, (state, action) => {
+        // state.isLoading = false;
       })
   },
 });

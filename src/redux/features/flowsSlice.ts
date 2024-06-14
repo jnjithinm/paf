@@ -3,6 +3,7 @@ import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import api from '../../config/axios';
 import endPoints from '../../config/endPoints';
 import {PaginationRequest} from './usersSlice';
+import { setLoading } from './authSlice';
 
 export interface FlowItem {
   flowId: number;
@@ -51,12 +52,15 @@ export const getAllFlows = createAsyncThunk<
   [string, PaginationRequest]
 >(
   'flows/getAllFlows',
-  async ([loggedInUserName, payload], {rejectWithValue}) => {
+  async ([loggedInUserName, payload], {dispatch,rejectWithValue}) => {
     try {
-      const response = await api.post(endPoints.GET_ALL_FLOWS, payload);
+      dispatch(setLoading(true));
+      const response = await api.post(endPoints.GET_ALL_FLOWS+loggedInUserName, payload);
       return response.data as GetAllFlowsResponse;
     } catch (error: any) {
       return rejectWithValue(error.response.data);
+    } finally{
+      dispatch(setLoading(false));
     }
   },
 );
@@ -64,26 +68,29 @@ export const getAllFlows = createAsyncThunk<
 export const getFlowById = createAsyncThunk<
   GetFlowByIdResponse,
   [number, PaginationRequest]
->('flows/getFlowById', async ([flowId, payload], {rejectWithValue}) => {
+>('flows/getFlowById', async ([flowId, payload], {dispatch,rejectWithValue}) => {
   try {
+    dispatch(setLoading(true));
     const response = await api.post(endPoints.GET_FLOW_BY_ID + flowId, payload);
     return response.data as GetFlowByIdResponse;
   } catch (error: any) {
     return rejectWithValue(error.response.data);
+  } finally{
+    dispatch(setLoading(false));
   }
 });
 
 interface InitialState {
   allFlows: GetAllFlowsResponsePayload | null;
   flowById: GetFlowByIdResponsePayload | null;
-  isLoading: boolean;
+  // isLoading: boolean;
   error: string | null;
 }
 
 const initialState: InitialState = {
   allFlows: null,
   flowById: null,
-  isLoading: false,
+  // isLoading: false,
   error: null,
 };
 
@@ -94,30 +101,30 @@ const flowsSlice = createSlice({
   extraReducers: builder => {
     builder
       .addCase(getAllFlows.pending, state => {
-        state.isLoading = true;
+        // state.isLoading = true;
       })
       .addCase(getAllFlows.fulfilled, (state, action) => {
-        state.isLoading = false;
+        // state.isLoading = false;
         state.allFlows = {
           ...state.allFlows,
           ...action.payload.payload,
         };
       })
       .addCase(getAllFlows.rejected, (state, action) => {
-        state.isLoading = false;
+        // state.isLoading = false;
       })
       .addCase(getFlowById.pending, state => {
-        state.isLoading = true;
+        // state.isLoading = true;
       })
       .addCase(getFlowById.fulfilled, (state, action) => {
-        state.isLoading = false;
+        // state.isLoading = false;
         state.flowById = {
           ...state.flowById,
           ...action.payload.payload,
         };
       })
       .addCase(getFlowById.rejected, (state, action) => {
-        state.isLoading = false;
+        // state.isLoading = false;
       });
   },
 });

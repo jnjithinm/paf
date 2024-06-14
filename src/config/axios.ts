@@ -4,7 +4,7 @@ import endPoints from './endPoints';
 
 const api: AxiosInstance = axios.create({
   baseURL: 'http://65.1.32.205:8080',
-  // timeout: 15000,
+  // timeout: 3500,
 });
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 1000;
@@ -12,6 +12,7 @@ const RETRY_DELAY = 1000;
 api.interceptors.request.use(
   async config => {
     const token = await AsyncStorage.getItem('token');
+
     if(token){
       config.headers['Authorization'] =`Bearer ${token}`;
     }

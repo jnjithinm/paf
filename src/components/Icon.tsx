@@ -60,6 +60,10 @@ import alarm_clock from '../assets/svg/alarm_clock.svg'
 import cross_icon_thin from '../assets/svg/cross_icon_thin.svg'
 import logout_icon from '../assets/svg/logout_icon.svg';
 import warning_icon from '../assets/svg/warning_icon.svg'
+import chevron_up_black_icon from '../assets/svg/chevron_up_black_icon.svg'
+import eye from '../assets/svg/eye.svg'
+import eye_off_disabled from '../assets/svg/eye_off_disabled.svg'
+
 
 const Icons = {
   app_logo,
@@ -119,7 +123,10 @@ const Icons = {
   alarm_clock,
   cross_icon_thin,
   logout_icon,
-  warning_icon
+  warning_icon,
+  chevron_up_black_icon,
+  eye,
+  eye_off_disabled
 };
 
 export type IconTypes = keyof typeof Icons;

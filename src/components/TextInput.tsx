@@ -53,19 +53,19 @@ export interface TextInputPropsTypes extends TextInputProps {
   setValue?: Dispatch<SetStateAction<string>>;
   icon?: IconTypes;
   onChange?: (text: any) => void;
+  passwordVisibility?: boolean;
   // placeHolder?: string;
   mandatory?: boolean;
   avoidTransform?: boolean;
   style?: ViewStyle;
   // textInputRef?: React.RefObject<CustomTextInputRef>;
-  isShowError?: boolean;
-  passwordVisibility?: boolean;
+  // isShowError?: boolean;
   errorMessage?: string;
   warningMessage?: string;
   dismiss?: boolean;
   textInputStyle?: TextStyle;
   manualHeight?: boolean;
-  editable?: boolean;
+  // editable?: boolean;
 }
 
 type RenderLabelTypes = {
@@ -76,20 +76,21 @@ const TextInput: FC<TextInputPropsTypes> = ({
   value,
   setValue,
   onChange,
+  passwordVisibility,
   // placeHolder,
   label,
   icon,
   mandatory,
   avoidTransform,
   style,
-  editable,
+  // editable,
   // textInputRef,
-  isShowError,
-  passwordVisibility,
+  // isShowError,
   errorMessage,
   warningMessage,
   dismiss,
   textInputStyle,
+
   manualHeight,
   ...rest
 }) => {
@@ -97,6 +98,7 @@ const TextInput: FC<TextInputPropsTypes> = ({
   const inputRef = useRef<RNTextInput | null>(null);
   const labelPosition = new Animated.Value(value ? -15 : 0);
   const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
+  const [isShowError,setIsShowError]=useState<boolean>(false);
 
   const handleFocus = () => {
     setIsFocused(true);
@@ -109,6 +111,7 @@ const TextInput: FC<TextInputPropsTypes> = ({
 
   const handleBlur = () => {
     setIsFocused(false);
+    setIsShowError(true);
     if (!value) {
       Animated.timing(labelPosition, {
         toValue: 0,
@@ -119,6 +122,7 @@ const TextInput: FC<TextInputPropsTypes> = ({
   };
 
   const handleOnTextChange = (text: string) => {
+    setIsShowError(false);
     if (setValue) {
       setValue(text);
     }
@@ -148,13 +152,14 @@ const TextInput: FC<TextInputPropsTypes> = ({
       <View
         style={{
           borderRadius: 10,
-          borderTopWidth: 1,
           borderColor: '#ABB4BD',
           borderWidth: 1,
           alignItems: 'center',
           flexDirection: 'row',
+          justifyContent: 'space-between',
           minHeight: 50,
           ...textInputStyle,
+          paddingHorizontal: icon ? 5 : 15,
           // ...style,
         }}>
         {icon && (
@@ -170,41 +175,55 @@ const TextInput: FC<TextInputPropsTypes> = ({
         <RNTextInput
           style={{
             color: colors.blackColor,
-            opacity: editable !== false ? undefined : 0.3,
-            paddingLeft: icon ? 5 : 15,
+            opacity: rest.editable !== false ? undefined : 0.3,
+
             fontFamily: FONT_VARIANT.regular,
             // flex: 1,
-            width: '100%',
+            // width: '100%',
             ...textInputStyle,
           }}
           placeholderTextColor={'#ABB4BD'}
           ref={ref => {
             inputRef.current = ref;
           }}
-          editable={editable}
           onFocus={handleFocus}
           onBlur={handleBlur}
           onChangeText={handleOnTextChange}
           value={value}
           onKeyPress={e => handleKeyPress(e)}
-          secureTextEntry={
-            (passwordVisibility && !isPasswordVisible) || rest.secureTextEntry
-          }
+          secureTextEntry={passwordVisibility && !isPasswordVisible}
           {...rest}
         />
-        {((passwordVisibility && !isPasswordVisible) ||
-          rest.secureTextEntry) && <Icon name="eye_off" />}
+        {passwordVisibility && (
+          <TouchableOpacity
+            onPress={() => setIsPasswordVisible(!isPasswordVisible)}
+            disabled={value.length === 0}>
+            <Icon
+              name={
+                isPasswordVisible
+                  ? 'eye'
+                  : value.length > 0
+                  ? 'eye_off'
+                  : 'eye_off_disabled'
+              }
+              style={{alignSelf:'flex-end',justifyContent:'flex-end'}}
+              width={20}
+              height={20}
+            />
+          </TouchableOpacity>
+        )}
       </View>
 
       {warningMessage && (
         <RenderWaringMessage warningMessage={warningMessage} />
       )}
       {errorMessage && isShowError && (
-        <View style={{flexDirection:'row',alignItems:'center',marginTop:2}}>
-          <Icon name='warning_icon' style={{marginRight:4}}/>
-        <Text size="verysmall3" color="dangerColor">
-          {errorMessage}
-        </Text>
+        <View
+          style={{flexDirection: 'row', alignItems: 'center', marginTop: 2}}>
+          <Icon name="warning_icon" style={{marginRight: 4}} />
+          <Text size="verysmall3" color="dangerColor">
+            {errorMessage}
+          </Text>
         </View>
       )}
     </View>

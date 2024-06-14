@@ -151,7 +151,7 @@ GetUserGroupResponse,
 
 // export const loginUser = createAsyncThunk<LoginResponse, AuthenticateRequest>(
 //   'auth/login',
-//   async (payload, {rejectWithValue}) => {
+//   async (payload, {dispatch,rejectWithValue}) => {
 
 //     try {
 //       const response = await api.post(endPoints.LOGIN_USER, {
@@ -169,7 +169,7 @@ interface InitialState {
   GetAllUserGroupsData: GetAllUserGroupsResponsePayload | null;
   GetAllUserData: GetAllUsersResponsePayload | null;
   GetUserGroupData:GetUserGroupsResponsePayload|null;
-  isLoading: boolean;
+
   error: string | null;
 }
 
@@ -177,7 +177,6 @@ const initialState: InitialState = {
   GetAllUserGroupsData: null,
   GetAllUserData: null,
     GetUserGroupData:null,
-  isLoading: false,
   error: null,
 };
 
@@ -188,43 +187,43 @@ const usersSlice = createSlice({
   extraReducers: builder => {
     builder
       .addCase(getAllUsers.pending, state => {
-        state.isLoading = true;
+        // state.isLoading = true;
       })
       .addCase(getAllUsers.fulfilled, (state, action) => {
-        state.isLoading = false;
+        // state.isLoading = false;
         state.GetAllUserData = {
           ...state.GetAllUserData,
           ...action.payload.payload,
         };
       })
       .addCase(getAllUsers.rejected, (state, action) => {
-        state.isLoading = false;
+        // state.isLoading = false;
       })
       .addCase(getAllUserGroups.pending, state => {
-        state.isLoading = true;
+        // state.isLoading = true;
       })
       .addCase(getAllUserGroups.fulfilled, (state, action) => {
-        state.isLoading = false;
+        // state.isLoading = false;
         state.GetAllUserGroupsData = {
           ...state.GetAllUserGroupsData,
           ...action.payload.payload,
         };
       })
       .addCase(getAllUserGroups.rejected, (state, action) => {
-        state.isLoading = false;
+        // state.isLoading = false;
       })
       .addCase(getUserGroups.pending, state => {
-        state.isLoading = true;
+        // state.isLoading = true;
       })
       .addCase(getUserGroups.fulfilled, (state, action) => {
-        state.isLoading = false;
+        // state.isLoading = false;
         state.GetUserGroupData = {
           ...state.GetAllUserGroupsData,
           ...action.payload.payload,
         };
       })
       .addCase(getUserGroups.rejected, (state, action) => {
-        state.isLoading = false;
+        // state.isLoading = false;
       })
   },
 });

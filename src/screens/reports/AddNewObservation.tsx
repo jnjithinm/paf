@@ -118,7 +118,7 @@ const AddNewObservation: FC<AddNewObservationScreenProps> = ({
         overridePaddingVertical
         style={{paddingVertical: 0}}
         icon="reports_icon"
-        title="New Observation">
+        title="Reports">
         <DateTimePickerComponent
           selectedDate={selectedDate}
           onDateChange={handleDateSelection}

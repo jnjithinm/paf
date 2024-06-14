@@ -16,8 +16,9 @@ const endPoints = {
   GET_ALL_RUBRICS: `PAF/rubrics/all`,
   DELETE_RUBRIC: `PAF/rubrics`,
   GET_RUBRIC: `PAF/rubrics/`,
-  GET_ALL_FLOWS: `PAF/flows/all?loggedInUserName=atul.more.11`,
+  GET_ALL_FLOWS: `PAF/flows/all?loggedInUserName=`,
   GET_FLOW_BY_ID: `PAF/flows/`,
   GET_FORM_BY_ID: `PAF/forms/`,
+  GET_PREVIEW_FORM:`PAF/forms/previewForm/`
 };
 export default endPoints;

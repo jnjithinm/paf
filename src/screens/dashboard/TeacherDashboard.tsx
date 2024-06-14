@@ -1,5 +1,11 @@
 import React, {FC, useEffect, useState} from 'react';
-import {TextInput, TouchableOpacity, View, ViewStyle} from 'react-native';
+import {
+  Image,
+  TextInput,
+  TouchableOpacity,
+  View,
+  ViewStyle,
+} from 'react-native';
 import {RouteProp, useFocusEffect} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {Drawer} from 'react-native-drawer-layout';
@@ -154,9 +160,13 @@ export const ObservationsTile: FC<ObservationTileTypes> = ({
         <Text size="verysmall3" opacity="0.50">
           User Assessed
         </Text>
+        <View style={{flexDirection:'row'}}>
+          <Image source={{uri:`data:image/jpeg;base64,${image}`}}/>
         <Text fontVariant="bold" size="small3">
           {userAssisted}
         </Text>
+        
+        </View>
       </View>
       <View style={{flex: 4}}>
         <Text size="verysmall3" opacity="0.50">
@@ -376,7 +386,32 @@ const RenderSearch: FC<RenderSearchTypes> = ({
       <Icon name="filter_icon" />
     </View>
   </View>
-);
+);type RatingProps = {
+  rating: number; // Pass the rating as a prop
+};
+
+const RatingStars: React.FC<RatingProps> = ({ rating }) => {
+  const renderStars = () => {
+    const stars = [];
+    const maxStars = 5;
+
+    for (let i = 0; i < maxStars; i++) {
+      if (i < Math.floor(rating)) {
+        stars.push(<Icon key={i} name="star_icon" />); 
+      } else if (i < rating) {
+        stars.push(<Icon key={i} name='star_half_filled_icon'  width={15} height={15}/>); 
+      } else {
+        stars.push(<Icon key={i} name="star_unfilled_icon" />);
+      }
+    }
+
+    return stars;
+  };
+
+  return <View style={{ flexDirection: 'row' }}>{renderStars()}</View>;
+};
+
+
 
 const TeacherDashboard: FC<TeacherDashboardScreenProps> = ({
   navigation,
@@ -389,13 +424,15 @@ const TeacherDashboard: FC<TeacherDashboardScreenProps> = ({
 
   useFocusEffect(
     React.useCallback(() => {
-      dispatch(getDashboardDetailsAndObservationList(userData.id));
+      dispatch(getDashboardDetailsAndObservationList(userData?.id));
     }, []),
   );
 
   const closeDrawer = () => {
     setIsDrawerOpen(false);
   };
+
+  console.log('user', userData.userImage);
   return (
     <Drawer
       open={isDrawerOpen}
@@ -424,7 +461,14 @@ const TeacherDashboard: FC<TeacherDashboardScreenProps> = ({
           }}>
           <View style={{justifyContent: 'space-evenly', width: '55%'}}>
             <View style={{flexDirection: 'row', justifyContent: 'center'}}>
-              <Icon name="pro_pic_sample" />
+              <Image
+                source={{uri: `data:image/jpeg;base64,${userData?.userImage}`}}
+                style={{
+                  width: normaliseDesigns(50),
+                  height: normaliseDesigns(50),
+                  borderRadius: 40,
+                }}
+              />
               <View style={{marginLeft: 10, flex: 1}}>
                 <Text fontVariant="bold" size="body2">
                   Hi, {userData?.name}
@@ -448,12 +492,7 @@ const TeacherDashboard: FC<TeacherDashboardScreenProps> = ({
                 {dashboardDetails?.averageRating}
               </Text>
               <View style={{justifyContent: 'space-around'}}>
-                <View style={{flexDirection: 'row'}}>
-                  {Array.from({length: 4}, () => '').map(item => (
-                    <Icon name="star_icon" />
-                  ))}
-                  <Icon name="star_unfilled_icon" />
-                </View>
+              <RatingStars rating={Number(dashboardDetails?.averageRating)} />
                 <Text size="verysmall3">from 1000 ratings</Text>
               </View>
             </View>
@@ -509,9 +548,16 @@ const TeacherDashboard: FC<TeacherDashboardScreenProps> = ({
               key={index}
               rating={item.ratings?.toString()}
               userAssisted={item.userAssessed}
-              image={''}
+              image={item.reportedByImage}
               reportedBy={item.reportedBy}
-              onPress={() => {}}
+              onPress={() => {  
+                navigation.navigate('ReportsStack', {
+                  screen: 'ObservationReport',
+                  params: {
+                    observationItem: item,
+                  },
+                });
+              }}
             />
           ))}
         </View>

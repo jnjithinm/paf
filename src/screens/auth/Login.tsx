@@ -15,7 +15,10 @@ import Button from '../../components/Button';
 import {useAppDispatch} from '../../redux/store';
 import {authenticateUser} from '../../redux/features/authSlice';
 import Layout from '../../components/Layout';
-import { getUserCredentials, storeUserCredentials } from '../../utils/functions/localStorageOperations';
+import {
+  getUserCredentials,
+  storeUserCredentials,
+} from '../../utils/functions/localStorageOperations';
 import useValidation from '../../utils/hooks/useValidation';
 
 type LoginNavigationProp = StackNavigationProp<MainStackParamList, 'Login'>;
@@ -29,8 +32,8 @@ interface LoginScreenProps {
 const Login: FC<LoginScreenProps> = ({navigation, route}) => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
-  const [isChanged,setIsChanged]=useState<boolean>(false);
-  const [isShowError,setIsShowError]=useState<boolean>(false);
+  const [isChanged, setIsChanged] = useState<boolean>(false);
+  const [isShowError, setIsShowError] = useState<boolean>(false);
   const [isRememberMe, setIsRememberMe] = useState<boolean>(false);
   const dispatch = useAppDispatch();
 
@@ -46,23 +49,18 @@ const Login: FC<LoginScreenProps> = ({navigation, route}) => {
     value: password,
   });
 
-
-  const onPressLogin = async() => {
-
-      setIsShowError(true);
-      if (!emailIdErrorMessage && !passwordErrorMessage) {
-        if (isRememberMe && isChanged) {
-          await storeUserCredentials(email, password);
-          dispatch(
-            // authenticateUser({username: 'teacher.2.373', password: 'Ch1$!r+$1k'}),
-            authenticateUser({username: email, password: password}),
-          );
-        } else {
-          dispatch(
-            authenticateUser({username: email, password: password}),
-          );
-        }
-      
+  const onPressLogin = async () => {
+    setIsShowError(true);
+    if (!emailIdErrorMessage && !passwordErrorMessage) {
+      if (isRememberMe && isChanged) {
+        await storeUserCredentials(email, password);
+        await  dispatch(
+          // authenticateUser({username: 'teacher.2.373', password: 'Ch1$!r+$1k'}),
+          authenticateUser({username: email, password: password}),
+        );
+      } else {
+        await  dispatch(authenticateUser({username: email, password: password}));
+      }
     }
   };
 
@@ -83,7 +81,6 @@ const Login: FC<LoginScreenProps> = ({navigation, route}) => {
       const getUserDetails = async () => {
         try {
           const data = await getUserCredentials();
-          console.log("daata",data)
           if (data?.emailId && data?.password) {
             setEmail(data.emailId);
             setPassword(data?.password);
@@ -96,7 +93,6 @@ const Login: FC<LoginScreenProps> = ({navigation, route}) => {
       getUserDetails();
     }, []),
   );
-
 
   return (
     <Layout
@@ -127,9 +123,9 @@ const Login: FC<LoginScreenProps> = ({navigation, route}) => {
             setIsChanged(true);
           }}
           errorMessage={emailIdErrorMessage}
-          isShowError={isShowError}
+          // isShowError={isShowError}
           placeholder="Enter your email address"
-          autoCapitalize='none'
+          autoCapitalize="none"
         />
         <TextInput
           label="Password"
@@ -140,11 +136,11 @@ const Login: FC<LoginScreenProps> = ({navigation, route}) => {
             setIsChanged(true);
           }}
           errorMessage={passwordErrorMessage}
-          isShowError={isShowError}
+          // isShowError={isShowError}
           placeholder="Enter your password"
-          secureTextEntry
+          passwordVisibility
           style={{marginTop: 10}}
-          autoCapitalize='none'
+          autoCapitalize="none"
         />
         <View
           style={{
@@ -185,7 +181,7 @@ const Login: FC<LoginScreenProps> = ({navigation, route}) => {
         <Button
           style={{width: '100%'}}
           text="Log In"
-          active
+          active={Boolean(!emailIdErrorMessage && !passwordErrorMessage)}
           onPress={onPressLogin}
         />
         <View

@@ -166,7 +166,7 @@ const Layout: FC<LayoutPropsTypes> = ({
         onScroll={handleScroll}
         // {...panResponder?.panHandlers}
         showsVerticalScrollIndicator={showsVerticalScrollIndicator}>
-        {modifiedChildren}
+        {  modifiedChildren}
       </ScrollView>
       {isLoading && <Loading />}
     </KeyboardAvoidingView>
