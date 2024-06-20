@@ -14,25 +14,31 @@ import Tab from '../../components/Tab';
 import Text from '../../components/Text';
 import Icon, {IconTypes} from '../../components/Icon';
 import colors from '../../config/colors';
-import {ObservationsTile} from '../dashboard/TeacherDashboard';
+import {
+  ObservationsTile,
+  RenderSearchWithFilter,
+} from '../dashboard/TeacherDashboard';
 import {ReportsTabBarStackParamList} from '../../navigation/ReportsTabStack';
 import {normaliseDesigns} from '../../utils/helpers/responsiveHelpers';
 import Calendar from '../../components/Calendar';
 import {useAppDispatch, useAppSelector} from '../../redux/store';
-import {getAllObservations} from '../../redux/features/observationSlice';
+import {
+  ObservationData,
+  getAllObservations,
+} from '../../redux/features/observationSlice';
 
-type ReportsMainPageNavigationProp = StackNavigationProp<
+type ObservationReportsMainPageNavigationProp = StackNavigationProp<
   ReportsTabBarStackParamList,
-  'ReportsMainPage'
+  'ObservationReportsMainPage'
 >;
-type ReportsMainPageRouteProp = RouteProp<
+type ObservationReportsMainPageRouteProp = RouteProp<
   ReportsTabBarStackParamList,
-  'ReportsMainPage'
+  'ObservationReportsMainPage'
 >;
 
-interface ReportsMainPageScreenProps {
-  navigation: ReportsMainPageNavigationProp;
-  route: ReportsMainPageRouteProp;
+interface ObservationReportsMainPageScreenProps {
+  navigation: ObservationReportsMainPageNavigationProp;
+  route: ObservationReportsMainPageRouteProp;
 }
 
 type FloatingButtonTypes = {
@@ -84,11 +90,11 @@ export const FloatingButton: FC<FloatingButtonTypes> = ({
   );
 };
 
-const ReportsMainPage: FC<ReportsMainPageScreenProps> = ({
+const ObservationReportsMainPage: FC<ObservationReportsMainPageScreenProps> = ({
   navigation,
   route,
 }) => {
-  const [rubricListData, setRubricListData] = useState<any[]>([]);
+  const [rubricListData, setRubricListData] = useState<ObservationData[]>([]);
   const [isAddButtonPressed, setIsAddButtonPressed] = useState<boolean>(false);
   const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
 
@@ -147,7 +153,6 @@ const ReportsMainPage: FC<ReportsMainPageScreenProps> = ({
             setIsFilterOpen(false);
           }}
           isVisible={isFilterOpen}
-          isOKCancelButtonsNeeded
         />
         <Text size="body3" fontVariant="bold" style={{marginVertical: 10}}>
           Observation Reports
@@ -160,52 +165,17 @@ const ReportsMainPage: FC<ReportsMainPageScreenProps> = ({
           ]}
           onClick={title => handleTabClick(title)}
         />
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            marginTop: 20,
-          }}>
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              width: '85%',
-              backgroundColor: '#F5F7FA',
-              borderRadius: 10,
-              paddingHorizontal: 10,
-            }}>
-            <TextInput
-              style={{flex: 1, color: colors.blackColor, paddingVertical: 5}}
-              placeholder="Search"
-              placeholderTextColor={colors.darkGrey}
-              // onChangeText={text => {
-              //   setSearchText(text);
-              // }}
-            />
-            <Icon name="search_icon" />
-          </View>
-          <TouchableOpacity
-            style={{
-              borderWidth: 1,
-              borderColor: colors.primaryColor,
-              padding: 8,
-              borderRadius: 10,
-            }}
-            onPress={() => {
-              setIsFilterOpen(true);
-            }}>
-            <Icon name="filter_icon" />
-          </TouchableOpacity>
-        </View>
-        <View style={{marginTop: 10}}>
+        <RenderSearchWithFilter
+          onTextChange={()=>{}}
+          onPressFilterIcon={()=>{}}
+        />
+        <View style={{marginVertical: 10}}>
           {rubricListData?.map((item, index) => (
             <ObservationsTile
               key={index}
               rating={item.ratings?.toString()}
               userAssisted={item.userAssessed}
-              image={''}
+              image={item.i}
               reportedBy={item.reportedBy}
               onPress={() => {
                 navigation.navigate('ObservationReport', {
@@ -248,4 +218,4 @@ const ReportsMainPage: FC<ReportsMainPageScreenProps> = ({
     </>
   );
 };
-export default ReportsMainPage;
+export default ObservationReportsMainPage;

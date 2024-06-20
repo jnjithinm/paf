@@ -15,7 +15,7 @@ import {
 import colors from '../config/colors';
 import Icon, {IconTypes} from './Icon';
 import Text from './Text';
-import {FONT_VARIANT} from '../config/themes';
+import {FONT_SIZES, FONT_VARIANT} from '../config/themes';
 import {normaliseDesigns} from '../utils/helpers/responsiveHelpers';
 
 type RenderWarningMessageTypes = {
@@ -98,7 +98,7 @@ const TextInput: FC<TextInputPropsTypes> = ({
   const inputRef = useRef<RNTextInput | null>(null);
   const labelPosition = new Animated.Value(value ? -15 : 0);
   const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
-  const [isShowError,setIsShowError]=useState<boolean>(false);
+  const [isShowError, setIsShowError] = useState<boolean>(false);
 
   const handleFocus = () => {
     setIsFocused(true);
@@ -145,7 +145,7 @@ const TextInput: FC<TextInputPropsTypes> = ({
       {label && (
         <Text
           style={{alignSelf: 'flex-start', marginBottom: 3, fontWeight: '700'}}
-          size="body1">
+          size='small3'>
           {label}
         </Text>
       )}
@@ -157,9 +157,10 @@ const TextInput: FC<TextInputPropsTypes> = ({
           alignItems: 'center',
           flexDirection: 'row',
           justifyContent: 'space-between',
-          minHeight: 50,
+          maxHeight: 40,
           ...textInputStyle,
-          paddingHorizontal: icon ? 5 : 15,
+          paddingHorizontal: icon ? 5 : 10,
+          width: '100%',
           // ...style,
         }}>
         {icon && (
@@ -176,10 +177,9 @@ const TextInput: FC<TextInputPropsTypes> = ({
           style={{
             color: colors.blackColor,
             opacity: rest.editable !== false ? undefined : 0.3,
-
             fontFamily: FONT_VARIANT.regular,
-            // flex: 1,
-            // width: '100%',
+            fontSize: FONT_SIZES.small3,
+            width: passwordVisibility ? '80%' : '100%',
             ...textInputStyle,
           }}
           placeholderTextColor={'#ABB4BD'}
@@ -206,7 +206,7 @@ const TextInput: FC<TextInputPropsTypes> = ({
                   ? 'eye_off'
                   : 'eye_off_disabled'
               }
-              style={{alignSelf:'flex-end',justifyContent:'flex-end'}}
+              style={{alignSelf: 'flex-end', justifyContent: 'flex-end'}}
               width={20}
               height={20}
             />

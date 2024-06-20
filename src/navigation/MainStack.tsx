@@ -8,11 +8,20 @@ import Login from '../screens/auth/Login';
 import DashboardTabNavigator, { DashboardTabBarStackParamList } from './DashboardTabStack';
 import {useAppSelector} from '../redux/store';
 import { NavigatorScreenParams } from '@react-navigation/native';
+import ResetPassword from '../screens/auth/ResetPassword';
+import CreateNewPassword from '../screens/auth/CreateNewPassword';
+import SignUp from '../screens/auth/SignUp';
+import Notifications from '../screens/dashboard/Notifications';
 
 export type MainStackParamList = {
   Splash: undefined;
   Login: undefined;
+  ResetPassword:undefined;
+  CreateNewPassword:undefined;
+  SignUp:undefined;
   DashboardTabStack:  NavigatorScreenParams<DashboardTabBarStackParamList>;
+  Notifications:undefined;
+
 };
 
 const MainStack = createStackNavigator<MainStackParamList>();
@@ -35,7 +44,7 @@ const MainStackNavigator = () => {
   // const memoizedIsLoggedIn = useMemo(() => isLoggedIn, [isLoggedIn]);
   const {isLoggedIn} = useAppSelector(state => state.auth);
 
-  if (isLoggedIn) {
+  if (true) {
     return (
       <MainStack.Navigator
         screenOptions={({route}) => {
@@ -47,6 +56,10 @@ const MainStackNavigator = () => {
         <MainStack.Screen
           name="DashboardTabStack"
           component={DashboardTabNavigator}
+        />
+         <MainStack.Screen
+          name='Notifications'
+          component={Notifications}
         />
       </MainStack.Navigator>
     );
@@ -69,6 +82,9 @@ const MainStackNavigator = () => {
         }}>
         <MainStack.Screen name="Splash" component={Splash} />
         <MainStack.Screen name="Login" component={Login} />
+        <MainStack.Screen name="ResetPassword" component={ResetPassword} />
+        <MainStack.Screen name='CreateNewPassword' component={CreateNewPassword}/>
+        <MainStack.Screen name='SignUp' component={SignUp}/>
       </MainStack.Navigator>
     );
   }

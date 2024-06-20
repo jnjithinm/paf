@@ -1,6 +1,7 @@
 import {ViewComponent} from 'react-native';
 import colors from './colors';
 import {FONT_SIZES, FONT_STYLES, FONT_VARIANT, OPACITY} from './themes';
+import { allLevels, allRoles, allUserTypes } from './constants';
 
 
 export type CustomNumericFieldRef = {
@@ -16,6 +17,10 @@ export type FileObject = {
   name: string;
 };
 
+export type UserCredentialTypes={
+  username:string;
+  password:string
+}
 
 export type FontSizeValuesTypes = keyof typeof FONT_SIZES;
 export type OpacityValuesTypes = keyof typeof OPACITY;
@@ -24,8 +29,7 @@ export type FontStyleValuesTypes = keyof typeof FONT_STYLES;
 export type ColorTypes = keyof typeof colors;
 
 
-
-export type UserCredentialTypes={
-  emailId:string;
-  password:string
-}
+// Defining Types
+export type Role = typeof allRoles[number];
+export type Level = typeof allLevels[number];
+export type UserType = typeof allUserTypes[number];

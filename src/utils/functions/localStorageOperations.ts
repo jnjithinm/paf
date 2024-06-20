@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { UserCredentialTypes } from '../../config/types';
+import {UserCredentialTypes} from '../../config/types';
 
 export const storeToken = async (token: string) => {
   try {
@@ -18,42 +18,36 @@ export const removeToken = async () => {
 };
 
 export const storeUserCredentials = async (
-  emailId: string,
+  username: string,
   password: string,
-
 ) => {
   try {
-    if (emailId) {
-      await AsyncStorage.setItem('emailId', emailId);
+    if (username) {
+      await AsyncStorage.setItem('username', username);
     }
     if (password) {
       await AsyncStorage.setItem('password', password);
     }
-
-    
   } catch (error) {
     console.log('Error saving screen name: ', error);
   }
 };
 
-export const getUserCredentials = async (): Promise<UserCredentialTypes | null> => {
-  try {
-    const emailId = await AsyncStorage.getItem('emailId');
-    const password = await AsyncStorage.getItem('password');
+export const getUserCredentials =
+  async (): Promise<UserCredentialTypes | null> => {
+    try {
+      const username = await AsyncStorage.getItem('username');
+      const password = await AsyncStorage.getItem('password');
 
-    if (
-      emailId === null ||
-      password === null
-
-    ) {
+      if (username === null || password === null) {
+        return null;
+      }
+      return {username, password};
+    } catch (error) {
+      console.log('Error getting user details: ', error);
       return null;
     }
-    return {emailId, password};
-  } catch (error) {
-    console.log('Error getting user details: ', error);
-    return null;
-  }
-};
+  };
 
 export const clearUserCredentials = async () => {
   try {

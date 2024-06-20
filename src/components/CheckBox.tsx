@@ -27,18 +27,18 @@ export default CheckBox;
 
 const styles = StyleSheet.create({
   selected: {
-    height:normaliseDesigns(20),
-    width: normaliseDesigns(20),
-    borderRadius: 5,
+    height:normaliseDesigns(14),
+    width: normaliseDesigns(14),
+    borderRadius: 4,
     backgroundColor: colors.blackColor,
     alignItems: 'center',
     justifyContent: 'center',
   },
   deselected: {
-    height:normaliseDesigns(20),
-    width: normaliseDesigns(20),
-    borderRadius: 5,
-    borderWidth: 2,
+    height:normaliseDesigns(14),
+    width: normaliseDesigns(14),
+    borderRadius: 4,
+    borderWidth: 1,
     borderColor: '#ABB4BD',
   },
 });

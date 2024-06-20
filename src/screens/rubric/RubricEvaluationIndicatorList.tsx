@@ -59,7 +59,9 @@ const RubricEvaluationIndicatorList: FC<RubricEvaluationIndicatorListScreenProps
             (Last update: 23/01/2024 by Admin)
           </Text>
         </View>
-        <SearchFilter placeholder="Search domain" />
+        <SearchFilter placeholder="Search domain" onSearch={function (text: string): void {
+          throw new Error('Function not implemented.');
+        } } />
         <View style={{marginVertical:10}}>
         {rubricData?.dataList.indicators?.map(item => (
           <RubricIndicatorList

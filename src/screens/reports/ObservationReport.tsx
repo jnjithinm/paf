@@ -2,10 +2,10 @@ import React, {FC, useEffect, useState} from 'react';
 import {KeyboardAvoidingView, Platform, View} from 'react-native';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
+import {TextInput as RNTextInput} from 'react-native';
 
 import {FONT_SIZES, FONT_VARIANT} from '../../config/themes';
 import Layout from '../../components/Layout';
-import TextInput from '../../components/TextInput';
 import Text from '../../components/Text';
 import Image from '../../components/Image';
 import colors from '../../config/colors';
@@ -14,6 +14,8 @@ import EvidenceCard from '../../components/EvidenceCard';
 import {ReportsTabBarStackParamList} from '../../navigation/ReportsTabStack';
 import {useAppDispatch, useAppSelector} from '../../redux/store';
 import {getObservationById} from '../../redux/features/observationSlice';
+import {RatingStars, RenderProfileIcon} from '../dashboard/TeacherDashboard';
+import FooterWithButtons from '../../components/FooterWithButtons';
 
 type ObservationReportNavigationProp = StackNavigationProp<
   ReportsTabBarStackParamList,
@@ -44,18 +46,21 @@ const ObservationReport: FC<ObservationReportScreenProps> = ({
 
   return (
     <KeyboardAvoidingView
-      style={{flex: 1}} 
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    >
+      style={{flex: 1}}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <Layout
         overridePaddingHorizontal
         overridePaddingVertical
         style={{paddingHorizontal: 15, paddingVertical: 0}}
         icon="reports_icon"
-        title="New Observation">
+        title="Report">
         <View style={{marginVertical: 20}}>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <Icon name={'evidence_card_sample_image'} />
+            <RenderProfileIcon
+              image={observationById?.userImage}
+              name={observationById?.userName?.toString() || ''}
+              size={50}
+            />
             <View style={{flex: 1, justifyContent: 'center', marginLeft: 10}}>
               <View>
                 <Text fontVariant="bold" size="body2">
@@ -63,10 +68,9 @@ const ObservationReport: FC<ObservationReportScreenProps> = ({
                 </Text>
               </View>
               <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                {Array.from({length: 4}, () => '').map(item => (
-                  <Icon name="star_icon" />
-                ))}
-                <Icon name="star_unfilled_icon" />
+                <RatingStars
+                  rating={Number(observationById?.observationAvgRatings)}
+                />
                 <View
                   style={{
                     height: 10,
@@ -76,7 +80,7 @@ const ObservationReport: FC<ObservationReportScreenProps> = ({
                   }}
                 />
                 <Text style={{color: '#4E565F'}} size="small3">
-                  3.2/5
+                  {observationById?.observationAvgRatings}/5
                 </Text>
               </View>
             </View>
@@ -105,8 +109,8 @@ const ObservationReport: FC<ObservationReportScreenProps> = ({
               photoCount={item?.fileCount?.Image}
               onPressEvidenceCard={() => {
                 navigation.navigate('AddNewEvidenceCard', {
-                  observationStatus: observationById.observationStatus,
-                  evidenceCardDetails:item
+                  observationStatus: observationById?.observationStatus,
+                  evidenceCardDetails: item,
                 });
               }}
             />
@@ -116,29 +120,29 @@ const ObservationReport: FC<ObservationReportScreenProps> = ({
             <Text
               style={{
                 color: colors.blackColor,
-                marginBottom: 5,
+                marginBottom: 0,
               }}
               fontVariant="bold">
-              Feedback note
+              Feedback note for teacher
             </Text>
-            <TextInput
-              label=""
+            <RNTextInput
               value={observationById?.feedbackDescription?.toString() || ''}
-              setValue={setFeedbackNote}
+              onChangeText={setFeedbackNote}
+              style={{color: '#4E565F'}}
               multiline
               maxLength={200}
               editable={false}
             />
-            <Text
-              style={{
-                alignSelf: 'flex-end',
-                fontFamily: FONT_VARIANT.regular,
-                fontSize: FONT_SIZES.small2,
-                marginTop: 5,
-              }}>{`${feedbackNote.length}/200`}</Text>
           </View>
         </View>
       </Layout>
+      <FooterWithButtons
+        onPressProceedButton={() => {}}
+        onPressCancelButton={() => {}}
+        icon="edit_icon"
+        proceedButtonText="Edit card"
+        isActiveProceedButton
+      />
     </KeyboardAvoidingView>
   );
 };

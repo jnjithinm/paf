@@ -7,6 +7,7 @@ import {normaliseDesigns} from '../utils/helpers/responsiveHelpers';
 import {logoutAndclearToken} from '../redux/features/authSlice';
 import {useAppDispatch, useAppSelector} from '../redux/store';
 import {navigate} from '../utils/helpers/navigationHelpers';
+import { RenderProfileIcon } from '../screens/dashboard/TeacherDashboard';
 
 type RenderItemTypes = {
   icon?: IconTypes;
@@ -85,6 +86,8 @@ const DrawerContent: FC<DrawerContentTypes> = ({closeDrawer}) => {
   const dispatch = useAppDispatch();
 
   const {userData} = useAppSelector(state => state.auth);
+  const {dashboardDetails} = useAppSelector(state => state.observation);
+
   const itemsArray: RenderItemTypes[] = [
     {
       icon: 'drawer_icon_home',
@@ -161,25 +164,22 @@ const DrawerContent: FC<DrawerContentTypes> = ({closeDrawer}) => {
         <View
           style={{
             flexDirection: 'row',
-            justifyContent: 'center',
+            justifyContent: 'flex-start',
             marginTop: 40,
             alignItems: 'center',
             alignContent: 'center',
           }}>
-          <Image
-            source={{uri: `data:image/jpeg;base64,${userData?.userImage}`}}
-            style={{
-              width: normaliseDesigns(50),
-              height: normaliseDesigns(50),
-              borderRadius: 40,
-            }}
-          />
-          <View style={{marginLeft: 10, justifyContent: 'center', top: 10}}>
+            <RenderProfileIcon
+                image={userData?.userImage}
+                name={userData?.name}
+                size={40}
+              />
+          <View style={{marginLeft: 10}}>
             <Text fontVariant="bold" size="body2">
-              Hi, Swaraj
+            Hi, {userData?.name}
             </Text>
-            <Text style={{flex: 1}} size="small1">
-              Nirmala Niketan High School
+            <Text size="small1">
+            {dashboardDetails?.schoolName}
             </Text>
           </View>
         </View>

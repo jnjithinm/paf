@@ -16,7 +16,6 @@ import Layout from '../../components/Layout';
 import Text from '../../components/Text';
 import Image from '../../components/Image';
 import FileUpload from '../../components/FileUpload';
-import Icon from '../../components/Icon';
 import FooterWithButtons from '../../components/FooterWithButtons';
 import {useAppDispatch, useAppSelector} from '../../redux/store';
 import {
@@ -29,6 +28,7 @@ import LabeledDropdown, {
 import {saveEvidenceCard} from '../../redux/features/observationSlice';
 import {FileObject} from '../../config/types';
 import {ReportsTabBarStackParamList} from '../../navigation/ReportsTabStack';
+import RatingInput from '../../components/RatingInput';
 
 type AddNewEvidenceCardNavigationProp = StackNavigationProp<
   ReportsTabBarStackParamList,
@@ -44,92 +44,6 @@ interface AddNewEvidenceCardScreenProps {
   route: AddNewEvidenceCardRouteProp;
 }
 
-type RatingInputTypes = {
-  label: string;
-  rating: number;
-  onChangeRating: (rating: number) => void;
-  size?: number;
-  disabled?: boolean;
-};
-
-export const RatingInput: FC<RatingInputTypes> = ({
-  label,
-  rating,
-  onChangeRating,
-  size = 20,
-  disabled,
-}) => {
-  const [selectedRating, setSelectedRating] = useState(rating);
-
-  const handleStarPress = (index: number) => {
-    const newRating = index + 1;
-    setSelectedRating(newRating);
-    onChangeRating(newRating);
-  };
-
-  const filledStars = Math.floor(rating);
-  const hasHalfStar = rating - filledStars >= 0.5;
-  return (
-    <View>
-      {label && (
-        <Text fontVariant="bold" size="body1">
-          {label}
-        </Text>
-      )}
-      <View
-        style={{
-          flexDirection: 'row',
-          marginTop: 5,
-          width: '35%',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-        }}>
-        {Array.from({length: 5}, (_, index) => {
-          if (index < filledStars) {
-            return (
-              <TouchableOpacity
-                key={index}
-                onPress={() => handleStarPress(index)}
-                disabled={disabled}>
-                <Icon key={index} name="star_icon" width={size} height={size} />
-              </TouchableOpacity>
-            );
-          } else if (index === filledStars && hasHalfStar) {
-            return (
-              <TouchableOpacity
-                key={index}
-                onPress={() => handleStarPress(index)}
-                disabled={disabled}>
-                <Icon
-                  key={index}
-                  name="star_half_filled_icon"
-                  width={size}
-                  height={size}
-                />
-              </TouchableOpacity>
-            );
-          } else {
-            return (
-              <TouchableOpacity
-                key={index}
-                onPress={() => handleStarPress(index)}
-                disabled={disabled}>
-                <Icon
-                  key={index}
-                  name="star_unfilled_icon"
-                  width={size}
-                  height={size}
-                />
-              </TouchableOpacity>
-            );
-          }
-        })}
-        <View style={{height: 15, width: 1, backgroundColor: '#E4E7EB'}} />
-        <Text style={{left: 5}}>( {rating} ) </Text>
-      </View>
-    </View>
-  );
-};
 
 const AddNewEvidenceCard: FC<AddNewEvidenceCardScreenProps> = ({
   navigation,

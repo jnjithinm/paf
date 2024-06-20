@@ -30,6 +30,8 @@ interface LayoutPropsTypes extends ViewStyle {
   isLoading?: boolean[];
   hideHeader?: boolean;
   onPressMenuIcon?: () => void;
+  onPressBellIcon?:()=>void;
+  onPressProfileIcon?:()=>void;
   onPressBackArrow?: () => void;
   onScrollToEnd?: () => void;
   onPressLogoutButton?: () => void;
@@ -38,6 +40,7 @@ interface LayoutPropsTypes extends ViewStyle {
   title?: string;
   icon?: ImageIconNames;
   titleTransition?: boolean;
+
 }
 const Layout: FC<LayoutPropsTypes> = ({
   children,
@@ -50,6 +53,8 @@ const Layout: FC<LayoutPropsTypes> = ({
   hideHeader,
   // isLoading = [false],
   onPressMenuIcon,
+  onPressBellIcon,
+  onPressProfileIcon,
   onScrollToEnd,
   //   navigateBack,
   onPressBackArrow,
@@ -59,6 +64,7 @@ const Layout: FC<LayoutPropsTypes> = ({
   title,
   icon,
   titleTransition,
+
 }) => {
   const {isLoading} = useAppSelector(state => state.auth);
   // const {isLoading}=useAppSelector(state=>state.observation);
@@ -147,6 +153,8 @@ const Layout: FC<LayoutPropsTypes> = ({
         <Header
           avoidBackButton={avoidBackButton}
           dashboard={dashboard}
+          onPressBellIcon={onPressBellIcon}
+          onPressProfileIcon={onPressProfileIcon}
           onPressBackArrow={onPressBackArrow}
           onPressLogoutButton={onPressLogoutButton}
           title={title}

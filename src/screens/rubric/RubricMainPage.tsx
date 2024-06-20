@@ -14,6 +14,7 @@ import {
   deleteRubric,
   getAllRubrics,
 } from '../../redux/features/rubricSlice';
+import Text from '../../components/Text';
 
 type RubricMainPageNavigationProp = StackNavigationProp<
   RubricTabBarStackParamList,
@@ -100,7 +101,13 @@ const RubricMainPage: FC<RubricMainPageScreenProps> = ({
       overridePaddingHorizontal
       overridePaddingVertical
       style={{paddingHorizontal: 15}}
-      title="Evaluation Rubrics">
+      title="Evaluation Rubrics"
+      icon="evaluation_icon"
+      titleTransition
+    >
+        <Text size="body3" fontVariant="bold" style={{marginVertical: 10}}>
+        Evaluation Rubrics
+        </Text>
       <View style={{marginVertical: 10}}>
         <Tab tabs={tabs} onClick={title => handleTabClick(title)} />
 

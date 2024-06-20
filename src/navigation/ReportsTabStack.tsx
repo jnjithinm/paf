@@ -4,7 +4,7 @@ import {
   createStackNavigator,
 } from '@react-navigation/stack';
 
-import ReportsMainPage from '../screens/reports/ReportsMainPage';
+import ReportsMainPage from '../screens/reports/ObservationReportsMainPage';
 import ReportsEvidenceCard from '../screens/reports/ReportsEvidenceCard';
 import AddNewObservation from '../screens/reports/AddNewObservation';
 import AddNewEvidenceCard from '../screens/reports/AddNewEvidenceCard';
@@ -13,12 +13,13 @@ import {
   EvidenceResponse,
   ObservationData,
 } from '../redux/features/observationSlice';
-import ObservationReport from '../screens/reports/ObservationReport';
 import {FileObject} from '../config/types';
 import PlayFile from '../screens/reports/PlayFile';
+import ObservationReportsMainPage from '../screens/reports/ObservationReportsMainPage';
+import ObservationReport from '../screens/reports/ObservationReport';
 
 export type ReportsTabBarStackParamList = {
-  ReportsMainPage: undefined;
+  ObservationReportsMainPage: undefined;
   ReportsEvidenceCard: {userAccessed: string};
   AddNewObservation: undefined;
   AddNewEvidenceCard: {
@@ -62,8 +63,8 @@ const ReportsStack = () => {
         keyboardHidesTabBar: true,
       })}>
       <ReportsStackTab.Screen
-        name="ReportsMainPage"
-        component={ReportsMainPage}
+        name="ObservationReportsMainPage"
+        component={ObservationReportsMainPage}
       />
       <ReportsStackTab.Screen
         name="ReportsEvidenceCard"

@@ -5,13 +5,13 @@ import endPoints from '../../config/endPoints';
 
 import {FileObject} from '../../config/types';
 import {PaginationRequest} from './usersSlice';
-import { setLoading } from './authSlice';
+import {setLoading} from './authSlice';
 
 interface Observation {
   userAssessed: string;
-  userImage:string;
+  userImage: string | null;
   reportedBy: string;
-  reportedByImage:string;
+  reportedByImage: string | null;
   ratings: number;
 }
 
@@ -86,6 +86,7 @@ type GetObservationByIdResponse = {
     feedbackDescription: string;
     observationStatus: 'Completed' | 'Pending';
     observationAvgRatings: number;
+    userImage: string | null;
     evidenceResponseList: EvidenceResponse[];
   };
   status: number;
@@ -143,7 +144,7 @@ type GetAllObservationsResponsePayload = GetAllObservationsResponse['payload'];
 export const getDashboardDetailsAndObservationList = createAsyncThunk<
   GetDashboardDetailsAndObservationListResponse,
   number
->('observation/dashboard', async (id, {dispatch,rejectWithValue}) => {
+>('observation/dashboard', async (id, {dispatch, rejectWithValue}) => {
   try {
     dispatch(setLoading(true));
     const response = await api.get(
@@ -153,7 +154,7 @@ export const getDashboardDetailsAndObservationList = createAsyncThunk<
     return response.data as GetDashboardDetailsAndObservationListResponse;
   } catch (error: any) {
     return rejectWithValue(error.response.data);
-  } finally{
+  } finally {
     dispatch(setLoading(false));
   }
 });
@@ -161,14 +162,14 @@ export const getDashboardDetailsAndObservationList = createAsyncThunk<
 export const getObservationById = createAsyncThunk<
   GetObservationByIdResponse,
   number
->('observation/getObservationById', async (id, {dispatch,rejectWithValue}) => {
+>('observation/getObservationById', async (id, {dispatch, rejectWithValue}) => {
   try {
     dispatch(setLoading(true));
     const response = await api.get(endPoints.GET_OBSERVATION_BY_ID + id);
     return response.data as GetObservationByIdResponse;
   } catch (error: any) {
     return rejectWithValue(error.response.data);
-  } finally{
+  } finally {
     dispatch(setLoading(false));
   }
 });
@@ -176,14 +177,14 @@ export const getObservationById = createAsyncThunk<
 export const getEvidenceById = createAsyncThunk<
   GetObservationByIdResponse,
   number
->('observation/getEvidenceById', async (id, {dispatch,rejectWithValue}) => {
+>('observation/getEvidenceById', async (id, {dispatch, rejectWithValue}) => {
   try {
     dispatch(setLoading(true));
     const response = await api.get(endPoints.GET_EVIDENCE_BY_ID + id);
     return response.data as GetObservationByIdResponse;
   } catch (error: any) {
     return rejectWithValue(error.response.data);
-  } finally{
+  } finally {
     dispatch(setLoading(false));
   }
 });
@@ -193,7 +194,7 @@ export const getAllObservations = createAsyncThunk<
   [number, PaginationRequest]
 >(
   'observation/getAllObservations',
-  async ([id, payload], {dispatch,rejectWithValue}) => {
+  async ([id, payload], {dispatch, rejectWithValue}) => {
     try {
       dispatch(setLoading(true));
       const response = await api.post(
@@ -203,7 +204,7 @@ export const getAllObservations = createAsyncThunk<
       return response.data as GetAllObservationsResponse;
     } catch (error: any) {
       return rejectWithValue(error.response.data);
-    } finally{
+    } finally {
       dispatch(setLoading(false));
     }
   },
@@ -214,7 +215,7 @@ export const saveEvidenceCard = createAsyncThunk<
   [SaveEvidenceCardEvidenceInfoRequest, FileObject[]?]
 >(
   'observation/saveEvidenceCard',
-  async ([evidenceInfo, file], {dispatch,rejectWithValue}) => {
+  async ([evidenceInfo, file], {dispatch, rejectWithValue}) => {
     try {
       dispatch(setLoading(true));
       const formData = new FormData();
@@ -229,7 +230,7 @@ export const saveEvidenceCard = createAsyncThunk<
       return response.data as SaveEvidenceCardResponse;
     } catch (error: any) {
       return rejectWithValue(error.response.data);
-    } finally{
+    } finally {
       dispatch(setLoading(false));
     }
   },
@@ -263,7 +264,6 @@ const observationSlice = createSlice({
     builder
 
       .addCase(getDashboardDetailsAndObservationList.pending, state => {
-
         // state.isLoading = true;
       })
       .addCase(
@@ -281,11 +281,9 @@ const observationSlice = createSlice({
         getDashboardDetailsAndObservationList.rejected,
         (state, action) => {
           // state.isLoading = false;
-              
         },
       )
       .addCase(saveEvidenceCard.pending, state => {
-
         // state.isLoading = true;
       })
       .addCase(saveEvidenceCard.fulfilled, (state, action) => {
@@ -297,30 +295,23 @@ const observationSlice = createSlice({
       })
       .addCase(saveEvidenceCard.rejected, (state, action) => {
         // state.isLoading = false;
-
       })
       .addCase(getObservationById.pending, state => {
-
         // state.isLoading = true;
       })
       .addCase(getObservationById.fulfilled, (state, action) => {
         // state.isLoading = false;
 
-        state.observationById = {
-          ...state.observationById,
-          ...action.payload.payload,
-        };
+        state.observationById = action.payload.payload;
       })
       .addCase(getObservationById.rejected, (state, action) => {
         // state.isLoading = false;
-
       })
       .addCase(getAllObservations.pending, state => {
         // state.isLoading = true;
       })
       .addCase(getAllObservations.fulfilled, (state, action) => {
         // state.isLoading = false;
-
 
         state.allObservations = {
           ...state.allObservations,
@@ -329,7 +320,6 @@ const observationSlice = createSlice({
       })
       .addCase(getAllObservations.rejected, (state, action) => {
         // state.isLoading = false;
-
       });
   },
 });

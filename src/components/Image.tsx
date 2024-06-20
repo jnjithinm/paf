@@ -7,7 +7,6 @@ import list_icon from '../assets/images/list_icon.png';
 import search_reports_icon from '../assets/images/search_reports_icon.png';
 import reports_icon from '../assets/images/reports_icon.png';
 import search_icon from '../assets/images/search_icon.png';
-import edit_icon from '../assets/images/edit_icon.png';
 import evidence_icon from '../assets/images/evidence_icon.png';
 import img_upload_icon from '../assets/images/img_upload_icon.png';
 import upload_icon from '../assets/images/upload_icon.png';
@@ -16,10 +15,12 @@ import mic_icon from '../assets/images/mic_icon.png';
 import attachment from '../assets/images/attachment.png';
 import video_icon from '../assets/images/video_icon.png';
 import flow_icon from '../assets/images/flow_icon.png';
-import response_card_icon from '../assets/images/response_card_icon.png'
-import success_icon from '../assets/images/success_icon.jpg'
-import send_reminder_success_icon from '../assets/images/send_reminder_success_icon.png'
-
+import response_card_icon from '../assets/images/response_card_icon.png';
+import success_icon from '../assets/images/success_icon.jpg';
+import send_reminder_success_icon from '../assets/images/send_reminder_success_icon.png';
+import reset_password_icon from '../assets/images/reset_password_icon.png'
+import email_icon from '../assets/images/email_icon.png'
+import notification_icon from '../assets/images/notification_icon.png'
 
 export type ImageIconNames =
   | 'evaluation_icon'
@@ -36,9 +37,12 @@ export type ImageIconNames =
   | 'mic_icon'
   | 'video_icon'
   | 'flow_icon'
-  |'response_card_icon'
-  |'success_icon'
-  |'send_reminder_success_icon';
+  | 'response_card_icon'
+  | 'success_icon'
+  | 'send_reminder_success_icon'
+  | 'reset_password_icon'
+  | 'email_icon'
+  |'notification_icon';
 
 type ImagePropsTypes = {
   name: ImageIconNames;
@@ -51,8 +55,8 @@ const Image: FC<ImagePropsTypes> = ({name, size = 1, style, ...rest}) => {
     let width, height;
     switch (param) {
       case 'evaluation_icon':
-        width = 30 * size;
-        height = 45 * size;
+        width = 107.833333* size;
+        height = 85.333333 * size;
         return {Src: evaluation_icon, StyleConst: {width, height}};
       case 'list_icon':
         return {Src: list_icon, StyleConst: {width, height}};
@@ -60,8 +64,6 @@ const Image: FC<ImagePropsTypes> = ({name, size = 1, style, ...rest}) => {
         return {Src: reports_icon, StyleConst: styles.Evaluation_icon};
       case 'search_icon':
         return {Src: search_icon, StyleConst: styles.search_icon};
-      case 'edit_icon':
-        return {Src: edit_icon, StyleConst: styles.edit_icon};
       case 'evidence_icon':
         return {Src: evidence_icon, StyleConst: styles.evidence_icon};
       case 'img_upload_icon':
@@ -88,15 +90,26 @@ const Image: FC<ImagePropsTypes> = ({name, size = 1, style, ...rest}) => {
         width = 99 * size;
         height = 64 * size;
         return {Src: response_card_icon, StyleConst: {width, height}};
-        
-        case 'success_icon':
-          width = 114 * size;
-          height = 80 * size;
-          return {Src: success_icon, StyleConst: {width, height}};
-          case 'send_reminder_success_icon':
-            width = 91.1 * size;
-            height = 51.2 * size;
-            return {Src: send_reminder_success_icon, StyleConst: {width, height}};
+      case 'success_icon':
+        width = 114 * size;
+        height = 80 * size;
+        return {Src: success_icon, StyleConst: {width, height}};
+      case 'send_reminder_success_icon':
+        width = 91.1 * size;
+        height = 51.2 * size;
+        return {Src: send_reminder_success_icon, StyleConst: {width, height}};
+        case 'reset_password_icon':
+          width = 110.625 * size;
+          height = 64 * size;
+          return {Src: reset_password_icon, StyleConst: {width, height}};
+          case 'email_icon':
+            width = 110.75 * size;
+            height = 64 * size;
+            return {Src: email_icon, StyleConst: {width, height}};
+            case 'notification_icon':
+              width = 91.125 * size;
+              height = 64 * size;
+              return {Src: notification_icon, StyleConst: {width, height}};
       default:
         return {Src: evaluation_icon, StyleConst: {width, height}};
     }
@@ -133,7 +146,6 @@ const styles = StyleSheet.create({
   evidence_icon: {
     height: normaliseDesigns(20),
     width: normaliseDesigns(20),
-    margin: normaliseDesigns(5),
   },
   img_upload_icon: {
     height: normaliseDesigns(18),
@@ -144,6 +156,5 @@ const styles = StyleSheet.create({
   cross_icon: {
     height: normaliseDesigns(10),
     width: normaliseDesigns(10),
-    margin: normaliseDesigns(5),
   },
 });

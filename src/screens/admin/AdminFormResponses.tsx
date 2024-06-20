@@ -35,7 +35,7 @@ import {
   RubricWiseDescriptionRenderal,
   RubricWiseMainPageRenderal,
 } from './formResponsesRenderals/rubricWiseRenderals';
-import {FloatingButton} from '../reports/ReportsMainPage';
+import {FloatingButton} from '../reports/ObservationReportsMainPage';
 import Modal from '../../components/Modal';
 import MultiSelectDropdown from '../../components/MultiSelectDropdown';
 import {DropdownObject} from '../../components/LabeledDropdown';
@@ -166,7 +166,7 @@ const RenderModalContent: FC<RenderModalContentTypes> = ({
   </View>
 );
 
-const RenderSuccessModalContent: JSX.Element = (
+const RenderSuccessModalContent: FC=() => (
   <View
     style={{
       alignItems: 'center',
@@ -183,7 +183,7 @@ const RenderSuccessModalContent: JSX.Element = (
   </View>
 );
 
-const RenderSendReminderSuccessModalContent: JSX.Element = (
+const RenderSendReminderSuccessModalContent: FC=() => (
   <View
     style={{
       alignItems: 'center',
@@ -532,7 +532,7 @@ const AdminFormResponses: FC<AdminFormResponsesScreenProps> = ({
             setIsVisibleSuccessModal(false);
           }}
           closeButton
-          content={RenderSuccessModalContent}
+          content={<RenderSuccessModalContent/>}
           isVisible={isVisibleSuccessModal}
           containerStyle={{justifyContent: 'center'}}
           contentStyle={{width: '70%'}}
@@ -543,7 +543,7 @@ const AdminFormResponses: FC<AdminFormResponsesScreenProps> = ({
             setIsVisibleSendReminderSuccessModal(false);
           }}
           closeButton
-          content={RenderSendReminderSuccessModalContent}
+          content={<RenderSendReminderSuccessModalContent/>}
           isVisible={isVisibleSendReminderSuccessModal}
           containerStyle={{justifyContent: 'center'}}
           contentStyle={{width: '70%'}}

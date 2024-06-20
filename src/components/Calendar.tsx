@@ -13,8 +13,9 @@ import Icon from './Icon';
 import colors from '../config/colors';
 import moment from 'moment';
 import {Dropdown} from 'react-native-element-dropdown';
-import { RatingInput } from '../screens/reports/AddNewEvidenceCard';
-
+import {normaliseDesigns} from '../utils/helpers/responsiveHelpers';
+import Button from './Button';
+import RatingInput from './RatingInput';
 
 const generateCalendar = (
   month: number | undefined,
@@ -41,56 +42,6 @@ const generateCalendar = (
 
   return days;
 };
-
-type RenderButtonsTypes = {
-  proceedButtonText: string;
-  cancelButtonText?: string;
-  onPressProceedButton: () => void;
-  onPressCancelButton: () => void;
-  style?: ViewStyle;
-};
-
-const RenderButtons: FC<RenderButtonsTypes> = ({
-  proceedButtonText,
-  cancelButtonText = 'Cancel',
-  onPressProceedButton,
-  onPressCancelButton,
-  style,
-}) => (
-  <View
-    style={{
-      flexDirection: 'row',
-      width: '100%',
-      justifyContent: 'space-between',
-      ...style,
-    }}>
-    <TouchableOpacity
-      style={{
-        backgroundColor: '#EA7804',
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderRadius: 5,
-        padding: 5,
-        width: '47%',
-      }}
-      onPress={onPressProceedButton}>
-      <Text color="backgroundColor">{proceedButtonText}</Text>
-    </TouchableOpacity>
-    <TouchableOpacity
-      style={{
-        borderColor: '#EA7804',
-        borderWidth: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderRadius: 5,
-        padding: 8,
-        width: '47%',
-      }}
-      onPress={onPressCancelButton}>
-      <Text style={{color: '#EA7804'}}>{cancelButtonText}</Text>
-    </TouchableOpacity>
-  </View>
-);
 
 type RenderDropdownTypes = {
   label: 'Month' | 'Year';
@@ -145,38 +96,35 @@ const dateFilterOptions: string[] = [
   'Past 1 year',
 ];
 
-interface ModalPropsTypes {
+interface CalendarPropsTypes {
   onProceed: () => void;
   onClose: () => void;
   isVisible: boolean;
-  title?: string;
-  content?: ReactNode;
-  Close?: string;
-  isOKCancelButtonsNeeded?: boolean;
-  closeButton?: boolean;
-  renderButton?: ReactNode;
+  rating?:number;
 }
 
-const Modal: FC<ModalPropsTypes> = ({
+type FilterObject={
+  rating:number,
+  date:{
+    startDate:string,
+    endDate:string
+  }
+}
+
+const Calendar: FC<CalendarPropsTypes> = ({
   onProceed,
   onClose,
   isVisible,
-  title,
-  content,
-  isOKCancelButtonsNeeded,
-  closeButton,
-  renderButton,
+  rating
 }) => {
-  const [selectedStartDate, setSelectedStartDate] = useState<
-    number | undefined
-  >();
+
   const [selectedStartMonth, setSelectedStartMonth] = useState<
     number | undefined
   >(undefined);
   const [selectedStartYear, setSelectedStartYear] = useState<
     number | undefined
   >(undefined);
-  const [selectedEndDate, setSelectedEndDate] = useState<number | undefined>();
+
   const [selectedEndMonth, setSelectedEndMonth] = useState<number | undefined>(
     undefined,
   );
@@ -186,41 +134,32 @@ const Modal: FC<ModalPropsTypes> = ({
   const [selectedFilterByDate, setSelectedFilterByDate] = useState<
     string | undefined
   >(undefined);
+  
   const weekdays = moment.weekdays();
   const days = generateCalendar(selectedStartMonth, selectedStartYear);
-  // Map through weekdays to get the first 2 letters of each day
   const shortWeekdays = weekdays.map(day => day.slice(0, 2));
 
   return (
     <RNModal visible={isVisible} animationType="slide" transparent>
-      <View style={styles.modalOverlay} />
-      <View style={styles.modalContainer}>
-        <View style={styles.modalContent}>
-          {title && (
-            <View style={styles.header}>
-              <Text
-                color="blackColor"
-                style={{justifyContent: 'flex-start'}}
-                fontVariant="semiBold"
-                size="body1">
-                {title}
-              </Text>
-              {closeButton && (
-                <TouchableOpacity onPress={() => onClose()}>
-                  <Icon name="cross_icon" width={20} height={20} />
-                </TouchableOpacity>
-              )}
-            </View>
-          )}
+      <View style={styles.CalendarOverlay} />
+      <View style={styles.CalendarContainer}>
+        <View style={styles.CalendarContent}>
           <ScrollView contentContainerStyle={styles.contentContainer}>
-            <Text size="body2" fontVariant="bold">
-              Filter
-            </Text>
-            <Text size="body1" fontVariant="bold">
+            <View style={styles.header}>
+              <Text size="body2" fontVariant="bold">
+                Filter
+              </Text>
+              <TouchableOpacity
+                style={{justifyContent: 'flex-end'}}
+                onPress={() => onClose()}>
+                <Icon name="cross_icon_thin" width={10} height={10} />
+              </TouchableOpacity>
+            </View>
+            <Text size="body1" fontVariant="bold" style={{marginVertical:5}}>
               sort by filtering
             </Text>
-            <RatingInput label={''} rating={0} onChangeRating={() => {}} />
-            <Text size="body1" fontVariant="bold">
+            <RatingInput label={''} rating={0} onChangeRating={() => {}} showRating={false}/>
+            <Text size="body1" fontVariant="bold" style={{marginVertical:5}}>
               By date
             </Text>
             <View
@@ -228,6 +167,8 @@ const Modal: FC<ModalPropsTypes> = ({
                 flexDirection: 'row',
                 flexWrap: 'wrap',
                 justifyContent: 'space-evenly',
+                width:'85%',
+                alignContent:'flex-start'
               }}>
               {dateFilterOptions.map((item, index) => (
                 <TouchableOpacity
@@ -242,6 +183,7 @@ const Modal: FC<ModalPropsTypes> = ({
                     paddingVertical: 5,
                     borderRadius: 5,
                     marginBottom: 10,
+                    alignContent:'flex-start'
                   }}
                   onPress={() => {
                     setSelectedFilterByDate(item);
@@ -357,15 +299,12 @@ const Modal: FC<ModalPropsTypes> = ({
               </View>
             </View>
 
-            {renderButton}
-            {isOKCancelButtonsNeeded && (
-              <RenderButtons
-                onPressCancelButton={onClose}
-                onPressProceedButton={onProceed}
-                proceedButtonText="Apply"
-                style={{marginTop: 25, alignSelf: 'flex-end'}}
-              />
-            )}
+            <Button
+              text="Apply"
+              style={{marginTop: 20}}
+              active
+              onPress={() => {}}
+            />
           </ScrollView>
         </View>
       </View>
@@ -373,10 +312,10 @@ const Modal: FC<ModalPropsTypes> = ({
   );
 };
 
-export default Modal;
+export default Calendar;
 
 const styles = StyleSheet.create({
-  modalOverlay: {
+  CalendarOverlay: {
     position: 'absolute',
     top: 0,
     bottom: 0,
@@ -384,30 +323,26 @@ const styles = StyleSheet.create({
     right: 0,
     backgroundColor: 'rgba(0,0,0,0.5)',
   },
-  modalContainer: {
+  CalendarContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     alignSelf: 'flex-end',
-    marginTop: 150,
+    marginTop: normaliseDesigns(150),
     height: '100%',
   },
-  modalContent: {
+  CalendarContent: {
     backgroundColor: colors.backgroundColor,
     borderRadius: 20,
     // width: '80%',
   },
   header: {
-    backgroundColor: colors.secondaryColor,
-    paddingHorizontal: 20,
-    paddingVertical: 15,
-    borderTopRightRadius: 20,
-    borderTopLeftRadius: 20,
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems:'center'
   },
   contentContainer: {
-    paddingHorizontal: 10,
+    paddingHorizontal: 15,
     paddingTop: 15,
   },
   buttonsContainer: {

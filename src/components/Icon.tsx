@@ -63,6 +63,11 @@ import warning_icon from '../assets/svg/warning_icon.svg'
 import chevron_up_black_icon from '../assets/svg/chevron_up_black_icon.svg'
 import eye from '../assets/svg/eye.svg'
 import eye_off_disabled from '../assets/svg/eye_off_disabled.svg'
+import edit_icon from '../assets/svg/edit_icon.svg'
+import google_icon from '../assets/svg/google_icon.svg'
+import facebook_icon from '../assets/svg/facebook_icon.svg'
+import rating_deselected_icon from '../assets/svg/rating_deselected_icon.svg'
+
 
 
 const Icons = {
@@ -126,7 +131,11 @@ const Icons = {
   warning_icon,
   chevron_up_black_icon,
   eye,
-  eye_off_disabled
+  eye_off_disabled,
+  edit_icon,
+  google_icon,
+  facebook_icon,
+  rating_deselected_icon
 };
 
 export type IconTypes = keyof typeof Icons;

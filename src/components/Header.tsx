@@ -13,7 +13,10 @@ type HeaderPropsTypes = {
   avoidBackButton?: boolean;
   dashboard?: boolean;
   onPressMenuIcon?: () => void;
+  onPressBellIcon?:()=>void;
+  onPressProfileIcon?:()=>void;
   onPressBackArrow?: () => void;
+
   onPressLogoutButton?: () => void;
   icon?: ImageIconNames;
   scrollTransition?: boolean;
@@ -25,26 +28,18 @@ const Header: FC<HeaderPropsTypes> = ({
   avoidBackButton,
   dashboard,
   onPressMenuIcon,
+  onPressBellIcon,
+  onPressProfileIcon,
   onPressBackArrow,
   onPressLogoutButton,
   icon,
+
   scrollTransition,
   isScrolled,
 }) => {
-  const [isOpenTooltip, setIsOpenTooltip] = useState<boolean>(false);
 
   const navigation = useNavigation();
-  useFocusEffect(
-    React.useCallback(() => {
-      setIsOpenTooltip(false);
-    }, []),
-  );
-
-  const onPressLogout = () => {
-    setIsOpenTooltip(false);
-    onPressLogoutButton && onPressLogoutButton();
-  };
-
+ 
   // console.log("tttt", title);
 
   return (
@@ -76,10 +71,10 @@ const Header: FC<HeaderPropsTypes> = ({
             <Icon name="menu_icon" />
           </TouchableOpacity>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <TouchableOpacity onPress={() => {}}>
+            <TouchableOpacity onPress={onPressBellIcon}>
               <Icon name="bell_icon" />
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => {}}>
+            <TouchableOpacity onPress={onPressProfileIcon}>
               <Icon name="profile_icon" />
             </TouchableOpacity>
           </View>

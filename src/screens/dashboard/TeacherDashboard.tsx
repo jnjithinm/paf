@@ -19,6 +19,8 @@ import {normaliseDesigns} from '../../utils/helpers/responsiveHelpers';
 import DrawerContent from '../../components/DrawerContent';
 import {useAppDispatch, useAppSelector} from '../../redux/store';
 import {getDashboardDetailsAndObservationList} from '../../redux/features/observationSlice';
+import {navigate} from '../../utils/helpers/navigationHelpers';
+import Calendar from '../../components/Calendar';
 
 type TeacherDashboardNavigationProp = StackNavigationProp<
   DashboardTabBarStackParamList,
@@ -97,7 +99,7 @@ const RenderTitleWithLink: FC<RenderTitleWithLinkTypes> = ({
 type ObservationTileTypes = {
   rating: string;
   userAssisted: string;
-  image: string;
+  image: string | null | undefined;
   onPress: () => void;
   reportedBy: string;
   style?: ViewStyle;
@@ -131,11 +133,10 @@ export const ObservationsTile: FC<ObservationTileTypes> = ({
         borderWidth: 1,
         borderColor: '#F4C24A',
         justifyContent: 'space-between',
-        height: normaliseDesigns(50),
-
+        minHeight: normaliseDesigns(50),
         borderRadius: 10,
         alignItems: 'center',
-        marginVertical: 5,
+        marginVertical: 3,
         backgroundColor: isPressed ? '#FCEBC5' : colors.backgroundColor,
         ...style,
       }}>
@@ -160,12 +161,13 @@ export const ObservationsTile: FC<ObservationTileTypes> = ({
         <Text size="verysmall3" opacity="0.50">
           User Assessed
         </Text>
-        <View style={{flexDirection:'row'}}>
-          <Image source={{uri:`data:image/jpeg;base64,${image}`}}/>
-        <Text fontVariant="bold" size="small3">
-          {userAssisted}
-        </Text>
-        
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          <RenderProfileIcon image={image} name={reportedBy} />
+          <View style={{flex: 1}}>
+            <Text fontVariant="bold" size="small3" style={{marginLeft: 5}}>
+              {userAssisted}
+            </Text>
+          </View>
         </View>
       </View>
       <View style={{flex: 4}}>
@@ -185,7 +187,7 @@ type ObservationFilterTileTypes = {
   onPress: () => void;
 };
 
-const ObservationFilterTile: FC<ObservationFilterTileTypes> = ({
+export const ObservationFilterTile: FC<ObservationFilterTileTypes> = ({
   text,
   color,
   count,
@@ -213,7 +215,8 @@ const ObservationFilterTile: FC<ObservationFilterTileTypes> = ({
       paddingHorizontal: 10,
       height: 40,
       borderRadius: 10,
-    }}>
+    }}
+    onPress={() => {}}>
     <Text
       style={{
         color:
@@ -340,66 +343,86 @@ const CourseTile: FC<CoursesTileTypes> = ({
 
 type RenderSearchTypes = {
   placeHolder?: string;
-  onTextChange: () => void;
+  onTextChange: (text: string) => void;
+  onPressFilterIcon: () => void;
   style?: ViewStyle;
 };
 
-const RenderSearch: FC<RenderSearchTypes> = ({
+export const RenderSearchWithFilter: FC<RenderSearchTypes> = ({
   placeHolder = 'Search',
   onTextChange,
+  onPressFilterIcon,
   style,
-}) => (
-  <View
-    style={{
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      marginTop: 20,
-      ...style,
-    }}>
-    <View
-      style={{
-        flexDirection: 'row',
-        alignItems: 'center',
-        width: '85%',
-        backgroundColor: '#F5F7FA',
-        borderRadius: 10,
-        paddingHorizontal: 10,
-      }}>
-      <TextInput
-        style={{flex: 1, color: colors.blackColor, paddingVertical: 5}}
-        placeholder="Search"
-        placeholderTextColor={colors.darkGrey}
-        // onChangeText={text => {
-        //   setSearchText(text);
-        // }}
+}) => {
+  const [isOpenCalendar, setIsOpenCalendar] = useState<boolean>(false);
+  return (
+    <>
+      <Calendar
+        onProceed={() => {}}
+        onClose={() => {
+          setIsOpenCalendar(false);
+        }}
+        isVisible={isOpenCalendar}
       />
-      <Icon name="search_icon" />
-    </View>
-    <View
-      style={{
-        borderWidth: 1,
-        borderColor: colors.primaryColor,
-        padding: 8,
-        borderRadius: 10,
-      }}>
-      <Icon name="filter_icon" />
-    </View>
-  </View>
-);type RatingProps = {
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          marginVertical: 20,
+          ...style,
+        }}>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            width: '85%',
+            backgroundColor: '#F5F7FA',
+            borderRadius: 10,
+            paddingHorizontal: 10,
+          }}>
+          <TextInput
+            style={{flex: 1, color: colors.blackColor, paddingVertical: 5}}
+            placeholder="Search"
+            placeholderTextColor={colors.darkGrey}
+            onChangeText={text => {
+              onTextChange(text);
+            }}
+          />
+          <Icon name="search_icon" />
+        </View>
+        <TouchableOpacity
+          style={{
+            borderWidth: 1,
+            borderColor: colors.primaryColor,
+            padding: 8,
+            borderRadius: 10,
+          }}
+          onPress={() => {
+            setIsOpenCalendar(true);
+          }}>
+          <Icon name="filter_icon" />
+        </TouchableOpacity>
+      </View>
+    </>
+  );
+};
+type RatingProps = {
   rating: number;
 };
 
-const RatingStars: FC<RatingProps> = ({ rating }) => {
+export const RatingStars: FC<RatingProps> = ({rating}) => {
   const renderStars = () => {
     const stars = [];
     const maxStars = 5;
 
     for (let i = 0; i < maxStars; i++) {
       if (i < Math.floor(rating)) {
-        stars.push(<Icon key={i} name="star_icon" />); 
+        stars.push(<Icon key={i} name="star_icon" />);
       } else if (i < rating) {
-        stars.push(<Icon key={i} name='star_half_filled_icon'  width={15} height={15}/>); 
+        stars.push(
+          <Icon key={i} name="star_half_filled_icon" width={15} height={15} />,
+        );
       } else {
         stars.push(<Icon key={i} name="star_unfilled_icon" />);
       }
@@ -407,22 +430,59 @@ const RatingStars: FC<RatingProps> = ({ rating }) => {
     return stars;
   };
 
-  return <View style={{ flexDirection: 'row' }}>{renderStars()}</View>;
+  return <View style={{flexDirection: 'row'}}>{renderStars()}</View>;
 };
 
-type RenderProfileIconTypes={
-name:string;
-size?:number
-}
+type RenderProfileIconTypes = {
+  image: string | null | undefined;
+  name: string;
+  size?: number;
+};
 
-const RenderProfileIcon:FC<RenderProfileIconTypes>=({name,size})=>{
-  return(
-    <View>
+const getInitials = (name: string): string => {
+  const nameParts = name.trim().split(' ');
+  if (nameParts.length > 1) {
+    const firstNameInitial = nameParts[0][0];
+    const lastNameInitial = nameParts[nameParts.length - 1][0];
+    return `${firstNameInitial}${lastNameInitial}`.toUpperCase();
+  } else {
+    const firstInitial = name[0];
+    const lastInitial = name[name.length - 1];
+    return `${firstInitial}${lastInitial}`.toUpperCase();
+  }
+};
 
-    </View>
-  )
-}
-
+export const RenderProfileIcon: FC<RenderProfileIconTypes> = ({
+  image,
+  name,
+  size = 20,
+}) => {
+  if (image) {
+    return (
+      <Image
+        source={{uri: `${image}`}}
+        style={{width: size, height: size, borderRadius: size / 2}}
+      />
+    );
+  } else {
+    const initials = getInitials(name);
+    return (
+      <View
+        style={[
+          {
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: '#CBD2D9',
+            width: size,
+            height: size,
+            borderRadius: size / 2,
+          },
+        ]}>
+        <Text style={{fontSize: size / 2}}>{initials}</Text>
+      </View>
+    );
+  }
+};
 
 const TeacherDashboard: FC<TeacherDashboardScreenProps> = ({
   navigation,
@@ -430,6 +490,7 @@ const TeacherDashboard: FC<TeacherDashboardScreenProps> = ({
 }) => {
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
   const dispatch = useAppDispatch();
+  
   const {userData} = useAppSelector(state => state.auth);
   const {dashboardDetails} = useAppSelector(state => state.observation);
 
@@ -443,7 +504,6 @@ const TeacherDashboard: FC<TeacherDashboardScreenProps> = ({
     setIsDrawerOpen(false);
   };
 
-  console.log('user', userData.userImage);
   return (
     <Drawer
       open={isDrawerOpen}
@@ -457,6 +517,10 @@ const TeacherDashboard: FC<TeacherDashboardScreenProps> = ({
         onPressMenuIcon={() => {
           setIsDrawerOpen(true);
         }}
+        onPressBellIcon={() => {
+          navigate('Notifications');
+        }}
+        onPressProfileIcon={() => {}}
         dashboard
         avoidBackButton>
         <View
@@ -471,20 +535,17 @@ const TeacherDashboard: FC<TeacherDashboardScreenProps> = ({
             flex: 1,
           }}>
           <View style={{justifyContent: 'space-evenly', width: '55%'}}>
-            <View style={{flexDirection: 'row', justifyContent: 'center'}}>
-              <Image
-                source={{uri: `data:image/jpeg;base64,${userData?.userImage}`}}
-                style={{
-                  width: normaliseDesigns(50),
-                  height: normaliseDesigns(50),
-                  borderRadius: 40,
-                }}
+            <View style={{flexDirection: 'row', justifyContent: 'flex-start',alignItems:'center'}}>
+              <RenderProfileIcon
+                image={userData?.userImage}
+                name={userData?.name}
+                size={45}
               />
-              <View style={{marginLeft: 10, flex: 1}}>
+              <View style={{marginLeft: 10, }}>
                 <Text fontVariant="bold" size="body2">
                   Hi, {userData?.name}
                 </Text>
-                <Text style={{flex: 1}} size="small2">
+                <Text size="small2">
                   {dashboardDetails?.schoolName}
                 </Text>
               </View>
@@ -503,7 +564,7 @@ const TeacherDashboard: FC<TeacherDashboardScreenProps> = ({
                 {dashboardDetails?.averageRating}
               </Text>
               <View style={{justifyContent: 'space-around'}}>
-              <RatingStars rating={Number(dashboardDetails?.averageRating)} />
+                <RatingStars rating={Number(dashboardDetails?.averageRating)} />
                 <Text size="verysmall3">from 1000 ratings</Text>
               </View>
             </View>
@@ -516,8 +577,11 @@ const TeacherDashboard: FC<TeacherDashboardScreenProps> = ({
             style={{alignSelf: 'flex-end'}}
           />
         </View>
-        <RenderSearch onTextChange={() => {}} />
-        <View style={{marginTop: 40}}>
+        <RenderSearchWithFilter
+          onTextChange={() => {}}
+          onPressFilterIcon={() => {}}
+        />
+        <View style={{marginTop: 10}}>
           <RenderTitleWithLink
             icon="analytics_icon"
             titleText="Analytics"
@@ -531,46 +595,48 @@ const TeacherDashboard: FC<TeacherDashboardScreenProps> = ({
             titleText="Observations"
             linkText="All Observations"
             onPress={() => {
-              // navigation.navigate('ReportsStack');
+              navigation.navigate('ReportsStack',{screen:'ObservationReportsMainPage'});
             }}
           />
           <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
             <ObservationFilterTile
-              count={Number(dashboardDetails?.total)}
+              count={Number(dashboardDetails?.total) || 0}
               color="green"
               text="All"
               onPress={() => {}}
             />
             <ObservationFilterTile
-              count={Number(dashboardDetails?.byMe)}
+              count={Number(dashboardDetails?.byMe) || 0}
               color="orange"
               text="By Me"
               onPress={() => {}}
             />
             <ObservationFilterTile
-              count={Number(dashboardDetails?.forMe)}
+              count={Number(dashboardDetails?.forMe) || 0}
               color="yellow"
               text="For Me"
               onPress={() => {}}
             />
           </View>
-          {dashboardDetails?.observations?.slice(0, 4)?.map((item, index) => (
-            <ObservationsTile
-              key={index}
-              rating={item.ratings?.toString()}
-              userAssisted={item.userAssessed}
-              image={item.reportedByImage}
-              reportedBy={item.reportedBy}
-              onPress={() => {  
-                navigation.navigate('ReportsStack', {
-                  screen: 'ObservationReport',
-                  params: {
-                    observationItem: item,
-                  },
-                });
-              }}
-            />
-          ))}
+          <View style={{marginTop: 20}}>
+            {dashboardDetails?.observations?.slice(0, 4)?.map((item, index) => (
+              <ObservationsTile
+                key={index}
+                rating={item.ratings?.toString()}
+                userAssisted={item.userAssessed}
+                image={item.reportedByImage}
+                reportedBy={item.reportedBy}
+                onPress={() => {
+                  navigation.navigate('ReportsStack', {
+                    screen: 'ObservationReport',
+                    params: {
+                      observationItem: item,
+                    },
+                  });
+                }}
+              />
+            ))}
+          </View>
         </View>
         <View>
           <RenderTitleWithLink

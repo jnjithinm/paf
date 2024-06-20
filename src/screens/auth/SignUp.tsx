@@ -13,10 +13,7 @@ import {normaliseDesigns} from '../../utils/helpers/responsiveHelpers';
 import CheckBox from '../../components/CheckBox';
 import Button from '../../components/Button';
 import {useAppDispatch, useAppSelector} from '../../redux/store';
-import {
-  authenticateUser,
-  setErrorMessage,
-} from '../../redux/features/authSlice';
+import {authenticateUser, setErrorMessage} from '../../redux/features/authSlice';
 import Layout from '../../components/Layout';
 import {
   getUserCredentials,
@@ -24,27 +21,28 @@ import {
 } from '../../utils/functions/localStorageOperations';
 import useValidation from '../../utils/hooks/useValidation';
 
-type LoginNavigationProp = StackNavigationProp<MainStackParamList, 'Login'>;
-type LoginRouteProp = RouteProp<MainStackParamList, 'Login'>;
+type SignUpNavigationProp = StackNavigationProp<MainStackParamList, 'SignUp'>;
+type SignUpRouteProp = RouteProp<MainStackParamList, 'SignUp'>;
 
-interface LoginScreenProps {
-  navigation: LoginNavigationProp;
-  route: LoginRouteProp;
+interface SignUpScreenProps {
+  navigation: SignUpNavigationProp;
+  route: SignUpRouteProp;
 }
 
-const Login: FC<LoginScreenProps> = ({navigation, route}) => {
-  const [username, setUsername] = useState<string>('');
+const SignUp: FC<SignUpScreenProps> = ({navigation, route}) => {
+  const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
-  const [isChanged, setIsChanged] = useState<boolean>(false);
-  const [isRememberMe, setIsRememberMe] = useState<boolean>(false);
+  const [reEnterPassword,setReEnterPassword]=useState<string>('');
+  const [schoolWardName,setSchoolWardName]=useState<string>('');
 
+  const [isRememberMe,setIsRememberMe]=useState<boolean>(false);
   const dispatch = useAppDispatch();
-  const {errorMessage} = useAppSelector(state => state.auth);
+  const {errorMessage}=useAppSelector(state=>state.auth)
   const {validateField} = useValidation();
 
-  const usernameErrorMessage = validateField({
-    fieldName: 'Username',
-    value: username,
+  const emailErrorMessage = validateField({
+    fieldName: 'Email ID',
+    value: email,
   });
 
   const passwordErrorMessage = validateField({
@@ -52,47 +50,18 @@ const Login: FC<LoginScreenProps> = ({navigation, route}) => {
     value: password,
   });
 
-  const onPressLogin = async () => {
-    if (!usernameErrorMessage && !passwordErrorMessage) {
-      if (isRememberMe && isChanged) {
-        setIsChanged(false);
-        await storeUserCredentials(username, password);
-        await dispatch(authenticateUser({username, password}));
-      } else {
-        await dispatch(authenticateUser({username, password}));
-      }
+  const onPressSignUp = async () => {
+    if (!passwordErrorMessage) {
+      // if (isRememberMe && isChanged) {
+      //   setIsChanged(false);
+      //   await storeUserCredentials(username, password);
+      //   await dispatch(authenticateUser({username, password}));
+      // } else {
+      //   await dispatch(authenticateUser({username, password}));
+      // }
     }
   };
 
-  useFocusEffect(
-    React.useCallback(() => {
-      const onBackPress = () => {
-        BackHandler.exitApp();
-        return true;
-      };
-      BackHandler.addEventListener('hardwareBackPress', onBackPress);
-      return () =>
-        BackHandler.removeEventListener('hardwareBackPress', onBackPress);
-    }, []),
-  );
-
-  useFocusEffect(
-    React.useCallback(() => {
-      const getUserDetails = async () => {
-        try {
-          const data = await getUserCredentials();
-          if (data?.username && data?.password) {
-            setUsername(data?.username);
-            setPassword(data?.password);
-            setIsRememberMe(true);
-          }
-        } catch (err) {
-          console.log('err', err);
-        }
-      };
-      getUserDetails();
-    }, []),
-  );
 
   return (
     <Layout
@@ -105,25 +74,25 @@ const Login: FC<LoginScreenProps> = ({navigation, route}) => {
       }}
       hideHeader>
       <StatusBar backgroundColor={colors.backgroundColor} />
-      <Icon name="app_logo" width={65} height={65} style={{marginTop: '20%'}} />
-      <Text size={'body6'} fontVariant="bold" style={{marginVertical: 10}}>
+      <Icon name="app_logo" width={50} height={50} style={{marginTop:5}} />
+      <Text size={'body5'} fontVariant="bold" style={{marginVertical:5}}>
         Welcome!
       </Text>
-      <Text opacity={'0.75'} size="body1" fontVariant="semiBold">
-        Please login to your account.
+      <Text opacity={'0.75'} size='small3' fontVariant="semiBold">
+        Please SignUp to your account.
       </Text>
       <Text color="darkGrey"></Text>
-      <View style={{marginTop: '5%', width: '100%'}}>
+      <View style={{marginTop:5, width: '100%'}}>
         <TextInput
-          label="Username"
-          value={username}
-          setValue={setUsername}
+          label="Email"
+          value={email}
+          setValue={setEmail}
           onChange={() => {
-            setIsChanged(true);
-            setErrorMessage('');
+            setErrorMessage('')
           }}
-          errorMessage={usernameErrorMessage}
-          placeholder="Enter your username"
+          errorMessage={emailErrorMessage}
+          placeholder="Enter your email address"
+          keyboardType='email-address'
           autoCapitalize="none"
         />
         <TextInput
@@ -131,25 +100,32 @@ const Login: FC<LoginScreenProps> = ({navigation, route}) => {
           value={password}
           setValue={setPassword}
           onChange={() => {
-            setIsChanged(true);
-            setErrorMessage('');
+            setErrorMessage('')
           }}
-          errorMessage={passwordErrorMessage || errorMessage}
-          placeholder="Enter your password"
+          errorMessage={passwordErrorMessage ||  errorMessage }
+          placeholder="Enter new password"
           passwordVisibility
           style={{marginTop: 10}}
           autoCapitalize="none"
         />
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            marginTop: 5,
-          }}>
-          <View
+                <TextInput
+          label="Re-enter password"
+          value={reEnterPassword}
+          setValue={setReEnterPassword}
+          onChange={() => {
+            setErrorMessage('')
+          }}
+          errorMessage={passwordErrorMessage ||  errorMessage }
+          placeholder="Re-enter new password"
+          passwordVisibility
+          style={{marginTop: 10}}
+          autoCapitalize="none"
+        />
+            <View
             style={{
               flexDirection: 'row',
               alignItems: 'center',
+              marginTop:2
             }}>
             <CheckBox
               isActive={isRememberMe}
@@ -157,29 +133,36 @@ const Login: FC<LoginScreenProps> = ({navigation, route}) => {
                 isRememberMe ? setIsRememberMe(false) : setIsRememberMe(true);
               }}
               size={10}
-
+              style={{
+                height: normaliseDesigns(16),
+                width: normaliseDesigns(16),
+              }}
             />
 
             <Text size="small2" style={{left: 3}}>
               Remember me
             </Text>
           </View>
-          <TouchableOpacity
-            onPress={() => {
-              navigation.navigate('ResetPassword');
-            }}>
-            <Text size="small2" style={{textDecorationLine: 'underline'}}>
-              Forgot password?
-            </Text>
-          </TouchableOpacity>
-        </View>
+          <TextInput
+          label="School ward name"
+          value={reEnterPassword}
+          setValue={setReEnterPassword}
+          onChange={() => {
+            setErrorMessage('')
+          }}
+          errorMessage={passwordErrorMessage ||  errorMessage }
+          placeholder="Enter your school ward name"
+          style={{marginTop: 10}}
+          autoCapitalize="none"
+        />
+
       </View>
-      <View style={{width: '100%', marginTop: '15%', alignItems: 'center'}}>
+      <View style={{width: '100%', marginTop: 20, alignItems: 'center'}}>
         <Button
           style={{width: '100%'}}
-          text="Log In"
-          active={Boolean(!usernameErrorMessage && !passwordErrorMessage)}
-          onPress={onPressLogin}
+          text="Sign Up"
+          active={Boolean(!emailErrorMessage && !passwordErrorMessage)}
+          onPress={onPressSignUp}
         />
         <View style={{marginVertical: 10}}>
           <Text style={{color: '#ABB4BD', marginVertical: 10}} size="body1">
@@ -224,9 +207,9 @@ const Login: FC<LoginScreenProps> = ({navigation, route}) => {
             alignItems: 'center',
           }}>
           <Text style={{color: '#ABB4BD'}} size="body1">
-            Don't have an account ?
+            Already have an account ?
           </Text>
-          <TouchableOpacity onPress={()=>{navigation.navigate('SignUp')}}>
+          <TouchableOpacity onPress={()=>{navigation.navigate('Login')}}>
             <Text
               style={{
                 textDecorationLine: 'underline',
@@ -234,7 +217,7 @@ const Login: FC<LoginScreenProps> = ({navigation, route}) => {
                 color: '#1F2933',
                 left: 5,
               }}>
-              Sign up
+              Login
             </Text>
           </TouchableOpacity>
         </View>
@@ -260,4 +243,4 @@ const Login: FC<LoginScreenProps> = ({navigation, route}) => {
     </Layout>
   );
 };
-export default Login;
+export default SignUp;

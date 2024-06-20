@@ -4,15 +4,17 @@ import {normaliseDesigns} from '../utils/helpers/responsiveHelpers';
 import Button from '../components/Button';
 import colors from '../config/colors';
 import Images, {ImageIconNames} from '../components/Image';
+import { IconTypes } from './Icon';
 
 interface FooterWithButtonsProps {
   onPressProceedButton: () => void;
   onPressCancelButton: () => void;
   proceedButtonText: string;
-  cancelButtonText: string;
+  cancelButtonText?: string;
   isActiveProceedButton?: boolean;
   style?: ViewStyle;
-  image?: ImageIconNames
+  image?: ImageIconNames;
+  icon?:IconTypes;
 }
 
 const FooterWithButtons: FC<FooterWithButtonsProps> = ({
@@ -20,9 +22,10 @@ const FooterWithButtons: FC<FooterWithButtonsProps> = ({
   onPressCancelButton,
   isActiveProceedButton = false,
   proceedButtonText,
-  cancelButtonText,
+  cancelButtonText='Cancel',
   style,
-  image
+  image,
+  icon
 }) => (
   <View
     style={{
@@ -49,7 +52,7 @@ const FooterWithButtons: FC<FooterWithButtonsProps> = ({
         
     <Button
       onPress={onPressProceedButton}
-      image={image}
+      icon={icon}
       text={proceedButtonText}
       active={isActiveProceedButton}
       textStyle={{ color: isActiveProceedButton? '#FFFFFF' : 'black'}}

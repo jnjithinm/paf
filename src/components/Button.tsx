@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, {FC} from 'react';
 import {
   DimensionValue,
   Platform,
@@ -9,14 +9,12 @@ import {
   ViewStyle,
 } from 'react-native';
 
-
-import Icon, { IconTypes } from './Icon';
+import Icon, {IconTypes} from './Icon';
 import Images, {ImageIconNames} from '../components/Image';
-import { ColorTypes } from '../config/types';
+import {ColorTypes} from '../config/types';
 import colors from '../config/colors';
-import { FONT_SIZES, FONT_VARIANT } from '../config/themes';
-import { normaliseDesigns } from '../utils/helpers/responsiveHelpers';
-
+import {FONT_SIZES, FONT_VARIANT} from '../config/themes';
+import {normaliseDesigns} from '../utils/helpers/responsiveHelpers';
 
 interface ButtonPropsType {
   text: string;
@@ -28,7 +26,6 @@ interface ButtonPropsType {
   style?: ViewStyle;
   textStyle?: TextStyle;
   icon?: IconTypes;
-  image?: ImageIconNames;
 }
 
 const Button: FC<ButtonPropsType> = ({
@@ -41,7 +38,6 @@ const Button: FC<ButtonPropsType> = ({
   style,
   textStyle,
   icon,
-  image
 }) => {
   let bgColor = colors[backgroundColor];
 
@@ -62,25 +58,18 @@ const Button: FC<ButtonPropsType> = ({
       disabled={!active}
       onPress={onPress}>
       {icon && (
-        <View style={{ width: '15%', justifyContent: 'center', alignItems: 'center' }}>
+        <View
+          style={{
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
           <Icon
             name={icon}
-            stroke={colors.backgroundColor}
             width={15}
             height={15}
           />
         </View>
       )}
-      {image && (
-        <View style={{ width: '20%', height: '100%', justifyContent: 'center', alignItems: 'center' , }}>
-          <Images
-            name={image}
-            width={15}
-            height={15}
-          />
-        </View>
-      )}
-      <View style={{ width: '80%',  height: '100%',justifyContent: 'center', alignItems: 'center' , }}>
 
         <Text
           style={[
@@ -93,11 +82,9 @@ const Button: FC<ButtonPropsType> = ({
               textAlign: 'center',
               ...textStyle,
             },
-
           ]}>
           {text}
         </Text>
-      </View>
     </TouchableOpacity>
   );
 };

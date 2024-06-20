@@ -50,21 +50,25 @@ export const changeBottomTabBarVisibility = createAction<boolean>(
 
 export const setLoading = createAction<boolean>('SET_LOADING');
 
+export const setErrorMessage = createAction<string>('SET_ERROR_MESSAGE');
+
 export const authenticateUser = createAsyncThunk<
   AuthenticateResponse,
   AuthenticateRequest
 >('auth/authenticate', async (payload, {dispatch, rejectWithValue}) => {
   try {
-    removeToken();
+    setLoading(true)
+   await removeToken();
     const response = await api.post(endPoints.AUTHENTICATE_USER, {
       username: payload.username,
       password: payload.password,
     });
-    storeToken(response.data.payload.token)
+   await storeToken(response.data.payload.token)
     return response.data as AuthenticateResponse;
   } catch (error: any) {
     return rejectWithValue(error.response.data);
   } finally {
+    setLoading(true)
     await dispatch(
       loginUser({username: payload.username, password: payload.password}),
     );
@@ -102,7 +106,7 @@ const initialState = {
     isAdmin: false,
     userImage: '',
   },
-  isError: false,
+  errorMessage: '',
   isBottomTabBarVisible: false,
 };
 
@@ -123,23 +127,28 @@ const authSlice = createSlice({
       .addCase(setLoading, (state, action) => {
         state.isLoading = action.payload;
       })
+      .addCase(setErrorMessage, (state, action) => {
+        state.errorMessage = action.payload;
+      })
       .addCase(authenticateUser.pending, state => {
         state.isLoading = true;
-        state.isError = false;
+        state.errorMessage = '';
       })
       .addCase(authenticateUser.fulfilled, (state, action) => {
         storeToken(action.payload?.payload?.token);
         state.isLoading = true;
       })
       .addCase(authenticateUser.rejected, (state, action) => {
+
         state.isLoading = false;
         state.isLoggedIn = false;
-        state.isError = true;
+        state.errorMessage = 'Username or password is incorrect';
+
       })
       .addCase(loginUser.pending, state => {
         state.isLoading = true;
         state.isLoading = false;
-        state.isError = false;
+        state.errorMessage = '';
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.isLoading = false;
@@ -149,7 +158,7 @@ const authSlice = createSlice({
       .addCase(loginUser.rejected, (state, action) => {
         state.isLoading = false;
         state.isLoggedIn = false;
-        state.isError = true;
+        state.errorMessage = '';
       });
   },
 });

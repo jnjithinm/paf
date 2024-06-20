@@ -1,9 +1,5 @@
 import React, {FC, useEffect, useState} from 'react';
-import {
-  KeyboardAvoidingView,
-  Platform,
-  View,
-} from 'react-native';
+import {KeyboardAvoidingView, Platform, View} from 'react-native';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 
@@ -40,8 +36,6 @@ const ViewEvidenceCard: FC<ViewEvidenceCardScreenProps> = ({
   const [feedbackNote, setFeedbackNote] = useState('');
   const dispatch = useAppDispatch();
   const {observationById} = useAppSelector(state => state.observation);
-
-
 
   return (
     <KeyboardAvoidingView
@@ -104,20 +98,18 @@ const ViewEvidenceCard: FC<ViewEvidenceCardScreenProps> = ({
               videoClipCount={item?.fileCount?.Video}
               noteCount={item?.fileCount?.Document}
               photoCount={item?.fileCount?.Image}
+              onPressEvidenceCard={() => {}}
             />
           ))}
-
-        
           <View style={{marginTop: 10}}>
-          <Text
-            style={{
-              color:
-                colors.blackColor,
-                marginBottom:5
-            }}
-            fontVariant='bold'>
-            Feedback note
-          </Text>
+            <Text
+              style={{
+                color: colors.blackColor,
+                marginBottom: 5,
+              }}
+              fontVariant="bold">
+              Feedback note
+            </Text>
             <TextInput
               label=""
               value={observationById?.feedbackDescription?.toString() || ''}
