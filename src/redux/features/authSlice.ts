@@ -51,8 +51,8 @@ export const changeBottomTabBarVisibility = createAction<boolean>(
 
 export const setLoading = createAction<boolean>('SET_LOADING');
 
-export const setShowMessage = createAction<ErrorStatusObject | null>(
-  'SET_SHOW_MESSAGE',
+export const setAuthShowMessage = createAction<ErrorStatusObject | null>(
+  'SET_AUTH_SHOW_MESSAGE',
 );
 
 export const setErrorMessage = createAction<string>('SET_ERROR_MESSAGE');
@@ -112,7 +112,7 @@ interface initialState {
     isAdmin: boolean;
     userImage: string;
   };
-  showMessage: ErrorStatusObject | null;
+  authShowMessage: ErrorStatusObject | null;
   errorMessage: string;
 }
 
@@ -129,7 +129,7 @@ const initialState: initialState = {
     isAdmin: false,
     userImage: '',
   },
-  showMessage: null,
+  authShowMessage: null,
   errorMessage: '',
 };
 
@@ -150,8 +150,8 @@ const authSlice = createSlice({
       .addCase(setLoading, (state, action) => {
         state.isLoading = action.payload;
       })
-      .addCase(setShowMessage, (state, action) => {
-        state.showMessage = action.payload;
+      .addCase(setAuthShowMessage, (state, action) => {
+        state.authShowMessage = action.payload;
       })
       .addCase(setErrorMessage, (state, action) => {
         state.errorMessage = action.payload;

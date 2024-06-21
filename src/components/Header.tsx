@@ -7,83 +7,10 @@ import colors from '../config/colors';
 import {normaliseDesigns} from '../utils/helpers/responsiveHelpers';
 import {FONT_SIZES, FONT_VARIANT} from '../config/themes';
 import Images, {ImageIconNames} from '../components/Image';
-import {useAppDispatch, useAppSelector} from '../redux/store';
 import Text from './Text';
-import { ErrorStatusObject} from '../config/types';
-import {setShowMessage} from '../redux/features/authSlice';
-
-export interface ShowMessageTypes extends ErrorStatusObject {
-  style?: ViewStyle;
-}
-
-export const ShowMessage: FC<ShowMessageTypes> = ({
-  status,
-  message,
-  style,
-}) => {
-  const dispatch = useAppDispatch();
-
-  const closeShowMessage=()=>{
-    dispatch(setShowMessage(null));
-  };
-
-  useEffect(() => {
-    if (message) {
-      const timer = setTimeout(() => {
-        closeShowMessage();
-      }, 2500);
-
-      return () => clearTimeout(timer);
-    }
-  }, [message]); 
-
-  if (!message) {
-    return null;
-  }
 
 
-  return (
-    <View
-      style={[
-        styles.showMessage,
-        {
-          backgroundColor: status === 'Failed' ? '#F58484' : '#EBF9D9',
-          borderColor: status === 'Failed' ? '#C41B1B' : '#749E35',
-          ...style,
-        },
-      ]}>
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          width: '95%',
-        }}>
-        <View style={styles.iconContainer}>
-          <Icon name="cross_icon" />
-        </View>
-        <Text color="blackColor" style={{width: '90%'}} size="small3">
-          {message}
-        </Text>
-      </View>
-      <TouchableOpacity
-        style={{
-          width: '15%',
-          height: '100%',
-          alignItems: 'center',
-          justifyContent: 'center',
-          flex: 1,
-        }}
-        onPress={closeShowMessage}>
-        <Icon
-          name={status === 'Failed' ? 'cross_icon' : 'checkbox'}
-          width={15}
-          height={15}
-        />
-      </TouchableOpacity>
-    </View>
-  );
-};
+
 
 type HeaderPropsTypes = {
   title?: string;
@@ -113,23 +40,16 @@ const Header: FC<HeaderPropsTypes> = ({
   isScrolled,
 }) => {
   const navigation = useNavigation();
-  const {showMessage} = useAppSelector(state => state.auth);
+ 
 
-  useEffect(() => {
-    setTimeout(() => {
-      setShowMessage(null);
-    }, 1000);
-  }, [showMessage]);
-
-  console.log('sefse', showMessage);
   return (
     <View style={styles.headerContainer}>
-      {showMessage && (
+      {/* {showMessage && (
         <ShowMessage
           message={showMessage?.message}
           status={showMessage?.status}
         />
-      )}
+      )} */}
       {dashboard && (
         <View style={styles.dashboardContainer}>
           <TouchableOpacity onPress={onPressMenuIcon}>
@@ -179,29 +99,7 @@ const Header: FC<HeaderPropsTypes> = ({
 };
 
 const styles = StyleSheet.create({
-  showMessage: {
-    position: 'absolute',
-    top: normaliseDesigns(15),
-    marginHorizontal: '4%',
-    // transform: [{ translateX: -0.5 * normaliseDesigns(250) }, { translateY: -0.5 * 45 }],
-    flexDirection: 'row',
-    borderWidth: 1.5,
-    zIndex: 2,
-    width: '100%',
-    minHeight: normaliseDesigns(40),
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    borderRadius: 10,
-    paddingHorizontal: 10,
-    // flex:1
-  },
-  iconContainer: {
-    padding: 9,
-    backgroundColor: '#C41B1B',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 7,
-  },
+
   headerContainer: {
     justifyContent: 'flex-end',
     width: '100%',

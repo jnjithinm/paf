@@ -1,4 +1,4 @@
-import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
+import {createAction, createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 
 import api from '../../config/axios';
 import endPoints from '../../config/endPoints';
@@ -35,6 +35,11 @@ interface GetIndicatorsResponse {
 }
 
 type GetIndicatorsResponsePayload = GetIndicatorsResponse['payload'];
+
+export const setMasterShowMessage = createAction<ErrorStatusObject | null>(
+  'SET_MASTER_SHOW_MESSAGE',
+);
+
 
 export const getAllDomains = createAsyncThunk<GetDomainsResponse, void>(
   'master/getAllDomains',
@@ -74,14 +79,14 @@ export const getIndicatorsByDomainId = createAsyncThunk<
 interface InitialState {
   allDomains: GetDomainsResponse | null;
   indicatorsByDomain: GetIndicatorsResponsePayload | null;
-  showMessage: ErrorStatusObject | null;
+  masterShowMessage: ErrorStatusObject | null;
   errorMessage: string;
 }
 
 const initialState: InitialState = {
   allDomains: null,
   indicatorsByDomain: null,
-  showMessage: null,
+  masterShowMessage: null,
   errorMessage:''
 };
 
@@ -91,6 +96,9 @@ const masterSlice = createSlice({
   reducers: {},
   extraReducers: builder => {
     builder
+    .addCase(setMasterShowMessage, (state, action) => {
+      state.masterShowMessage = action.payload;
+    })
       .addCase(getAllDomains.pending, state => {
         // state.isLoading = true;
       })

@@ -163,7 +163,7 @@ export const ObservationsTile: FC<ObservationTileTypes> = ({
           User Assessed
         </Text>
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <RenderProfileIcon image={image} name={reportedBy} />
+          <RenderProfileIcon image={image} name={userAssisted} />
           <View style={{flex: 1}}>
             <Text fontVariant="bold" size="small3" style={{marginLeft: 5}}>
               {userAssisted}

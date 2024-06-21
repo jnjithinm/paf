@@ -1,4 +1,4 @@
-import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
+import {createAction, createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 
 import api from '../../config/axios';
 import endPoints from '../../config/endPoints';
@@ -160,6 +160,11 @@ type ObservationRequest={
   paginationRequest: PaginationRequest
 };
 
+export const setObservationShowMessage = createAction<ErrorStatusObject | null>(
+  'SET_OBSERVATION_SHOW_MESSAGE',
+);
+
+
 export const getDashboardDetailsAndObservationList = createAsyncThunk<
   GetDashboardDetailsAndObservationListResponse,
   number
@@ -307,7 +312,7 @@ interface InitialState {
   saveEvidenceCardResponse: SaveEvidenceCardResponsePayload | null;
   observationById: GetObservationByIdResponsePayload | null;
   allObservations: GetAllObservationsResponsePayload | null;
-  showMessage: ErrorStatusObject | null;
+  observationShowMessage: ErrorStatusObject | null;
   errorMessage: string;
 }
 
@@ -317,7 +322,7 @@ const initialState: InitialState = {
   dashboardDetails: null,
   observationById: null,
   allObservations: null,
-  showMessage: null,
+  observationShowMessage: null,
   errorMessage: ''
 };
 
@@ -329,7 +334,9 @@ const observationSlice = createSlice({
   },
   extraReducers: builder => {
     builder
-
+    .addCase(setObservationShowMessage, (state, action) => {
+      state.observationShowMessage = action.payload;
+    })
       .addCase(getDashboardDetailsAndObservationList.pending, state => {
         // state.isLoading = true;
       })

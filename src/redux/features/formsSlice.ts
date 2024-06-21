@@ -1,4 +1,4 @@
-import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
+import {createAction, createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 
 import api from '../../config/axios';
 import endPoints from '../../config/endPoints';
@@ -140,6 +140,10 @@ interface GetPreviewFormResponse {
 
 type GetPreviewFormResponsePayload = GetPreviewFormResponse['payload'];
 
+export const setFormsShowMessage = createAction<ErrorStatusObject | null>(
+  'SET_FORMS_SHOW_MESSAGE',
+);
+
 export const getFormById = createAsyncThunk<GetFormByIdResponse, number>(
   'forms/getFormById',
   async (formId, {rejectWithValue, dispatch}) => {
@@ -173,14 +177,14 @@ export const getPreviewForm = createAsyncThunk<GetPreviewFormResponse, number>(
 interface InitialState {
   formById: GetAllFlowsResponsePayload | null;
   previewForm: GetPreviewFormResponsePayload | null;
-  showMessage: ErrorStatusObject | null;
+  formsShowMessage: ErrorStatusObject | null;
   errorMessage: string;
 }
 
 const initialState: InitialState = {
   formById: null,
   previewForm: null,
-  showMessage: null,
+  formsShowMessage: null,
   errorMessage:''
 };
 
@@ -190,6 +194,9 @@ const formsSlice = createSlice({
   reducers: {},
   extraReducers: builder => {
     builder
+    .addCase(setFormsShowMessage, (state, action) => {
+      state.formsShowMessage = action.payload;
+    })
       .addCase(getFormById.pending, state => {
         // state.isLoading = true;
       })

@@ -107,8 +107,9 @@ const DashboardTabBar = ({state, navigation}: BottomTabBarProps) => {
             key={index}
             disabled={focused}>
             <Icon
-              name={focused ? `${iconName}_focused` : iconName}
-              // stroke={colors.blackColor}
+              name={ iconName}
+              stroke={focused? colors.blackColor:'#ABB4BD'}
+              strokeWidth={2}
               // name={iconName}
               // stroke={colors.secondaryColor}
               width={size}

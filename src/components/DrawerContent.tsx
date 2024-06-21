@@ -7,7 +7,13 @@ import {normaliseDesigns} from '../utils/helpers/responsiveHelpers';
 import {logoutAndclearToken} from '../redux/features/authSlice';
 import {useAppDispatch, useAppSelector} from '../redux/store';
 import {navigate} from '../utils/helpers/navigationHelpers';
-import { RenderProfileIcon } from '../screens/dashboard/TeacherDashboard';
+import {RenderProfileIcon} from '../screens/dashboard/TeacherDashboard';
+
+import {
+  ParentRoles,
+  UserTypes,
+  roleLevels,
+} from '../config/constants';
 
 type RenderItemTypes = {
   icon?: IconTypes;
@@ -88,7 +94,7 @@ const DrawerContent: FC<DrawerContentTypes> = ({closeDrawer}) => {
   const {userData} = useAppSelector(state => state.auth);
   const {dashboardDetails} = useAppSelector(state => state.observation);
 
-  const itemsArray: RenderItemTypes[] = [
+  const itemsArrayUser: RenderItemTypes[] = [
     {
       icon: 'drawer_icon_home',
       itemName: 'Dashboard',
@@ -124,7 +130,57 @@ const DrawerContent: FC<DrawerContentTypes> = ({closeDrawer}) => {
     },
   ];
 
-  const settingsItems: RenderItemTypes[] = [
+  const itemsArrayAdmin: RenderItemTypes[] = [
+    {
+      icon: 'drawer_icon_home',
+      itemName: 'Dashboard',
+      onPressItem: () => {
+        closeDrawer();
+      },
+    },
+    {
+      icon: 'drawer_icon_observation_reports',
+      itemName: 'User Management',
+      onPressItem: () => {
+        navigate('DashboardTabStack', {screen: 'ReportsStack'});
+      },
+      expandItem: {
+        itemName: 'Resources',
+        onPressItem: () => {},
+      },
+    },
+    {
+      icon: 'drawer_icon_observation_reports',
+      itemName: 'Teacher Evaluation',
+      onPressItem: () => {
+        navigate('DashboardTabStack', {screen: 'ReportsStack'});
+      },
+      expandItem: {
+        itemName: 'Resources',
+        onPressItem: () => {},
+      },
+    },
+    {
+      icon: 'drawer_icon_observation_reports',
+      itemName: 'Schedules',
+      onPressItem: () => {
+        navigate('DashboardTabStack', {screen: 'ReportsStack'});
+      },
+    },
+    {
+      icon: 'drawer_icon_observation_reports',
+      itemName: 'Analytics',
+      onPressItem: () => {
+        navigate('DashboardTabStack', {screen: 'ReportsStack'});
+      },
+      expandItem: {
+        itemName: 'Resources',
+        onPressItem: () => {},
+      },
+    },
+  ];
+
+  const settingsItemsUser: RenderItemTypes[] = [
     {
       icon: 'drawer_icon_settings',
       itemName: 'Settings',
@@ -138,6 +194,36 @@ const DrawerContent: FC<DrawerContentTypes> = ({closeDrawer}) => {
       },
     },
   ];
+
+  const settingsItemsAdmin: RenderItemTypes[] = [
+    {
+      icon: 'logout_icon',
+      itemName: 'Logout',
+      onPressItem: () => {
+        dispatch(logoutAndclearToken());
+      },
+    },
+  ];
+
+  const getRoleLevel = (role: ParentRoles): UserTypes | undefined => {
+    for (const level of roleLevels) {
+      if (level.roles.includes(role)) {
+        return level.userType;
+      }
+    }
+    return undefined;
+  };
+
+  const settingsItems =
+    getRoleLevel(userData.roleType) === UserTypes.REGISTERED_USER
+      ? settingsItemsUser
+      : settingsItemsAdmin;
+
+  const itemsArray=
+  getRoleLevel(userData.roleType) === UserTypes.REGISTERED_USER
+  ? itemsArrayUser
+  : itemsArrayAdmin;
+
   return (
     <View style={{height: '100%'}}>
       <View
@@ -169,18 +255,19 @@ const DrawerContent: FC<DrawerContentTypes> = ({closeDrawer}) => {
             alignItems: 'center',
             alignContent: 'center',
           }}>
-            <RenderProfileIcon
-                image={userData?.userImage}
-                name={userData?.name}
-                size={40}
-              />
+          <RenderProfileIcon
+            image={userData?.userImage}
+            name={userData?.name}
+            size={40}
+          />
           <View style={{marginLeft: 10}}>
             <Text fontVariant="bold" size="body2">
-            Hi, {userData?.name}
+              Hi,{' '}
+              {getRoleLevel(userData.roleType) === UserTypes.REGISTERED_USER
+                ? userData.userName
+                : 'Admin'}
             </Text>
-            <Text size="small1">
-            {dashboardDetails?.schoolName}
-            </Text>
+            <Text size="small1">{dashboardDetails?.schoolName}</Text>
           </View>
         </View>
         <View
@@ -224,7 +311,8 @@ const DrawerContent: FC<DrawerContentTypes> = ({closeDrawer}) => {
           height: normaliseDesigns(75),
           alignItems: 'center',
           justifyContent: 'center',
-          marginTop: '40%',
+          bottom: 20,
+          position:'absolute'
         }}>
         <TouchableOpacity
           style={{

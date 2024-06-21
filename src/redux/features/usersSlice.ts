@@ -1,4 +1,4 @@
-import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
+import {createAction, createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 
 import api from '../../config/axios';
 import endPoints from '../../config/endPoints';
@@ -95,6 +95,11 @@ interface User {
   }
   type GetUserGroupsResponsePayload = GetUserGroupResponse['payload'];  
 
+
+  export const setUsersShowMessage = createAction<ErrorStatusObject | null>(
+    'SET_USERS_SHOW_MESSAGE',
+  );
+
 export const getAllUsers = createAsyncThunk<
   GetAllUsersResponse,
   PaginationRequest
@@ -170,7 +175,7 @@ interface InitialState {
   GetAllUserGroupsData: GetAllUserGroupsResponsePayload | null;
   GetAllUserData: GetAllUsersResponsePayload | null;
   GetUserGroupData:GetUserGroupsResponsePayload|null;
-  showMessage: ErrorStatusObject | null;
+  usersShowMessage: ErrorStatusObject | null;
   errorMessage: string;
 }
 
@@ -178,7 +183,7 @@ const initialState: InitialState = {
   GetAllUserGroupsData: null,
   GetAllUserData: null,
     GetUserGroupData:null,
-    showMessage: null,
+    usersShowMessage: null,
     errorMessage: ''
 };
 
@@ -188,6 +193,9 @@ const usersSlice = createSlice({
   reducers: {},
   extraReducers: builder => {
     builder
+    .addCase(setUsersShowMessage, (state, action) => {
+      state.usersShowMessage = action.payload;
+    })
       .addCase(getAllUsers.pending, state => {
         // state.isLoading = true;
       })

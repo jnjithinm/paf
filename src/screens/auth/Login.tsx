@@ -15,7 +15,6 @@ import {useAppDispatch, useAppSelector} from '../../redux/store';
 import {
   authenticateUser,
   setErrorMessage,
-  setShowMessage,
 } from '../../redux/features/authSlice';
 import Layout from '../../components/Layout';
 import {
@@ -40,7 +39,7 @@ const Login: FC<LoginScreenProps> = ({navigation, route}) => {
   const [isRememberMe, setIsRememberMe] = useState<boolean>(false);
 
   const dispatch = useAppDispatch();
-  const {errorMessage, showMessage} = useAppSelector(state => state.auth);
+  const {errorMessage} = useAppSelector(state => state.auth);
   const {validateField} = useValidation();
 
   const usernameErrorMessage = validateField({
@@ -95,7 +94,6 @@ const Login: FC<LoginScreenProps> = ({navigation, route}) => {
     }, []),
   );
 
-  console.log('ss', showMessage);
 
   return (
     <Layout
@@ -107,12 +105,7 @@ const Login: FC<LoginScreenProps> = ({navigation, route}) => {
         padding: 20,
       }}
       hideHeader>
-      {showMessage && (
-        <ShowMessage
-          message={showMessage.message}
-          status={showMessage.status}
-        />
-      )}
+
       <StatusBar backgroundColor={colors.backgroundColor} />
       <Icon name="app_logo" width={65} height={65} style={{marginTop: '20%'}} />
       <Text size={'body6'} fontVariant="bold" style={{marginVertical: 10}}>

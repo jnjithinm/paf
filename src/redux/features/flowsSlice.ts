@@ -1,4 +1,4 @@
-import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
+import {createAction, createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 
 import api from '../../config/axios';
 import endPoints from '../../config/endPoints';
@@ -48,6 +48,10 @@ interface GetFlowByIdResponse {
 
 type GetFlowByIdResponsePayload = GetFlowByIdResponse['payload'];
 
+export const setFlowsShowMessage = createAction<ErrorStatusObject | null>(
+  'SET_FLOWS_SHOW_MESSAGE',
+);
+
 export const getAllFlows = createAsyncThunk<
   GetAllFlowsResponse,
   [string, PaginationRequest]
@@ -85,7 +89,7 @@ export const getFlowById = createAsyncThunk<
 interface InitialState {
   allFlows: GetAllFlowsResponsePayload | null;
   flowById: GetFlowByIdResponsePayload | null;
-  showMessage: ErrorStatusObject | null;
+  flowsShowMessage: ErrorStatusObject | null;
   errorMessage: string;
 }
 
@@ -93,7 +97,7 @@ const initialState: InitialState = {
   allFlows: null,
   flowById: null,
   // isLoading: false,
-  showMessage: null,
+  flowsShowMessage: null,
   errorMessage:''
 };
 
@@ -103,6 +107,9 @@ const flowsSlice = createSlice({
   reducers: {},
   extraReducers: builder => {
     builder
+    .addCase(setFlowsShowMessage, (state, action) => {
+      state.flowsShowMessage = action.payload;
+    })
       .addCase(getAllFlows.pending, state => {
         // state.isLoading = true;
       })
