@@ -6,7 +6,7 @@ import endPoints from '../../config/endPoints';
 import {ErrorStatusObject, FileObject} from '../../config/types';
 import {PaginationRequest} from './usersSlice';
 import {setLoading} from './authSlice';
-import { DateFilterOption } from '../../components/Calendar';
+import {DateFilterOption} from '../../components/Calendar';
 
 interface Observation {
   userAssessed: string;
@@ -112,18 +112,29 @@ export type ObservationData = {
 type GetAllObservationsResponse = {
   payload: {
     message: string;
-    dataList: ObservationData[];
+    dataList:{
+      averageRating: number | null;
+      byMe: number;
+      forMe: number;
+      observations: Observation[]; // Adjust based on the actual structure of observation elements
+      pointStatus: any | null; // Replace `any` with the correct type if known
+      progressPoint: any | null; // Replace `any` with the correct type if known
+      schoolName: string | null;
+      total: number;
+    };
+    
     totalCount: number;
   };
   status: number;
 };
+
+
 
 type GetAllObservationsResponsePayload = GetAllObservationsResponse['payload'];
 
 type FilterTypes = 'All' | 'byMe' | 'forMe';
 
 type FilterObservationRequest = {filterType: FilterTypes; userId: number};
-
 
 // type AttachmentResponse = {
 //   attachmentId: number;
@@ -149,21 +160,22 @@ type FilterObservationRequest = {filterType: FilterTypes; userId: number};
 //   status: number;
 // };
 
+export type FilterType = 'All' | 'byMe' | 'forMe';
 
-type ObservationRequest={
-  userId?: string,
-  userGroupId?:string,
-  ratings?:number,
-  dateType?: DateFilterOption,
-  startDate?: string,
-  endDate?: string,
-  paginationRequest: PaginationRequest
+type ObservationRequest = {
+  userId?: string;
+  userGroupId?: string;
+  ratings?: number;
+  filterType: FilterType;
+  dateType?: DateFilterOption;
+  startDate?: string;
+  endDate?: string;
+  paginationRequest: PaginationRequest;
 };
 
 export const setObservationShowMessage = createAction<ErrorStatusObject | null>(
   'SET_OBSERVATION_SHOW_MESSAGE',
 );
-
 
 export const getDashboardDetailsAndObservationList = createAsyncThunk<
   GetDashboardDetailsAndObservationListResponse,
@@ -224,8 +236,6 @@ export const getAllObservations = createAsyncThunk<
       dispatch(setLoading(true));
       const filteredPayload: Partial<ObservationRequest> = {};
 
-
-
       if (payload.userId !== undefined) {
         filteredPayload.userId = payload.userId;
       }
@@ -245,14 +255,15 @@ export const getAllObservations = createAsyncThunk<
         filteredPayload.endDate = payload.endDate;
       }
 
-      const response = await api.post(
-        endPoints.GET_ALL_OBSERVATIONS + id,
-        { ...filteredPayload, paginationRequest: payload.paginationRequest },
-      );
-
+      const response = await api.post(endPoints.DASHBOARD_FILTER + id, {
+        ...filteredPayload,
+        paginationRequest: payload.paginationRequest,
+        filterType: payload.filterType,
+      });
 
       return response.data as GetAllObservationsResponse;
     } catch (error: any) {
+      console.log("er",error)
       return rejectWithValue(error.response.data);
     } finally {
       dispatch(setLoading(false));
@@ -323,7 +334,7 @@ const initialState: InitialState = {
   observationById: null,
   allObservations: null,
   observationShowMessage: null,
-  errorMessage: ''
+  errorMessage: '',
 };
 
 const observationSlice = createSlice({
@@ -334,9 +345,9 @@ const observationSlice = createSlice({
   },
   extraReducers: builder => {
     builder
-    .addCase(setObservationShowMessage, (state, action) => {
-      state.observationShowMessage = action.payload;
-    })
+      .addCase(setObservationShowMessage, (state, action) => {
+        state.observationShowMessage = action.payload;
+      })
       .addCase(getDashboardDetailsAndObservationList.pending, state => {
         // state.isLoading = true;
       })
@@ -369,6 +380,7 @@ const observationSlice = createSlice({
       })
       .addCase(saveEvidenceCard.rejected, (state, action) => {
         // state.isLoading = false;
+        console.log('aaaaa', action.error, 'dfd', action.error);
       })
       .addCase(getObservationById.pending, state => {
         // state.isLoading = true;

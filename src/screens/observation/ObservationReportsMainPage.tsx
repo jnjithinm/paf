@@ -20,10 +20,12 @@ import {normaliseDesigns} from '../../utils/helpers/responsiveHelpers';
 import Calendar, {FilterObject} from '../../components/Calendar';
 import {useAppDispatch, useAppSelector} from '../../redux/store';
 import {
+  FilterType,
   ObservationData,
   getAllObservations,
 } from '../../redux/features/observationSlice';
 import SearchWithFilter from '../../components/SearchWithFilter';
+import { DropdownObject } from '../../components/LabeledDropdown';
 
 type ObservationReportsMainPageNavigationProp = StackNavigationProp<
   ReportsTabBarStackParamList,
@@ -92,31 +94,18 @@ const ObservationReportsMainPage: FC<ObservationReportsMainPageScreenProps> = ({
   navigation,
   route,
 }) => {
-  const [rubricListData, setRubricListData] = useState<ObservationData[]>([]);
-  const [isAddButtonPressed, setIsAddButtonPressed] = useState<boolean>(false);
-  const [filter, setFilter] = useState<FilterObject | undefined>();
+
+  const [selectedFilter,setSelectedFilter]=useState<FilterType>('All')
 
   const dispatch = useAppDispatch();
-  const {allObservations, dashboardDetails} = useAppSelector(
+  const {allObservations} = useAppSelector(
     state => state.observation,
   );
   const {userData} = useAppSelector(state => state.auth);
-  const handleTabClick = (title: string) => {
-    if (allObservations?.dataList) {
-      title == 'Active'
-        ? setRubricListData(
-            allObservations?.dataList?.filter(
-              item => item.observationStatus === 'Completed',
-            ),
-          )
-        : title == 'Non-Active'
-        ? setRubricListData(
-            allObservations?.dataList?.filter(
-              item => item.observationStatus === 'Pending',
-            ),
-          )
-        : setRubricListData(allObservations?.dataList);
-    }
+
+  const handleTabClick = (title: DropdownObject) => {
+    setSelectedFilter(title?.value);
+    
   };
 
   useEffect(() => {
@@ -124,6 +113,7 @@ const ObservationReportsMainPage: FC<ObservationReportsMainPageScreenProps> = ({
       getAllObservations([
         userData.id,
         {
+          filterType:selectedFilter,
           // userId: undefined,
           // userGroupId:undefined,
           // ratings:filter?.rating,
@@ -138,13 +128,9 @@ const ObservationReportsMainPage: FC<ObservationReportsMainPageScreenProps> = ({
         },
       ]),
     );
-  }, []);
+  }, [selectedFilter]);
 
-  useEffect(() => {
-    if (allObservations) {
-      setRubricListData(allObservations?.dataList);
-    }
-  }, [allObservations]);
+
 
   return (
     <>
@@ -158,9 +144,9 @@ const ObservationReportsMainPage: FC<ObservationReportsMainPageScreenProps> = ({
         </Text>
         <Tab
           tabs={[
-            `All (${dashboardDetails?.total || ''})`,
-            `By me (${dashboardDetails?.byMe || ''})`,
-            `For me (${dashboardDetails?.forMe || ''})`,
+            {value:'All',label:`All (${allObservations?.dataList?.total || ''})`},
+            {value:'byMe',label:`By me (${allObservations?.dataList?.byMe || ''})`},
+            {value:'forMe',label: `For me (${allObservations?.dataList?.forMe || ''})`},
           ]}
           onClick={title => handleTabClick(title)}
         />
@@ -171,6 +157,7 @@ const ObservationReportsMainPage: FC<ObservationReportsMainPageScreenProps> = ({
               getAllObservations([
                 userData.id,
                 {
+                  filterType:selectedFilter,
                   userId: undefined,
                   userGroupId: undefined,
                   ratings: filter?.rating,
@@ -188,7 +175,7 @@ const ObservationReportsMainPage: FC<ObservationReportsMainPageScreenProps> = ({
           }}
         />
         <View style={{marginVertical: 10}}>
-          {rubricListData?.map((item, index) => (
+          {allObservations?.dataList?.observations?.map((item, index) => (
             <ObservationsTile
               key={index}
               rating={item.ratings?.toString()}
@@ -205,34 +192,14 @@ const ObservationReportsMainPage: FC<ObservationReportsMainPageScreenProps> = ({
         </View>
       </Layout>
 
-      {isAddButtonPressed ? (
-        <View>
-          <FloatingButton
-            icon="plus_icon"
-            text="New observation"
-            iconSize={15}
-            onPress={() => {
-              navigation.navigate('AddNewObservation');
-            }}
-            style={{bottom: normaliseDesigns(70), width: normaliseDesigns(145)}}
-          />
-          <FloatingButton
-            icon="cross_icon_white"
-            iconSize={10}
-            onPress={() => {
-              setIsAddButtonPressed(false);
-            }}
-          />
-        </View>
-      ) : (
         <FloatingButton
           icon="plus_icon"
           onPress={() => {
-            setIsAddButtonPressed(true);
+            navigation.navigate('AddNewObservation');
           }}
           iconSize={20}
         />
-      )}
+
     </>
   );
 };

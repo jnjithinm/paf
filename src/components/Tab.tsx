@@ -10,10 +10,13 @@ import {
 import {normaliseDesigns} from '../utils/helpers/responsiveHelpers';
 import {FONT_SIZES, FONT_VARIANT} from '../config/themes';
 import colors from '../config/colors';
+import { DropdownObject } from './LabeledDropdown';
+
+
 
 interface TabsProps {
-  tabs: string[];
-  onClick: (index: string) => void;
+  tabs: DropdownObject[];
+  onClick: (index: DropdownObject) => void;
   style?: ViewStyle;
   textStyle?:TextStyle
 }
@@ -21,7 +24,7 @@ interface TabsProps {
 const Tabs: React.FC<TabsProps> = ({tabs, onClick, style,textStyle}) => {
   const [selectedTab, setSelectedTab] = useState(0);
 
-  const handleTabPress = (tabIndex: number, tabName: string) => {
+  const handleTabPress = (tabIndex: number, tabName: DropdownObject) => {
     setSelectedTab(tabIndex);
     onClick(tabName);
   };
@@ -42,7 +45,7 @@ const Tabs: React.FC<TabsProps> = ({tabs, onClick, style,textStyle}) => {
                 selectedTab === index && styles.selectedTabHeaderText,
                 textStyle
               ]}>
-              {title}
+              {title.label}
             </Text>
           </TouchableOpacity>
         ))}

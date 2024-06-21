@@ -9,7 +9,7 @@ interface LoadingPropsTypes {
   timer?: number;
 }
 const Loading: React.FC<LoadingPropsTypes> = ({
-  size = 130,
+  size = 150,
   IsProcessingScreen,
   timer,
 }) => {

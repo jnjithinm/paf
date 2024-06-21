@@ -110,14 +110,15 @@ const FileUpload: React.FC<FileUploadProps> = ({
         filePaths.push(destPath);
       }
 
-      // Now filePaths contains the file paths, use it to zip the files
-      const targetPath = `${DocumentDirectoryPath}/myFile1.zip`;
+      // const filePath = flow == 'fromCamera' ? res.path : res.path;
+      const name = `${new Date().getTime()}.zip`;
+      const targetPath = `${RNFS.DocumentDirectoryPath}/${name}`;
 
       zip(filePaths, targetPath)
         .then(path => {
           if (onFilesPicked) {
             onFilesPicked([
-              {uri: path, name: 'myFile1.zip', type: 'application/zip'},
+              {uri: path, name, type: 'application/zip'},
             ]);
           }
         })

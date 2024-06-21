@@ -93,7 +93,7 @@ const RenderDropdown: FC<RenderDropdownTypes> = ({label, value, onChange}) => {
 
 const dateFilterOptions = [
   'Last week',
-  'This week',
+  'This month',
   'Past 3 months',
   'Past 1 year',
 ] as const;
