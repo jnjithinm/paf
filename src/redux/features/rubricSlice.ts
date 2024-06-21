@@ -3,7 +3,8 @@ import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import api from '../../config/axios';
 import endPoints from '../../config/endPoints';
 import {PaginationRequest} from './usersSlice';
-import {setLoading} from './authSlice';
+import {setLoading, setShowMessage} from './authSlice';
+import { ErrorStatusObject } from '../../config/types';
 
 export type RubricItem = {
   rubricId: number;
@@ -93,8 +94,10 @@ export const deleteRubric = createAsyncThunk<
   try {
     dispatch(setLoading(true));
     const response = await api.delete(endPoints.DELETE_RUBRIC, {data: payload});
+    console.log("re",response.data)
     return response.data as RubricsDeleteResponse;
   } catch (error: any) {
+    console.log("ressss",error,"sdssd",error.response?.data?.message)
     return rejectWithValue(error.response.data);
   } finally {
     dispatch(setLoading(false));
@@ -116,25 +119,24 @@ export const getRubric = createAsyncThunk<GetRubricResponse, number>(
   },
 );
 
+
+
 interface InitialState {
   allRubrics: GetAllRubricsResponsePayload | null;
   rubricData: GetRubricResponsePayload | null;
   deleteSuccess: boolean;
+  showMessage: ErrorStatusObject | null;
+  errorMessage: string;
 
-  error: {
-    status: 'Success' | 'Failed' | null;
-    message: string;
-  };
 }
 
 const initialState: InitialState = {
   allRubrics: null,
   rubricData: null,
   deleteSuccess: false,
-  error: {
-    status: null,
-    message: '',
-  },
+  showMessage: null,
+  errorMessage: ''
+
 };
 
 const rubricSlice = createSlice({
@@ -161,28 +163,31 @@ const rubricSlice = createSlice({
       })
       .addCase(getRubric.fulfilled, (state, action) => {
         // state.isLoading = false;
-        state.rubricData = {
-          ...state.rubricData,
-          ...action.payload.payload,
-        };
+        state.rubricData =action.payload.payload;
+        
       })
       .addCase(getRubric.rejected, (state, action) => {
         // state.isLoading = false;
       })
-      .addCase(deleteRubric.pending, state => {
+      .addCase(deleteRubric.pending, (state,action) => {
         // state.isLoading = true;
         state.deleteSuccess = false;
+
       })
       .addCase(deleteRubric.fulfilled, (state, action) => {
         // state.isLoading = false;
-        state.error = {
-          status: 'Success',
-          message: action.payload.payload.message?.toString(),
-        };
+        // state.error = {
+        //   status: 'Success',
+        //   message: action.payload.payload.message?.toString(),
+        // };
+        setShowMessage({status:'Success',message:action.payload.payload.message?.toString()})
+        console.log("dssss",action.payload);
         state.deleteSuccess = true;
       })
       .addCase(deleteRubric.rejected, (state, action) => {
         // state.isLoading = false;
+      // };
+      setShowMessage({status:'Failed',message:'sdds'})
       });
   },
 });

@@ -4,25 +4,23 @@ import {
   createStackNavigator,
 } from '@react-navigation/stack';
 
-import ReportsMainPage from '../screens/reports/ObservationReportsMainPage';
-import ReportsEvidenceCard from '../screens/reports/ReportsEvidenceCard';
-import AddNewObservation from '../screens/reports/AddNewObservation';
-import AddNewEvidenceCard from '../screens/reports/AddNewEvidenceCard';
-import ViewEvidenceCard from '../screens/reports/ViewEvidenceCard';
+import ReportsMainPage from '../screens/observation/ObservationReportsMainPage';
+import AddNewObservation from '../screens/observation/AddNewObservation';
 import {
   EvidenceResponse,
   ObservationData,
 } from '../redux/features/observationSlice';
 import {FileObject} from '../config/types';
-import PlayFile from '../screens/reports/PlayFile';
-import ObservationReportsMainPage from '../screens/reports/ObservationReportsMainPage';
-import ObservationReport from '../screens/reports/ObservationReport';
+import PlayFile from '../screens/observation/PlayFile';
+import ObservationReportsMainPage from '../screens/observation/ObservationReportsMainPage';
+import ObservationReport from '../screens/observation/ObservationReport';
+import CreateViewEvidenceCard from '../screens/observation/CreateViewEvidenceCard';
 
 export type ReportsTabBarStackParamList = {
   ObservationReportsMainPage: undefined;
   ReportsEvidenceCard: {userAccessed: string};
   AddNewObservation: undefined;
-  AddNewEvidenceCard: {
+  CreateViewEvidenceCard: {
     observationStatus: 'New' | 'Pending' | 'Completed';
     evidenceCardDetails?: EvidenceResponse;
   };
@@ -31,7 +29,6 @@ export type ReportsTabBarStackParamList = {
   //   selectedUser: DropdownObject;
   //   selectedDate: string;
   // };
-  ViewEvidenceCard: {evidenceId: string};
   ObservationReport: {observationItem: ObservationData};
   PlayFile: {file: FileObject};
 };
@@ -67,25 +64,18 @@ const ReportsStack = () => {
         component={ObservationReportsMainPage}
       />
       <ReportsStackTab.Screen
-        name="ReportsEvidenceCard"
-        component={ReportsEvidenceCard}
-      />
-      <ReportsStackTab.Screen
         name="AddNewObservation"
         component={AddNewObservation}
       />
       <ReportsStackTab.Screen
-        name="AddNewEvidenceCard"
-        component={AddNewEvidenceCard}
+        name="CreateViewEvidenceCard"
+        component={CreateViewEvidenceCard}
       />
       <ReportsStackTab.Screen
         name="ObservationReport"
         component={ObservationReport}
       />
-      <ReportsStackTab.Screen
-        name="ViewEvidenceCard"
-        component={ViewEvidenceCard}
-      />
+
       <ReportsStackTab.Screen name="PlayFile" component={PlayFile} />
     </ReportsStackTab.Navigator>
   );

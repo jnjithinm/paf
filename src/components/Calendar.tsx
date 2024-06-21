@@ -1,11 +1,10 @@
-import React, {FC, ReactNode, useState} from 'react';
+import React, {FC, useState} from 'react';
 import {
   Modal as RNModal,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
   View,
-  ViewStyle,
 } from 'react-native';
 
 import Text from './Text';
@@ -59,12 +58,13 @@ const RenderDropdown: FC<RenderDropdownTypes> = ({label, value, onChange}) => {
     });
   }
   const startYear = 1900;
-  const endYear = 2024;
-
+  const endYear = new Date().getFullYear();
   const years = [];
-  for (let year = startYear; year <= endYear; year++) {
-    years.push({label: year?.toString(), value: year?.toString()});
+
+  for (let year = endYear; year >= startYear; year--) {
+    years.push({label: year.toString(), value: year.toString()});
   }
+
   return (
     <View style={{flexDirection: 'row', alignItems: 'center', width: '50%'}}>
       <Dropdown
@@ -83,41 +83,42 @@ const RenderDropdown: FC<RenderDropdownTypes> = ({label, value, onChange}) => {
         placeholderStyle={{color: '#CBD2D9'}}
         iconColor="transparent"
         style={{width: '100%'}}
+        itemTextStyle={{color: colors.blackColor}}
+        selectedTextStyle={{color: colors.blackColor}}
       />
       <Icon name="up_and_down_selection" style={{right: 25}} />
     </View>
   );
 };
 
-const dateFilterOptions: string[] = [
+const dateFilterOptions = [
   'Last week',
   'This week',
   'Past 3 months',
   'Past 1 year',
-];
+] as const;
+
+export type DateFilterOption = (typeof dateFilterOptions)[number];
+
+export type FilterObject = {
+  rating: number | undefined;
+  dateFilterOption: DateFilterOption | undefined;
+  date:
+    | {
+        startDate: string;
+        endDate: string;
+      }
+    | undefined;
+};
 
 interface CalendarPropsTypes {
-  onProceed: () => void;
+  onProceed: (value: FilterObject) => void;
   onClose: () => void;
   isVisible: boolean;
-  rating?:number;
 }
 
-type FilterObject={
-  rating:number,
-  date:{
-    startDate:string,
-    endDate:string
-  }
-}
-
-const Calendar: FC<CalendarPropsTypes> = ({
-  onProceed,
-  onClose,
-  isVisible,
-  rating
-}) => {
-
+const Calendar: FC<CalendarPropsTypes> = ({onProceed, onClose, isVisible}) => {
+  const [rating, setRating] = useState<number>(0);
   const [selectedStartMonth, setSelectedStartMonth] = useState<
     number | undefined
   >(undefined);
@@ -132,12 +133,31 @@ const Calendar: FC<CalendarPropsTypes> = ({
     undefined,
   );
   const [selectedFilterByDate, setSelectedFilterByDate] = useState<
-    string | undefined
+    DateFilterOption | undefined
   >(undefined);
-  
+
+  const [startDate, setStartDate] = useState<moment.Moment | undefined>(
+    undefined,
+  );
+  const [endDate, setEndDate] = useState<moment.Moment | undefined>(undefined);
+
   const weekdays = moment.weekdays();
   const days = generateCalendar(selectedStartMonth, selectedStartYear);
   const shortWeekdays = weekdays.map(day => day.slice(0, 2));
+
+  const handleStartDateChange = (month: number, year: number) => {
+    setSelectedStartMonth(month);
+    setSelectedStartYear(year);
+    setStartDate(moment({year, month: month - 1}));
+    // Automatically set end date to the same as start date initially
+    setEndDate(moment({year, month: month - 1}));
+  };
+
+  const handleEndDateChange = (month: number, year: number) => {
+    setSelectedEndMonth(month);
+    setSelectedEndYear(year);
+    setEndDate(moment({year, month: month - 1}));
+  };
 
   return (
     <RNModal visible={isVisible} animationType="slide" transparent>
@@ -150,16 +170,23 @@ const Calendar: FC<CalendarPropsTypes> = ({
                 Filter
               </Text>
               <TouchableOpacity
-                style={{justifyContent: 'flex-end'}}
+                style={{
+                  justifyContent: 'flex-end',
+                  width: normaliseDesigns(15),
+                  height: normaliseDesigns(15),
+                }}
                 onPress={() => onClose()}>
-                <Icon name="cross_icon_thin" width={10} height={10} />
+                <Icon name="cross_icon_thin" width={15} height={15} />
               </TouchableOpacity>
             </View>
-            <Text size="body1" fontVariant="bold" style={{marginVertical:5}}>
-              sort by filtering
-            </Text>
-            <RatingInput label={''} rating={0} onChangeRating={() => {}} showRating={false}/>
-            <Text size="body1" fontVariant="bold" style={{marginVertical:5}}>
+            <RatingInput
+              label={'sort by filtering'}
+              style={{marginVertical: 5}}
+              rating={rating}
+              onChangeRating={setRating}
+              showRating={false}
+            />
+            <Text size="body1" fontVariant="bold" style={{marginVertical: 10}}>
               By date
             </Text>
             <View
@@ -167,8 +194,8 @@ const Calendar: FC<CalendarPropsTypes> = ({
                 flexDirection: 'row',
                 flexWrap: 'wrap',
                 justifyContent: 'space-evenly',
-                width:'85%',
-                alignContent:'flex-start'
+                width: '85%',
+                alignContent: 'flex-start',
               }}>
               {dateFilterOptions.map((item, index) => (
                 <TouchableOpacity
@@ -183,7 +210,7 @@ const Calendar: FC<CalendarPropsTypes> = ({
                     paddingVertical: 5,
                     borderRadius: 5,
                     marginBottom: 10,
-                    alignContent:'flex-start'
+                    alignContent: 'flex-start',
                   }}
                   onPress={() => {
                     setSelectedFilterByDate(item);
@@ -205,16 +232,22 @@ const Calendar: FC<CalendarPropsTypes> = ({
                 <View style={{flexDirection: 'row'}}>
                   <RenderDropdown
                     label={'Month'}
-                    onChange={item => {
-                      setSelectedStartMonth(Number(item.value));
-                    }}
+                    onChange={item =>
+                      handleStartDateChange(
+                        Number(item.value),
+                        selectedStartYear || moment().year(),
+                      )
+                    }
                     value={selectedStartMonth}
                   />
                   <RenderDropdown
                     label={'Year'}
-                    onChange={item => {
-                      setSelectedStartYear(Number(item.value));
-                    }}
+                    onChange={item =>
+                      handleStartDateChange(
+                        selectedStartMonth || moment().month() + 1,
+                        Number(item.value),
+                      )
+                    }
                     value={selectedStartYear}
                   />
                 </View>
@@ -234,16 +267,22 @@ const Calendar: FC<CalendarPropsTypes> = ({
                 <View style={{flexDirection: 'row'}}>
                   <RenderDropdown
                     label={'Month'}
-                    onChange={item => {
-                      setSelectedEndMonth(Number(item.value));
-                    }}
+                    onChange={item =>
+                      handleEndDateChange(
+                        Number(item.value),
+                        selectedEndYear || moment().year(),
+                      )
+                    }
                     value={selectedEndMonth}
                   />
                   <RenderDropdown
                     label={'Year'}
-                    onChange={item => {
-                      setSelectedEndYear(Number(item.value));
-                    }}
+                    onChange={item =>
+                      handleEndDateChange(
+                        selectedEndMonth || moment().month() + 1,
+                        Number(item.value),
+                      )
+                    }
                     value={selectedEndYear}
                   />
                 </View>
@@ -275,7 +314,16 @@ const Calendar: FC<CalendarPropsTypes> = ({
 
               <View style={styles.daysRow}>
                 {days.map((day, index) => (
-                  <TouchableOpacity style={styles.day}>
+                  <TouchableOpacity
+                    style={styles.day}
+                    onPress={() => {
+                      if (startDate && !endDate) {
+                        setEndDate(day);
+                      } else {
+                        setStartDate(day);
+                        setEndDate(undefined);
+                      }
+                    }}>
                     <Text
                       key={index}
                       style={{
@@ -302,8 +350,23 @@ const Calendar: FC<CalendarPropsTypes> = ({
             <Button
               text="Apply"
               style={{marginTop: 20}}
-              active
-              onPress={() => {}}
+              active={Boolean(
+                rating !== 0 || selectedFilterByDate !== undefined,
+              )}
+              onPress={() => {
+                onProceed({
+                  rating,
+                  dateFilterOption: selectedFilterByDate,
+                  date:
+                    startDate && endDate
+                      ? {
+                          startDate: startDate.format('YYYY-MM-DD'),
+                          endDate: endDate.format('YYYY-MM-DD'),
+                        }
+                      : undefined,
+                });
+                onClose();
+              }}
             />
           </ScrollView>
         </View>
@@ -339,7 +402,7 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems:'center'
+    alignItems: 'center',
   },
   contentContainer: {
     paddingHorizontal: 15,

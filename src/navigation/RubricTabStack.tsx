@@ -4,7 +4,7 @@ import {
   createStackNavigator,
 } from '@react-navigation/stack';
 
-import AddNewObservation from '../screens/reports/AddNewObservation';
+import AddNewObservation from '../screens/observation/AddNewObservation';
 import {RubricIndicatorItem, RubricItem} from '../redux/features/rubricSlice';
 import RubricIndicatorDescription from '../screens/rubric/RubricIndicatorDescription';
 import RubricEvaluationIndicatorList from '../screens/rubric/RubricEvaluationIndicatorList';

@@ -35,7 +35,7 @@ const ImageItem: FC<ImageItemProps> = ({
       onPress={()=>onPressFile({uri: item.uri, name: item.name?.toString()||'', type: item.type?.toString()||''})}
       // disabled={disabled}
       >
-      <View style={{flexDirection: 'row', width: '90%'}}>
+      <View style={{flexDirection: 'row', width: '90%',alignItems:'center'}}>
         <View>
           {item.type?.startsWith('image') ? (
             <Image name="img_upload_icon" />
@@ -78,8 +78,6 @@ const FileUpload: React.FC<FileUploadProps> = ({
   disabled,
 }) => {
   const [files, setFiles] = useState<DocumentPickerResponse[]>([]);
-  const [uploadProgress, setUploadProgress] = useState<number>(80);
-  const [uploading, setUploading] = useState<boolean>(false);
   const getContentUriPath = async (contentUri: any) => {
     const fileInfo = await RNFS.stat(contentUri);
     return fileInfo.originalFilepath || contentUri;
@@ -98,7 +96,8 @@ const FileUpload: React.FC<FileUploadProps> = ({
         ],
       });
 
-      setFiles(results);
+      const newFiles = [...files, ...results];
+      setFiles(newFiles);
 
       const filePaths = [];
 

@@ -2,6 +2,7 @@ import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 
 import api from '../../config/axios';
 import endPoints from '../../config/endPoints';
+import { ErrorStatusObject } from '../../config/types';
 
 interface UserData {
   userId: number;
@@ -169,15 +170,16 @@ interface InitialState {
   GetAllUserGroupsData: GetAllUserGroupsResponsePayload | null;
   GetAllUserData: GetAllUsersResponsePayload | null;
   GetUserGroupData:GetUserGroupsResponsePayload|null;
-
-  error: string | null;
+  showMessage: ErrorStatusObject | null;
+  errorMessage: string;
 }
 
 const initialState: InitialState = {
   GetAllUserGroupsData: null,
   GetAllUserData: null,
     GetUserGroupData:null,
-  error: null,
+    showMessage: null,
+    errorMessage: ''
 };
 
 const usersSlice = createSlice({

@@ -1,13 +1,5 @@
 import React, {FC, useEffect, useState} from 'react';
-import {
-  FlatList,
-  KeyboardAvoidingView,
-  Platform,
-  ProgressBarAndroid,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import {KeyboardAvoidingView, Platform, StyleSheet, View} from 'react-native';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 
@@ -29,23 +21,23 @@ import {saveEvidenceCard} from '../../redux/features/observationSlice';
 import {FileObject} from '../../config/types';
 import {ReportsTabBarStackParamList} from '../../navigation/ReportsTabStack';
 import RatingInput from '../../components/RatingInput';
+import { navigate } from '../../utils/helpers/navigationHelpers';
 
-type AddNewEvidenceCardNavigationProp = StackNavigationProp<
+type CreateViewEvidenceCardNavigationProp = StackNavigationProp<
   ReportsTabBarStackParamList,
-  'AddNewEvidenceCard'
+  'CreateViewEvidenceCard'
 >;
-type AddNewEvidenceCardRouteProp = RouteProp<
+type CreateViewEvidenceCardRouteProp = RouteProp<
   ReportsTabBarStackParamList,
-  'AddNewEvidenceCard'
+  'CreateViewEvidenceCard'
 >;
 
-interface AddNewEvidenceCardScreenProps {
-  navigation: AddNewEvidenceCardNavigationProp;
-  route: AddNewEvidenceCardRouteProp;
+interface CreateViewEvidenceCardScreenProps {
+  navigation: CreateViewEvidenceCardNavigationProp;
+  route: CreateViewEvidenceCardRouteProp;
 }
 
-
-const AddNewEvidenceCard: FC<AddNewEvidenceCardScreenProps> = ({
+const CreateViewEvidenceCard: FC<CreateViewEvidenceCardScreenProps> = ({
   navigation,
   route,
 }) => {
@@ -137,7 +129,7 @@ const AddNewEvidenceCard: FC<AddNewEvidenceCardScreenProps> = ({
         overridePaddingVertical
         style={{paddingHorizontal: 15, paddingVertical: 0}}
         icon="reports_icon"
-        title="New Observation">
+        title={evidenceCardDetails ? 'Evidence Card' : 'New Observation'}>
         <View style={{marginVertical: 20}}>
           <View style={{flexDirection: 'row'}}>
             <Image name="evidence_icon" />
@@ -146,6 +138,7 @@ const AddNewEvidenceCard: FC<AddNewEvidenceCardScreenProps> = ({
                 alignSelf: 'center',
                 fontFamily: FONT_VARIANT.bold,
                 fontSize: FONT_SIZES.body1,
+                left:5
               }}>
               {'Add new evidence cards'}
             </Text>
@@ -221,14 +214,14 @@ const AddNewEvidenceCard: FC<AddNewEvidenceCardScreenProps> = ({
         }
         cancelButtonText={'Cancel'}
         onPressCancelButton={() => {
-          navigation.navigate('ReportsMainPage');
+          navigation.navigate('ObservationReportsMainPage')
         }}
         style={{}}
       />
     </KeyboardAvoidingView>
   );
 };
-export default AddNewEvidenceCard;
+export default CreateViewEvidenceCard;
 
 const styles = StyleSheet.create({
   progressContainer: {

@@ -3,9 +3,10 @@ import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import api from '../../config/axios';
 import endPoints from '../../config/endPoints';
 
-import {FileObject} from '../../config/types';
+import {ErrorStatusObject, FileObject} from '../../config/types';
 import {PaginationRequest} from './usersSlice';
 import {setLoading} from './authSlice';
+import { DateFilterOption } from '../../components/Calendar';
 
 interface Observation {
   userAssessed: string;
@@ -94,16 +95,18 @@ type GetObservationByIdResponse = {
 type GetObservationByIdResponsePayload = GetObservationByIdResponse['payload'];
 
 export type ObservationData = {
-  observationId: number;
-  userAssessed: string;
-  reportedBy: string;
-  ratings: number;
-  observationStatus: 'Completed' | 'Pending';
-  videoCount: number;
   audioCount: number;
+  createdDate: string;
   documentCount: number;
   imageCount: number;
-  createdDate: string;
+  observationId: number;
+  observationStatus: 'Completed' | 'Pending' | 'In Progress' | 'Cancelled';
+  ratings: number;
+  reportedBy: string;
+  reportedByImage: string;
+  userAssessed: string;
+  userImage: string;
+  videoCount: number;
 };
 
 type GetAllObservationsResponse = {
@@ -116,6 +119,11 @@ type GetAllObservationsResponse = {
 };
 
 type GetAllObservationsResponsePayload = GetAllObservationsResponse['payload'];
+
+type FilterTypes = 'All' | 'byMe' | 'forMe';
+
+type FilterObservationRequest = {filterType: FilterTypes; userId: number};
+
 
 // type AttachmentResponse = {
 //   attachmentId: number;
@@ -141,6 +149,17 @@ type GetAllObservationsResponsePayload = GetAllObservationsResponse['payload'];
 //   status: number;
 // };
 
+
+type ObservationRequest={
+  userId?: string,
+  userGroupId?:string,
+  ratings?:number,
+  dateType?: DateFilterOption,
+  startDate?: string,
+  endDate?: string,
+  paginationRequest: PaginationRequest
+};
+
 export const getDashboardDetailsAndObservationList = createAsyncThunk<
   GetDashboardDetailsAndObservationListResponse,
   number
@@ -150,7 +169,7 @@ export const getDashboardDetailsAndObservationList = createAsyncThunk<
     const response = await api.get(
       endPoints.GET_DASHBOARD_DETAILS_OBSERVATION + id,
     );
-    console.log('[API] Success:', JSON.stringify(response.data));
+    // console.log('[API] Success:', JSON.stringify(response.data));
     return response.data as GetDashboardDetailsAndObservationListResponse;
   } catch (error: any) {
     return rejectWithValue(error.response.data);
@@ -166,6 +185,7 @@ export const getObservationById = createAsyncThunk<
   try {
     dispatch(setLoading(true));
     const response = await api.get(endPoints.GET_OBSERVATION_BY_ID + id);
+    // console.log('[API] Success:', JSON.stringify(response.data));
     return response.data as GetObservationByIdResponse;
   } catch (error: any) {
     return rejectWithValue(error.response.data);
@@ -191,16 +211,60 @@ export const getEvidenceById = createAsyncThunk<
 
 export const getAllObservations = createAsyncThunk<
   GetAllObservationsResponse,
-  [number, PaginationRequest]
+  [number, ObservationRequest]
 >(
   'observation/getAllObservations',
   async ([id, payload], {dispatch, rejectWithValue}) => {
     try {
       dispatch(setLoading(true));
+      const filteredPayload: Partial<ObservationRequest> = {};
+
+
+
+      if (payload.userId !== undefined) {
+        filteredPayload.userId = payload.userId;
+      }
+      if (payload.userGroupId !== undefined) {
+        filteredPayload.userGroupId = payload.userGroupId;
+      }
+      if (payload.ratings !== undefined) {
+        filteredPayload.ratings = payload.ratings;
+      }
+      if (payload.dateType !== undefined) {
+        filteredPayload.dateType = payload.dateType;
+      }
+      if (payload.startDate !== undefined) {
+        filteredPayload.startDate = payload.startDate;
+      }
+      if (payload.endDate !== undefined) {
+        filteredPayload.endDate = payload.endDate;
+      }
+
       const response = await api.post(
         endPoints.GET_ALL_OBSERVATIONS + id,
-        payload,
+        { ...filteredPayload, paginationRequest: payload.paginationRequest },
       );
+
+
+      return response.data as GetAllObservationsResponse;
+    } catch (error: any) {
+      return rejectWithValue(error.response.data);
+    } finally {
+      dispatch(setLoading(false));
+    }
+  },
+);
+
+export const filterObservations = createAsyncThunk<
+  GetAllObservationsResponse,
+  [number, FilterObservationRequest]
+>(
+  'observation/filterObservations',
+  async ([id, payload], {dispatch, rejectWithValue}) => {
+    try {
+      dispatch(setLoading(true));
+      const response = await api.post(endPoints.DASHBOARD_FILTER + id, payload);
+      // console.log('[API] Success:', JSON.stringify(response.data));
       return response.data as GetAllObservationsResponse;
     } catch (error: any) {
       return rejectWithValue(error.response.data);
@@ -224,11 +288,13 @@ export const saveEvidenceCard = createAsyncThunk<
         // file.forEach((f, index) => {
         //   formData.append(`file_${index}`, f);
         // });
+        console.log('file', file[0].uri);
         formData.append('file', file[0]);
       }
       const response = await api.post(endPoints.SAVE_EVIDENCE_CARD, formData);
       return response.data as SaveEvidenceCardResponse;
     } catch (error: any) {
+      console.log('evidence card', error);
       return rejectWithValue(error.response.data);
     } finally {
       dispatch(setLoading(false));
@@ -241,8 +307,8 @@ interface InitialState {
   saveEvidenceCardResponse: SaveEvidenceCardResponsePayload | null;
   observationById: GetObservationByIdResponsePayload | null;
   allObservations: GetAllObservationsResponsePayload | null;
-  // isLoading: boolean;
-  error: string | null;
+  showMessage: ErrorStatusObject | null;
+  errorMessage: string;
 }
 
 const initialState: InitialState = {
@@ -251,7 +317,8 @@ const initialState: InitialState = {
   dashboardDetails: null,
   observationById: null,
   allObservations: null,
-  error: null,
+  showMessage: null,
+  errorMessage: ''
 };
 
 const observationSlice = createSlice({

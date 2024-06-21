@@ -20,7 +20,8 @@ import DrawerContent from '../../components/DrawerContent';
 import {useAppDispatch, useAppSelector} from '../../redux/store';
 import {getDashboardDetailsAndObservationList} from '../../redux/features/observationSlice';
 import {navigate} from '../../utils/helpers/navigationHelpers';
-import Calendar from '../../components/Calendar';
+import Calendar, {FilterObject} from '../../components/Calendar';
+import SearchWithFilter from '../../components/SearchWithFilter';
 
 type TeacherDashboardNavigationProp = StackNavigationProp<
   DashboardTabBarStackParamList,
@@ -341,72 +342,6 @@ const CourseTile: FC<CoursesTileTypes> = ({
   </View>
 );
 
-type RenderSearchTypes = {
-  placeHolder?: string;
-  onTextChange: (text: string) => void;
-  onPressFilterIcon: () => void;
-  style?: ViewStyle;
-};
-
-export const RenderSearchWithFilter: FC<RenderSearchTypes> = ({
-  placeHolder = 'Search',
-  onTextChange,
-  onPressFilterIcon,
-  style,
-}) => {
-  const [isOpenCalendar, setIsOpenCalendar] = useState<boolean>(false);
-  return (
-    <>
-      <Calendar
-        onProceed={() => {}}
-        onClose={() => {
-          setIsOpenCalendar(false);
-        }}
-        isVisible={isOpenCalendar}
-      />
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          marginVertical: 20,
-          ...style,
-        }}>
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            width: '85%',
-            backgroundColor: '#F5F7FA',
-            borderRadius: 10,
-            paddingHorizontal: 10,
-          }}>
-          <TextInput
-            style={{flex: 1, color: colors.blackColor, paddingVertical: 5}}
-            placeholder="Search"
-            placeholderTextColor={colors.darkGrey}
-            onChangeText={text => {
-              onTextChange(text);
-            }}
-          />
-          <Icon name="search_icon" />
-        </View>
-        <TouchableOpacity
-          style={{
-            borderWidth: 1,
-            borderColor: colors.primaryColor,
-            padding: 8,
-            borderRadius: 10,
-          }}
-          onPress={() => {
-            setIsOpenCalendar(true);
-          }}>
-          <Icon name="filter_icon" />
-        </TouchableOpacity>
-      </View>
-    </>
-  );
-};
 type RatingProps = {
   rating: number;
 };
@@ -465,7 +400,7 @@ export const RenderProfileIcon: FC<RenderProfileIconTypes> = ({
       />
     );
   } else {
-    const initials = getInitials(name);
+    const initials = name ? getInitials(name) : '';
     return (
       <View
         style={[
@@ -489,8 +424,10 @@ const TeacherDashboard: FC<TeacherDashboardScreenProps> = ({
   route,
 }) => {
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
+  const [filter, setFilter] = useState<FilterObject>();
+
   const dispatch = useAppDispatch();
-  
+
   const {userData} = useAppSelector(state => state.auth);
   const {dashboardDetails} = useAppSelector(state => state.observation);
 
@@ -535,19 +472,22 @@ const TeacherDashboard: FC<TeacherDashboardScreenProps> = ({
             flex: 1,
           }}>
           <View style={{justifyContent: 'space-evenly', width: '55%'}}>
-            <View style={{flexDirection: 'row', justifyContent: 'flex-start',alignItems:'center'}}>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'flex-start',
+                alignItems: 'center',
+              }}>
               <RenderProfileIcon
                 image={userData?.userImage}
-                name={userData?.name}
+                name={userData?.name || ''}
                 size={45}
               />
-              <View style={{marginLeft: 10, }}>
+              <View style={{marginLeft: 10}}>
                 <Text fontVariant="bold" size="body2">
                   Hi, {userData?.name}
                 </Text>
-                <Text size="small2">
-                  {dashboardDetails?.schoolName}
-                </Text>
+                <Text size="small2">{dashboardDetails?.schoolName}</Text>
               </View>
             </View>
             <View
@@ -577,9 +517,11 @@ const TeacherDashboard: FC<TeacherDashboardScreenProps> = ({
             style={{alignSelf: 'flex-end'}}
           />
         </View>
-        <RenderSearchWithFilter
+        <SearchWithFilter
           onTextChange={() => {}}
-          onPressFilterIcon={() => {}}
+          onProceed={filter => {
+            setFilter(filter);
+          }}
         />
         <View style={{marginTop: 10}}>
           <RenderTitleWithLink
@@ -595,7 +537,9 @@ const TeacherDashboard: FC<TeacherDashboardScreenProps> = ({
             titleText="Observations"
             linkText="All Observations"
             onPress={() => {
-              navigation.navigate('ReportsStack',{screen:'ObservationReportsMainPage'});
+              navigation.navigate('ReportsStack', {
+                screen: 'ObservationReportsMainPage',
+              });
             }}
           />
           <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>

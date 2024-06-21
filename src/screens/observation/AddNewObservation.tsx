@@ -4,7 +4,6 @@ import {
   KeyboardAvoidingView,
   TouchableOpacity,
   View,
-  ViewStyle,
 } from 'react-native';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
@@ -78,7 +77,7 @@ const AddNewObservation: FC<AddNewObservationScreenProps> = ({
 
   const handleDateSelection = (date: Date) => {
     setIsCalendarOpen(!isCalendarOpen);
-    console.log('dsetee', date);
+
     setSelectedDate(date);
   };
 
@@ -118,7 +117,7 @@ const AddNewObservation: FC<AddNewObservationScreenProps> = ({
         overridePaddingVertical
         style={{paddingVertical: 0}}
         icon="reports_icon"
-        title="Reports">
+        title="New Observation">
         <DateTimePickerComponent
           selectedDate={selectedDate}
           onDateChange={handleDateSelection}
@@ -157,7 +156,6 @@ const AddNewObservation: FC<AddNewObservationScreenProps> = ({
                   {selectedDate
                     ? moment(selectedDate).format('DD-MM-YYYY').toString()
                     : 'Select date'}
-                  {/* {selectedDate || 'Select date'} */}
                 </Text>
                 <TouchableOpacity
                   onPress={() => {
@@ -241,7 +239,7 @@ const AddNewObservation: FC<AddNewObservationScreenProps> = ({
         onPressProceedButton={() => {
           selectedUserGroup?.value &&
             selectedUser?.value &&
-            navigation.navigate('AddNewEvidenceCard',{observationStatus:'New'});
+            navigation.navigate('CreateViewEvidenceCard',{observationStatus:'New'});
         }}
         proceedButtonText={'Create evidence card'}
         isActiveProceedButton={Boolean(

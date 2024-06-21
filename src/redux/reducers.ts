@@ -14,8 +14,8 @@ const rootReducer = combineReducers({
   users: usersSlice,
   master: masterSlice,
   rubric: rubricSlice,
-  flows:flowsSlice,
-  forms:formsSlice
+  flows: flowsSlice,
+  forms: formsSlice,
 });
 
 export default rootReducer;

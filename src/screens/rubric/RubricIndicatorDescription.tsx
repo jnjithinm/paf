@@ -5,12 +5,12 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import moment from 'moment';
 
 import Layout from '../../components/Layout';
-import SearchFilter from '../../components/SearchFilter';
 import Image from '../../components/Image';
 import Text from '../../components/Text';
 import {RubricTabBarStackParamList} from '../../navigation/RubricTabStack';
 import colors from '../../config/colors';
 import Icon from '../../components/Icon';
+import SearchWithFilter from '../../components/SearchWithFilter';
 
 type RubricIndicatorDescriptionNavigationProp = StackNavigationProp<
   RubricTabBarStackParamList,
@@ -72,7 +72,7 @@ const RubricIndicatorDescription: FC<RubricIndicatorDescriptionScreenProps> = ({
             by Admin)
           </Text>
         </View>
-        <SearchFilter placeholder="Search domain" onSearch={()=>{}}  />
+        <SearchWithFilter placeholder="Search domain" onSearch={()=>{}}  />
 
         <View style={{marginVertical: 5}}>
           <Text fontVariant="bold">Domain</Text>
@@ -88,14 +88,14 @@ const RubricIndicatorDescription: FC<RubricIndicatorDescriptionScreenProps> = ({
               marginTop: 4,
               height: 40,
             }}
-            value={indicator.domainName}
+            value={indicator?.domainName}
           />
         </View>
         <View style={{marginVertical: 5}}>
           <Text fontVariant="bold">Tags</Text>
           <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
-            {indicator.tags.map(item => (
-              <RenderTags tags={item.tagName} />
+            {indicator?.tags?.map(item => (
+              <RenderTags tags={item.tagName} key={item.tagId}/>
             ))}
           </View>
         </View>

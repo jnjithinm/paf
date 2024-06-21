@@ -11,7 +11,7 @@ const endPoints = {
   GET_DOMAINS_BY_ID: `PAF/rubrics/indicatorsByDomainId/`,
   SAVE_EVIDENCE_CARD: `PAF/teachers/saveEvidence`,
   GET_OBSERVATION_BY_ID: `PAF/teachers/observation/`,
-  GET_ALL_OBSERVATIONS: `PAF/teachers/observation/getAllObservation/`,
+  GET_ALL_OBSERVATIONS: `PAF/teachers/observation/getAllObservation/search/`,
   GET_EVIDENCE_BY_ID: `PAF/teachers/evidence/`,
   GET_ALL_RUBRICS: `PAF/rubrics/all`,
   DELETE_RUBRIC: `PAF/rubrics`,
@@ -19,6 +19,7 @@ const endPoints = {
   GET_ALL_FLOWS: `PAF/flows/all?loggedInUserName=`,
   GET_FLOW_BY_ID: `PAF/flows/`,
   GET_FORM_BY_ID: `PAF/forms/`,
-  GET_PREVIEW_FORM:`PAF/forms/previewForm/`
+  GET_PREVIEW_FORM:`PAF/forms/previewForm/`,
+DASHBOARD_FILTER:`PAF/teachers/observation/dashBoardFilter/`
 };
 export default endPoints;

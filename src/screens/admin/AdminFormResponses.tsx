@@ -21,7 +21,6 @@ import {
 import colors from '../../config/colors';
 import Icon from '../../components/Icon';
 import Text from '../../components/Text';
-import SearchFilter from '../../components/SearchFilter';
 import FooterWithButtons from '../../components/FooterWithButtons';
 import {
   IndividualDescriptionRenderal,
@@ -35,7 +34,7 @@ import {
   RubricWiseDescriptionRenderal,
   RubricWiseMainPageRenderal,
 } from './formResponsesRenderals/rubricWiseRenderals';
-import {FloatingButton} from '../reports/ObservationReportsMainPage';
+import {FloatingButton} from '../observation/ObservationReportsMainPage';
 import Modal from '../../components/Modal';
 import MultiSelectDropdown from '../../components/MultiSelectDropdown';
 import {DropdownObject} from '../../components/LabeledDropdown';
@@ -47,6 +46,7 @@ import {
   Question,
   getFormById,
 } from '../../redux/features/formsSlice';
+import SearchWithFilter from '../../components/SearchWithFilter';
 
 type AdminFormResponsesNavigationProp = StackNavigationProp<
   AdminTabStackTabBarStackParamList,
@@ -618,7 +618,7 @@ const AdminFormResponses: FC<AdminFormResponsesScreenProps> = ({
             onClick={title => handleTabClick(title)}
           />
           {isMainPage && (
-            <SearchFilter
+            <SearchWithFilter
               onSearch={() => {}}
               placeholder={'Search by user name'}
             />

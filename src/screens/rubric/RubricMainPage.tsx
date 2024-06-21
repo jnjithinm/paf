@@ -78,8 +78,8 @@ const RubricMainPage: FC<RubricMainPageScreenProps> = ({
     );
   }, []);
 
-  const onPressDeleteRubric = (item: RubricItem) => {
-    dispatch(
+  const onPressDeleteRubric = async(item: RubricItem) => {
+   await dispatch(
       deleteRubric({ids: [item.rubricId], loggedInUserName: userData.userName}),
     );
   };

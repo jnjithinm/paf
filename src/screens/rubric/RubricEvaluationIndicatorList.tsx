@@ -5,14 +5,13 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import moment from 'moment';
 
 import Layout from '../../components/Layout';
-import SearchFilter from '../../components/SearchFilter';
 import Image from '../../components/Image';
 import Text from '../../components/Text';
 import {RubricTabBarStackParamList} from '../../navigation/RubricTabStack';
 import {useAppDispatch, useAppSelector} from '../../redux/store';
 import {getRubric} from '../../redux/features/rubricSlice';
 import RubricIndicatorList from '../../components/RubricIndicatorList';
-
+import SearchWithFilter from '../../components/SearchWithFilter';
 
 type RubricEvaluationIndicatorListNavigationProp = StackNavigationProp<
   RubricTabBarStackParamList,
@@ -27,10 +26,9 @@ interface RubricEvaluationIndicatorListScreenProps {
   navigation: RubricEvaluationIndicatorListNavigationProp;
   route: RubricEvaluationIndicatorListRouteProp;
 }
-const RubricEvaluationIndicatorList: FC<RubricEvaluationIndicatorListScreenProps> = ({
-  navigation,
-  route,
-}) => {
+const RubricEvaluationIndicatorList: FC<
+  RubricEvaluationIndicatorListScreenProps
+> = ({navigation, route}) => {
   const {rubric} = route.params;
 
   const {rubricData} = useAppSelector(state => state.rubric);
@@ -40,7 +38,10 @@ const RubricEvaluationIndicatorList: FC<RubricEvaluationIndicatorListScreenProps
     dispatch(getRubric(rubric.rubricId));
   }, []);
 
-  const onPressDeleteIndicator = () => {};
+  const onPressDeleteIndicator = () => {
+
+
+  };
 
   return (
     <Layout
@@ -59,28 +60,29 @@ const RubricEvaluationIndicatorList: FC<RubricEvaluationIndicatorListScreenProps
             (Last update: 23/01/2024 by Admin)
           </Text>
         </View>
-        <SearchFilter placeholder="Search domain" onSearch={function (text: string): void {
-          throw new Error('Function not implemented.');
-        } } />
-        <View style={{marginVertical:10}}>
-        {rubricData?.dataList.indicators?.map(item => (
-          <RubricIndicatorList
-            active={item.status}
-            createdBy={item.createdBy}
-            createdDate={moment(item.createdDate).format('DD/MM/YYYY')}
-            title={item.indicatorName}
-            onDelete={() => {
-              onPressDeleteIndicator();
-            }}
-            key={item.indicatorId}
-            onPress={() => {
-              navigation.navigate(
-                'RubricIndicatorDescription',
-                {indicator: item,title:rubric.rubricName},
-              );
-            }}
-          />
-        ))}
+        <SearchWithFilter
+          placeholder="Search domain"
+          onSearch={()=>{}}
+        />
+        <View style={{marginVertical: 10}}>
+          {rubricData?.dataList.indicators?.map(item => (
+            <RubricIndicatorList
+              active={item.status}
+              createdBy={item.createdBy}
+              createdDate={moment(item.createdDate).format('DD/MM/YYYY')}
+              title={item.indicatorName}
+              onDelete={() => {
+                onPressDeleteIndicator();
+              }}
+              key={item.indicatorId}
+              onPress={() => {
+                navigation.navigate('RubricIndicatorDescription', {
+                  indicator: item,
+                  title: rubric.rubricName,
+                });
+              }}
+            />
+          ))}
         </View>
       </View>
     </Layout>

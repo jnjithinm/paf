@@ -40,11 +40,9 @@ const customTransition = ({current, layouts}: StackCardInterpolationProps) => {
   };
 };
 const MainStackNavigator = () => {
-  // const {isLoggedIn} = useAuthentication();
-  // const memoizedIsLoggedIn = useMemo(() => isLoggedIn, [isLoggedIn]);
   const {isLoggedIn} = useAppSelector(state => state.auth);
 
-  if (true) {
+  if (isLoggedIn) {
     return (
       <MainStack.Navigator
         screenOptions={({route}) => {

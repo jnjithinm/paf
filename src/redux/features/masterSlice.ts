@@ -3,6 +3,7 @@ import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import api from '../../config/axios';
 import endPoints from '../../config/endPoints';
 import {setLoading} from './authSlice';
+import { ErrorStatusObject } from '../../config/types';
 interface Domain {
   domainId: number;
   domainName: string;
@@ -73,13 +74,15 @@ export const getIndicatorsByDomainId = createAsyncThunk<
 interface InitialState {
   allDomains: GetDomainsResponse | null;
   indicatorsByDomain: GetIndicatorsResponsePayload | null;
-  error: string | null;
+  showMessage: ErrorStatusObject | null;
+  errorMessage: string;
 }
 
 const initialState: InitialState = {
   allDomains: null,
   indicatorsByDomain: null,
-  error: null,
+  showMessage: null,
+  errorMessage:''
 };
 
 const masterSlice = createSlice({

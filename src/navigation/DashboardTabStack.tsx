@@ -20,7 +20,7 @@ const DashboardTab = createBottomTabNavigator<DashboardTabBarStackParamList>();
 
 const DashboardTabStack = () => {
 
-  const {isBottomTabBarVisible} = useAppSelector(state => state.auth);
+  // const {isBottomTabBarVisible} = useAppSelector(state => state.auth);
 
   return (
     <DashboardTab.Navigator

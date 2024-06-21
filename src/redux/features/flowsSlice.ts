@@ -4,6 +4,7 @@ import api from '../../config/axios';
 import endPoints from '../../config/endPoints';
 import {PaginationRequest} from './usersSlice';
 import { setLoading } from './authSlice';
+import { ErrorStatusObject } from '../../config/types';
 
 export interface FlowItem {
   flowId: number;
@@ -74,6 +75,7 @@ export const getFlowById = createAsyncThunk<
     const response = await api.post(endPoints.GET_FLOW_BY_ID + flowId, payload);
     return response.data as GetFlowByIdResponse;
   } catch (error: any) {
+    console.log("error.response?.data?.message",error.response?.data?.message)
     return rejectWithValue(error.response.data);
   } finally{
     dispatch(setLoading(false));
@@ -83,15 +85,16 @@ export const getFlowById = createAsyncThunk<
 interface InitialState {
   allFlows: GetAllFlowsResponsePayload | null;
   flowById: GetFlowByIdResponsePayload | null;
-  // isLoading: boolean;
-  error: string | null;
+  showMessage: ErrorStatusObject | null;
+  errorMessage: string;
 }
 
 const initialState: InitialState = {
   allFlows: null,
   flowById: null,
   // isLoading: false,
-  error: null,
+  showMessage: null,
+  errorMessage:''
 };
 
 const flowsSlice = createSlice({

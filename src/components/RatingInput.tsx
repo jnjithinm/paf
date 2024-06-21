@@ -1,5 +1,5 @@
 import {FC, useState} from 'react';
-import {TouchableOpacity, View} from 'react-native';
+import {TouchableOpacity, View, ViewStyle} from 'react-native';
 import Text from './Text';
 import Icon from './Icon';
 
@@ -10,6 +10,7 @@ type RatingInputTypes = {
   size?: number;
   disabled?: boolean;
   showRating?: boolean;
+  style?:ViewStyle
 };
 
 const RatingInput: FC<RatingInputTypes> = ({
@@ -19,6 +20,7 @@ const RatingInput: FC<RatingInputTypes> = ({
   size = 20,
   disabled,
   showRating = true,
+  style
 }) => {
   const [selectedRating, setSelectedRating] = useState(rating);
 
@@ -31,7 +33,7 @@ const RatingInput: FC<RatingInputTypes> = ({
   const filledStars = Math.floor(rating);
   const hasHalfStar = rating - filledStars >= 0.5;
   return (
-    <View>
+    <View style={{...style}}>
       {label && (
         <Text fontVariant="bold" size="body1">
           {label}

@@ -11,6 +11,7 @@ import {
   storeToken,
 } from '../../utils/functions/localStorageOperations';
 import endPoints from '../../config/endPoints';
+import {ErrorStatusObject, RoleType} from '../../config/types';
 
 interface AuthenticateRequest {
   username: string;
@@ -31,7 +32,7 @@ interface LoginResponse {
     name: string;
     role: string;
     roleId: number;
-    roleType: string;
+    roleType: RoleType;
     isAdmin: boolean;
     userImage: string;
     status: boolean;
@@ -50,6 +51,10 @@ export const changeBottomTabBarVisibility = createAction<boolean>(
 
 export const setLoading = createAction<boolean>('SET_LOADING');
 
+export const setShowMessage = createAction<ErrorStatusObject | null>(
+  'SET_SHOW_MESSAGE',
+);
+
 export const setErrorMessage = createAction<string>('SET_ERROR_MESSAGE');
 
 export const authenticateUser = createAsyncThunk<
@@ -57,18 +62,19 @@ export const authenticateUser = createAsyncThunk<
   AuthenticateRequest
 >('auth/authenticate', async (payload, {dispatch, rejectWithValue}) => {
   try {
-    setLoading(true)
-   await removeToken();
+    setLoading(true);
+    await removeToken();
     const response = await api.post(endPoints.AUTHENTICATE_USER, {
       username: payload.username,
       password: payload.password,
     });
-   await storeToken(response.data.payload.token)
+    await storeToken(response.data.payload.token);
     return response.data as AuthenticateResponse;
   } catch (error: any) {
+    console.log('errr', error);
     return rejectWithValue(error.response.data);
   } finally {
-    setLoading(true)
+    setLoading(true);
     await dispatch(
       loginUser({username: payload.username, password: payload.password}),
     );
@@ -86,14 +92,31 @@ export const loginUser = createAsyncThunk<LoginResponse, AuthenticateRequest>(
       return response.data as LoginResponse;
     } catch (error: any) {
       return rejectWithValue(error.response.data);
-    } 
+    }
     // finally{
     //   setLoading(false);
     // }
   },
 );
 
-const initialState = {
+interface initialState {
+  isLoading: boolean;
+  isLoggedIn: boolean;
+  userData: {
+    id: number;
+    userName: string;
+    name: string;
+    role: string;
+    roleId: number;
+    roleType: RoleType | null;
+    isAdmin: boolean;
+    userImage: string;
+  };
+  showMessage: ErrorStatusObject | null;
+  errorMessage: string;
+}
+
+const initialState: initialState = {
   isLoading: false,
   isLoggedIn: false,
   userData: {
@@ -102,12 +125,12 @@ const initialState = {
     name: '',
     role: '',
     roleId: 0,
-    roleType: '',
+    roleType: null,
     isAdmin: false,
     userImage: '',
   },
+  showMessage: null,
   errorMessage: '',
-  isBottomTabBarVisible: false,
 };
 
 const authSlice = createSlice({
@@ -127,6 +150,9 @@ const authSlice = createSlice({
       .addCase(setLoading, (state, action) => {
         state.isLoading = action.payload;
       })
+      .addCase(setShowMessage, (state, action) => {
+        state.showMessage = action.payload;
+      })
       .addCase(setErrorMessage, (state, action) => {
         state.errorMessage = action.payload;
       })
@@ -139,11 +165,9 @@ const authSlice = createSlice({
         state.isLoading = true;
       })
       .addCase(authenticateUser.rejected, (state, action) => {
-
         state.isLoading = false;
         state.isLoggedIn = false;
         state.errorMessage = 'Username or password is incorrect';
-
       })
       .addCase(loginUser.pending, state => {
         state.isLoading = true;
@@ -162,6 +186,5 @@ const authSlice = createSlice({
       });
   },
 });
-
 
 export default authSlice.reducer;

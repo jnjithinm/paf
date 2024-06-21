@@ -2,10 +2,10 @@ import React, {FC, useEffect, useState} from 'react';
 import {KeyboardAvoidingView, Platform, View} from 'react-native';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
+import {TextInput as RNTextInput} from 'react-native';
 
 import {FONT_SIZES, FONT_VARIANT} from '../../config/themes';
 import Layout from '../../components/Layout';
-import TextInput from '../../components/TextInput';
 import Text from '../../components/Text';
 import Image from '../../components/Image';
 import colors from '../../config/colors';
@@ -14,43 +14,53 @@ import EvidenceCard from '../../components/EvidenceCard';
 import {ReportsTabBarStackParamList} from '../../navigation/ReportsTabStack';
 import {useAppDispatch, useAppSelector} from '../../redux/store';
 import {getObservationById} from '../../redux/features/observationSlice';
+import {RatingStars, RenderProfileIcon} from '../dashboard/TeacherDashboard';
+import FooterWithButtons from '../../components/FooterWithButtons';
 
-type ViewEvidenceCardNavigationProp = StackNavigationProp<
+type ObservationReportNavigationProp = StackNavigationProp<
   ReportsTabBarStackParamList,
-  'ViewEvidenceCard'
+  'ObservationReport'
 >;
-type ViewEvidenceCardRouteProp = RouteProp<
+type ObservationReportRouteProp = RouteProp<
   ReportsTabBarStackParamList,
-  'ViewEvidenceCard'
+  'ObservationReport'
 >;
 
-interface ViewEvidenceCardScreenProps {
-  navigation: ViewEvidenceCardNavigationProp;
-  route: ViewEvidenceCardRouteProp;
+interface ObservationReportScreenProps {
+  navigation: ObservationReportNavigationProp;
+  route: ObservationReportRouteProp;
 }
 
-const ViewEvidenceCard: FC<ViewEvidenceCardScreenProps> = ({
+const ObservationReport: FC<ObservationReportScreenProps> = ({
   navigation,
   route,
 }) => {
   const [feedbackNote, setFeedbackNote] = useState('');
+  const {observationItem} = route.params;
   const dispatch = useAppDispatch();
   const {observationById} = useAppSelector(state => state.observation);
 
+  useEffect(() => {
+    dispatch(getObservationById(observationItem.observationId));
+  }, []);
+
   return (
     <KeyboardAvoidingView
-      style={{flex: 1}} // Ensure the component takes up the whole screen
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'} // Adjust behavior based on platform
-    >
+      style={{flex: 1}}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <Layout
         overridePaddingHorizontal
         overridePaddingVertical
         style={{paddingHorizontal: 15, paddingVertical: 0}}
         icon="reports_icon"
-        title="Evidence Card">
+        title="Observation Report">
         <View style={{marginVertical: 20}}>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <Icon name={'evidence_card_sample_image'} />
+            <RenderProfileIcon
+              image={observationById?.userImage}
+              name={observationById?.userName?.toString() || ''}
+              size={50}
+            />
             <View style={{flex: 1, justifyContent: 'center', marginLeft: 10}}>
               <View>
                 <Text fontVariant="bold" size="body2">
@@ -58,10 +68,9 @@ const ViewEvidenceCard: FC<ViewEvidenceCardScreenProps> = ({
                 </Text>
               </View>
               <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                {Array.from({length: 4}, () => '').map(item => (
-                  <Icon name="star_icon" />
-                ))}
-                <Icon name="star_unfilled_icon" />
+                <RatingStars
+                  rating={Number(observationById?.observationAvgRatings)}
+                />
                 <View
                   style={{
                     height: 10,
@@ -71,7 +80,7 @@ const ViewEvidenceCard: FC<ViewEvidenceCardScreenProps> = ({
                   }}
                 />
                 <Text style={{color: '#4E565F'}} size="small3">
-                  3.2/5
+                  {observationById?.observationAvgRatings}/5
                 </Text>
               </View>
             </View>
@@ -85,7 +94,7 @@ const ViewEvidenceCard: FC<ViewEvidenceCardScreenProps> = ({
                 fontFamily: FONT_VARIANT.bold,
                 fontSize: FONT_SIZES.body1,
               }}>
-              Add Evidence card
+              {`Evidence cards (${observationById?.evidenceResponseList?.length})`}
             </Text>
           </View>
 
@@ -98,37 +107,45 @@ const ViewEvidenceCard: FC<ViewEvidenceCardScreenProps> = ({
               videoClipCount={item?.fileCount?.Video}
               noteCount={item?.fileCount?.Document}
               photoCount={item?.fileCount?.Image}
-              onPressEvidenceCard={() => {}}
+              onPressEvidenceCard={() => {
+                navigation.navigate('CreateViewEvidenceCard', {
+                  observationStatus: observationById?.observationStatus,
+                  evidenceCardDetails: item,
+                });
+              }}
             />
           ))}
-          <View style={{marginTop: 10}}>
-            <Text
-              style={{
-                color: colors.blackColor,
-                marginBottom: 5,
-              }}
-              fontVariant="bold">
-              Feedback note
-            </Text>
-            <TextInput
-              label=""
-              value={observationById?.feedbackDescription?.toString() || ''}
-              setValue={setFeedbackNote}
-              multiline
-              maxLength={200}
-              editable={false}
-            />
-            <Text
-              style={{
-                alignSelf: 'flex-end',
-                fontFamily: FONT_VARIANT.regular,
-                fontSize: FONT_SIZES.small2,
-                marginTop: 5,
-              }}>{`${feedbackNote.length}/200`}</Text>
-          </View>
+
+          {observationById?.feedbackDescription && (
+            <View style={{marginTop: 10}}>
+              <Text
+                style={{
+                  color: colors.blackColor,
+                  marginBottom: 0,
+                }}
+                fontVariant="bold">
+                Feedback note for teacher
+              </Text>
+              <RNTextInput
+                value={observationById?.feedbackDescription?.toString() || ''}
+                onChangeText={setFeedbackNote}
+                style={{color: '#4E565F'}}
+                multiline
+                maxLength={200}
+                editable={false}
+              />
+            </View>
+          )}
         </View>
       </Layout>
+      <FooterWithButtons
+        onPressProceedButton={() => {}}
+        onPressCancelButton={() => {}}
+        icon="edit_icon"
+        proceedButtonText="Edit card"
+        isActiveProceedButton
+      />
     </KeyboardAvoidingView>
   );
 };
-export default ViewEvidenceCard;
+export default ObservationReport;

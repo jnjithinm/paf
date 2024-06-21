@@ -14,18 +14,16 @@ import Tab from '../../components/Tab';
 import Text from '../../components/Text';
 import Icon, {IconTypes} from '../../components/Icon';
 import colors from '../../config/colors';
-import {
-  ObservationsTile,
-  RenderSearchWithFilter,
-} from '../dashboard/TeacherDashboard';
+import {ObservationsTile} from '../dashboard/TeacherDashboard';
 import {ReportsTabBarStackParamList} from '../../navigation/ReportsTabStack';
 import {normaliseDesigns} from '../../utils/helpers/responsiveHelpers';
-import Calendar from '../../components/Calendar';
+import Calendar, {FilterObject} from '../../components/Calendar';
 import {useAppDispatch, useAppSelector} from '../../redux/store';
 import {
   ObservationData,
   getAllObservations,
 } from '../../redux/features/observationSlice';
+import SearchWithFilter from '../../components/SearchWithFilter';
 
 type ObservationReportsMainPageNavigationProp = StackNavigationProp<
   ReportsTabBarStackParamList,
@@ -96,7 +94,7 @@ const ObservationReportsMainPage: FC<ObservationReportsMainPageScreenProps> = ({
 }) => {
   const [rubricListData, setRubricListData] = useState<ObservationData[]>([]);
   const [isAddButtonPressed, setIsAddButtonPressed] = useState<boolean>(false);
-  const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
+  const [filter, setFilter] = useState<FilterObject | undefined>();
 
   const dispatch = useAppDispatch();
   const {allObservations, dashboardDetails} = useAppSelector(
@@ -126,9 +124,17 @@ const ObservationReportsMainPage: FC<ObservationReportsMainPageScreenProps> = ({
       getAllObservations([
         userData.id,
         {
-          page: 0,
-          size: 15,
-          type: 'all',
+          // userId: undefined,
+          // userGroupId:undefined,
+          // ratings:filter?.rating,
+          // dateType: filter?.dateFilterOption,
+          // startDate: filter?.date?.startDate,
+          // endDate: filter?.date?.endDate,
+          paginationRequest: {
+            page: 0,
+            size: 15,
+            type: 'all',
+          },
         },
       ]),
     );
@@ -147,27 +153,39 @@ const ObservationReportsMainPage: FC<ObservationReportsMainPageScreenProps> = ({
         icon={'search_reports_icon'}
         title={'Observation Reports'}
         titleTransition>
-        <Calendar
-          onProceed={() => {}}
-          onClose={() => {
-            setIsFilterOpen(false);
-          }}
-          isVisible={isFilterOpen}
-        />
         <Text size="body3" fontVariant="bold" style={{marginVertical: 10}}>
           Observation Reports
         </Text>
         <Tab
           tabs={[
-            `All (${dashboardDetails?.total})`,
-            `By me (${dashboardDetails?.byMe})`,
-            `For me (${dashboardDetails?.forMe})`,
+            `All (${dashboardDetails?.total || ''})`,
+            `By me (${dashboardDetails?.byMe || ''})`,
+            `For me (${dashboardDetails?.forMe || ''})`,
           ]}
           onClick={title => handleTabClick(title)}
         />
-        <RenderSearchWithFilter
-          onTextChange={()=>{}}
-          onPressFilterIcon={()=>{}}
+        <SearchWithFilter
+          onTextChange={() => {}}
+          onProceed={filter => {
+            dispatch(
+              getAllObservations([
+                userData.id,
+                {
+                  userId: undefined,
+                  userGroupId: undefined,
+                  ratings: filter?.rating,
+                  dateType: filter?.dateFilterOption,
+                  startDate: filter?.date?.startDate,
+                  endDate: filter?.date?.endDate,
+                  paginationRequest: {
+                    page: 0,
+                    size: 15,
+                    type: 'all',
+                  },
+                },
+              ]),
+            );
+          }}
         />
         <View style={{marginVertical: 10}}>
           {rubricListData?.map((item, index) => (
@@ -175,7 +193,7 @@ const ObservationReportsMainPage: FC<ObservationReportsMainPageScreenProps> = ({
               key={index}
               rating={item.ratings?.toString()}
               userAssisted={item.userAssessed}
-              image={item.i}
+              image={item.userImage}
               reportedBy={item.reportedBy}
               onPress={() => {
                 navigation.navigate('ObservationReport', {

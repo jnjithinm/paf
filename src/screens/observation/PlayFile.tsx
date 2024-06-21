@@ -6,6 +6,7 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import Layout from '../../components/Layout';
 import {ReportsTabBarStackParamList} from '../../navigation/ReportsTabStack';
 import VideoPlayer from '../../components/VideoPlayer';
+import Button from '../../components/Button';
 
 type PlayFileNavigationProp = StackNavigationProp<
   ReportsTabBarStackParamList,
@@ -38,6 +39,10 @@ const PlayFile: FC<PlayFileScreenProps> = ({navigation, route}) => {
       ) : (
         <></>
       )}
+      <View style={{marginTop:'40%',flexDirection:'row',justifyContent:'space-between'}}>
+      <Button text={'Delete'} active={false} onPress={()=>{}}/>
+      <Button text={'Cancel'} active={false} onPress={()=>{}} style={{}}/>
+      </View>
     </Layout>
   );
 };

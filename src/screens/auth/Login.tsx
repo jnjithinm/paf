@@ -9,13 +9,13 @@ import colors from '../../config/colors';
 import Icon from '../../components/Icon';
 import Text from '../../components/Text';
 import TextInput from '../../components/TextInput';
-import {normaliseDesigns} from '../../utils/helpers/responsiveHelpers';
 import CheckBox from '../../components/CheckBox';
 import Button from '../../components/Button';
 import {useAppDispatch, useAppSelector} from '../../redux/store';
 import {
   authenticateUser,
   setErrorMessage,
+  setShowMessage,
 } from '../../redux/features/authSlice';
 import Layout from '../../components/Layout';
 import {
@@ -23,6 +23,7 @@ import {
   storeUserCredentials,
 } from '../../utils/functions/localStorageOperations';
 import useValidation from '../../utils/hooks/useValidation';
+import {ShowMessage} from '../../components/Header';
 
 type LoginNavigationProp = StackNavigationProp<MainStackParamList, 'Login'>;
 type LoginRouteProp = RouteProp<MainStackParamList, 'Login'>;
@@ -39,7 +40,7 @@ const Login: FC<LoginScreenProps> = ({navigation, route}) => {
   const [isRememberMe, setIsRememberMe] = useState<boolean>(false);
 
   const dispatch = useAppDispatch();
-  const {errorMessage} = useAppSelector(state => state.auth);
+  const {errorMessage, showMessage} = useAppSelector(state => state.auth);
   const {validateField} = useValidation();
 
   const usernameErrorMessage = validateField({
@@ -94,6 +95,8 @@ const Login: FC<LoginScreenProps> = ({navigation, route}) => {
     }, []),
   );
 
+  console.log('ss', showMessage);
+
   return (
     <Layout
       style={{
@@ -104,6 +107,12 @@ const Login: FC<LoginScreenProps> = ({navigation, route}) => {
         padding: 20,
       }}
       hideHeader>
+      {showMessage && (
+        <ShowMessage
+          message={showMessage.message}
+          status={showMessage.status}
+        />
+      )}
       <StatusBar backgroundColor={colors.backgroundColor} />
       <Icon name="app_logo" width={65} height={65} style={{marginTop: '20%'}} />
       <Text size={'body6'} fontVariant="bold" style={{marginVertical: 10}}>
@@ -157,7 +166,6 @@ const Login: FC<LoginScreenProps> = ({navigation, route}) => {
                 isRememberMe ? setIsRememberMe(false) : setIsRememberMe(true);
               }}
               size={10}
-
             />
 
             <Text size="small2" style={{left: 3}}>
@@ -226,7 +234,10 @@ const Login: FC<LoginScreenProps> = ({navigation, route}) => {
           <Text style={{color: '#ABB4BD'}} size="body1">
             Don't have an account ?
           </Text>
-          <TouchableOpacity onPress={()=>{navigation.navigate('SignUp')}}>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('SignUp');
+            }}>
             <Text
               style={{
                 textDecorationLine: 'underline',
