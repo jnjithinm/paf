@@ -32,10 +32,16 @@ const ImageItem: FC<ImageItemProps> = ({
   return (
     <TouchableOpacity
       style={styles.progressContainer}
-      onPress={()=>onPressFile({uri: item.uri, name: item.name?.toString()||'', type: item.type?.toString()||''})}
+      onPress={() =>
+        onPressFile({
+          uri: item.uri,
+          name: item.name?.toString() || '',
+          type: item.type?.toString() || '',
+        })
+      }
       // disabled={disabled}
-      >
-      <View style={{flexDirection: 'row', width: '90%',alignItems:'center'}}>
+    >
+      <View style={{flexDirection: 'row', width: '90%', alignItems: 'center'}}>
         <View>
           {item.type?.startsWith('image') ? (
             <Image name="img_upload_icon" />
@@ -102,7 +108,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
       const filePaths = [];
 
       // Iterate over the results and copy each file to the app directory
-      for (const result of results) {
+      for (const result of newFiles) {
         const sourceUri = result.uri;
         const fileName = result.name;
         const destPath = `${DocumentDirectoryPath}/${fileName}`;
@@ -113,13 +119,12 @@ const FileUpload: React.FC<FileUploadProps> = ({
       // const filePath = flow == 'fromCamera' ? res.path : res.path;
       const name = `${new Date().getTime()}.zip`;
       const targetPath = `${RNFS.DocumentDirectoryPath}/${name}`;
-
+      console.log('file paths', filePaths);
       zip(filePaths, targetPath)
         .then(path => {
+          console.log('red', path);
           if (onFilesPicked) {
-            onFilesPicked([
-              {uri: path, name, type: 'application/zip'},
-            ]);
+            onFilesPicked([{uri: path, name, type: 'application/zip'}]);
           }
         })
         .catch(error => {
@@ -128,7 +133,6 @@ const FileUpload: React.FC<FileUploadProps> = ({
     } catch (err) {
       // Handle errors
     }
-
   };
   const handleRemoveItem = (item: DocumentPickerResponse) => {
     const updatedFiles = files.filter(file => file.uri !== item.uri);

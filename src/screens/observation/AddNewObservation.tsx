@@ -18,7 +18,7 @@ import colors from '../../config/colors';
 import {normaliseDesigns} from '../../utils/helpers/responsiveHelpers';
 import DateTimePickerComponent from '../../components/DateTimePickerComponent';
 import Icon from '../../components/Icon';
-import useActive from '../../utils/helpers/useActive';
+
 import {useAppDispatch, useAppSelector} from '../../redux/store';
 import {
   getAllUserGroups,
@@ -71,9 +71,7 @@ const AddNewObservation: FC<AddNewObservationScreenProps> = ({
   const {GetAllUserGroupsData, GetUserGroupData} = useAppSelector(
     state => state.users,
   );
-  const activeArray = [selectedDate, selectedUserGroup, selectedUser];
 
-  let isActive: boolean = useActive(activeArray);
 
   const handleDateSelection = (date: Date) => {
     setIsCalendarOpen(!isCalendarOpen);
@@ -106,7 +104,8 @@ const AddNewObservation: FC<AddNewObservationScreenProps> = ({
     }
   }, [selectedUserGroup?.value]);
 
-  // console.log('date', isActive);
+
+let isActive=Boolean(selectedDate && selectedUserGroup && selectedUser)
 
   return (
     <KeyboardAvoidingView
@@ -205,7 +204,7 @@ const AddNewObservation: FC<AddNewObservationScreenProps> = ({
             onPress={() => {
               setFeedbackNoteEnable(true);
             }}
-            disabled={!isActive}
+            disabled={Boolean()}
             style={{
               alignSelf: 'flex-start',
               borderBottomColor: isActive ? colors.blackColor : '#CBD2D9',
@@ -242,9 +241,7 @@ const AddNewObservation: FC<AddNewObservationScreenProps> = ({
             navigation.navigate('CreateViewEvidenceCard',{observationStatus:'New'});
         }}
         proceedButtonText={'Create evidence card'}
-        isActiveProceedButton={Boolean(
-          selectedDate && selectedUserGroup?.value && selectedUser?.value,
-        )}
+        isActiveProceedButton={isActive}
         cancelButtonText={'Cancel'}
         onPressCancelButton={() => {}}
         style={{}}

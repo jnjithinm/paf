@@ -92,7 +92,7 @@ const CreateViewEvidenceCard: FC<CreateViewEvidenceCardScreenProps> = ({
       ]),
     );
   };
-
+console.log("dasf",imageFiles)
   useEffect(() => {
     if (evidenceCardDetails) {
       setSelectedDomain({
@@ -223,47 +223,4 @@ const CreateViewEvidenceCard: FC<CreateViewEvidenceCardScreenProps> = ({
 };
 export default CreateViewEvidenceCard;
 
-const styles = StyleSheet.create({
-  progressContainer: {
-    borderWidth: 1,
-    borderColor: '#ABB4BD',
-    borderRadius: 5,
-    padding: 8,
-    marginBottom: 20,
-    flexDirection: 'row',
-  },
-  uploadingText: {
-    fontSize: 16,
-    color: '#333',
-    marginBottom: 10,
-  },
-  progressText: {
-    fontSize: 14,
-    color: '#333',
-    marginTop: 5,
-  },
-  dropZone: {
-    borderWidth: 1,
-    borderStyle: 'dashed',
-    borderColor: '#ABB4BD',
-    borderRadius: 5,
-    padding: 20,
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  video: {
-    width: '100%',
-    height: 200,
-  },
-  dropZoneText: {
-    fontSize: FONT_SIZES.body1,
-    fontFamily: FONT_VARIANT.semiBold,
-    color: '#1F2933',
-    marginLeft: 4,
-  },
-  supportedTypes: {
-    fontSize: 12,
-    color: '#666',
-    marginTop: 5,
-  },
-});
+

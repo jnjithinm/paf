@@ -395,7 +395,7 @@ export const RenderProfileIcon: FC<RenderProfileIconTypes> = ({
   if (image) {
     return (
       <Image
-        source={{uri: `${image}`}}
+        source={{uri: image}}
         style={{width: size, height: size, borderRadius: size / 2}}
       />
     );

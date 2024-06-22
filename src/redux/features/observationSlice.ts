@@ -300,14 +300,18 @@ export const saveEvidenceCard = createAsyncThunk<
       dispatch(setLoading(true));
       const formData = new FormData();
       formData.append('evidenceInfo', evidenceInfo);
+      console.log("ff",file)
+      formData.append('file', file);
       if (file && file?.length > 0) {
-        // file.forEach((f, index) => {
-        //   formData.append(`file_${index}`, f);
-        // });
-        console.log('file', file[0].uri);
-        formData.append('file', file[0]);
+        file.forEach((f, index) => {
+          formData.append(`file_${index}`, f);
+          console.log("fileeee",f)
+        });
+        // console.log('file', file[0].uri);
+        // formData.append('file', file[0]);
       }
       const response = await api.post(endPoints.SAVE_EVIDENCE_CARD, formData);
+      console.log("reeeeessss",response.data)
       return response.data as SaveEvidenceCardResponse;
     } catch (error: any) {
       console.log('evidence card', error);

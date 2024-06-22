@@ -25,7 +25,7 @@ import {
   getAllObservations,
 } from '../../redux/features/observationSlice';
 import SearchWithFilter from '../../components/SearchWithFilter';
-import { DropdownObject } from '../../components/LabeledDropdown';
+import {DropdownObject} from '../../components/LabeledDropdown';
 
 type ObservationReportsMainPageNavigationProp = StackNavigationProp<
   ReportsTabBarStackParamList,
@@ -94,18 +94,14 @@ const ObservationReportsMainPage: FC<ObservationReportsMainPageScreenProps> = ({
   navigation,
   route,
 }) => {
-
-  const [selectedFilter,setSelectedFilter]=useState<FilterType>('All')
+  const [selectedFilter, setSelectedFilter] = useState<FilterType>('All');
 
   const dispatch = useAppDispatch();
-  const {allObservations} = useAppSelector(
-    state => state.observation,
-  );
+  const {allObservations} = useAppSelector(state => state.observation);
   const {userData} = useAppSelector(state => state.auth);
 
   const handleTabClick = (title: DropdownObject) => {
     setSelectedFilter(title?.value);
-    
   };
 
   useEffect(() => {
@@ -113,7 +109,7 @@ const ObservationReportsMainPage: FC<ObservationReportsMainPageScreenProps> = ({
       getAllObservations([
         userData.id,
         {
-          filterType:selectedFilter,
+          filterType: selectedFilter,
           // userId: undefined,
           // userGroupId:undefined,
           // ratings:filter?.rating,
@@ -130,8 +126,6 @@ const ObservationReportsMainPage: FC<ObservationReportsMainPageScreenProps> = ({
     );
   }, [selectedFilter]);
 
-
-
   return (
     <>
       <Layout
@@ -144,9 +138,18 @@ const ObservationReportsMainPage: FC<ObservationReportsMainPageScreenProps> = ({
         </Text>
         <Tab
           tabs={[
-            {value:'All',label:`All (${allObservations?.dataList?.total || ''})`},
-            {value:'byMe',label:`By me (${allObservations?.dataList?.byMe || ''})`},
-            {value:'forMe',label: `For me (${allObservations?.dataList?.forMe || ''})`},
+            {
+              value: 'All',
+              label: `All (${allObservations?.dataList?.total || ''})`,
+            },
+            {
+              value: 'byMe',
+              label: `By me (${allObservations?.dataList?.byMe || ''})`,
+            },
+            {
+              value: 'forMe',
+              label: `For me (${allObservations?.dataList?.forMe || ''})`,
+            },
           ]}
           onClick={title => handleTabClick(title)}
         />
@@ -157,9 +160,7 @@ const ObservationReportsMainPage: FC<ObservationReportsMainPageScreenProps> = ({
               getAllObservations([
                 userData.id,
                 {
-                  filterType:selectedFilter,
-                  userId: undefined,
-                  userGroupId: undefined,
+                  filterType: selectedFilter,
                   ratings: filter?.rating,
                   dateType: filter?.dateFilterOption,
                   startDate: filter?.date?.startDate,
@@ -192,14 +193,13 @@ const ObservationReportsMainPage: FC<ObservationReportsMainPageScreenProps> = ({
         </View>
       </Layout>
 
-        <FloatingButton
-          icon="plus_icon"
-          onPress={() => {
-            navigation.navigate('AddNewObservation');
-          }}
-          iconSize={20}
-        />
-
+      <FloatingButton
+        icon="plus_icon"
+        onPress={() => {
+          navigation.navigate('AddNewObservation');
+        }}
+        iconSize={20}
+      />
     </>
   );
 };

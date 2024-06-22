@@ -48,7 +48,7 @@ const SearchWithFilter: FC<RenderSearchTypes> = ({
           }}>
           <TextInput
             style={{flex: 1, color: colors.blackColor, paddingVertical: 5}}
-            placeholder="Search"
+            placeholder={placeHolder}
             placeholderTextColor={colors.darkGrey}
             onChangeText={text => {
               onTextChange(text);
