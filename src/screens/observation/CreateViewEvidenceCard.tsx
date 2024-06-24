@@ -21,7 +21,6 @@ import {saveEvidenceCard} from '../../redux/features/observationSlice';
 import {FileObject} from '../../config/types';
 import {ReportsTabBarStackParamList} from '../../navigation/ReportsTabStack';
 import RatingInput from '../../components/RatingInput';
-import { navigate } from '../../utils/helpers/navigationHelpers';
 
 type CreateViewEvidenceCardNavigationProp = StackNavigationProp<
   ReportsTabBarStackParamList,
@@ -49,7 +48,8 @@ const CreateViewEvidenceCard: FC<CreateViewEvidenceCardScreenProps> = ({
     DropdownObject | undefined
   >(undefined);
   const [rating, setRating] = useState<number>(0);
-  const [imageFiles, setImageFiles] = useState<FileObject[]>([]);
+  // const [imageFiles, setImageFiles] = useState<FileObject[]>([]);
+  const [zipfile,setZipFile]=useState<FileObject>()
 
   const dispatch = useAppDispatch();
 
@@ -59,16 +59,19 @@ const CreateViewEvidenceCard: FC<CreateViewEvidenceCardScreenProps> = ({
   const {saveEvidenceCardResponse} = useAppSelector(state => state.observation);
   const {userData} = useAppSelector(state => state.auth);
 
-  function mergeArrays(...arrays: FileObject[][]): FileObject[] {
-    return arrays.reduce((acc, curr) => [...acc, ...curr], []);
+  // function mergeArrays(...arrays: FileObject[][]): FileObject[] {
+  //   return arrays.reduce((acc, curr) => [...acc, ...curr], []);
+  // }
+
+  // const handleFilesPicked = (files: FileObject[]) => {
+  //   const mergedArray: FileObject[] = mergeArrays(imageFiles, files);
+  //   console.log(':fd', imageFiles, files);
+  //   setImageFiles(mergedArray);
+  // };
+
+  const handleFilesPicked = (files: FileObject) => {
+  setZipFile(files)
   }
-
-  const handleFilesPicked = (files: FileObject[]) => {
-    const mergedArray: FileObject[] = mergeArrays(imageFiles, files);
-    console.log(':fd', imageFiles, files);
-    setImageFiles(mergedArray);
-  };
-
   useEffect(() => {
     dispatch(getAllDomains());
   }, []);
@@ -88,11 +91,11 @@ const CreateViewEvidenceCard: FC<CreateViewEvidenceCardScreenProps> = ({
           indicatorId: Number(selectedIndicator?.value),
           loggedInUserName: userData?.name,
         },
-        imageFiles,
+        zipfile,
       ]),
     );
   };
-console.log("dasf",imageFiles)
+// console.log("dasf",imageFiles)
   useEffect(() => {
     if (evidenceCardDetails) {
       setSelectedDomain({
@@ -200,9 +203,11 @@ console.log("dasf",imageFiles)
                 : []
             }
             disabled={observationStatus === 'Completed'}
+            
             onPressFile={item => {
               navigation.navigate('PlayFile', {file: item});
             }}
+            // onRemoveItem={setImageFiles}
           />
         </View>
       </Layout>

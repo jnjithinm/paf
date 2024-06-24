@@ -1,20 +1,36 @@
-import React, {Dispatch, FC, JSX, SetStateAction, useState} from 'react';
+import React, {
+  Dispatch,
+  FC,
+  JSX,
+  SetStateAction,
+  useEffect,
+  useState,
+} from 'react';
 import {TextInput, View} from 'react-native';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 
 import Layout from '../../components/Layout';
-import {useAppDispatch} from '../../redux/store';
+import {useAppDispatch, useAppSelector} from '../../redux/store';
 import {AdminTabStackTabBarStackParamList} from '../../navigation/AdminTabStack';
 import colors from '../../config/colors';
 import Text from '../../components/Text';
 import Icon from '../../components/Icon';
 import RadioButtonGroup from '../../components/RadioButtonGroup';
 import {
+  normaliseDesigns,
   normaliseFont,
 } from '../../utils/helpers/responsiveHelpers';
 import CheckboxGroup from '../../components/CheckBoxGroup';
-import RatingRadioButton from '../../components/RatingRadioButtons';
+import {
+  FormSubmission,
+  QuestionOption,
+  getPreviewForm,
+  submitPreviewForm,
+} from '../../redux/features/formsSlice';
+import FooterWithButtons from '../../components/FooterWithButtons';
+import {Dropdown} from 'react-native-element-dropdown';
+import {FONT_VARIANT} from '../../config/themes';
 
 type EvaluationFormNavigationProp = StackNavigationProp<
   AdminTabStackTabBarStackParamList,
@@ -92,7 +108,7 @@ const RenderTaskItem: FC<RenderTaskItemTypes> = ({
         flex: 1,
         alignSelf: 'flex-start',
       }}>
-      <Text style={{flex: 3}}>{index}</Text>
+      <Text style={{flex: 3}}>{index + 1}</Text>
       <View style={{flex: 2}}>
         <Icon name="arrow_narrow_right" />
       </View>
@@ -105,14 +121,33 @@ const RenderTaskItem: FC<RenderTaskItemTypes> = ({
 );
 
 type RenderInputAnswerTypes = {
-  answer: string;
-  setAnswer: Dispatch<SetStateAction<string>>;
+  itemAnswer: AnswerObject | undefined;
+  answers: AnswerObject[];
+  setAnswers: Dispatch<SetStateAction<AnswerObject[]>>;
+  questionId: number;
+  questionOptionId: number;
+  longText?: boolean;
 };
-const RenderInputAnswer: FC<RenderInputAnswerTypes> = ({answer, setAnswer}) => (
+const RenderInputAnswer: FC<RenderInputAnswerTypes> = ({
+  itemAnswer,
+  answers,
+  setAnswers,
+  questionId,
+  questionOptionId,
+  longText = false,
+}) => (
   <TextInput
-    value={answer}
+    value={itemAnswer?.answer as string}
     onChangeText={(text: string) => {
-      setAnswer(text);
+      if (itemAnswer) {
+        setAnswers(
+          answers.map(item =>
+            item === itemAnswer ? {...item, answer: text} : item,
+          ),
+        );
+      } else {
+        setAnswers([...answers, {questionId, questionOptionId, answer: text}]);
+      }
     }}
     placeholderTextColor={'#ABB4BD'}
     placeholder="Type your answer here"
@@ -121,11 +156,211 @@ const RenderInputAnswer: FC<RenderInputAnswerTypes> = ({answer, setAnswer}) => (
       borderBottomWidth: 1,
       paddingBottom: 0,
       fontSize: normaliseFont(11),
+      color: colors.blackColor,
+      minHeight: normaliseDesigns(25),
     }}
   />
 );
 
+type RenderDropdownTypes = {
+  itemAnswer: AnswerObject | undefined;
+  answers: AnswerObject[];
+  setAnswers: Dispatch<SetStateAction<AnswerObject[]>>;
+  questionId: number;
+  questionOptionId: number;
+  options: QuestionOption[];
+};
+const RenderDrodpwown: FC<RenderDropdownTypes> = ({
+  itemAnswer,
+  answers,
+  setAnswers,
+  questionId,
+  questionOptionId,
+  options,
+}) => {
+  console.log("ite",itemAnswer?.answer,(
+    itemAnswer?.answer as QuestionOption
+  )?.optionMappingId?.toString())
+  return (
+    <Dropdown
+      value={(
+        itemAnswer?.answer as QuestionOption
+      )?.optionMappingId?.toString()}
+      labelField="label"
+      valueField="value"
+      data={options.map(item => ({
+        value: item.optionMappingId?.toString(),
+        label: item.optionText,
+      }))}
+      renderItem={(item)=>(
+        <View style={{width:'70%'}}>
+        <Text style={{paddingHorizontal:10}} size='small1'>{item.label}</Text>
+        </View>
+      )}
+      style={{width:'80%'}}
+      selectedTextStyle={{
+        fontSize: normaliseFont(13),
+        color: colors.blackColor,
+        fontFamily: FONT_VARIANT.regular,
+        textTransform: 'capitalize',
+      }}
+      containerStyle={{}}
+      itemContainerStyle={{
+        paddingVertical:2,
+        height:normaliseDesigns(30)
+      }}
+      onChange={item => {
+        const updatedAnswers = answers.some(
+          ans => ans.questionId === questionId && ans.questionOptionId === questionOptionId
+        )
+          ? answers.map(ans =>
+              ans.questionId === questionId && ans.questionOptionId === questionOptionId
+                ? {
+                    ...ans,
+                    answer: { optionMappingId: Number(item.value), optionText: item.label },
+                  }
+                : ans,
+            )
+          : [
+              ...answers,
+              {
+                questionId: questionId,
+                questionOptionId: questionOptionId,
+                answer: { optionMappingId: Number(item.value), optionText: item.label },
+              },
+            ];
+      
+        console.log("sfd", updatedAnswers);
+        setAnswers(updatedAnswers);
+      }}
+    />
+  );
+};
 
+export type AnswerObject = {
+  questionId: number;
+  questionOptionId: number;
+  answer: string | QuestionOption[] | QuestionOption;
+};
+
+type QuestionTypeSelectorTypes = {
+  questionOptionId: number;
+  questionId: number;
+  answers: AnswerObject[];
+  setAnswers: Dispatch<SetStateAction<AnswerObject[]>>;
+  options?: QuestionOption[];
+};
+
+const QuestionTypeSelector: FC<QuestionTypeSelectorTypes> = ({
+  questionOptionId,
+  questionId,
+  answers,
+  setAnswers,
+  options,
+}) => {
+  let itemAnswer = answers?.find(item => item.questionId === questionId);
+  switch (questionOptionId) {
+    case 1:
+      return (
+        <RenderDrodpwown
+          options={options || []}
+          itemAnswer={itemAnswer}
+          setAnswers={setAnswers}
+          questionId={questionId}
+          questionOptionId={questionOptionId}
+          answers={answers}
+        />
+      );
+    case 2:
+      return (
+        <CheckboxGroup
+          itemAnswer={itemAnswer}
+          setAnswers={setAnswers}
+          options={options || []}
+          questionId={questionId}
+          questionOptionId={questionOptionId}
+          answers={answers}
+        />
+      );
+    case 3:
+      return (
+        <RadioButtonGroup
+          itemAnswer={itemAnswer}
+          setAnswers={setAnswers}
+          options={options || []}
+          questionId={questionId}
+          questionOptionId={questionOptionId}
+          answers={answers}
+        />
+      );
+    case 4:
+      return (
+        <RenderInputAnswer
+          itemAnswer={itemAnswer}
+          setAnswers={setAnswers}
+          questionId={questionId}
+          questionOptionId={questionOptionId}
+          answers={answers}
+        />
+      );
+    case 5:
+      return (
+        <RenderInputAnswer
+          itemAnswer={itemAnswer}
+          setAnswers={setAnswers}
+          questionId={questionId}
+          questionOptionId={questionOptionId}
+          answers={answers}
+          longText
+        />
+      );
+    case 6:
+      return <></>;
+    case 7:
+      return <></>;
+    default:
+      return <></>;
+  }
+};
+
+const formatAnswer = (answers: AnswerObject[]): FormSubmission[] => {
+  let formattedAnswer: FormSubmission[] = [];
+  answers.map(item => {
+    switch (item.questionOptionId) {
+      case 1:
+      case 3:
+        formattedAnswer.push({
+          questionId: item.questionId,
+          questionOptionId: item.questionOptionId,
+          optionMappingId: (item.answer as QuestionOption).optionMappingId,
+          responseValue: null,
+        });
+        break;
+      case 2:
+        (item.answer as QuestionOption[]).map(ele => {
+          formattedAnswer.push({
+            questionId: item.questionId,
+            questionOptionId: item.questionOptionId,
+            optionMappingId: ele.optionMappingId,
+            responseValue: null,
+          });
+        });
+        break;
+      case 4:
+      case 5:
+        formattedAnswer.push({
+          questionId: item.questionId,
+          questionOptionId: item.questionOptionId,
+          optionMappingId: null,
+          responseValue: item.answer as string,
+        });
+        break;
+      default:
+        break;
+    }
+  });
+  return formattedAnswer;
+};
 
 interface EvaluationFormScreenProps {
   navigation: EvaluationFormNavigationProp;
@@ -133,63 +368,81 @@ interface EvaluationFormScreenProps {
 }
 
 const EvaluationForm: FC<EvaluationFormScreenProps> = ({navigation, route}) => {
+  const {flowDetailItem} = route.params;
+
+  const [answers, setAnswers] = useState<AnswerObject[]>([]);
+  const {userData} = useAppSelector(state => state.auth);
+  const {previewForm, submitPreviewFormResponse} = useAppSelector(
+    state => state.forms,
+  );
   const dispatch = useAppDispatch();
 
-  const [answer, setAnswer] = useState<string>('');
-  // useEffect(() => {
-  //   if (deleteSuccess) {
-  //     dispatch(
-  //       getAllRubrics({
-  //         page: 0,
-  //         size: 15,
-  //         type: 'all',
-  //       }),
-  //     );
-  //   }
-  // }, [deleteSuccess]);
+  useEffect(() => {
+    dispatch(getPreviewForm(flowDetailItem.flowId));
+  }, []);
+
+  const onPressSubmit = () => {
+    dispatch(
+      submitPreviewForm({
+        formId: flowDetailItem.formId,
+        flowId: flowDetailItem.flowId,
+        userId: userData.id,
+        formQuestionRequestList: formatAnswer(answers),
+      }),
+    );
+  };
+
+  useEffect(() => {
+    if (submitPreviewFormResponse) {
+      navigation.navigate('AdminFormResponses', {flowDetailItem});
+    }
+  }, [submitPreviewFormResponse]);
 
   return (
-    <Layout
-      overridePaddingHorizontal
-      overridePaddingVertical
-      style={{paddingHorizontal: 15, paddingVertical: 15}}>
-      <RenderSectionTitle
-        title="Section 1"
-        description="Lorem ipsum dolor sit amet consectetur. Dolor morbi cras scelerisque risus nulla."
+    <>
+      <Layout
+        overridePaddingHorizontal
+        overridePaddingVertical
+        style={{paddingHorizontal: 15, paddingVertical: 15}}
+        title={flowDetailItem.formName}>
+        {previewForm?.dataList?.sections.map((item, index) => (
+          <View>
+            <RenderSectionTitle
+              title={item.sectionName}
+              description={item.sectionDescription}
+              key={index}
+            />
+            {item?.questions?.map((item, index) => (
+              <RenderTaskItem
+                index={index}
+                key={index}
+                question={item.questionText}
+                renderSelection={
+                  (
+                    <QuestionTypeSelector
+                      questionOptionId={item.questionOptionId}
+                      answers={answers}
+                      setAnswers={setAnswers}
+                      options={item.questionOptions}
+                      questionId={item.questionId}
+                    />
+                  ) || <></>
+                }
+              />
+            ))}
+          </View>
+        ))}
+      </Layout>
+      <FooterWithButtons
+        isActiveProceedButton
+        onPressProceedButton={onPressSubmit}
+        onPressCancelButton={() => {
+          setAnswers([]);
+        }}
+        proceedButtonText={'Submit'}
+        cancelButtonText={'Clear Form'}
       />
-      <RenderTaskItem
-        index={0}
-        question={'How do you approach classroom management?'}
-        renderSelection={
-          <RadioButtonGroup
-            options={['Positive learning', 'Activities', 'Engaging students']}
-            onChange={() => {}}
-          />
-        }
-      />
-      <RenderTaskItem
-        index={1}
-        question={'How do you approach classroom management?'}
-        renderSelection={
-          <RenderInputAnswer answer={answer} setAnswer={setAnswer} />
-        }
-      />
-      <RenderTaskItem
-        index={2}
-        question={'How do you approach classroom management?'}
-        renderSelection={
-          <CheckboxGroup
-            options={['Positive learning', 'Activities', 'Engaging students']}
-            onChange={() => {}}
-          />
-        }
-      />
-      <RenderTaskItem
-        index={3}
-        question={'How do you approach classroom management?'}
-        renderSelection={<RatingRadioButton onChange={() => {}} />}
-      />
-    </Layout>
+    </>
   );
 };
 export default EvaluationForm;

@@ -47,6 +47,7 @@ import {
   getFormById,
 } from '../../redux/features/formsSlice';
 import SearchWithFilter from '../../components/SearchWithFilter';
+import {FilterObject} from '../../components/Calendar';
 
 type AdminFormResponsesNavigationProp = StackNavigationProp<
   AdminTabStackTabBarStackParamList,
@@ -166,7 +167,7 @@ const RenderModalContent: FC<RenderModalContentTypes> = ({
   </View>
 );
 
-const RenderSuccessModalContent: FC=() => (
+const RenderSuccessModalContent: FC = () => (
   <View
     style={{
       alignItems: 'center',
@@ -183,19 +184,19 @@ const RenderSuccessModalContent: FC=() => (
   </View>
 );
 
-const RenderSendReminderSuccessModalContent: FC=() => (
+const RenderSendReminderSuccessModalContent: FC = () => (
   <View
     style={{
       alignItems: 'center',
       justifyContent: 'center',
       paddingHorizontal: 30,
     }}>
-    <Image name='send_reminder_success_icon' />
+    <Image name="send_reminder_success_icon" />
     <Text size="body2" fontVariant="bold" style={{marginVertical: 5}}>
       Success!
     </Text>
     <Text size="small2" fontVariant="bold" style={{textAlign: 'center'}}>
-    Reminder sent successfully to all pending users.
+      Reminder sent successfully to all pending users.
     </Text>
   </View>
 );
@@ -401,8 +402,8 @@ const AdminFormResponses: FC<AdminFormResponsesScreenProps> = ({
     );
   }, []);
 
-  const handleTabClick = (title: string) => {
-    setSelectedTab(title as TabTypes);
+  const handleTabClick = (title: DropdownObject) => {
+    setSelectedTab(title.value as TabTypes);
   };
 
   const onPressBackButton = () => {
@@ -532,7 +533,7 @@ const AdminFormResponses: FC<AdminFormResponsesScreenProps> = ({
             setIsVisibleSuccessModal(false);
           }}
           closeButton
-          content={<RenderSuccessModalContent/>}
+          content={<RenderSuccessModalContent />}
           isVisible={isVisibleSuccessModal}
           containerStyle={{justifyContent: 'center'}}
           contentStyle={{width: '70%'}}
@@ -543,7 +544,7 @@ const AdminFormResponses: FC<AdminFormResponsesScreenProps> = ({
             setIsVisibleSendReminderSuccessModal(false);
           }}
           closeButton
-          content={<RenderSendReminderSuccessModalContent/>}
+          content={<RenderSendReminderSuccessModalContent />}
           isVisible={isVisibleSendReminderSuccessModal}
           containerStyle={{justifyContent: 'center'}}
           contentStyle={{width: '70%'}}
@@ -613,14 +614,23 @@ const AdminFormResponses: FC<AdminFormResponsesScreenProps> = ({
         )}
         <View style={{marginBottom: 10}}>
           <Tab
-            tabs={['Individual', 'Question Wise', 'Rubric Wise']}
+            tabs={[
+              {value: 'Individual', label: 'Individual'},
+              {value: 'Question Wise', label: 'Question Wise'},
+              {value: 'Rubric Wise', label: 'Rubric Wise'},
+            ]}
             textStyle={{fontSize: normaliseFont(15)}}
             onClick={title => handleTabClick(title)}
           />
           {isMainPage && (
             <SearchWithFilter
-              onSearch={() => {}}
-              placeholder={'Search by user name'}
+              placeHolder={'Search by user name'}
+              onTextChange={function (text: string): void {
+                throw new Error('Function not implemented.');
+              }}
+              onProceed={function (filter: FilterObject): void {
+                throw new Error('Function not implemented.');
+              }}
             />
           )}
         </View>

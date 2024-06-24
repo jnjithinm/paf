@@ -3,41 +3,53 @@ import {View, TouchableOpacity, StyleSheet, ViewStyle} from 'react-native';
 import Text from './Text';
 import colors from '../config/colors';
 import {normaliseDesigns} from '../utils/helpers/responsiveHelpers';
+import {QuestionOption} from '../redux/features/formsSlice';
+import { AnswerObject } from '../screens/admin/EvaluationForm';
 
 type RadioButtonGroupPropsTypes = {
-  options: string[];
-  onChange: Dispatch<SetStateAction<string>>;
-  onChangeValues?: () => void;
-  value?: string;
+  options: QuestionOption[];
+  answers: AnswerObject[];
+  itemAnswer: AnswerObject | undefined;
+  setAnswers: Dispatch<SetStateAction<AnswerObject[]>>;
+  questionId: number;
+  questionOptionId: number;
   disabled?: boolean;
   style?: ViewStyle;
 };
-
 const RadioButtonGroup: FC<RadioButtonGroupPropsTypes> = ({
   options,
-  onChange,
-  value = '',
+  answers,
+  itemAnswer,
   disabled = false,
-  onChangeValues,
+  setAnswers,
+  questionId,
+  questionOptionId,
   style,
 }) => {
   const [selectedIndex, setSelectedIndex] = useState(-1);
 
   useEffect(() => {
-    const newValueIndex = options.findIndex(option => option === value);
+    const newValueIndex = options.findIndex(
+      option => option.optionMappingId === (itemAnswer?.answer as QuestionOption).optionMappingId,
+    );
 
     if (newValueIndex !== -1) {
       setSelectedIndex(newValueIndex);
     } else {
       setSelectedIndex(-1);
     }
-  }, [value, options]);
+  }, [itemAnswer, options]);
 
-  const handlePress = (index: number, label: string) => {
-    if (onChangeValues) {
-      onChangeValues();
-    }
-    onChange(label);
+  const handlePress = (index: number, option: QuestionOption) => {
+    setSelectedIndex(index);
+
+    const updatedAnswers = answers.map(ans =>
+      ans.questionId === questionId && ans.questionOptionId === questionOptionId
+        ? { ...ans, answer: option }
+        : ans
+    );
+
+    setAnswers(updatedAnswers);
   };
 
   let modifiedOptions = [...options];
@@ -45,7 +57,7 @@ const RadioButtonGroup: FC<RadioButtonGroupPropsTypes> = ({
   if (remainder === 1 || remainder === 2) {
     const numToAdd = 3 - remainder;
     for (let i = 0; i < numToAdd; i++) {
-      modifiedOptions.push('');
+      modifiedOptions.push({optionMappingId: 0, optionText: ''});
     }
   }
 
@@ -58,7 +70,7 @@ const RadioButtonGroup: FC<RadioButtonGroupPropsTypes> = ({
             flex: 1,
           }}
           key={index}>
-          {item !== '' && (
+          {item.optionMappingId !== 0 && (
             <TouchableOpacity
               key={index}
               disabled={disabled}
@@ -69,9 +81,9 @@ const RadioButtonGroup: FC<RadioButtonGroupPropsTypes> = ({
                 borderColor: '#E4E7EB',
                 borderWidth: 1,
                 width: '65%',
-                padding:5,
-                borderRadius:7,
-                marginVertical:3
+                padding: 5,
+                borderRadius: 7,
+                marginVertical: 3,
               }}>
               <View
                 style={[
@@ -84,8 +96,11 @@ const RadioButtonGroup: FC<RadioButtonGroupPropsTypes> = ({
                   <View style={styles.RadioButtonSelected} />
                 )}
               </View>
-              <Text fontVariant="regular" size="small1" style={{width: '100%',color:'#4E565F'}}>
-                {item}
+              <Text
+                fontVariant="regular"
+                size="small1"
+                style={{width: '100%', color: '#4E565F'}}>
+                {item.optionText}
               </Text>
             </TouchableOpacity>
           )}
@@ -111,7 +126,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 6,
-    borderColor:'#ABB4BD'
+    borderColor: '#ABB4BD',
   },
   RadioButtonSelected: {
     width: normaliseDesigns(11),

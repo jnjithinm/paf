@@ -14,7 +14,7 @@ export type AdminTabStackTabBarStackParamList = {
   AdminFlowsMainPage: undefined;
   AdminFormList: {flowItem: FlowItem};
   AdminFormResponses: {flowDetailItem: FlowDetailItem};
-  EvaluationForm: undefined;
+  EvaluationForm:  {flowDetailItem: FlowDetailItem};
 };
 
 const AdminTabStackTab =

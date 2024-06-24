@@ -21,5 +21,6 @@ const endPoints = {
   GET_FORM_BY_ID: `PAF/forms/`,
   GET_PREVIEW_FORM: `PAF/forms/previewForm/`,
   DASHBOARD_FILTER: `PAF/teachers/observation/dashBoardFilter/`,
+  SUBMIT_FORM_RESPONSE:`PAF/forms/submitFormResponse`
 };
 export default endPoints;

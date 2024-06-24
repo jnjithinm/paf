@@ -10,7 +10,7 @@ interface RubricListModalProps {
   createdDate: string;
   userCount: number;
   onDelete: () => void;
-  onPress:()=>void;
+  onPress: () => void;
 }
 
 const RubricListModal: React.FC<RubricListModalProps> = ({
@@ -20,7 +20,7 @@ const RubricListModal: React.FC<RubricListModalProps> = ({
   createdDate,
   userCount,
   onDelete,
-  onPress
+  onPress,
 }) => {
   return (
     <TouchableOpacity style={styles.container} onPress={onPress}>
@@ -43,7 +43,13 @@ const RubricListModal: React.FC<RubricListModalProps> = ({
               width: '90%',
             }}>
             <Text
-              style={[styles.status, {color: active ? '#749E35' : '#D62828'}]}>
+              style={{
+                padding: 2,
+                borderRadius: 5,
+                paddingHorizontal: 15,
+                fontSize: FONT_SIZES.small3,
+                color: active ? '#749E35' : '#D62828',
+              }}>
               <View
                 style={[
                   styles.dot,
@@ -99,12 +105,6 @@ export const styles = StyleSheet.create({
     fontFamily: FONT_VARIANT.bold,
     color: '#1F2933',
   },
-  status: {
-    padding: 2,
-    borderRadius: 5,
-    paddingHorizontal: 15,
-    fontSize: FONT_SIZES.small3,
-  },
   dot: {
     width: 8,
     height: 8,
@@ -153,4 +153,3 @@ export const styles = StyleSheet.create({
 });
 
 export default RubricListModal;
-

@@ -18,7 +18,7 @@ import colors from '../../config/colors';
 import Icon from '../../components/Icon';
 import Text from '../../components/Text';
 import {getAllFlows} from '../../redux/features/flowsSlice';
-import { styles } from '../../components/RubricListModal';
+import {styles} from '../../components/RubricListModal';
 
 type AdminFlowsMainPageNavigationProp = StackNavigationProp<
   AdminTabStackTabBarStackParamList,
@@ -41,7 +41,7 @@ interface FlowsItemProps {
   createdDate: string;
   userCount: number;
   onDelete: () => void;
-  onPress:()=>void;
+  onPress: () => void;
 }
 
 const FlowsItem: React.FC<FlowsItemProps> = ({
@@ -51,7 +51,7 @@ const FlowsItem: React.FC<FlowsItemProps> = ({
   createdDate,
   userCount,
   onDelete,
-  onPress
+  onPress,
 }) => {
   return (
     <TouchableOpacity style={styles.container} onPress={onPress}>
@@ -70,17 +70,22 @@ const FlowsItem: React.FC<FlowsItemProps> = ({
           <View
             style={{
               backgroundColor: active ? '#EBF9D9' : '#FFEDED',
-              borderRadius: 15,
-              width: '90%',
+              borderRadius: 7,
+              flexDirection:'row',
+              alignItems:'center',
+              justifyContent:'center',
+              paddingVertical:3,
+              paddingHorizontal:7
             }}>
-            <Text
-              style={[styles.status, {color: active ? '#749E35' : '#D62828'}]}>
-              <View
+               <View
                 style={[
                   styles.dot,
                   {backgroundColor: active ? '#749E35' : '#D62828'},
                 ]}
               />
+            <Text
+              style={{color: active ? '#749E35' : '#D62828'}} size='small2'>
+             
               {active ? ' Active' : ' Inactive'}
             </Text>
           </View>
@@ -119,11 +124,7 @@ const AdminFlowsMainPage: FC<AdminFlowsMainPageScreenProps> = ({
   const {userData} = useAppSelector(state => state.auth);
   const dispatch = useAppDispatch();
 
-  const handleTabClick = (title: string) => {
-
-  };
-
-
+  const handleTabClick = (title: string) => {};
 
   useEffect(() => {
     dispatch(
@@ -169,9 +170,13 @@ const AdminFlowsMainPage: FC<AdminFlowsMainPageScreenProps> = ({
       </Text>
       <View style={{marginVertical: 10}}>
         <Tab
-          tabs={['All', 'Owned by me(20)', 'Not owned by me(20)']}
+          tabs={[
+            {value: 'All', label: 'All'},
+            {value: 'Owned by me(20)', label: 'Owned by me(20'},
+            {value: 'Not owned by me(20)', label: 'Not owned by me(20)'},
+          ]}
           textStyle={{fontSize: normaliseFont(12)}}
-          onClick={title => handleTabClick(title)}
+          onClick={title => handleTabClick(title?.value)}
         />
         <View
           style={{
@@ -202,7 +207,7 @@ const AdminFlowsMainPage: FC<AdminFlowsMainPageScreenProps> = ({
             }}
             key={item.flowId}
             onPress={() => {
-              navigation.navigate('AdminFormList',{flowItem:item});
+              navigation.navigate('AdminFormList', {flowItem: item});
             }}
           />
         ))}

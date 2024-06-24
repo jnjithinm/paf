@@ -3,12 +3,12 @@ import {TouchableOpacity, View, ViewStyle} from 'react-native';
 
 import moment from 'moment';
 import Text from '../../../components/Text';
-import {RatingInput} from '../../observation/CreateViewEvidenceCard';
 import Icon from '../../../components/Icon';
 import Image from '../../../components/Image';
 import {normaliseDesigns} from '../../../utils/helpers/responsiveHelpers';
 import colors from '../../../config/colors';
 import {IndividualResponse} from '../../../redux/features/formsSlice';
+import RatingInput from '../../../components/RatingInput';
 
 type AdminIndividualTileTypes = {
   rating: string;

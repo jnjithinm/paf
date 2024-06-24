@@ -12,6 +12,9 @@ import colors from '../../config/colors';
 import Icon from '../../components/Icon';
 import Text from '../../components/Text';
 import {getFlowById} from '../../redux/features/flowsSlice';
+import {DropdownObject} from '../../components/LabeledDropdown';
+import { getRoleLevel } from '../../components/DrawerContent';
+import { UserTypes } from '../../config/constants';
 
 type AdminFormListNavigationProp = StackNavigationProp<
   AdminTabStackTabBarStackParamList,
@@ -37,7 +40,7 @@ const RenderFormItem: FC<RenderFormItemTypes> = ({title, onPressItem}) => (
       borderWidth: 1,
       borderColor: '#F4C24A',
       borderRadius: 10,
-      marginVertical:5
+      marginVertical: 5,
     }}
     onPress={onPressItem}>
     <Icon name="form_list" />
@@ -81,10 +84,11 @@ const AdminFormList: FC<AdminFormListScreenProps> = ({navigation, route}) => {
   const {flowItem} = route.params;
   const [selectedTab, setSelectedTab] = useState<TabTypes>('Form list');
   const {flowById} = useAppSelector(state => state.flows);
+  const {userData} = useAppSelector(state=>state.auth);
   const dispatch = useAppDispatch();
 
-  const handleTabClick = (title: string) => {
-    setSelectedTab(title as TabTypes);
+  const handleTabClick = (title: DropdownObject) => {
+    setSelectedTab(title.value as TabTypes);
   };
 
   useEffect(() => {
@@ -120,7 +124,10 @@ const AdminFormList: FC<AdminFormListScreenProps> = ({navigation, route}) => {
       title={flowItem.flowName}>
       <View style={{marginVertical: 10}}>
         <Tab
-          tabs={['Form list', 'Responses']}
+          tabs={[
+            {label: 'Form list', value: 'Form list'},
+            {label: 'Responses', value: 'Responses'},
+          ]}
           textStyle={{fontSize: normaliseFont(12)}}
           onClick={title => handleTabClick(title)}
         />
@@ -162,11 +169,17 @@ const AdminFormList: FC<AdminFormListScreenProps> = ({navigation, route}) => {
         </View>
         {selectedTab === 'Form list' ? (
           <View>
-            {flowById?.dataList.map(item => (
+            {flowById?.dataList.map((item,index) => (
               <RenderFormItem
                 title={item.formName}
-                onPressItem={() => {navigation.navigate('AdminFormResponses',{flowDetailItem:item})}}
-                key={item.formId}
+                onPressItem={() => {
+                  getRoleLevel(userData.roleType) === UserTypes.REGISTERED_USER
+                  ?
+                  navigation.navigate('AdminFormResponses', {
+                    flowDetailItem: item,
+                  }): navigation.navigate('EvaluationForm',{flowDetailItem: item})
+                }}
+                key={index}
               />
             ))}
           </View>

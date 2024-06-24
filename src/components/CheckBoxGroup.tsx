@@ -1,50 +1,107 @@
-import React, { Dispatch, SetStateAction, useState, FC, useEffect } from 'react';
-import { View, TouchableOpacity, StyleSheet, ViewStyle } from 'react-native';
+import React, {FC, Dispatch, SetStateAction, useState, useEffect} from 'react';
+import {View, TouchableOpacity, StyleSheet, ViewStyle} from 'react-native';
 import Text from './Text';
 import colors from '../config/colors';
-import { normaliseDesigns } from '../utils/helpers/responsiveHelpers';
+import {normaliseDesigns} from '../utils/helpers/responsiveHelpers';
+import {QuestionOption} from '../redux/features/formsSlice';
+import {AnswerObject} from '../screens/admin/EvaluationForm';
+import Icon from './Icon';
 
 type CheckboxGroupPropsTypes = {
-  options: string[];
-  onChange: Dispatch<SetStateAction<string[]>>;
-  values?: string[];
+  options: QuestionOption[];
+  answers: AnswerObject[];
+  itemAnswer: AnswerObject | undefined;
+  setAnswers: Dispatch<SetStateAction<AnswerObject[]>>;
+  questionId: number;
+  questionOptionId: number;
   disabled?: boolean;
   style?: ViewStyle;
 };
 
 const CheckboxGroup: FC<CheckboxGroupPropsTypes> = ({
   options,
-  onChange,
-  values = [],
+  answers,
+  setAnswers,
+  itemAnswer,
+  questionId,
+  questionOptionId,
   disabled = false,
   style,
 }) => {
   const [selectedIndexes, setSelectedIndexes] = useState<number[]>([]);
 
   useEffect(() => {
-    const newIndexes = options.map((option, index) =>
-      values.includes(option) ? index : -1
-    ).filter(index => index !== -1);
+    if (itemAnswer) {
+      const newIndexes = options
+        .map((option, index) =>
+          (itemAnswer.answer as QuestionOption[]).some(
+            value => value.optionMappingId === option.optionMappingId,
+          )
+            ? index
+            : -1,
+        )
+        .filter(index => index !== -1);
 
-    if (JSON.stringify(newIndexes) !== JSON.stringify(selectedIndexes)) {
-      setSelectedIndexes(newIndexes);
+      if (JSON.stringify(newIndexes) !== JSON.stringify(selectedIndexes)) {
+        setSelectedIndexes(newIndexes);
+      }
     }
-  }, [values, options]);
+  }, [itemAnswer, options, selectedIndexes]);
 
-  const handlePress = (index: number, label: string) => {
-    let newSelectedIndexes;
-    let newValue;
+  const handlePress = (index: number, option: QuestionOption) => {
+    let newValues;
 
     if (selectedIndexes.includes(index)) {
-      newSelectedIndexes = selectedIndexes.filter(i => i !== index);
-      newValue = values.filter(v => v !== label);
+      newValues = itemAnswer?.answer
+        ? (itemAnswer.answer as QuestionOption[]).filter(
+            v => v.optionMappingId !== option.optionMappingId,
+          )
+        : [];
     } else {
-      newSelectedIndexes = [...selectedIndexes, index];
-      newValue = [...values, label];
+      newValues = itemAnswer?.answer
+        ? [
+            ...(itemAnswer.answer as QuestionOption[]),
+            {
+              optionMappingId: option.optionMappingId,
+              optionText: option.optionText,
+            },
+          ]
+        : [
+            {
+              optionMappingId: option.optionMappingId,
+              optionText: option.optionText,
+            },
+          ];
     }
 
-    setSelectedIndexes(newSelectedIndexes);
-    onChange(newValue);
+    setSelectedIndexes(prevIndexes =>
+      prevIndexes.includes(index)
+        ? prevIndexes.filter(i => i !== index)
+        : [...prevIndexes, index],
+    );
+
+    const existingAnswerIndex = answers.findIndex(
+      ans =>
+        ans.questionId === questionId && ans.questionOptionId === questionOptionId
+    );
+  
+    if (existingAnswerIndex !== -1) {
+      const updatedAnswers = [...answers];
+      updatedAnswers[existingAnswerIndex] = {
+        ...updatedAnswers[existingAnswerIndex],
+        answer: newValues,
+      };
+      setAnswers(updatedAnswers);
+    } else {
+      setAnswers(prevAnswers => [
+        ...prevAnswers,
+        {
+          questionId,
+          questionOptionId,
+          answer: newValues,
+        },
+      ]);
+    }
   };
 
   let modifiedOptions = [...options];
@@ -52,7 +109,7 @@ const CheckboxGroup: FC<CheckboxGroupPropsTypes> = ({
   if (remainder === 1 || remainder === 2) {
     const numToAdd = 3 - remainder;
     for (let i = 0; i < numToAdd; i++) {
-      modifiedOptions.push('');
+      modifiedOptions.push({optionMappingId: 0, optionText: ''});
     }
   }
 
@@ -65,7 +122,7 @@ const CheckboxGroup: FC<CheckboxGroupPropsTypes> = ({
             flex: 1,
           }}
           key={index}>
-          {item !== '' && (
+          {item.optionMappingId !== 0 && (
             <TouchableOpacity
               key={index}
               disabled={disabled}
@@ -78,21 +135,24 @@ const CheckboxGroup: FC<CheckboxGroupPropsTypes> = ({
                 width: '65%',
                 padding: 5,
                 borderRadius: 7,
-                marginVertical: 3
+                marginVertical: 3,
               }}>
               <View
                 style={[
                   styles.Checkbox,
                   selectedIndexes.includes(index)
-                    ? { borderColor: colors.secondaryColor }
+                    ? {backgroundColor: '#EA7804',borderWidth:0}
                     : null,
                 ]}>
                 {selectedIndexes.includes(index) && (
-                  <View style={styles.CheckboxSelected} />
+                  <Icon name='checkbox' width={10} height={10}/>
                 )}
               </View>
-              <Text fontVariant="regular" size="small1" style={{ width: '100%', color: '#4E565F' }}>
-                {item}
+              <Text
+                fontVariant="regular"
+                size="small1"
+                style={{width: '100%', color: '#4E565F'}}>
+                {item.optionText}
               </Text>
             </TouchableOpacity>
           )}
@@ -113,17 +173,17 @@ const styles = StyleSheet.create({
   Checkbox: {
     width: normaliseDesigns(12),
     height: normaliseDesigns(12),
-    borderRadius: 2,
+    borderRadius: 4,
     borderWidth: 0.8,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 6,
-    borderColor: '#ABB4BD'
+    borderColor: '#ABB4BD',
   },
   CheckboxSelected: {
     width: normaliseDesigns(8),
     height: normaliseDesigns(8),
-    borderRadius: 1,
+    borderRadius: 4,
     backgroundColor: colors.secondaryColor,
   },
 });

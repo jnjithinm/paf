@@ -112,7 +112,7 @@ export type ObservationData = {
 type GetAllObservationsResponse = {
   payload: {
     message: string;
-    dataList:{
+    dataList: {
       averageRating: number | null;
       byMe: number;
       forMe: number;
@@ -122,13 +122,11 @@ type GetAllObservationsResponse = {
       schoolName: string | null;
       total: number;
     };
-    
+
     totalCount: number;
   };
   status: number;
 };
-
-
 
 type GetAllObservationsResponsePayload = GetAllObservationsResponse['payload'];
 
@@ -260,10 +258,10 @@ export const getAllObservations = createAsyncThunk<
         paginationRequest: payload.paginationRequest,
         filterType: payload.filterType,
       });
-
+      console.log('[API] Success:', JSON.stringify(response.data));
       return response.data as GetAllObservationsResponse;
     } catch (error: any) {
-      console.log("er",error)
+      console.log('er', error);
       return rejectWithValue(error.response.data);
     } finally {
       dispatch(setLoading(false));
@@ -271,47 +269,42 @@ export const getAllObservations = createAsyncThunk<
   },
 );
 
-export const filterObservations = createAsyncThunk<
-  GetAllObservationsResponse,
-  [number, FilterObservationRequest]
->(
-  'observation/filterObservations',
-  async ([id, payload], {dispatch, rejectWithValue}) => {
-    try {
-      dispatch(setLoading(true));
-      const response = await api.post(endPoints.DASHBOARD_FILTER + id, payload);
-      // console.log('[API] Success:', JSON.stringify(response.data));
-      return response.data as GetAllObservationsResponse;
-    } catch (error: any) {
-      return rejectWithValue(error.response.data);
-    } finally {
-      dispatch(setLoading(false));
-    }
-  },
-);
+// export const filterObservations = createAsyncThunk<
+//   GetAllObservationsResponse,
+//   [number, FilterObservationRequest]
+// >(
+//   'observation/filterObservations',
+//   async ([id, payload], {dispatch, rejectWithValue}) => {
+//     try {
+//       dispatch(setLoading(true));
+//       const response = await api.post(endPoints.DASHBOARD_FILTER + id, payload);
+//       console.log('[API] Success:', JSON.stringify(response.data));
+//       return response.data as GetAllObservationsResponse;
+//     } catch (error: any) {
+//       console.log('[API] Success:', JSON.stringify(error));
+//       return rejectWithValue(error.response.data);
+//     } finally {
+//       dispatch(setLoading(false));
+//     }
+//   },
+// );
 
 export const saveEvidenceCard = createAsyncThunk<
   SaveEvidenceCardResponse,
-  [SaveEvidenceCardEvidenceInfoRequest, FileObject[]?]
+  [SaveEvidenceCardEvidenceInfoRequest, FileObject?]
 >(
   'observation/saveEvidenceCard',
   async ([evidenceInfo, file], {dispatch, rejectWithValue}) => {
     try {
       dispatch(setLoading(true));
       const formData = new FormData();
-      formData.append('evidenceInfo', evidenceInfo);
-      console.log("ff",file)
-      formData.append('file', file);
-      if (file && file?.length > 0) {
-        file.forEach((f, index) => {
-          formData.append(`file_${index}`, f);
-          console.log("fileeee",f)
-        });
-        // console.log('file', file[0].uri);
-        // formData.append('file', file[0]);
+      formData.append('evidenceInfo',JSON.stringify(evidenceInfo));
+
+      if(file){
+        formData.append('file',file);
       }
       const response = await api.post(endPoints.SAVE_EVIDENCE_CARD, formData);
-      console.log("reeeeessss",response.data)
+
       return response.data as SaveEvidenceCardResponse;
     } catch (error: any) {
       console.log('evidence card', error);
@@ -384,7 +377,7 @@ const observationSlice = createSlice({
       })
       .addCase(saveEvidenceCard.rejected, (state, action) => {
         // state.isLoading = false;
-        console.log('aaaaa', action.error, 'dfd', action.error);
+        console.log('aaaaa', 'dfd', action.payload);
       })
       .addCase(getObservationById.pending, state => {
         // state.isLoading = true;

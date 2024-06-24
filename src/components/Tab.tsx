@@ -8,11 +8,9 @@ import {
   TextStyle,
 } from 'react-native';
 import {normaliseDesigns} from '../utils/helpers/responsiveHelpers';
-import {FONT_SIZES, FONT_VARIANT} from '../config/themes';
+import { FONT_VARIANT} from '../config/themes';
 import colors from '../config/colors';
 import { DropdownObject } from './LabeledDropdown';
-
-
 
 interface TabsProps {
   tabs: DropdownObject[];

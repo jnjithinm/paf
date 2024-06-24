@@ -2,9 +2,8 @@ import {createAction, createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 
 import api from '../../config/axios';
 import endPoints from '../../config/endPoints';
-import {PaginationRequest} from './usersSlice';
 import {setLoading} from './authSlice';
-import { ErrorStatusObject } from '../../config/types';
+import {ErrorStatusObject} from '../../config/types';
 
 interface Indicator {
   domainId: number;
@@ -92,7 +91,7 @@ interface GetFormByIdResponse {
 
 type GetAllFlowsResponsePayload = GetFormByIdResponse['payload'];
 
-interface QuestionOption {
+export interface QuestionOption {
   optionMappingId: number;
   optionText: string;
 }
@@ -101,11 +100,18 @@ interface Indicator {
   //
 }
 
+type QuestionTypes =
+  | 'Question 3 description'
+  | 'Question 2 Time Type'
+  | 'Question 3 Dropdown Type'
+  | 'Question 1 Short answer Type'
+  | 'Question 2 Date type';
+
 interface QuestionPreviewForm {
   questionOptionId: number;
   questionId: number;
   questionText: string;
-  questionDescription: string;
+  questionDescription: QuestionTypes;
   isRequired: boolean;
   questionOptions: QuestionOption[];
   indicators: Indicator[];
@@ -140,6 +146,29 @@ interface GetPreviewFormResponse {
 
 type GetPreviewFormResponsePayload = GetPreviewFormResponse['payload'];
 
+export type FormSubmission = {
+  questionId: number;
+  questionOptionId: number;
+  optionMappingId: number | null;
+  responseValue: string | null;
+};
+
+type SubmitPreviewFormRequest = {
+  flowId: number;
+  formId: number;
+  userId: number;
+  formQuestionRequestList: FormSubmission[];
+};
+
+interface SubmitPreviewFormResponse {
+  payload: {
+    id: number;
+    message: string;
+  };
+  status: number;
+}
+type SubmitPreviewFormResponsePayload = SubmitPreviewFormResponse['payload'];
+
 export const setFormsShowMessage = createAction<ErrorStatusObject | null>(
   'SET_FORMS_SHOW_MESSAGE',
 );
@@ -165,6 +194,7 @@ export const getPreviewForm = createAsyncThunk<GetPreviewFormResponse, number>(
     try {
       dispatch(setLoading(true));
       const response = await api.get(endPoints.GET_PREVIEW_FORM + formId);
+      console.log('reesoi', response.data);
       return response.data as GetPreviewFormResponse;
     } catch (error: any) {
       return rejectWithValue(error.response.data);
@@ -174,9 +204,25 @@ export const getPreviewForm = createAsyncThunk<GetPreviewFormResponse, number>(
   },
 );
 
+export const submitPreviewForm = createAsyncThunk<
+SubmitPreviewFormResponse,
+  SubmitPreviewFormRequest
+>('forms/submitPreviewForm', async (payload, {dispatch, rejectWithValue}) => {
+  try {
+    dispatch(setLoading(true));
+    const response = await api.put(endPoints.SUBMIT_FORM_RESPONSE, payload);
+    return response.data as SubmitPreviewFormResponse;
+  } catch (error: any) {
+    return rejectWithValue(error.response.data);
+  } finally {
+    dispatch(setLoading(false));
+  }
+});
+
 interface InitialState {
   formById: GetAllFlowsResponsePayload | null;
   previewForm: GetPreviewFormResponsePayload | null;
+  submitPreviewFormResponse:SubmitPreviewFormResponsePayload|null;
   formsShowMessage: ErrorStatusObject | null;
   errorMessage: string;
 }
@@ -184,8 +230,9 @@ interface InitialState {
 const initialState: InitialState = {
   formById: null,
   previewForm: null,
+  submitPreviewFormResponse:null,
   formsShowMessage: null,
-  errorMessage:''
+  errorMessage: '',
 };
 
 const formsSlice = createSlice({
@@ -194,9 +241,9 @@ const formsSlice = createSlice({
   reducers: {},
   extraReducers: builder => {
     builder
-    .addCase(setFormsShowMessage, (state, action) => {
-      state.formsShowMessage = action.payload;
-    })
+      .addCase(setFormsShowMessage, (state, action) => {
+        state.formsShowMessage = action.payload;
+      })
       .addCase(getFormById.pending, state => {
         // state.isLoading = true;
       })
@@ -222,6 +269,22 @@ const formsSlice = createSlice({
       })
       .addCase(getPreviewForm.rejected, (state, action) => {
         // state.isLoading = false;
+      })
+      .addCase(submitPreviewForm.pending, state => {
+        // state.isLoading = true;
+      })
+      .addCase(submitPreviewForm.fulfilled, (state, action) => {
+        state.formsShowMessage = {
+          status: 'Success',
+          message: action.payload.payload.message,
+        };
+        state.submitPreviewFormResponse=action.payload.payload
+      })
+      .addCase(submitPreviewForm.rejected, (state, action) => {
+        state.formsShowMessage = {
+          status: 'Failed',
+          message: action?.payload?.error?.errorMessage,
+        };
       });
   },
 });

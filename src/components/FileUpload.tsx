@@ -1,4 +1,4 @@
-import React, {FC, useEffect, useState} from 'react';
+import React, {Dispatch, FC, SetStateAction, useEffect, useState} from 'react';
 import {
   View,
   TouchableOpacity,
@@ -70,10 +70,21 @@ const ImageItem: FC<ImageItemProps> = ({
   );
 };
 
+const zipFiles = async (filePaths: string | string[], targetPath: string) => {
+  try {
+    await zip(filePaths, targetPath);
+    return targetPath;
+  } catch (error) {
+    console.error('Failed to zip files:', error);
+    throw error;
+  }
+};
+
 interface FileUploadProps {
-  onFilesPicked?: (files: FileObject[]) => void;
+  onFilesPicked?: (files: FileObject) => void;
   filesArray?: FileObject[];
   onPressFile: (item: FileObject) => void;
+  onRemoveItem: Dispatch<SetStateAction<FileObject[]>>;
   disabled?: boolean;
 }
 
@@ -81,6 +92,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
   onFilesPicked,
   filesArray,
   onPressFile,
+  onRemoveItem,
   disabled,
 }) => {
   const [files, setFiles] = useState<DocumentPickerResponse[]>([]);
@@ -106,37 +118,37 @@ const FileUpload: React.FC<FileUploadProps> = ({
       setFiles(newFiles);
 
       const filePaths = [];
-
-      // Iterate over the results and copy each file to the app directory
+      // let sources:string[];
       for (const result of newFiles) {
         const sourceUri = result.uri;
         const fileName = result.name;
-        const destPath = `${DocumentDirectoryPath}/${fileName}`;
+        const destPath = `${RNFS.DocumentDirectoryPath}/${fileName}`;
         await RNFS.copyFile(sourceUri, destPath);
         filePaths.push(destPath);
+        // filePaths.push(sourceUri);
       }
 
-      // const filePath = flow == 'fromCamera' ? res.path : res.path;
       const name = `${new Date().getTime()}.zip`;
       const targetPath = `${RNFS.DocumentDirectoryPath}/${name}`;
-      console.log('file paths', filePaths);
-      zip(filePaths, targetPath)
-        .then(path => {
-          console.log('red', path);
-          if (onFilesPicked) {
-            onFilesPicked([{uri: path, name, type: 'application/zip'}]);
-          }
-        })
-        .catch(error => {
-          console.log('error ziping', error);
-        });
+      await zipFiles(filePaths, targetPath);
+
+      const zipFile = {
+        uri: targetPath,
+        name,
+        type: 'application/zip',
+      };
+      if (onFilesPicked) {
+        onFilesPicked(zipFile);
+      }
     } catch (err) {
-      // Handle errors
+      console.error('Error picking files:', err);
+      Alert.alert('Error', 'Failed to pick files');
     }
   };
   const handleRemoveItem = (item: DocumentPickerResponse) => {
-    const updatedFiles = files.filter(file => file.uri !== item.uri);
+    const updatedFiles = files.filter(file => file !== item);
     setFiles(updatedFiles);
+    onRemoveItem(updatedFiles);
   };
 
   // useEffect(() => {
@@ -165,6 +177,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
       <View style={{marginVertical: 10}}>
         {files.map(item => (
           <ImageItem
+            key={item.name}
             item={item}
             onRemove={handleRemoveItem}
             onPressFile={onPressFile}
@@ -190,7 +203,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   dropZoneText: {
-    fontSize: 14,
+    fontSize: 13,
     color: '#333',
   },
   browseText: {

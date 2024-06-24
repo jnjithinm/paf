@@ -22,7 +22,6 @@ import {
   storeUserCredentials,
 } from '../../utils/functions/localStorageOperations';
 import useValidation from '../../utils/hooks/useValidation';
-import {ShowMessage} from '../../components/Header';
 
 type LoginNavigationProp = StackNavigationProp<MainStackParamList, 'Login'>;
 type LoginRouteProp = RouteProp<MainStackParamList, 'Login'>;

@@ -1,4 +1,5 @@
-import {Image, TouchableOpacity, View} from 'react-native';
+import {TouchableOpacity, View} from 'react-native';
+
 import colors from '../config/colors';
 import Icon, {IconTypes} from './Icon';
 import Text from './Text';
@@ -8,7 +9,6 @@ import {logoutAndclearToken} from '../redux/features/authSlice';
 import {useAppDispatch, useAppSelector} from '../redux/store';
 import {navigate} from '../utils/helpers/navigationHelpers';
 import {RenderProfileIcon} from '../screens/dashboard/TeacherDashboard';
-
 import {
   ParentRoles,
   UserTypes,
@@ -83,6 +83,16 @@ const RenderItem: FC<RenderItemTypes> = ({
     </>
   );
 };
+
+export const getRoleLevel = (role: ParentRoles): UserTypes | undefined => {
+  for (const level of roleLevels) {
+    if (level.roles.includes(role)) {
+      return level.userType;
+    }
+  }
+  return undefined;
+};
+
 
 type DrawerContentTypes = {
   closeDrawer: () => void;
@@ -205,14 +215,6 @@ const DrawerContent: FC<DrawerContentTypes> = ({closeDrawer}) => {
     },
   ];
 
-  const getRoleLevel = (role: ParentRoles): UserTypes | undefined => {
-    for (const level of roleLevels) {
-      if (level.roles.includes(role)) {
-        return level.userType;
-      }
-    }
-    return undefined;
-  };
 
   const settingsItems =
     getRoleLevel(userData.roleType) === UserTypes.REGISTERED_USER
