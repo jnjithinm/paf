@@ -12,16 +12,13 @@ import {setFormsShowMessage} from '../redux/features/formsSlice';
 import {setAuthShowMessage} from '../redux/features/authSlice';
 import {setFlowsShowMessage} from '../redux/features/flowsSlice';
 import {useAppDispatch, useAppSelector} from '../redux/store';
+import {commonErrorMessage} from '../config/constants';
 
-export interface ShowMessageTypes  {
+export interface ShowMessageTypes {
   style?: ViewStyle;
-  onClose?: () => void;
 }
 
-const ShowMessage: FC<ShowMessageTypes> = ({
-  onClose,
-  style,
-}) => {
+const ShowMessage: FC<ShowMessageTypes> = ({style}) => {
   const dispatch = useAppDispatch();
 
   const {authShowMessage} = useAppSelector(state => state.auth);
@@ -84,13 +81,19 @@ const ShowMessage: FC<ShowMessageTypes> = ({
     return null;
   }
 
+  const onCloseShowMessage = () => {
+    resetShowMessage(showMessage);
+  };
+
   return (
     <View
       style={[
         styles.showMessage,
         {
-          backgroundColor: showMessage.status === 'Failed' ? '#F58484' : '#EBF9D9',
-          borderColor: showMessage.status === 'Failed' ? '#C41B1B' : '#749E35',
+          backgroundColor:
+            showMessage.status === 'Failed' ? '#FFEDED' : '#EBF9D9',
+          borderColor: showMessage.status === 'Failed' ? '#D62828' : '#749E35',
+          borderWidth:1.5,
           ...style,
         },
       ]}>
@@ -104,19 +107,26 @@ const ShowMessage: FC<ShowMessageTypes> = ({
         <View
           style={{
             padding: 9,
-            backgroundColor: showMessage.status === 'Failed' ? '#C41B1B' : '#749E35',
+            backgroundColor:
+              showMessage.status === 'Failed' ? '#D62828' : '#749E35',
             alignItems: 'center',
             justifyContent: 'center',
             borderRadius: 7,
           }}>
           <Icon
-            name={showMessage.status === 'Failed' ? 'cross_icon' : 'checkbox'}
+            name={showMessage.status === 'Failed' ? 'cross_icon_white' : 'checkbox'}
+            stroke={'white'}
             width={10}
             height={10}
           />
         </View>
-        <Text color="blackColor" style={{width: '90%'}} size="small3">
-          {showMessage.message}
+        <Text
+          style={{
+            width: '90%',
+            color: showMessage.status === 'Failed' ? '#D62828' : '#749E35',
+          }}
+          size="small3">
+          {showMessage.message || commonErrorMessage}
         </Text>
       </View>
       <TouchableOpacity
@@ -127,8 +137,8 @@ const ShowMessage: FC<ShowMessageTypes> = ({
           justifyContent: 'center',
           flex: 1,
         }}
-        onPress={onClose}>
-        <Icon name={'cross_icon'} width={15} height={15} />
+        onPress={onCloseShowMessage}>
+        <Icon name={'cross_icon_thin'} width={10} height={10} />
       </TouchableOpacity>
     </View>
   );
@@ -138,7 +148,6 @@ const styles = StyleSheet.create({
   showMessage: {
     position: 'absolute',
     marginHorizontal: '3%',
-    // transform: [{ translateX: -0.5 * normaliseDesigns(250) }, { translateY: -0.5 * 45 }],
     flexDirection: 'row',
     borderWidth: 1.5,
     zIndex: 10,
@@ -149,7 +158,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingHorizontal: 10,
     top: 7,
-    // flex:1
   },
 });
 

@@ -23,9 +23,7 @@ api.interceptors.request.use(
       : 'application/json';
 
     console.log(
-      `[API] Request: ${config.method?.toUpperCase()} ${config.url} ${
-        config.headers
-      }`,
+      `[API] Request: ${config.method?.toUpperCase()} ${config.url}`,
       config.method?.toUpperCase() === 'GET' ? '' : config.data,
     );
 

@@ -2,9 +2,11 @@ import {TouchableOpacity, View} from 'react-native';
 import Text from '../../../components/Text';
 import Icon from '../../../components/Icon';
 import {FC} from 'react';
-import { Question, QuestionWiseResponse } from '../../../redux/features/formsSlice';
+import {
+  Question,
+  QuestionWiseResponse,
+} from '../../../redux/features/formsSlice';
 import moment from 'moment';
-
 
 type RenderQuestionsTypes = {
   index: number;
@@ -27,6 +29,7 @@ const RenderQuestions: FC<RenderQuestionsTypes> = ({
       borderColor: '#F4C24A',
       flexDirection: 'row',
       borderRadius: 10,
+      marginVertical:5
     }}
     disabled={hideBorder}
     onPress={() => {
@@ -54,24 +57,23 @@ const RenderQuestions: FC<RenderQuestionsTypes> = ({
 );
 
 type QuestionWiseMainPageRenderalTypes = {
-  onPressItem: (item:Question) => void;
-  questionList:Question[]
+  onPressItem: (item: Question) => void;
+  questionList: Question[];
 };
 
 //IndividualMainScreenRenderals
 export const QuestionWiseMainPageRenderal: FC<
   QuestionWiseMainPageRenderalTypes
-> = ({onPressItem,questionList}) => (
+> = ({onPressItem, questionList}) => (
   <View>
-
-    {questionList.map((item)=>(
-          <RenderQuestions
-          index={item.questionId}
-          question={
-            item.questionText
-          }
-          onPressItem={()=>{onPressItem(item)}}
-        />
+    {questionList.map(item => (
+      <RenderQuestions
+        index={item.questionId}
+        question={item.questionText}
+        onPressItem={() => {
+          onPressItem(item);
+        }}
+      />
     ))}
   </View>
 );
@@ -142,20 +144,18 @@ const QuestionResponseTile: FC<QuestionResponseTileTypes> = ({
 );
 
 type QuestionWiseDescriptionRenderalTypes = {
-  question:Question|null;
-  questionResponses:QuestionWiseResponse[]|undefined;
+  question: Question | null;
+  questionResponses: QuestionWiseResponse[] | undefined;
 };
 
 //IndividualMainScreenRenderals
 export const QuestionWiseDescriptionRenderal: FC<
-QuestionWiseDescriptionRenderalTypes
-> = ({question,questionResponses}) => (
+  QuestionWiseDescriptionRenderalTypes
+> = ({question, questionResponses}) => (
   <View>
     <RenderQuestions
-      index={question?.questionId||0}
-      question={
-        question?.questionText||''
-      }
+      index={question?.questionId || 0}
+      question={question?.questionText || ''}
       hideBorder
     />
     <View style={{flexDirection: 'row', alignItems: 'center'}}>
@@ -167,17 +167,15 @@ QuestionWiseDescriptionRenderalTypes
       <Text style={{color: '#4E565F'}}>)</Text>
     </View>
     <View style={{marginTop: 20}}>
-      {questionResponses?.map((item)=>(
-           <QuestionResponseTile
-           response={
-            item.responseValues
-           }
-           submittedBy={item.name}
-           submittedOn={moment(new Date(item.responseDate)).format('DD/MM/YYYY')}
-           ratings={'4.5'}
-         />
+      {questionResponses?.map(item => (
+        <QuestionResponseTile
+          key={item.name}
+          response={item.responseValues}
+          submittedBy={item.name}
+          submittedOn={moment(new Date(item.responseDate)).format('DD/MM/YYYY')}
+          ratings={'4.5'}
+        />
       ))}
-   
     </View>
   </View>
 );

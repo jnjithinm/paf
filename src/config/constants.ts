@@ -48,7 +48,7 @@ export const roleLevels: RoleLevelMapping[] = [
     level: RoleLevelTypes.PAF_CENTRAL_OFFICE,
     userType: UserTypes.PAF_USER,
     roles: [
-    ParentRoles.ADMIN,
+      ParentRoles.ADMIN,
       ParentRoles.LEAD,
       ParentRoles.CURRICULUM_MANAGER,
       ParentRoles.CURRICULUM_DEVELOPER,
@@ -92,3 +92,5 @@ export const roleLevels: RoleLevelMapping[] = [
   },
 ];
 
+export const commonErrorMessage =
+  "We're experiencing some issues. Please retry in a little while.";

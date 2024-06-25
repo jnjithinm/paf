@@ -25,7 +25,7 @@ export type ErrorStatus = 'Success' | 'Failed';
 
 export interface ErrorStatusObject {
   status: ErrorStatus;
-  message: string;
+  message?: string;
 }
 
 export type FontSizeValuesTypes = keyof typeof FONT_SIZES;

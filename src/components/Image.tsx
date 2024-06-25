@@ -18,9 +18,9 @@ import flow_icon from '../assets/images/flow_icon.png';
 import response_card_icon from '../assets/images/response_card_icon.png';
 import success_icon from '../assets/images/success_icon.jpg';
 import send_reminder_success_icon from '../assets/images/send_reminder_success_icon.png';
-import reset_password_icon from '../assets/images/reset_password_icon.png'
-import email_icon from '../assets/images/email_icon.png'
-import notification_icon from '../assets/images/notification_icon.png'
+import reset_password_icon from '../assets/images/reset_password_icon.png';
+import email_icon from '../assets/images/email_icon.png';
+import notification_icon from '../assets/images/notification_icon.png';
 
 export type ImageIconNames =
   | 'evaluation_icon'
@@ -42,7 +42,7 @@ export type ImageIconNames =
   | 'send_reminder_success_icon'
   | 'reset_password_icon'
   | 'email_icon'
-  |'notification_icon';
+  | 'notification_icon';
 
 type ImagePropsTypes = {
   name: ImageIconNames;
@@ -55,7 +55,7 @@ const Image: FC<ImagePropsTypes> = ({name, size = 1, style, ...rest}) => {
     let width, height;
     switch (param) {
       case 'evaluation_icon':
-        width = 107.833333* size;
+        width = 107.833333 * size;
         height = 85.333333 * size;
         return {Src: evaluation_icon, StyleConst: {width, height}};
       case 'list_icon':
@@ -98,18 +98,18 @@ const Image: FC<ImagePropsTypes> = ({name, size = 1, style, ...rest}) => {
         width = 91.1 * size;
         height = 51.2 * size;
         return {Src: send_reminder_success_icon, StyleConst: {width, height}};
-        case 'reset_password_icon':
-          width = 110.625 * size;
-          height = 64 * size;
-          return {Src: reset_password_icon, StyleConst: {width, height}};
-          case 'email_icon':
-            width = 110.75 * size;
-            height = 64 * size;
-            return {Src: email_icon, StyleConst: {width, height}};
-            case 'notification_icon':
-              width = 91.125 * size;
-              height = 64 * size;
-              return {Src: notification_icon, StyleConst: {width, height}};
+      case 'reset_password_icon':
+        width = 110.625 * size;
+        height = 64 * size;
+        return {Src: reset_password_icon, StyleConst: {width, height}};
+      case 'email_icon':
+        width = 110.75 * size;
+        height = 64 * size;
+        return {Src: email_icon, StyleConst: {width, height}};
+      case 'notification_icon':
+        width = 91.125 * size;
+        height = 64 * size;
+        return {Src: notification_icon, StyleConst: {width, height}};
       default:
         return {Src: evaluation_icon, StyleConst: {width, height}};
     }

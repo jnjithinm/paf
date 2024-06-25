@@ -2,10 +2,9 @@ import {createAction, createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 
 import api from '../../config/axios';
 import endPoints from '../../config/endPoints';
-
 import {ErrorStatusObject, FileObject} from '../../config/types';
 import {PaginationRequest} from './usersSlice';
-import {setLoading} from './authSlice';
+import {ErrorResponse, setLoading} from './authSlice';
 import {DateFilterOption} from '../../components/Calendar';
 
 interface Observation {
@@ -177,7 +176,8 @@ export const setObservationShowMessage = createAction<ErrorStatusObject | null>(
 
 export const getDashboardDetailsAndObservationList = createAsyncThunk<
   GetDashboardDetailsAndObservationListResponse,
-  number
+  number,
+  {rejectValue: ErrorResponse}
 >('observation/dashboard', async (id, {dispatch, rejectWithValue}) => {
   try {
     dispatch(setLoading(true));
@@ -195,7 +195,8 @@ export const getDashboardDetailsAndObservationList = createAsyncThunk<
 
 export const getObservationById = createAsyncThunk<
   GetObservationByIdResponse,
-  number
+  number,
+  {rejectValue: ErrorResponse}
 >('observation/getObservationById', async (id, {dispatch, rejectWithValue}) => {
   try {
     dispatch(setLoading(true));
@@ -211,7 +212,8 @@ export const getObservationById = createAsyncThunk<
 
 export const getEvidenceById = createAsyncThunk<
   GetObservationByIdResponse,
-  number
+  number,
+  {rejectValue: ErrorResponse}
 >('observation/getEvidenceById', async (id, {dispatch, rejectWithValue}) => {
   try {
     dispatch(setLoading(true));
@@ -226,7 +228,8 @@ export const getEvidenceById = createAsyncThunk<
 
 export const getAllObservations = createAsyncThunk<
   GetAllObservationsResponse,
-  [number, ObservationRequest]
+  [number, ObservationRequest],
+  {rejectValue: ErrorResponse}
 >(
   'observation/getAllObservations',
   async ([id, payload], {dispatch, rejectWithValue}) => {
@@ -269,29 +272,11 @@ export const getAllObservations = createAsyncThunk<
   },
 );
 
-// export const filterObservations = createAsyncThunk<
-//   GetAllObservationsResponse,
-//   [number, FilterObservationRequest]
-// >(
-//   'observation/filterObservations',
-//   async ([id, payload], {dispatch, rejectWithValue}) => {
-//     try {
-//       dispatch(setLoading(true));
-//       const response = await api.post(endPoints.DASHBOARD_FILTER + id, payload);
-//       console.log('[API] Success:', JSON.stringify(response.data));
-//       return response.data as GetAllObservationsResponse;
-//     } catch (error: any) {
-//       console.log('[API] Success:', JSON.stringify(error));
-//       return rejectWithValue(error.response.data);
-//     } finally {
-//       dispatch(setLoading(false));
-//     }
-//   },
-// );
 
 export const saveEvidenceCard = createAsyncThunk<
   SaveEvidenceCardResponse,
-  [SaveEvidenceCardEvidenceInfoRequest, FileObject?]
+  [SaveEvidenceCardEvidenceInfoRequest, FileObject?],
+  {rejectValue: ErrorResponse}
 >(
   'observation/saveEvidenceCard',
   async ([evidenceInfo, file], {dispatch, rejectWithValue}) => {
@@ -362,7 +347,10 @@ const observationSlice = createSlice({
       .addCase(
         getDashboardDetailsAndObservationList.rejected,
         (state, action) => {
-          // state.isLoading = false;
+          state.observationShowMessage = {
+            status: 'Failed',
+            message: action?.payload?.error?.errorMessage,
+          };
         },
       )
       .addCase(saveEvidenceCard.pending, state => {
@@ -376,8 +364,10 @@ const observationSlice = createSlice({
         };
       })
       .addCase(saveEvidenceCard.rejected, (state, action) => {
-        // state.isLoading = false;
-        console.log('aaaaa', 'dfd', action.payload);
+        state.observationShowMessage = {
+          status: 'Failed',
+          message: action?.payload?.error?.errorMessage,
+        };
       })
       .addCase(getObservationById.pending, state => {
         // state.isLoading = true;
@@ -388,13 +378,15 @@ const observationSlice = createSlice({
         state.observationById = action.payload.payload;
       })
       .addCase(getObservationById.rejected, (state, action) => {
-        // state.isLoading = false;
+        state.observationShowMessage = {
+          status: 'Failed',
+          message: action?.payload?.error?.errorMessage,
+        };
       })
       .addCase(getAllObservations.pending, state => {
         // state.isLoading = true;
       })
       .addCase(getAllObservations.fulfilled, (state, action) => {
-        // state.isLoading = false;
 
         state.allObservations = {
           ...state.allObservations,
@@ -402,7 +394,10 @@ const observationSlice = createSlice({
         };
       })
       .addCase(getAllObservations.rejected, (state, action) => {
-        // state.isLoading = false;
+        state.observationShowMessage = {
+          status: 'Failed',
+          message: action?.payload?.error?.errorMessage,
+        };
       });
   },
 });

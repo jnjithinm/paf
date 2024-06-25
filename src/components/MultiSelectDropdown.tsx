@@ -33,6 +33,7 @@ type MultiSelectDropdownTypes = {
   selectedValues: string[];
   setSelectedValues:Dispatch<SetStateAction<string[]>>;
   onSelectItem?: () => void;
+  disabled?:boolean
 };
 
 const MultiSelectDropdown: FC<MultiSelectDropdownTypes> = ({
@@ -40,10 +41,11 @@ const MultiSelectDropdown: FC<MultiSelectDropdownTypes> = ({
   style,
   containerStyle,
   options,
-  placeHolder,
+  placeHolder='Select',
   selectedValues,
   onSelectItem,
   setSelectedValues,
+  disabled
 }) => (
   <View style={{...containerStyle, marginVertical: 5}}>
     {label && (
@@ -55,7 +57,8 @@ const MultiSelectDropdown: FC<MultiSelectDropdownTypes> = ({
       data={options}
       labelField="label"
       valueField="value"
-      placeholder="select"
+      placeholder={placeHolder}
+      disable={disabled}
       style={{
         borderColor: '#CBD2D9',
         borderWidth: 1,

@@ -169,6 +169,7 @@ type RenderDropdownTypes = {
   questionId: number;
   questionOptionId: number;
   options: QuestionOption[];
+  placeHolder?:string
 };
 const RenderDrodpwown: FC<RenderDropdownTypes> = ({
   itemAnswer,
@@ -177,6 +178,7 @@ const RenderDrodpwown: FC<RenderDropdownTypes> = ({
   questionId,
   questionOptionId,
   options,
+  placeHolder='Select an Item'
 }) => {
   console.log("ite",itemAnswer?.answer,(
     itemAnswer?.answer as QuestionOption
@@ -192,6 +194,7 @@ const RenderDrodpwown: FC<RenderDropdownTypes> = ({
         value: item.optionMappingId?.toString(),
         label: item.optionText,
       }))}
+      placeholder={placeHolder}
       renderItem={(item)=>(
         <View style={{width:'70%'}}>
         <Text style={{paddingHorizontal:10}} size='small1'>{item.label}</Text>
@@ -375,6 +378,7 @@ const EvaluationForm: FC<EvaluationFormScreenProps> = ({navigation, route}) => {
   const {previewForm, submitPreviewFormResponse} = useAppSelector(
     state => state.forms,
   );
+  
   const dispatch = useAppDispatch();
 
   useEffect(() => {

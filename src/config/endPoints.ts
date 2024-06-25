@@ -21,6 +21,10 @@ const endPoints = {
   GET_FORM_BY_ID: `PAF/forms/`,
   GET_PREVIEW_FORM: `PAF/forms/previewForm/`,
   DASHBOARD_FILTER: `PAF/teachers/observation/dashBoardFilter/`,
-  SUBMIT_FORM_RESPONSE:`PAF/forms/submitFormResponse`
+  SUBMIT_FORM_RESPONSE:`PAF/forms/submitFormResponse`,
+  ACCEPTING_RESPONSES:`PAF/forms/acceptResponse`,
+  GET_PENDING_USERS_LIST_FOR_SEND_REMINDER:`PAF/forms/getPendingUserListForSendReminder/`,
+  SEND_REMINDER_TO_ALL_PENDING_USERS:`PAF/flows/sendReminder/`,
+  SEND_REMINDER_TO_USER_GROUPS:`PAF/flows/sendFormAssignmentReminder/`
 };
 export default endPoints;

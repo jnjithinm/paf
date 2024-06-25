@@ -45,6 +45,7 @@ const AdminIndividualTile: FC<AdminIndividualTileTypes> = ({
         setIsPressed(true);
         onPress();
       }}
+      key={name}
       style={{
         width: '100%',
         flexDirection: 'row',
@@ -125,6 +126,7 @@ export const IndividualMainPageRenderal: FC<
           onPress(item);
           // navigation.navigate('AdminFormList');
         }}
+        key={item.userId}
         name={item.name}
         image={''}
         questionsAnswered={'10/10'}

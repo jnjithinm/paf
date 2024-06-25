@@ -67,7 +67,7 @@ import edit_icon from '../assets/svg/edit_icon.svg'
 import google_icon from '../assets/svg/google_icon.svg'
 import facebook_icon from '../assets/svg/facebook_icon.svg'
 import rating_deselected_icon from '../assets/svg/rating_deselected_icon.svg'
-
+import print_icon from '../assets/svg/print_icon.svg'
 
 
 const Icons = {
@@ -135,7 +135,8 @@ const Icons = {
   edit_icon,
   google_icon,
   facebook_icon,
-  rating_deselected_icon
+  rating_deselected_icon,
+  print_icon
 };
 
 export type IconTypes = keyof typeof Icons;

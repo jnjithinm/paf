@@ -173,11 +173,12 @@ const AdminFormList: FC<AdminFormListScreenProps> = ({navigation, route}) => {
               <RenderFormItem
                 title={item.formName}
                 onPressItem={() => {
-                  getRoleLevel(userData.roleType) === UserTypes.REGISTERED_USER
-                  ?
+                  // getRoleLevel(userData.roleType) === UserTypes.REGISTERED_USER
+                  // ?
                   navigation.navigate('AdminFormResponses', {
                     flowDetailItem: item,
-                  }): navigation.navigate('EvaluationForm',{flowDetailItem: item})
+                  })
+                  // : navigation.navigate('EvaluationForm',{flowDetailItem: item})
                 }}
                 key={index}
               />

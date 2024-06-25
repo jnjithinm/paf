@@ -140,8 +140,8 @@ type RubricWiseDescriptionTileTypes = {
   answerOptions: string[];
 };
 
-const RubricWiseDescriptionTile: FC<RubricWiseDescriptionTileTypes> = () => (
-  <View>
+const RubricWiseDescriptionTile: FC<RubricWiseDescriptionTileTypes> = ({question}) => (
+  <View key={question}>
     <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
       <Text>Decision making evalutation</Text>
       <View

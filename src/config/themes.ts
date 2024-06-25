@@ -56,7 +56,7 @@ export const FONT_STYLES = {
   normal: {
     fontFamily: 'Lato-Regular',
     fontSize: FONT_SIZES.normal,
-    color:colors.blackColor
+    color:colors.blackColor,
   },
   
 } as const;

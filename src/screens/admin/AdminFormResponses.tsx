@@ -6,7 +6,7 @@ import React, {
   useState,
   JSX,
 } from 'react';
-import {TouchableOpacity, View} from 'react-native';
+import {ScrollView, TouchableOpacity, View} from 'react-native';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 
@@ -19,7 +19,7 @@ import {
   normaliseFont,
 } from '../../utils/helpers/responsiveHelpers';
 import colors from '../../config/colors';
-import Icon from '../../components/Icon';
+import Icon, {IconTypes} from '../../components/Icon';
 import Text from '../../components/Text';
 import FooterWithButtons from '../../components/FooterWithButtons';
 import {
@@ -38,16 +38,22 @@ import {FloatingButton} from '../observation/ObservationReportsMainPage';
 import Modal from '../../components/Modal';
 import MultiSelectDropdown from '../../components/MultiSelectDropdown';
 import {DropdownObject} from '../../components/LabeledDropdown';
-import {getAllUsers} from '../../redux/features/usersSlice';
+import {
+  getAllUsers,
+  getPendingUsersListForSendReminder,
+} from '../../redux/features/usersSlice';
 import Button from '../../components/Button';
-import Image from '../../components/Image';
+import Image, {ImageIconNames} from '../../components/Image';
 import {
   IndividualResponse,
   Question,
   getFormById,
+  resetSendReminderToAllPendingUsers,
+  sendReminderToAllPendingUsers,
 } from '../../redux/features/formsSlice';
 import SearchWithFilter from '../../components/SearchWithFilter';
 import {FilterObject} from '../../components/Calendar';
+import {FlowDetailItem} from '../../redux/features/flowsSlice';
 
 type AdminFormResponsesNavigationProp = StackNavigationProp<
   AdminTabStackTabBarStackParamList,
@@ -65,24 +71,30 @@ interface AdminFormResponsesScreenProps {
 
 type ResponseAccessToggleTypes = {
   label: 'Accepting Responses';
-  isAccessingResponses: boolean;
-  setIsAccessingResponses: Dispatch<SetStateAction<boolean>>;
+  isAcceptingResponses: boolean;
+  setIsAcceptingResponses: Dispatch<SetStateAction<boolean>>;
   disabed?: boolean;
 };
 
 const ResponseAccessToggle: FC<ResponseAccessToggleTypes> = ({
   label,
-  isAccessingResponses,
-  setIsAccessingResponses,
+  isAcceptingResponses,
+  setIsAcceptingResponses,
   disabed = false,
 }) => (
-  <View style={{flexDirection: 'row', alignItems: 'center'}}>
+  <View
+    style={{
+      flexDirection: 'row',
+      alignItems: 'center',
+      alignSelf: 'flex-end',
+      marginTop: 7,
+    }}>
     <Text style={{color: '#4E565F', right: 5}} size="small1">
       {label}
     </Text>
     <TouchableOpacity
       style={{
-        backgroundColor: isAccessingResponses ? '#EA7804' : colors.darkGrey,
+        backgroundColor: isAcceptingResponses ? '#EA7804' : colors.darkGrey,
         width: normaliseDesigns(32),
         height: normaliseDesigns(16),
         alignItems: 'center',
@@ -94,15 +106,12 @@ const ResponseAccessToggle: FC<ResponseAccessToggleTypes> = ({
         if (disabed) {
           return;
         }
-        setIsAccessingResponses(!isAccessingResponses);
-        // selected === 'Re-Investment'
-        //   ? setSelected('Withdraw')
-        //   : setSelected('Re-Investment');
+        setIsAcceptingResponses(!isAcceptingResponses);
       }}>
       <View
         style={{
           backgroundColor: colors.backgroundColor,
-          alignSelf: isAccessingResponses ? 'flex-end' : 'flex-start',
+          alignSelf: isAcceptingResponses ? 'flex-end' : 'flex-start',
           width: normaliseDesigns(11),
           height: normaliseDesigns(11),
           borderRadius: 25,
@@ -126,7 +135,7 @@ type ScreenComponentType = {
   renderal: JSX.Element;
 };
 
-type RenderModalContentTypes = {
+type RenderAssignFormModalContentTypes = {
   usersItems: DropdownObject[];
   userGroupsItems: DropdownObject[];
   selectedUsers: string[];
@@ -136,7 +145,9 @@ type RenderModalContentTypes = {
   onPressAssign: () => void;
 };
 
-const RenderModalContent: FC<RenderModalContentTypes> = ({
+export const RenderAssignFormModalContent: FC<
+  RenderAssignFormModalContentTypes
+> = ({
   usersItems,
   userGroupsItems,
   selectedUsers,
@@ -167,7 +178,17 @@ const RenderModalContent: FC<RenderModalContentTypes> = ({
   </View>
 );
 
-const RenderSuccessModalContent: FC = () => (
+type RenderSuccessModalContentTypes = {
+  icon: ImageIconNames;
+  highlightText?: string;
+  descriptionText: string;
+};
+
+const RenderSuccessModalContent: FC<RenderSuccessModalContentTypes> = ({
+  icon,
+  highlightText = 'Success!',
+  descriptionText,
+}) => (
   <View
     style={{
       alignItems: 'center',
@@ -176,27 +197,10 @@ const RenderSuccessModalContent: FC = () => (
     }}>
     <Image name="success_icon" />
     <Text size="body2" fontVariant="bold" style={{marginVertical: 5}}>
-      Success!
+      {highlightText}
     </Text>
     <Text size="small2" fontVariant="bold" style={{textAlign: 'center'}}>
-      Form assigned to selected user and user groups.
-    </Text>
-  </View>
-);
-
-const RenderSendReminderSuccessModalContent: FC = () => (
-  <View
-    style={{
-      alignItems: 'center',
-      justifyContent: 'center',
-      paddingHorizontal: 30,
-    }}>
-    <Image name="send_reminder_success_icon" />
-    <Text size="body2" fontVariant="bold" style={{marginVertical: 5}}>
-      Success!
-    </Text>
-    <Text size="small2" fontVariant="bold" style={{textAlign: 'center'}}>
-      Reminder sent successfully to all pending users.
+      {descriptionText}
     </Text>
   </View>
 );
@@ -205,12 +209,14 @@ type LabeledSingleRadioButtonTypes = {
   label: string;
   selectedValue: string;
   onValueChange: (value: string) => void;
+  active?: boolean;
 };
 
 const LabeledSingleRadioButton: FC<LabeledSingleRadioButtonTypes> = ({
   label,
   selectedValue,
   onValueChange,
+  active,
 }) => {
   return (
     <View
@@ -219,11 +225,12 @@ const LabeledSingleRadioButton: FC<LabeledSingleRadioButtonTypes> = ({
         marginVertical: 5,
         flexDirection: 'row',
         alignItems: 'center',
+        width: '100%',
       }}>
-      <Text style={{flex: 7}} size="small3">
+      <Text size="small3" style={{width: '90%'}}>
         {label}
       </Text>
-      <View style={{flex: 1}}>
+      <View>
         <TouchableOpacity
           key={label}
           onPress={() => onValueChange(label)}
@@ -256,39 +263,117 @@ const LabeledSingleRadioButton: FC<LabeledSingleRadioButtonTypes> = ({
 };
 
 type RenderSendReminderModalTypes = {
-  listOfPendingUsers: string[];
-  scheduleReminderDate: string;
-  formAssignmentReminder: string;
-  userGroups: DropdownObject[];
-  selectedUserGroupsAssignmentReminder: string[];
-  setSelectedUserGroupsAssignmentReminder: Dispatch<SetStateAction<string[]>>;
-  onPressSendButton: () => void;
+  flowDetailItem: FlowDetailItem;
 };
 
 const RenderSendReminderModal: FC<RenderSendReminderModalTypes> = ({
-  userGroups,
-  selectedUserGroupsAssignmentReminder,
-  setSelectedUserGroupsAssignmentReminder,
-  onPressSendButton,
+  flowDetailItem,
 }) => {
-  const [selectedValue1, setSelectedValue1] = useState('');
+  const [selectedRemindMethod, setSelectedRemindMethod] = useState('');
+  const [selectedUserGroups, setSelectedUserGroups] = useState<string[]>([]);
+
+  const dispatch = useAppDispatch();
+
+  const {pendingUsersListForSendReminder} = useAppSelector(
+    state => state.users,
+  );
+  const {userData} = useAppSelector(state => state.auth);
+
+  useEffect(() => {
+    if (selectedRemindMethod === '2. Select reminder') {
+      setSelectedUserGroups([]);
+    } else if (selectedRemindMethod === '3. Form assignment reminder') {
+    } else {
+    }
+  }, [selectedRemindMethod]);
+
+  useEffect(() => {
+    dispatch(getPendingUsersListForSendReminder(flowDetailItem.formId));
+  }, []);
+
+  const handleOnPressSend = () => {
+    if (
+      selectedRemindMethod ===
+      '1. Send reminder to all pending users to submit their responses.'
+    ) {
+      dispatch(
+        sendReminderToAllPendingUsers([
+          'To All Pending Users',
+          flowDetailItem.formId,
+          userData.userName,
+        ]),
+      );
+    } else if (selectedRemindMethod === '2. Select reminder') {
+      dispatch(
+        sendReminderToAllPendingUsers([
+          'By Date',
+          flowDetailItem.formId,
+          userData.userName,
+        ]),
+      );
+    } else {
+      dispatch(
+        sendReminderToAllPendingUsers([
+          'By User Groups',
+          flowDetailItem.formId,
+          userData.userName,
+          selectedUserGroups,
+        ]),
+      );
+    }
+  };
 
   return (
-    <View style={{justifyContent: 'space-between'}}>
-      <View>
+    <View
+      style={{
+        justifyContent: 'space-between',
+        paddingHorizontal: 10,
+        width: '100%',
+      }}>
+      <View style={{width: '100%'}}>
         <LabeledSingleRadioButton
-          selectedValue={selectedValue1}
+          selectedValue={selectedRemindMethod}
           label="1. Send reminder to all pending users to submit their responses."
           onValueChange={value => {
-            setSelectedValue1(value);
+            setSelectedRemindMethod(value);
           }}
         />
-        <View>
+        {selectedRemindMethod ===
+          '1. Send reminder to all pending users to submit their responses.' && (
+          <View
+            style={{
+              borderWidth: 1,
+              borderColor: '#F4C24A',
+              width: '80%',
+              borderRadius: 8,
+              padding: 8,
+            }}>
+            <Text size="small3" fontVariant="bold">
+              List of pending users
+            </Text>
+            <ScrollView
+              style={{marginTop: 5, maxHeight: normaliseDesigns(75)}}
+              showsVerticalScrollIndicator>
+              {pendingUsersListForSendReminder?.dataList?.Users?.map(
+                (item, index) => (
+                  <View
+                    style={{flexDirection: 'row', marginVertical: 2}}
+                    key={index}>
+                    <Text size="small2" fontVariant="semiBold">
+                      {item.name}
+                    </Text>
+                  </View>
+                ),
+              )}
+            </ScrollView>
+          </View>
+        )}
+        <View style={{marginVertical: 3}}>
           <LabeledSingleRadioButton
-            selectedValue={selectedValue1}
+            selectedValue={selectedRemindMethod}
             label="2. Select reminder"
             onValueChange={value => {
-              setSelectedValue1(value);
+              setSelectedRemindMethod(value);
             }}
           />
           <TouchableOpacity
@@ -301,38 +386,114 @@ const RenderSendReminderModal: FC<RenderSendReminderModalTypes> = ({
               width: '80%',
               paddingHorizontal: 7,
               paddingVertical: 8,
-            }}>
+            }}
+            disabled={selectedRemindMethod !== '2. Select reminder'}>
             <Text size="small3" style={{color: '#ABB4BD'}}>
               Select date
             </Text>
             <Icon name="calendar_icon" />
           </TouchableOpacity>
         </View>
-        <View>
+        <View style={{marginTop: 3}}>
           <LabeledSingleRadioButton
-            selectedValue={selectedValue1}
+            selectedValue={selectedRemindMethod}
             label="3. Form assignment reminder"
             onValueChange={value => {
-              setSelectedValue1(value);
+              setSelectedRemindMethod(value);
             }}
           />
           <MultiSelectDropdown
-            options={userGroups}
-            selectedValues={selectedUserGroupsAssignmentReminder}
-            setSelectedValues={setSelectedUserGroupsAssignmentReminder}
+            options={
+              pendingUsersListForSendReminder?.dataList?.UserGroups?.map(
+                item => ({
+                  value: item.userGroupId?.toString(),
+                  label: item.groupName,
+                }),
+              ) || []
+            }
+            selectedValues={selectedUserGroups}
+            setSelectedValues={setSelectedUserGroups}
             style={{paddingVertical: 0, width: '80%'}}
+            disabled={selectedRemindMethod !== '3. Form assignment reminder'}
           />
         </View>
       </View>
       <Button
         text="Send"
         style={{marginTop: normaliseDesigns(150)}}
-        active={false}
-        onPress={onPressSendButton}
+        active={
+          Boolean(
+            selectedRemindMethod ===
+              '1. Send reminder to all pending users to submit their responses.',
+          ) ||
+          (selectedRemindMethod === '3. Form assignment reminder' &&
+            selectedUserGroups?.length > 0)
+        }
+        onPress={handleOnPressSend}
       />
     </View>
   );
 };
+
+type ShowResponseCountAndActionsTypes = {
+  onPressReminder: () => void;
+  onPressPrint: () => void;
+  responseCount: number;
+  isAcceptingResponses: boolean;
+  setIsAcceptingResponses: Dispatch<SetStateAction<boolean>>;
+};
+
+const ShowResponseCountAndActions: FC<ShowResponseCountAndActionsTypes> = ({
+  onPressReminder,
+  onPressPrint,
+  responseCount,
+  isAcceptingResponses,
+  setIsAcceptingResponses,
+}) => (
+  <View style={{marginTop: 10}}>
+    <View
+      style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+      }}>
+      <View style={{flexDirection: 'row', alignItems: 'center'}}>
+        <View
+          style={{
+            backgroundColor: '#F4C24A',
+            aspectRatio: 1,
+            height: normaliseDesigns(18),
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: 7,
+          }}>
+          <Icon name={'evidence_card_icon'} />
+        </View>
+        <Text size="body2" fontVariant="bold" style={{left: 5}}>
+          Responses ({responseCount})
+        </Text>
+      </View>
+      <View style={{flexDirection: 'row'}}>
+        <TouchableOpacity onPress={onPressReminder}>
+          <Icon
+            name="admin_response_clock"
+            width={22}
+            height={22}
+            style={{right: 10}}
+          />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={onPressPrint}>
+          <Icon name="print_icon" width={22} height={22} />
+        </TouchableOpacity>
+      </View>
+    </View>
+    <ResponseAccessToggle
+      label={'Accepting Responses'}
+      isAcceptingResponses={isAcceptingResponses}
+      setIsAcceptingResponses={setIsAcceptingResponses}
+    />
+  </View>
+);
 
 const AdminFormResponses: FC<AdminFormResponsesScreenProps> = ({
   navigation,
@@ -355,17 +516,12 @@ const AdminFormResponses: FC<AdminFormResponsesScreenProps> = ({
 
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [selectedUserGroups, setSelectedUserGroups] = useState<string[]>([]);
-  const [isAccessingResponses, setIsAccessingResponses] =
+  const [isAcceptingResponses, setIsAcceptingResponses] =
     useState<boolean>(true);
-
-  const [
-    selectedUserGroupsAssignmentReminder,
-    setSelectedUserGroupsAssignmentReminder,
-  ] = useState<string[]>([]);
 
   const [isAssignFormModalVisible, setIsAssignFormModalVisible] =
     useState<boolean>(false);
-  const [isVisibleSuccessModal, setIsVisibleSuccessModal] =
+  const [isVisibleAssignFormSuccessModal, setIsVisibleAssignFormSuccessModal] =
     useState<boolean>(false);
   const [isSendReminderModalVisible, setIsSendReminderModalVisible] =
     useState<boolean>(false);
@@ -374,7 +530,9 @@ const AdminFormResponses: FC<AdminFormResponsesScreenProps> = ({
     setIsVisibleSendReminderSuccessModal,
   ] = useState<boolean>(false);
 
-  const {formById} = useAppSelector(state => state.forms);
+  const {formById, sendReminderToAllPendingUsersResponse} = useAppSelector(
+    state => state.forms,
+  );
   const {GetAllUserGroupsData, GetAllUserData} = useAppSelector(
     state => state.users,
   );
@@ -392,7 +550,7 @@ const AdminFormResponses: FC<AdminFormResponsesScreenProps> = ({
   };
 
   useEffect(() => {
-    dispatch(getFormById(56));
+    dispatch(getFormById([flowDetailItem.formId, flowDetailItem.flowId]));
     dispatch(
       getAllUsers({
         page: 0,
@@ -401,6 +559,13 @@ const AdminFormResponses: FC<AdminFormResponsesScreenProps> = ({
       }),
     );
   }, []);
+
+  useEffect(() => {
+    if (sendReminderToAllPendingUsersResponse) {
+      setIsSendReminderModalVisible(false);
+      setIsVisibleAssignFormSuccessModal(true);
+    }
+  }, [sendReminderToAllPendingUsersResponse]);
 
   const handleTabClick = (title: DropdownObject) => {
     setSelectedTab(title.value as TabTypes);
@@ -427,6 +592,7 @@ const AdminFormResponses: FC<AdminFormResponsesScreenProps> = ({
         if (individualScreen === 'main') {
           renderal = (
             <IndividualMainPageRenderal
+              key={0}
               onPress={onPressItem}
               individualResponse={formById?.dataList.individualResponses || []}
             />
@@ -445,6 +611,7 @@ const AdminFormResponses: FC<AdminFormResponsesScreenProps> = ({
         if (questionWiseScreen === 'main') {
           renderal = (
             <QuestionWiseMainPageRenderal
+              key={1}
               onPressItem={onPressItem}
               questionList={formById?.dataList.questionList || []}
             />
@@ -452,6 +619,7 @@ const AdminFormResponses: FC<AdminFormResponsesScreenProps> = ({
         } else {
           renderal = (
             <QuestionWiseDescriptionRenderal
+              key={2}
               question={selectedQuestion}
               questionResponses={
                 selectedQuestion?.questionId
@@ -501,9 +669,8 @@ const AdminFormResponses: FC<AdminFormResponsesScreenProps> = ({
           title="Assign form"
           closeButton
           contentStyle={{width: '100%'}}
-          // style={{marginTop:normaliseDesigns(150)}}
           content={
-            <RenderModalContent
+            <RenderAssignFormModalContent
               usersItems={
                 GetAllUserData?.dataList.map(item => ({
                   value: item.userId?.toString(),
@@ -522,7 +689,7 @@ const AdminFormResponses: FC<AdminFormResponsesScreenProps> = ({
               setSelectedUserGroups={setSelectedUserGroups}
               onPressAssign={() => {
                 setIsAssignFormModalVisible(false);
-                setIsVisibleSuccessModal(true);
+                setIsVisibleAssignFormSuccessModal(true);
               }}
             />
           }
@@ -530,11 +697,18 @@ const AdminFormResponses: FC<AdminFormResponsesScreenProps> = ({
         <Modal
           onProceed={() => {}}
           onClose={() => {
-            setIsVisibleSuccessModal(false);
+            setIsVisibleAssignFormSuccessModal(false);
+            dispatch(resetSendReminderToAllPendingUsers())
           }}
           closeButton
-          content={<RenderSuccessModalContent />}
-          isVisible={isVisibleSuccessModal}
+          content={
+            <RenderSuccessModalContent
+              icon='success_icon'
+              highlightText=""
+              descriptionText="Form assigned to selected user and user groups."
+            />
+          }
+          isVisible={isVisibleAssignFormSuccessModal}
           containerStyle={{justifyContent: 'center'}}
           contentStyle={{width: '70%'}}
         />
@@ -544,7 +718,13 @@ const AdminFormResponses: FC<AdminFormResponsesScreenProps> = ({
             setIsVisibleSendReminderSuccessModal(false);
           }}
           closeButton
-          content={<RenderSendReminderSuccessModalContent />}
+          content={
+            <RenderSuccessModalContent
+              icon="send_reminder_success_icon"
+              highlightText="Great"
+              descriptionText={sendReminderToAllPendingUsersResponse?.message?.toString()||''}
+            />
+          }
           isVisible={isVisibleSendReminderSuccessModal}
           containerStyle={{justifyContent: 'center'}}
           contentStyle={{width: '70%'}}
@@ -555,62 +735,21 @@ const AdminFormResponses: FC<AdminFormResponsesScreenProps> = ({
             setIsSendReminderModalVisible(false);
           }}
           closeButton
-          content={
-            <RenderSendReminderModal
-              listOfPendingUsers={[]}
-              scheduleReminderDate={''}
-              formAssignmentReminder={''}
-              userGroups={
-                GetAllUserData?.dataList.map(item => ({
-                  value: item.userId?.toString(),
-                  label: item.userName,
-                })) || []
-              }
-              selectedUserGroupsAssignmentReminder={
-                selectedUserGroupsAssignmentReminder
-              }
-              setSelectedUserGroupsAssignmentReminder={
-                setSelectedUserGroupsAssignmentReminder
-              }
-              onPressSendButton={function (): void {
-                throw new Error('Function not implemented.');
-              }}
-            />
-          }
+          content={<RenderSendReminderModal flowDetailItem={flowDetailItem} />}
           title="Send reminder"
           isVisible={isSendReminderModalVisible}
           contentStyle={{width: '100%'}}
         />
         {isMainPage && (
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              marginTop: 5,
-            }}>
-            <View style={{flexDirection: 'row', alignItems: 'center'}}>
-              <Text
-                size="body2"
-                fontVariant="bold"
-                style={{marginVertical: 10}}>
-                12/100 Responses
-              </Text>
-              <TouchableOpacity>
-                <Icon
-                  name="admin_response_clock"
-                  width={20}
-                  height={20}
-                  style={{left: 5}}
-                />
-              </TouchableOpacity>
-            </View>
-            <ResponseAccessToggle
-              label={'Accepting Responses'}
-              isAccessingResponses={isAccessingResponses}
-              setIsAccessingResponses={setIsAccessingResponses}
-            />
-          </View>
+          <ShowResponseCountAndActions
+            onPressReminder={() => {
+              setIsSendReminderModalVisible(true);
+            }}
+            onPressPrint={() => {}}
+            responseCount={formById?.dataList?.individualResponses?.length || 0}
+            isAcceptingResponses={isAcceptingResponses}
+            setIsAcceptingResponses={setIsAcceptingResponses}
+          />
         )}
         <View style={{marginBottom: 10}}>
           <Tab
@@ -641,7 +780,6 @@ const AdminFormResponses: FC<AdminFormResponsesScreenProps> = ({
           icon="alarm_clock"
           onPress={() => {
             setIsAssignFormModalVisible(true);
-            // setIsAddButtonPressed(true);
           }}
           iconSize={20}
         />

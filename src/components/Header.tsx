@@ -44,12 +44,6 @@ const Header: FC<HeaderPropsTypes> = ({
 
   return (
     <View style={styles.headerContainer}>
-      {/* {showMessage && (
-        <ShowMessage
-          message={showMessage?.message}
-          status={showMessage?.status}
-        />
-      )} */}
       {dashboard && (
         <View style={styles.dashboardContainer}>
           <TouchableOpacity onPress={onPressMenuIcon}>

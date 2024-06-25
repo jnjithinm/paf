@@ -11,7 +11,8 @@ import {
   storeToken,
 } from '../../utils/functions/localStorageOperations';
 import endPoints from '../../config/endPoints';
-import {ErrorStatusObject, RoleType} from '../../config/types';
+import {ErrorStatusObject} from '../../config/types';
+import { ParentRoles, RoleLevelTypes } from '../../config/constants';
 
 interface AuthenticateRequest {
   username: string;
@@ -32,7 +33,7 @@ interface LoginResponse {
     name: string;
     role: string;
     roleId: number;
-    roleType: RoleType;
+    roleType: ParentRoles;
     isAdmin: boolean;
     userImage: string;
     status: boolean;
@@ -42,6 +43,19 @@ interface LoginResponse {
     };
   };
 }
+
+export interface ErrorResponseObject {
+  errorCode: string;
+  errorMessage: string;
+  id: string;
+  time: number;
+}
+
+export interface ErrorResponse {
+  error: ErrorResponseObject;
+  status: number;
+}
+
 
 export const logoutAndclearToken = createAction<void>('LOGOUT_AND_CLEAR_TOKEN');
 
@@ -93,9 +107,6 @@ export const loginUser = createAsyncThunk<LoginResponse, AuthenticateRequest>(
     } catch (error: any) {
       return rejectWithValue(error.response.data);
     }
-    // finally{
-    //   setLoading(false);
-    // }
   },
 );
 
@@ -108,7 +119,7 @@ interface initialState {
     name: string;
     role: string;
     roleId: number;
-    roleType: RoleType | null;
+    roleType: ParentRoles | null;
     isAdmin: boolean;
     userImage: string;
   };
@@ -177,7 +188,7 @@ const authSlice = createSlice({
       .addCase(loginUser.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isLoggedIn = true;
-        state.userData = {...state.userData, ...action.payload.payload};
+        state.userData =action.payload.payload;
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.isLoading = false;
