@@ -12,7 +12,7 @@ import {
 } from '../../utils/functions/localStorageOperations';
 import endPoints from '../../config/endPoints';
 import {ErrorStatusObject} from '../../config/types';
-import { ParentRoles, RoleLevelTypes } from '../../config/constants';
+import {ParentRoles, RoleLevelTypes} from '../../config/constants';
 
 interface AuthenticateRequest {
   username: string;
@@ -44,6 +44,16 @@ interface LoginResponse {
   };
 }
 
+interface ForgotPasswordResponse {
+  payload: {
+    id: number;
+    message: string;
+  };
+  status: number;
+}
+
+type ForgotPasswordResponsePayload = ForgotPasswordResponse['payload'];
+
 export interface ErrorResponseObject {
   errorCode: string;
   errorMessage: string;
@@ -55,7 +65,6 @@ export interface ErrorResponse {
   error: ErrorResponseObject;
   status: number;
 }
-
 
 export const logoutAndclearToken = createAction<void>('LOGOUT_AND_CLEAR_TOKEN');
 
@@ -73,7 +82,8 @@ export const setErrorMessage = createAction<string>('SET_ERROR_MESSAGE');
 
 export const authenticateUser = createAsyncThunk<
   AuthenticateResponse,
-  AuthenticateRequest
+  AuthenticateRequest,
+  {rejectValue: ErrorResponse}
 >('auth/authenticate', async (payload, {dispatch, rejectWithValue}) => {
   try {
     setLoading(true);
@@ -110,6 +120,19 @@ export const loginUser = createAsyncThunk<LoginResponse, AuthenticateRequest>(
   },
 );
 
+export const forgotPassword = createAsyncThunk<ForgotPasswordResponse, string>(
+  'auth/forgotPassword',
+  async (loggedInUserName, {dispatch, rejectWithValue}) => {
+    try {
+      const response = await api.get(
+        endPoints.FORGOT_PASSWORD + loggedInUserName,
+      );
+      return response.data as ForgotPasswordResponse;
+    } catch (error: any) {
+      return rejectWithValue(error.response.data);
+    }
+  },
+);
 interface initialState {
   isLoading: boolean;
   isLoggedIn: boolean;
@@ -123,6 +146,7 @@ interface initialState {
     isAdmin: boolean;
     userImage: string;
   };
+  forgotPasswordResponse: ForgotPasswordResponsePayload | null;
   authShowMessage: ErrorStatusObject | null;
   errorMessage: string;
 }
@@ -140,6 +164,7 @@ const initialState: initialState = {
     isAdmin: false,
     userImage: '',
   },
+  forgotPasswordResponse: null,
   authShowMessage: null,
   errorMessage: '',
 };
@@ -174,11 +199,17 @@ const authSlice = createSlice({
       .addCase(authenticateUser.fulfilled, (state, action) => {
         storeToken(action.payload?.payload?.token);
         state.isLoading = true;
+        state.errorMessage=''
       })
       .addCase(authenticateUser.rejected, (state, action) => {
         state.isLoading = false;
         state.isLoggedIn = false;
-        state.errorMessage = 'Username or password is incorrect';
+        action?.payload?.error?.errorMessage
+          ? (state.authShowMessage = {
+              status: 'Failed',
+              message: action?.payload?.error?.errorMessage?.toString(),
+            })
+          : (state.errorMessage = 'Invalid password entered');
       })
       .addCase(loginUser.pending, state => {
         state.isLoading = true;
@@ -188,12 +219,25 @@ const authSlice = createSlice({
       .addCase(loginUser.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isLoggedIn = true;
-        state.userData =action.payload.payload;
+        state.userData = action.payload.payload;
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.isLoading = false;
         state.isLoggedIn = false;
         state.errorMessage = '';
+      })
+      .addCase(forgotPassword.pending, state => {
+        state.isLoading = true;
+        state.errorMessage = '';
+        state.forgotPasswordResponse = null;
+      })
+      .addCase(forgotPassword.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.forgotPasswordResponse = action.payload.payload;
+      })
+      .addCase(forgotPassword.rejected, (state, action) => {
+        state.isLoading = false;
+        state.forgotPasswordResponse = null;
       });
   },
 });

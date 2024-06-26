@@ -6,20 +6,18 @@ import {FONT_VARIANT, FONT_SIZES} from '../config/themes';
 
 import {Dropdown} from 'react-native-element-dropdown';
 import {normaliseFont} from '../utils/helpers/responsiveHelpers';
+import { ItemType } from '../config/types';
 
-export type DropdownObject = {
-  value: string;
-  label: string;
-};
+
 
 interface DropdownProps {
   label?: string;
-  options: DropdownObject[];
+  options: ItemType[];
   setSelectedValue?: Dispatch<SetStateAction<string>>;
-  setSelectedItem?: Dispatch<SetStateAction<DropdownObject | undefined>>;
+  setSelectedItem?: Dispatch<SetStateAction<ItemType | undefined>>;
   setIsChanged?: Dispatch<SetStateAction<boolean>>;
   defaultValue: string;
-  onChangeItem?: (object: DropdownObject) => void;
+  onChangeItem?: (object: ItemType) => void;
   disabled?: boolean;
   mandatory?: boolean;
   halfSize?: boolean;
@@ -49,7 +47,7 @@ const LabelDropdown: FC<DropdownProps> = ({
   placeHolder,
   style,
 }) => {
-  function isDropdownItem(item: any): item is DropdownObject {
+  function isDropdownItem(item: any): item is ItemType {
     return typeof item === 'object' && item !== null;
   }
 

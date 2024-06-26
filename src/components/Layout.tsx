@@ -14,7 +14,7 @@ import Header from './Header';
 import {ImageIconNames} from './Image';
 import Loading from './Loading';
 import {useAppSelector} from '../redux/store';
-import ShowMessage from './ShowMessage';
+import ShowToastMessage from './ShowToastMessage';
 
 // import  usePanResponder  from 'utils/functions/AutoLogoutManager'
 // import Loading from './Loading';
@@ -150,7 +150,7 @@ const Layout: FC<LayoutPropsTypes> = ({
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}>
       <StatusBar backgroundColor={colors.primaryLightColor} />
-      <ShowMessage/>
+      <ShowToastMessage/>
       {!hideHeader && (
         <Header
           avoidBackButton={avoidBackButton}

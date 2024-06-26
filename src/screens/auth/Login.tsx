@@ -14,6 +14,7 @@ import Button from '../../components/Button';
 import {useAppDispatch, useAppSelector} from '../../redux/store';
 import {
   authenticateUser,
+  logoutAndclearToken,
   setErrorMessage,
 } from '../../redux/features/authSlice';
 import Layout from '../../components/Layout';
@@ -36,6 +37,7 @@ const Login: FC<LoginScreenProps> = ({navigation, route}) => {
   const [password, setPassword] = useState<string>('');
   const [isChanged, setIsChanged] = useState<boolean>(false);
   const [isRememberMe, setIsRememberMe] = useState<boolean>(false);
+  const [isShowError,setIsShowError]=useState<boolean>(false);
 
   const dispatch = useAppDispatch();
   const {errorMessage} = useAppSelector(state => state.auth);
@@ -53,6 +55,7 @@ const Login: FC<LoginScreenProps> = ({navigation, route}) => {
 
   const onPressLogin = async () => {
     if (!usernameErrorMessage && !passwordErrorMessage) {
+      setIsShowError(true);
       if (isRememberMe && isChanged) {
         setIsChanged(false);
         await storeUserCredentials(username, password);
@@ -77,6 +80,7 @@ const Login: FC<LoginScreenProps> = ({navigation, route}) => {
 
   useFocusEffect(
     React.useCallback(() => {
+      dispatch(logoutAndclearToken());
       const getUserDetails = async () => {
         try {
           const data = await getUserCredentials();
@@ -92,7 +96,6 @@ const Login: FC<LoginScreenProps> = ({navigation, route}) => {
       getUserDetails();
     }, []),
   );
-
 
   return (
     <Layout
@@ -121,7 +124,7 @@ const Login: FC<LoginScreenProps> = ({navigation, route}) => {
           setValue={setUsername}
           onChange={() => {
             setIsChanged(true);
-            setErrorMessage('');
+            dispatch(setErrorMessage(''));
           }}
           errorMessage={usernameErrorMessage}
           placeholder="Enter your username"
@@ -133,7 +136,7 @@ const Login: FC<LoginScreenProps> = ({navigation, route}) => {
           setValue={setPassword}
           onChange={() => {
             setIsChanged(true);
-            setErrorMessage('');
+            dispatch(setErrorMessage(''));
           }}
           errorMessage={passwordErrorMessage || errorMessage}
           placeholder="Enter your password"

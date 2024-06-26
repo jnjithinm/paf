@@ -10,11 +10,12 @@ import {
 import {normaliseDesigns} from '../utils/helpers/responsiveHelpers';
 import { FONT_VARIANT} from '../config/themes';
 import colors from '../config/colors';
-import { DropdownObject } from './LabeledDropdown';
+import { ItemType } from '../config/types';
+
 
 interface TabsProps {
-  tabs: DropdownObject[];
-  onClick: (index: DropdownObject) => void;
+  tabs: ItemType[];
+  onClick: (index: ItemType) => void;
   style?: ViewStyle;
   textStyle?:TextStyle
 }
@@ -22,7 +23,7 @@ interface TabsProps {
 const Tabs: React.FC<TabsProps> = ({tabs, onClick, style,textStyle}) => {
   const [selectedTab, setSelectedTab] = useState(0);
 
-  const handleTabPress = (tabIndex: number, tabName: DropdownObject) => {
+  const handleTabPress = (tabIndex: number, tabName: ItemType) => {
     setSelectedTab(tabIndex);
     onClick(tabName);
   };

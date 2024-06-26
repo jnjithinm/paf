@@ -11,7 +11,6 @@ import DocumentPicker, {
 } from 'react-native-document-picker';
 import Image from '../components/Image';
 import ZipArchive, {zip} from 'react-native-zip-archive';
-import {MainBundlePath, DocumentDirectoryPath} from 'react-native-fs';
 import Text from './Text';
 import {FileObject} from '../config/types';
 import RNFS from 'react-native-fs';

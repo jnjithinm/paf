@@ -58,6 +58,7 @@ export interface TextInputPropsTypes extends TextInputProps {
   mandatory?: boolean;
   avoidTransform?: boolean;
   style?: ViewStyle;
+  isShowErrorOnButtonPress?:boolean;
   // textInputRef?: React.RefObject<CustomTextInputRef>;
   // isShowError?: boolean;
   errorMessage?: string;

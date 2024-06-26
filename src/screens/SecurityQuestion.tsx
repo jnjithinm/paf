@@ -7,7 +7,7 @@ import StatusBar from '../components/StatusBar';
 import colors from '../config/colors';
 import Icon from '../components/Icon';
 import Text from '../components/Text';
-import LabelDropdown, {dropdownObject} from '../components/LabeledDropdown';
+import LabelDropdown from '../components/LabeledDropdown';
 import TextInput from '../components/TextInput';
 import Button from '../components/Button';
 import Layout from '../components/Layout';
@@ -28,9 +28,9 @@ interface SecurityQuestionScreenProps {
 
 type RenderQuestionAndAnswerTypes = {
   questions: string[];
-  selectedQuestionAndAnswer: dropdownObject[] | undefined;
+  selectedQuestionAndAnswer: ItemType[] | undefined;
   setSelectedQuestionAndAnswer: Dispatch<
-    SetStateAction<dropdownObject[] | undefined>
+    SetStateAction<ItemType[] | undefined>
   >;
   answerVariable: string;
   selectedQuestion: string;
@@ -59,10 +59,10 @@ const SecurityQuestion: FC<SecurityQuestionScreenProps> = ({
   navigation,
   route,
 }) => {
-  // const [answerVariable,setAnswerVariable]=useState<dropdownObject|undefined>({label:'',value:''});
+  // const [answerVariable,setAnswerVariable]=useState<ItemType|undefined>({label:'',value:''});
   // const [selectedQuestion,setSelectedQuestion]=useState<string>('');
   const [selectedQuestionAndAnswer, setSelectedQuestionAndAnswer] = useState<
-    dropdownObject[] | undefined
+    ItemType[] | undefined
   >([
     {label: `What's your pet's name ?`, value: ''},
     {label: `What's your pet's name ?`, value: ''},

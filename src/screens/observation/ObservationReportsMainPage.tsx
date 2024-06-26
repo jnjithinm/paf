@@ -25,7 +25,8 @@ import {
   getAllObservations,
 } from '../../redux/features/observationSlice';
 import SearchWithFilter from '../../components/SearchWithFilter';
-import {DropdownObject} from '../../components/LabeledDropdown';
+import { ItemType } from '../../config/types';
+
 
 type ObservationReportsMainPageNavigationProp = StackNavigationProp<
   ReportsTabBarStackParamList,
@@ -68,7 +69,7 @@ export const FloatingButton: FC<FloatingButtonTypes> = ({
         right: 20,
         flexDirection: 'row',
         backgroundColor: '#EA7804',
-        borderRadius: 10,
+        borderRadius: 13,
         zIndex: 1,
         ...Platform.select({
           ios: {
@@ -78,7 +79,7 @@ export const FloatingButton: FC<FloatingButtonTypes> = ({
             shadowRadius: 4,
           },
           android: {
-            elevation: 5,
+            elevation: 7,
           },
         }),
         ...style,
@@ -100,8 +101,8 @@ const ObservationReportsMainPage: FC<ObservationReportsMainPageScreenProps> = ({
   const {allObservations} = useAppSelector(state => state.observation);
   const {userData} = useAppSelector(state => state.auth);
 
-  const handleTabClick = (title: DropdownObject) => {
-    setSelectedFilter(title?.value);
+  const handleTabClick = (title: ItemType) => {
+    setSelectedFilter(title?.value as FilterType);
   };
 
   useEffect(() => {

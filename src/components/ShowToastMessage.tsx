@@ -18,7 +18,7 @@ export interface ShowMessageTypes {
   style?: ViewStyle;
 }
 
-const ShowMessage: FC<ShowMessageTypes> = ({style}) => {
+const ShowToastMessage: FC<ShowMessageTypes> = ({style}) => {
   const dispatch = useAppDispatch();
 
   const {authShowMessage} = useAppSelector(state => state.auth);
@@ -84,6 +84,8 @@ const ShowMessage: FC<ShowMessageTypes> = ({style}) => {
   const onCloseShowMessage = () => {
     resetShowMessage(showMessage);
   };
+
+  
 
   return (
     <View
@@ -161,4 +163,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ShowMessage;
+export default ShowToastMessage;

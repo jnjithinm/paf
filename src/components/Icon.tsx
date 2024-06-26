@@ -68,7 +68,7 @@ import google_icon from '../assets/svg/google_icon.svg'
 import facebook_icon from '../assets/svg/facebook_icon.svg'
 import rating_deselected_icon from '../assets/svg/rating_deselected_icon.svg'
 import print_icon from '../assets/svg/print_icon.svg'
-
+import user_and_usergroup_icon from '../assets/svg/user_and_usergroup_icon.svg'
 
 const Icons = {
   app_logo,
@@ -136,7 +136,8 @@ const Icons = {
   google_icon,
   facebook_icon,
   rating_deselected_icon,
-  print_icon
+  print_icon,
+  user_and_usergroup_icon
 };
 
 export type IconTypes = keyof typeof Icons;

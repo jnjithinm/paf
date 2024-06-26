@@ -5,8 +5,9 @@ import Text from './Text';
 import Icon from './Icon';
 import {normaliseDesigns} from '../utils/helpers/responsiveHelpers';
 import {MultiSelect} from 'react-native-element-dropdown';
-import {DropdownObject} from './LabeledDropdown';
+
 import colors from '../config/colors';
+import { ItemType } from '../config/types';
 
 const customSearchInput = (onSearch: (arg0: string) => void) => (
   <View style={{padding: 10}}>
@@ -28,7 +29,7 @@ type MultiSelectDropdownTypes = {
   label?: string;
   style?: ViewStyle;
   containerStyle?:ViewStyle;
-  options: DropdownObject[];
+  options: ItemType[];
   placeHolder?: string;
   selectedValues: string[];
   setSelectedValues:Dispatch<SetStateAction<string[]>>;
@@ -49,7 +50,7 @@ const MultiSelectDropdown: FC<MultiSelectDropdownTypes> = ({
 }) => (
   <View style={{...containerStyle, marginVertical: 5}}>
     {label && (
-      <Text style={{marginBottom: 4}} fontVariant="bold">
+      <Text style={{marginBottom: 4}} size='small2' fontVariant="bold">
         {label}
       </Text>
     )}
@@ -62,9 +63,10 @@ const MultiSelectDropdown: FC<MultiSelectDropdownTypes> = ({
       style={{
         borderColor: '#CBD2D9',
         borderWidth: 1,
-        paddingVertical: 8,
+        paddingVertical: 3,
         paddingHorizontal: 10,
         borderRadius: 7,
+
         ...style
       }}
       search

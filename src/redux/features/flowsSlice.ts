@@ -3,8 +3,8 @@ import {createAction, createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import api from '../../config/axios';
 import endPoints from '../../config/endPoints';
 import {PaginationRequest} from './usersSlice';
-import { setLoading } from './authSlice';
-import { ErrorStatusObject } from '../../config/types';
+import {ErrorResponse, setLoading} from './authSlice';
+import {ErrorStatusObject} from '../../config/types';
 
 export interface FlowItem {
   flowId: number;
@@ -48,23 +48,69 @@ interface GetFlowByIdResponse {
 
 type GetFlowByIdResponsePayload = GetFlowByIdResponse['payload'];
 
+export type SendReminderMethods =
+  | 'To All Pending Users'
+  | 'By Date'
+  | 'By User Groups';
+
+interface SendReminderToAllPendingUsersResponse {
+  payload: {
+    id: number;
+    message: string;
+  };
+  status: number;
+}
+
+type SendReminderToAllPendingUsersResponsePayload =
+  SendReminderToAllPendingUsersResponse['payload'];
+
+interface AssignFlowRequest {
+  userIds: number[];
+  userGroupIds: number[];
+  id: number;
+  loggedInUserName: string;
+}
+
+interface AssignFlowResponse{
+  payload: {
+    message: string;
+  };
+  status: number;
+}
+
+type AssignFlowResponsePayload =
+AssignFlowResponse['payload'];
+
 export const setFlowsShowMessage = createAction<ErrorStatusObject | null>(
   'SET_FLOWS_SHOW_MESSAGE',
 );
 
+export const resetSendReminderToAllPendingUsers = createAction<void>(
+  'RESET_SEND_REMINDER_TO_ALL_PENDING_USERS',
+);
+
+export const resetAssignFlowResponse = createAction<void>(
+  'RESET_ASSIGN_FLOW_RESPONSE',
+);
+
+
 export const getAllFlows = createAsyncThunk<
   GetAllFlowsResponse,
-  [string, PaginationRequest]
+  [string, PaginationRequest],
+  {rejectValue: ErrorResponse}
 >(
   'flows/getAllFlows',
-  async ([loggedInUserName, payload], {dispatch,rejectWithValue}) => {
+  async ([loggedInUserName, payload], {dispatch, rejectWithValue}) => {
     try {
       dispatch(setLoading(true));
-      const response = await api.post(endPoints.GET_ALL_FLOWS+loggedInUserName, payload);
+      const response = await api.post(
+        endPoints.GET_ALL_FLOWS + loggedInUserName,
+        payload,
+      );
       return response.data as GetAllFlowsResponse;
     } catch (error: any) {
       return rejectWithValue(error.response.data);
-    } finally{
+    } finally {
       dispatch(setLoading(false));
     }
   },
@@ -72,24 +118,101 @@ export const getAllFlows = createAsyncThunk<
 
 export const getFlowById = createAsyncThunk<
   GetFlowByIdResponse,
-  [number, PaginationRequest]
->('flows/getFlowById', async ([flowId, payload], {dispatch,rejectWithValue}) => {
-  try {
-    dispatch(setLoading(true));
-    const response = await api.post(endPoints.GET_FLOW_BY_ID + flowId, payload);
-    
-    return response.data as GetFlowByIdResponse;
-  } catch (error: any) {
-    console.log("error.response?.data?.message",error.response?.data?.message)
-    return rejectWithValue(error.response.data);
-  } finally{
-    dispatch(setLoading(false));
-  }
-});
+  [number, PaginationRequest],
+  {rejectValue: ErrorResponse}
+>(
+  'flows/getFlowById',
+  async ([flowId, payload], {dispatch, rejectWithValue}) => {
+    try {
+      dispatch(setLoading(true));
+      const response = await api.post(
+        endPoints.GET_FLOW_BY_ID + flowId,
+        payload,
+      );
+
+      return response.data as GetFlowByIdResponse;
+    } catch (error: any) {
+      console.log(
+        'error.response?.data?.message',
+        error.response?.data?.message,
+      );
+      return rejectWithValue(error.response.data);
+    } finally {
+      dispatch(setLoading(false));
+    }
+  },
+);
+
+export const sendReminderToAllPendingUsers = createAsyncThunk<
+  SendReminderToAllPendingUsersResponse,
+  [SendReminderMethods, number, string, string[]?],
+  {rejectValue: ErrorResponse}
+>(
+  'forms/sendReminderToAllPendingUsers',
+  async (
+    [sendReminderMethod, flowId, loggedInUserName, userGroupIds],
+    {dispatch, rejectWithValue},
+  ) => {
+    try {
+      dispatch(setLoading(true));
+      let response;
+      const userGroupIdsParam = userGroupIds ? userGroupIds.join(',') : '';
+      if (sendReminderMethod === 'To All Pending Users') {
+        response = await api.get(
+          endPoints.SEND_REMINDER_TO_ALL_PENDING_USERS +
+            flowId +
+            `?loggedInUserName=${loggedInUserName}`,
+        );
+      } else if (sendReminderMethod === 'By Date') {
+        response = await api.get(
+          endPoints.SEND_REMINDER_TO_ALL_PENDING_USERS +
+            flowId +
+            `loggedInUserName=${loggedInUserName}`,
+        );
+      } else {
+        response = await api.get(
+          endPoints.SEND_REMINDER_TO_USER_GROUPS +
+            flowId +
+            `?userGroupIds=${userGroupIdsParam}&loggedInUserName=${loggedInUserName}`,
+        );
+      }
+      return response.data as SendReminderToAllPendingUsersResponse;
+    } catch (error: any) {
+      return rejectWithValue(error.response.data);
+    } finally {
+      dispatch(setLoading(false));
+    }
+  },
+);
+
+export const assignFlowToUsersAndGroups = createAsyncThunk<
+  AssignFlowResponse,
+  AssignFlowRequest,
+  {rejectValue: ErrorResponse}
+>(
+  'forms/assignFlowToUsersAndGroups',
+  async (payload, {dispatch, rejectWithValue}) => {
+    try {
+      dispatch(setLoading(true));
+      const response = await api.put(
+        endPoints.ASSIGN_FLOW_TO_USERS_AND_USER_GROUPS,
+        payload,
+      );
+      console.log('re', response.data);
+      return response.data as AssignFlowResponse;
+    } catch (error: any) {
+      return rejectWithValue(error.response.data);
+    } finally {
+      dispatch(setLoading(false));
+    }
+  },
+);
 
 interface InitialState {
   allFlows: GetAllFlowsResponsePayload | null;
   flowById: GetFlowByIdResponsePayload | null;
+  sendReminderToAllPendingUsersResponse: SendReminderToAllPendingUsersResponsePayload | null;
+  assignFlowResponse:AssignFlowResponsePayload|null;
   flowsShowMessage: ErrorStatusObject | null;
   errorMessage: string;
 }
@@ -97,9 +220,10 @@ interface InitialState {
 const initialState: InitialState = {
   allFlows: null,
   flowById: null,
-  // isLoading: false,
+  sendReminderToAllPendingUsersResponse: null,
+  assignFlowResponse:null,
   flowsShowMessage: null,
-  errorMessage:''
+  errorMessage: '',
 };
 
 const flowsSlice = createSlice({
@@ -108,9 +232,15 @@ const flowsSlice = createSlice({
   reducers: {},
   extraReducers: builder => {
     builder
-    .addCase(setFlowsShowMessage, (state, action) => {
-      state.flowsShowMessage = action.payload;
-    })
+      .addCase(setFlowsShowMessage, (state, action) => {
+        state.flowsShowMessage = action.payload;
+      })
+      .addCase(resetAssignFlowResponse, state => {
+        state.assignFlowResponse = null;
+      })
+      .addCase(resetSendReminderToAllPendingUsers, state => {
+        state.sendReminderToAllPendingUsersResponse = null;
+      })
       .addCase(getAllFlows.pending, state => {
         // state.isLoading = true;
       })
@@ -136,7 +266,30 @@ const flowsSlice = createSlice({
       })
       .addCase(getFlowById.rejected, (state, action) => {
         // state.isLoading = false;
-      });
+      })
+      .addCase(sendReminderToAllPendingUsers.pending, state => {
+        state.sendReminderToAllPendingUsersResponse = null;
+      })
+      .addCase(sendReminderToAllPendingUsers.fulfilled, (state, action) => {
+        state.sendReminderToAllPendingUsersResponse = action.payload.payload;
+      })
+      .addCase(sendReminderToAllPendingUsers.rejected, (state, action) => {
+        state.flowsShowMessage = {
+          status: 'Failed',
+          message: action?.payload?.error?.errorMessage,
+        };
+      })     .addCase(assignFlowToUsersAndGroups.pending, state => {
+        state.assignFlowResponse =null;
+      })
+      .addCase(assignFlowToUsersAndGroups.fulfilled, (state, action) => {
+        state.assignFlowResponse = action.payload.payload;
+      })
+      .addCase(assignFlowToUsersAndGroups.rejected, (state, action) => {
+        state.flowsShowMessage = {
+          status: 'Failed',
+          message: action?.payload?.error?.errorMessage,
+        };
+      })
   },
 });
 

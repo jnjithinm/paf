@@ -25,8 +25,8 @@ export type ReportsTabBarStackParamList = {
     evidenceCardDetails?: EvidenceResponse;
   };
   //  {
-  //   selectedUserGroup: DropdownObject;
-  //   selectedUser: DropdownObject;
+  //   selectedUserGroup: ItemType;
+  //   selectedUser: ItemType;
   //   selectedDate: string;
   // };
   ObservationReport: {observationItem: ObservationData};

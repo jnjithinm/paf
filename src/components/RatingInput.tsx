@@ -1,5 +1,5 @@
 import {FC, useState} from 'react';
-import {TouchableOpacity, View, ViewStyle} from 'react-native';
+import {TextStyle, TouchableOpacity, View, ViewStyle} from 'react-native';
 import Text from './Text';
 import Icon from './Icon';
 
@@ -11,6 +11,7 @@ type RatingInputTypes = {
   disabled?: boolean;
   showRating?: boolean;
   style?:ViewStyle
+  labelStyle:TextStyle
 };
 
 const RatingInput: FC<RatingInputTypes> = ({
@@ -20,7 +21,8 @@ const RatingInput: FC<RatingInputTypes> = ({
   size = 20,
   disabled,
   showRating = true,
-  style
+  style,
+  labelStyle
 }) => {
   const [selectedRating, setSelectedRating] = useState(rating);
 
@@ -35,7 +37,7 @@ const RatingInput: FC<RatingInputTypes> = ({
   return (
     <View style={{...style}}>
       {label && (
-        <Text fontVariant="bold" size="body1">
+        <Text fontVariant="bold" size="body1" style={{...labelStyle}}>
           {label}
         </Text>
       )}

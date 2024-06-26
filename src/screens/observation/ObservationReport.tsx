@@ -1,6 +1,6 @@
 import React, {FC, useEffect, useState} from 'react';
 import {KeyboardAvoidingView, Platform, View} from 'react-native';
-import {RouteProp} from '@react-navigation/native';
+import {RouteProp, useFocusEffect} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {TextInput as RNTextInput} from 'react-native';
 
@@ -42,7 +42,8 @@ const ObservationReport: FC<ObservationReportScreenProps> = ({
 
   useEffect(() => {
     dispatch(getObservationById(observationItem.observationId));
-  }, []);
+  }, [observationItem]);
+
 
   return (
     <KeyboardAvoidingView

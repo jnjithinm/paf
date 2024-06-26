@@ -26,9 +26,9 @@ import {
   getUserGroups,
 } from '../../redux/features/usersSlice';
 import LabeledDropdown, {
-  DropdownObject,
 } from '../../components/LabeledDropdown';
 import {ReportsTabBarStackParamList} from '../../navigation/ReportsTabStack';
+import { ItemType } from '../../config/types';
 
 type AddNewObservationNavigationProp = StackNavigationProp<
   ReportsTabBarStackParamList,
@@ -56,9 +56,9 @@ const AddNewObservation: FC<AddNewObservationScreenProps> = ({
   route,
 }) => {
   const [selectedUserGroup, setSelectedUserGroup] = useState<
-    DropdownObject | undefined
+    ItemType | undefined
   >(undefined);
-  const [selectedUser, setSelectedUser] = useState<DropdownObject | undefined>(
+  const [selectedUser, setSelectedUser] = useState<ItemType | undefined>(
     undefined,
   );
   const [selectedDate, setSelectedDate] = useState<any>('');

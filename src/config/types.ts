@@ -10,6 +10,11 @@ export type CustomNumericFieldRef = {
   triggerResetPin: () => void;
 };
 
+export type ItemType = {
+  value: string;
+  label: string;
+};
+
 export type FileObject = {
   uri: string;
   type: string;

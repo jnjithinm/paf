@@ -13,6 +13,8 @@ import {View} from 'react-native';
 import Image from '../../components/Image';
 import colors from '../../config/colors';
 import {normaliseDesigns} from '../../utils/helpers/responsiveHelpers';
+import { useAppDispatch, useAppSelector } from '../../redux/store';
+import { forgotPassword } from '../../redux/features/authSlice';
 
 type ResetPasswordNavigationProp = StackNavigationProp<
   MainStackParamList,
@@ -37,10 +39,10 @@ const RenderConfirmEmailModal: FC<RenderConfirmEmailModalTypes> = ({
     style={{justifyContent: 'center', alignItems: 'center', marginTop: -15}}>
     <Image name="email_icon" />
     <Text fontVariant="bold" style={{marginVertical: 10}}>
-      Check your email
+      Check your username
     </Text>
     <Text style={{textAlign: 'center'}} size="small3">
-      We have sent a password recover instructions to your email.
+      We have sent a password recover instructions to your username.
     </Text>
     <View
       style={{
@@ -73,25 +75,34 @@ const RenderConfirmEmailModal: FC<RenderConfirmEmailModalTypes> = ({
   </View>
 );
 
-
 const ResetPassword: FC<ResetPasswordScreenProps> = ({navigation, route}) => {
-  const [email, setEmail] = useState<string>('');
+  const [username, setUsername] = useState<string>('');
   const [isShowModal, setIsShowModal] = useState<boolean>(false);
+const dispatch=useAppDispatch();
+
+const {forgotPasswordResponse}=useAppSelector(state=>state.auth);
 
   const {validateField} = useValidation();
 
-  const emailIdErrorMessage = validateField({
-    fieldName: 'Email ID',
-    value: email,
+  const usernameErrorMessage = validateField({
+    fieldName: 'Username',
+    value: username,
   });
 
   const onPressSendButton = () => {
-    setIsShowModal(true);
+    dispatch(forgotPassword(username));
+
   };
 
-  const onPressOpenEmail=()=>{
-    navigation.navigate('CreateNewPassword')
-  }
+  useEffect(()=>{
+    if(forgotPasswordResponse){
+      setIsShowModal(true);
+    }
+  },[forgotPasswordResponse])
+
+  const onPressOpenEmail = () => {
+    navigation.navigate('CreateNewPassword');
+  };
 
   return (
     <Layout
@@ -125,23 +136,23 @@ const ResetPassword: FC<ResetPasswordScreenProps> = ({navigation, route}) => {
         Reset Password
       </Text>
       <Text style={{color: '#4E565F'}} size="body1">
-        Enter the email associated with your account and we will send an email
-        with instructions to reset your password.
+        Enter the username associated with your account and we will send an
+        email with instructions to reset your password.
       </Text>
       <TextInput
-        label="Email"
-        value={email}
-        setValue={setEmail}
-        errorMessage={emailIdErrorMessage}
-        placeholder="Enter email address"
+        label="Username"
+        value={username}
+        setValue={setUsername}
+        errorMessage={usernameErrorMessage}
+        placeholder="Enter your username"
         autoCapitalize="none"
-        keyboardType="email-address"
+
         style={{marginVertical: '10%'}}
       />
       <Button
         style={{width: '100%'}}
         text="Send"
-        active={!emailIdErrorMessage}
+        active={!usernameErrorMessage}
         onPress={onPressSendButton}
       />
     </Layout>

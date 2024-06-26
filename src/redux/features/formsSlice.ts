@@ -5,7 +5,6 @@ import endPoints from '../../config/endPoints';
 import {ErrorResponse, setLoading} from './authSlice';
 import {ErrorStatusObject} from '../../config/types';
 
-
 interface Indicator {
   domainId: number;
   domainName: string;
@@ -97,9 +96,13 @@ export interface QuestionOption {
   optionText: string;
 }
 
-interface Indicator {
-  //
-}
+export interface IndicatorPreviewForm   {
+  domainId: number;
+  indicatorId: number;
+  indicatorName: string;
+  indicatorDescription: string;
+  status: boolean;
+};
 
 type QuestionTypes =
   | 'Question 3 description'
@@ -115,7 +118,7 @@ interface QuestionPreviewForm {
   questionDescription: QuestionTypes;
   isRequired: boolean;
   questionOptions: QuestionOption[];
-  indicators: Indicator[];
+  indicators: IndicatorPreviewForm[];
 }
 
 interface Section {
@@ -126,32 +129,34 @@ interface Section {
   questions: QuestionPreviewForm[];
 }
 
-interface DataList {
-  formId: number;
-  formName: string;
-  formText: string;
-  formDescription: string;
-  isDraft: boolean;
-  status: boolean;
-  acceptingResponse: boolean;
-  sections: Section[];
-}
 
 interface GetPreviewFormResponse {
   payload: {
     message: string;
-    dataList: DataList;
+    dataList: {
+      formId: number;
+      formName: string;
+      formText: string;
+      formDescription: string;
+      isDraft: boolean;
+      status: boolean;
+      acceptingResponse: boolean;
+      sections: Section[];
+    };
   };
   status: number;
 }
 
 type GetPreviewFormResponsePayload = GetPreviewFormResponse['payload'];
 
+export type IndicatorRatingType = Array<{ [key: number]: number }>;
+
 export type FormSubmission = {
   questionId: number;
   questionOptionId: number;
   optionMappingId: number | null;
   responseValue: string | null;
+  indicatorRating:string|null;
 };
 
 type SubmitPreviewFormRequest = {
@@ -187,30 +192,30 @@ interface AcceptingFormResponsesResponse {
 type AcceptingFormResponsesResponsePayload =
   AcceptingFormResponsesResponse['payload'];
 
-type SendReminderMethods =
-  | 'To All Pending Users'
-  | 'By Date'
-  | 'By User Groups';
+interface AssignFormRequest {
+  userIds: number[];
+  userGroupIds: number[];
+  id: number;
+  loggedInUserName: string;
+}
 
-interface SendReminderToAllPendingUsersResponse {
+interface AssignFormResponse{
   payload: {
-    id: number;
     message: string;
   };
   status: number;
 }
 
-type SendReminderToAllPendingUsersResponsePayload =
-  SendReminderToAllPendingUsersResponse['payload'];
+type AssignFormResponsePayload =
+AssignFormResponse['payload'];
 
 export const setFormsShowMessage = createAction<ErrorStatusObject | null>(
   'SET_FORMS_SHOW_MESSAGE',
 );
 
-export const resetSendReminderToAllPendingUsers = createAction<void>(
-  'RESET_SEND_REMINDER_TO_ALL_PENDING_USERS',
+export const resetAssignFormResponse = createAction<void>(
+  'RESET_ASSIGN_FORM_RESPONSE',
 );
-
 
 export const getFormById = createAsyncThunk<
   GetFormByIdResponse,
@@ -241,7 +246,6 @@ export const getPreviewForm = createAsyncThunk<
   try {
     dispatch(setLoading(true));
     const response = await api.get(endPoints.GET_PREVIEW_FORM + formId);
-    console.log('reesoi', response.data);
     return response.data as GetPreviewFormResponse;
   } catch (error: any) {
     return rejectWithValue(error.response.data);
@@ -285,40 +289,21 @@ export const acceptingFormResponses = createAsyncThunk<
   },
 );
 
-export const sendReminderToAllPendingUsers = createAsyncThunk<
-  SendReminderToAllPendingUsersResponse,
-  [SendReminderMethods, number, string, string[]?],
+export const assignFormToUsersAndGroups = createAsyncThunk<
+  AssignFormResponse,
+  AssignFormRequest,
   {rejectValue: ErrorResponse}
 >(
-  'forms/sendReminderToAllPendingUsers',
-  async (
-    [sendReminderMethod, flowId, loggedInUserName, userGroupIds],
-    {dispatch, rejectWithValue},
-  ) => {
+  'forms/assignFormToUsersAndGroups',
+  async (payload, {dispatch, rejectWithValue}) => {
     try {
       dispatch(setLoading(true));
-      let response;
-      const userGroupIdsParam = userGroupIds ? userGroupIds.join(',') : '';
-      if (sendReminderMethod === 'To All Pending Users') {
-        response = await api.get(
-          endPoints.SEND_REMINDER_TO_ALL_PENDING_USERS +
-            flowId +
-            `?loggedInUserName=${loggedInUserName}`,
-        );
-      } else if (sendReminderMethod === 'By Date') {
-        response = await api.get(
-          endPoints.SEND_REMINDER_TO_ALL_PENDING_USERS +
-            flowId +
-            `loggedInUserName=${loggedInUserName}`,
-        );
-      } else {
-        response = await api.get(
-          endPoints.SEND_REMINDER_TO_USER_GROUPS +
-            flowId +
-            `?userGroupIds=${userGroupIdsParam}&loggedInUserName=${loggedInUserName}`,
-        );
-      }
-      return response.data as SendReminderToAllPendingUsersResponse;
+      const response = await api.put(
+        endPoints.ASSIGN_FORM_TO_USERS_AND_GROUPS,
+        payload,
+      );
+      console.log('re', response.data);
+      return response.data as AssignFormResponse;
     } catch (error: any) {
       return rejectWithValue(error.response.data);
     } finally {
@@ -332,10 +317,9 @@ interface InitialState {
   previewForm: GetPreviewFormResponsePayload | null;
   submitPreviewFormResponse: SubmitPreviewFormResponsePayload | null;
   acceptingFormResponses: AcceptingFormResponsesResponsePayload | null;
-  sendReminderToAllPendingUsersResponse: SendReminderToAllPendingUsersResponsePayload | null;
+  assignFormResponse:AssignFormResponsePayload | null;
   formsShowMessage: ErrorStatusObject | null;
   errorMessage: string;
-  message:string;
 }
 
 const initialState: InitialState = {
@@ -343,10 +327,9 @@ const initialState: InitialState = {
   previewForm: null,
   submitPreviewFormResponse: null,
   acceptingFormResponses: null,
-  sendReminderToAllPendingUsersResponse: null,
   formsShowMessage: null,
+  assignFormResponse:null,
   errorMessage: '',
-  message:''
 };
 
 const formsSlice = createSlice({
@@ -358,41 +341,33 @@ const formsSlice = createSlice({
       .addCase(setFormsShowMessage, (state, action) => {
         state.formsShowMessage = action.payload;
       })
-      .addCase(resetSendReminderToAllPendingUsers, (state) => {
-        state.sendReminderToAllPendingUsersResponse = null;
+      .addCase(resetAssignFormResponse, (state, action) => {
+        state.assignFormResponse = null;
       })
       .addCase(getFormById.pending, state => {
         // state.isLoading = true;
       })
       .addCase(getFormById.fulfilled, (state, action) => {
         // state.isLoading = false;
-        state.formById = {
-          ...state.formById,
-          ...action.payload.payload,
-        };
+        state.formById = action.payload.payload;
       })
       .addCase(getFormById.rejected, (state, action) => {
         state.formsShowMessage = {
           status: 'Failed',
-          message:
-            action?.payload?.error?.errorMessage?.toString()
+          message: action?.payload?.error?.errorMessage?.toString(),
         };
       })
       .addCase(getPreviewForm.pending, state => {
-        // state.isLoading = true;
+        state.previewForm = null;
       })
       .addCase(getPreviewForm.fulfilled, (state, action) => {
-        // state.isLoading = false;
-        state.previewForm = {
-          ...state.previewForm,
-          ...action.payload.payload,
-        };
+        state.previewForm = action.payload.payload;
       })
       .addCase(getPreviewForm.rejected, (state, action) => {
+        state.previewForm = null;
         state.formsShowMessage = {
           status: 'Failed',
-          message:
-            action?.payload?.error?.errorMessage?.toString()
+          message: action?.payload?.error?.errorMessage?.toString(),
         };
       })
       .addCase(submitPreviewForm.pending, state => {
@@ -408,8 +383,7 @@ const formsSlice = createSlice({
       .addCase(submitPreviewForm.rejected, (state, action) => {
         state.formsShowMessage = {
           status: 'Failed',
-          message:
-            action?.payload?.error?.errorMessage?.toString()
+          message: action?.payload?.error?.errorMessage?.toString(),
         };
       })
       .addCase(acceptingFormResponses.pending, state => {
@@ -421,22 +395,21 @@ const formsSlice = createSlice({
       .addCase(acceptingFormResponses.rejected, (state, action) => {
         state.formsShowMessage = {
           status: 'Failed',
-          message:
-            action?.payload?.error?.errorMessage?.toString()
+          message: action?.payload?.error?.errorMessage?.toString(),
         };
       })
-      .addCase(sendReminderToAllPendingUsers.pending, state => {
+      .addCase(assignFormToUsersAndGroups.pending, state => {
         // state.isLoading = true;
       })
-      .addCase(sendReminderToAllPendingUsers.fulfilled, (state, action) => {
-        state.sendReminderToAllPendingUsersResponse = action.payload.payload;
+      .addCase(assignFormToUsersAndGroups.fulfilled, (state, action) => {
+        state.assignFormResponse = action.payload.payload;
       })
-      .addCase(sendReminderToAllPendingUsers.rejected, (state, action) => {
+      .addCase(assignFormToUsersAndGroups.rejected, (state, action) => {
         state.formsShowMessage = {
           status: 'Failed',
-          message: action?.payload?.error?.errorMessage
+          message: action?.payload?.error?.errorMessage?.toString(),
         };
-      });
+      })
   },
 });
 

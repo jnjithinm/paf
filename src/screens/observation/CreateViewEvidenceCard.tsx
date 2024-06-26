@@ -14,11 +14,9 @@ import {
   getAllDomains,
   getIndicatorsByDomainId,
 } from '../../redux/features/masterSlice';
-import LabeledDropdown, {
-  DropdownObject,
-} from '../../components/LabeledDropdown';
+import LabeledDropdown from '../../components/LabeledDropdown';
 import {saveEvidenceCard} from '../../redux/features/observationSlice';
-import {FileObject} from '../../config/types';
+import {FileObject, ItemType} from '../../config/types';
 import {ReportsTabBarStackParamList} from '../../navigation/ReportsTabStack';
 import RatingInput from '../../components/RatingInput';
 
@@ -42,14 +40,14 @@ const CreateViewEvidenceCard: FC<CreateViewEvidenceCardScreenProps> = ({
 }) => {
   const {observationStatus, evidenceCardDetails} = route.params;
   const [selectedIndicator, setSelectedIndicator] = useState<
-    DropdownObject | undefined
+    ItemType | undefined
   >(undefined);
-  const [selectedDomain, setSelectedDomain] = useState<
-    DropdownObject | undefined
-  >(undefined);
+  const [selectedDomain, setSelectedDomain] = useState<ItemType | undefined>(
+    undefined,
+  );
   const [rating, setRating] = useState<number>(0);
   // const [imageFiles, setImageFiles] = useState<FileObject[]>([]);
-  const [zipfile,setZipFile]=useState<FileObject>()
+  const [zipfile, setZipFile] = useState<FileObject>();
 
   const dispatch = useAppDispatch();
 
@@ -70,8 +68,8 @@ const CreateViewEvidenceCard: FC<CreateViewEvidenceCardScreenProps> = ({
   // };
 
   const handleFilesPicked = (files: FileObject) => {
-  setZipFile(files)
-  }
+    setZipFile(files);
+  };
   useEffect(() => {
     dispatch(getAllDomains());
   }, []);
@@ -95,7 +93,7 @@ const CreateViewEvidenceCard: FC<CreateViewEvidenceCardScreenProps> = ({
       ]),
     );
   };
-// console.log("dasf",imageFiles)
+  // console.log("dasf",imageFiles)
   useEffect(() => {
     if (evidenceCardDetails) {
       setSelectedDomain({
@@ -141,7 +139,7 @@ const CreateViewEvidenceCard: FC<CreateViewEvidenceCardScreenProps> = ({
                 alignSelf: 'center',
                 fontFamily: FONT_VARIANT.bold,
                 fontSize: FONT_SIZES.body1,
-                left:5
+                left: 5,
               }}>
               {'Add new evidence cards'}
             </Text>
@@ -203,11 +201,14 @@ const CreateViewEvidenceCard: FC<CreateViewEvidenceCardScreenProps> = ({
                 : []
             }
             disabled={observationStatus === 'Completed'}
-            
             onPressFile={item => {
               navigation.navigate('PlayFile', {file: item});
             }}
-            // onRemoveItem={setImageFiles}
+            onRemoveItem={function (
+              value: React.SetStateAction<FileObject[]>,
+            ): void {
+              throw new Error('Function not implemented.');
+            }} // onRemoveItem={setImageFiles}
           />
         </View>
       </Layout>
@@ -219,7 +220,7 @@ const CreateViewEvidenceCard: FC<CreateViewEvidenceCardScreenProps> = ({
         }
         cancelButtonText={'Cancel'}
         onPressCancelButton={() => {
-          navigation.navigate('ObservationReportsMainPage')
+          navigation.navigate('ObservationReportsMainPage');
         }}
         style={{}}
       />
@@ -227,5 +228,3 @@ const CreateViewEvidenceCard: FC<CreateViewEvidenceCardScreenProps> = ({
   );
 };
 export default CreateViewEvidenceCard;
-
-

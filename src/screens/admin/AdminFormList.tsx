@@ -12,9 +12,9 @@ import colors from '../../config/colors';
 import Icon from '../../components/Icon';
 import Text from '../../components/Text';
 import {getFlowById} from '../../redux/features/flowsSlice';
-import {DropdownObject} from '../../components/LabeledDropdown';
-import { getRoleLevel } from '../../components/DrawerContent';
-import { UserTypes } from '../../config/constants';
+import {ItemType} from '../../config/types';
+import {getRoleLevel} from '../../components/DrawerContent';
+import {UserTypes} from '../../config/constants';
 
 type AdminFormListNavigationProp = StackNavigationProp<
   AdminTabStackTabBarStackParamList,
@@ -84,10 +84,10 @@ const AdminFormList: FC<AdminFormListScreenProps> = ({navigation, route}) => {
   const {flowItem} = route.params;
   const [selectedTab, setSelectedTab] = useState<TabTypes>('Form list');
   const {flowById} = useAppSelector(state => state.flows);
-  const {userData} = useAppSelector(state=>state.auth);
+  const {userData} = useAppSelector(state => state.auth);
   const dispatch = useAppDispatch();
 
-  const handleTabClick = (title: DropdownObject) => {
+  const handleTabClick = (title: ItemType) => {
     setSelectedTab(title.value as TabTypes);
   };
 
@@ -104,17 +104,6 @@ const AdminFormList: FC<AdminFormListScreenProps> = ({navigation, route}) => {
     );
   }, []);
 
-  // useEffect(() => {
-  //   if (deleteSuccess) {
-  //     dispatch(
-  //       getAllRubrics({
-  //         page: 0,
-  //         size: 15,
-  //         type: 'all',
-  //       }),
-  //     );
-  //   }
-  // }, [deleteSuccess]);
 
   return (
     <Layout
@@ -169,16 +158,19 @@ const AdminFormList: FC<AdminFormListScreenProps> = ({navigation, route}) => {
         </View>
         {selectedTab === 'Form list' ? (
           <View>
-            {flowById?.dataList.map((item,index) => (
+            {flowById?.dataList.map((item, index) => (
               <RenderFormItem
                 title={item.formName}
                 onPressItem={() => {
-                  // getRoleLevel(userData.roleType) === UserTypes.REGISTERED_USER
-                  // ?
-                  navigation.navigate('AdminFormResponses', {
-                    flowDetailItem: item,
-                  })
-                  // : navigation.navigate('EvaluationForm',{flowDetailItem: item})
+                  // getRoleLevel(userData?.roleType) === UserTypes.PAF_USER
+                  //   ? 
+                  //   navigation.navigate('AdminFormResponses', {
+                  //       flowDetailItem: item,
+                  //     })
+                  //   :
+                     navigation.navigate('EvaluationForm', {
+                        flowDetailItem: item,
+                      });
                 }}
                 key={index}
               />

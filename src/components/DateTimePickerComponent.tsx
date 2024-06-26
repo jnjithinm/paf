@@ -3,11 +3,12 @@ import {View, Button, Platform, Text} from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 interface DateTimePickerProps {
-  selectedDate: Date;
+  selectedDate: string;
   onDateChange: (date: string) => void;
   showPicker: boolean;
   minimumDate?: Date;
   maximumDate?: Date;
+  mode?:string
 }
 
 const DateTimePickerComponent: FC<DateTimePickerProps> = ({
@@ -16,6 +17,7 @@ const DateTimePickerComponent: FC<DateTimePickerProps> = ({
   showPicker,
   minimumDate,
   maximumDate,
+  mode='date'
 }) => {
   const onChange = (event: any, selectedDate: Date | undefined) => {
     onDateChange( selectedDate?.toString()||'');
@@ -29,7 +31,7 @@ const DateTimePickerComponent: FC<DateTimePickerProps> = ({
         <DateTimePicker
           testID="dateTimePicker"
           value={selectedDate || new Date()}
-          mode={'date'}
+          mode={mode}
           display={Platform.OS === 'ios' ? 'spinner' : 'default'}
           onChange={onChange}
           minimumDate={minimumDate}

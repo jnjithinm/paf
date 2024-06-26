@@ -84,12 +84,14 @@ const RenderItem: FC<RenderItemTypes> = ({
   );
 };
 
-export const getRoleLevel = (role: ParentRoles): UserTypes | undefined => {
+export const getRoleLevel = (role: ParentRoles|null): UserTypes | undefined => {
+  if(role){
   for (const level of roleLevels) {
     if (level.roles.includes(role)) {
       return level.userType;
     }
   }
+}
   return undefined;
 };
 

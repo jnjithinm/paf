@@ -17,8 +17,15 @@ import {normaliseFont} from '../../utils/helpers/responsiveHelpers';
 import colors from '../../config/colors';
 import Icon from '../../components/Icon';
 import Text from '../../components/Text';
-import {getAllFlows} from '../../redux/features/flowsSlice';
+import {
+  assignFlowToUsersAndGroups,
+  getAllFlows,
+  resetAssignFlowResponse,
+} from '../../redux/features/flowsSlice';
 import {styles} from '../../components/RubricListModal';
+import {FloatingButton} from '../observation/ObservationReportsMainPage';
+import Modal from '../../components/Modal';
+import {RenderAssignFormModalContent, RenderSuccessModalContent} from './AdminFormResponses';
 
 type AdminFlowsMainPageNavigationProp = StackNavigationProp<
   AdminTabStackTabBarStackParamList,
@@ -71,21 +78,19 @@ const FlowsItem: React.FC<FlowsItemProps> = ({
             style={{
               backgroundColor: active ? '#EBF9D9' : '#FFEDED',
               borderRadius: 7,
-              flexDirection:'row',
-              alignItems:'center',
-              justifyContent:'center',
-              paddingVertical:3,
-              paddingHorizontal:7
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              paddingVertical: 3,
+              paddingHorizontal: 7,
             }}>
-               <View
-                style={[
-                  styles.dot,
-                  {backgroundColor: active ? '#749E35' : '#D62828'},
-                ]}
-              />
-            <Text
-              style={{color: active ? '#749E35' : '#D62828'}} size='small2'>
-             
+            <View
+              style={[
+                styles.dot,
+                {backgroundColor: active ? '#749E35' : '#D62828'},
+              ]}
+            />
+            <Text style={{color: active ? '#749E35' : '#D62828'}} size="small2">
               {active ? ' Active' : ' Inactive'}
             </Text>
           </View>
@@ -120,7 +125,11 @@ const AdminFlowsMainPage: FC<AdminFlowsMainPageScreenProps> = ({
   navigation,
   route,
 }) => {
-  const {allFlows} = useAppSelector(state => state.flows);
+  const [isAssignFlowModalVisible, setIsAssignFlowModalVisible] =
+    useState<boolean>(false);
+  const [isVisibleAssignFormSuccessModal, setIsVisibleAssignFormSuccessModal] =
+    useState<boolean>(false);
+  const {allFlows,assignFlowResponse} = useAppSelector(state => state.flows);
   const {userData} = useAppSelector(state => state.auth);
   const dispatch = useAppDispatch();
 
@@ -139,80 +148,131 @@ const AdminFlowsMainPage: FC<AdminFlowsMainPageScreenProps> = ({
     );
   }, []);
 
+  useEffect(()=>{
+    if(assignFlowResponse){
+      setIsVisibleAssignFormSuccessModal(true);
+    }
+  },[assignFlowResponse])
+
+
   const onPressDeleteRubric = (item: RubricItem) => {
     dispatch(
       deleteRubric({ids: [item.rubricId], loggedInUserName: userData.userName}),
     );
   };
 
-  // useEffect(() => {
-  //   if (deleteSuccess) {
-  //     dispatch(
-  //       getAllRubrics({
-  //         page: 0,
-  //         size: 15,
-  //         type: 'all',
-  //       }),
-  //     );
-  //   }
-  // }, [deleteSuccess]);
+  const onPressAssignFlow = (
+    selectedUsers: number[],
+    selectedUserGroups: number[],
+  ) => {
+    setIsAssignFlowModalVisible(false);
+    dispatch(
+      assignFlowToUsersAndGroups({
+        userIds: selectedUsers,
+        userGroupIds: selectedUserGroups,
+        loggedInUserName: userData.userName,
+        id: userData.id,
+      }),
+    );
+  };
 
   return (
-    <Layout
-      overridePaddingHorizontal
-      overridePaddingVertical
-      style={{paddingHorizontal: 15}}
-      title="Flows"
-      icon="flow_icon"
-      titleTransition>
-      <Text size="body3" fontVariant="bold" style={{marginVertical: 10}}>
-        Flows
-      </Text>
-      <View style={{marginVertical: 10}}>
-        <Tab
-          tabs={[
-            {value: 'All', label: 'All'},
-            {value: 'Owned by me(20)', label: 'Owned by me(20'},
-            {value: 'Not owned by me(20)', label: 'Not owned by me(20)'},
-          ]}
-          textStyle={{fontSize: normaliseFont(12)}}
-          onClick={title => handleTabClick(title?.value)}
+    <>
+      <Layout
+        overridePaddingHorizontal
+        overridePaddingVertical
+        style={{paddingHorizontal: 15}}
+        title="Flows"
+        icon="flow_icon"
+        titleTransition>
+        <Modal
+          onProceed={() => {}}
+          onClose={() => {
+            setIsAssignFlowModalVisible(false);
+          }}
+          isVisible={isAssignFlowModalVisible}
+          title="Assign flow"
+          closeButton
+          contentStyle={{width: '100%'}}
+          content={
+            <RenderAssignFormModalContent onPressAssign={onPressAssignFlow} />
+          }
         />
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            backgroundColor: '#F5F7FA',
-            borderRadius: 10,
-            paddingHorizontal: 10,
-            marginVertical: 10,
-          }}>
-          <TextInput
-            style={{flex: 1, color: colors.blackColor, paddingVertical: 5}}
-            placeholder="Search by flow name"
-            placeholderTextColor={colors.darkGrey}
+          <Modal
+          onProceed={() => {}}
+          onClose={() => {
+            setIsVisibleAssignFormSuccessModal(false);
+            dispatch(resetAssignFlowResponse());
+          }}
+          closeButton
+          content={
+            <RenderSuccessModalContent
+              icon='flow_icon'
+              highlightText="Success!"
+              descriptionText="Form assigned to selected user and user groups."
+            />
+          }
+          isVisible={isVisibleAssignFormSuccessModal}
+          containerStyle={{justifyContent: 'center'}}
+          contentStyle={{width: '70%'}}
+        />
+        <Text size="body3" fontVariant="bold" style={{marginVertical: 10}}>
+          Flows
+        </Text>
+        <View style={{marginVertical: 10}}>
+          <Tab
+            tabs={[
+              {value: 'All', label: 'All'},
+              {value: 'Owned by me(20)', label: 'Owned by me(20'},
+              {value: 'Not owned by me(20)', label: 'Not owned by me(20)'},
+            ]}
+            textStyle={{fontSize: normaliseFont(12)}}
+            onClick={title => handleTabClick(title?.value)}
           />
-          <Icon name="search_icon" />
-        </View>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              backgroundColor: '#F5F7FA',
+              borderRadius: 10,
+              paddingHorizontal: 10,
+              marginVertical: 10,
+            }}>
+            <TextInput
+              style={{flex: 1, color: colors.blackColor, paddingVertical: 5}}
+              placeholder="Search by flow name"
+              placeholderTextColor={colors.darkGrey}
+            />
+            <Icon name="search_icon" />
+          </View>
 
-        {allFlows?.dataList?.map(item => (
-          <FlowsItem
-            active={item.status}
-            createdBy={item.createdBy}
-            createdDate={moment(item.createdDate).format('DD/MM/YYYY')}
-            title={item.flowName}
-            userCount={55}
-            onDelete={() => {
-              // onPressDeleteRubric(item);
-            }}
-            key={item.flowId}
-            onPress={() => {
-              navigation.navigate('AdminFormList', {flowItem: item});
-            }}
-          />
-        ))}
-      </View>
-    </Layout>
+          {allFlows?.dataList?.map(item => (
+            <FlowsItem
+              active={item.status}
+              createdBy={item.createdBy}
+              createdDate={moment(item.createdDate).format('DD/MM/YYYY')}
+              title={item.flowName}
+              userCount={55}
+              onDelete={() => {
+                // onPressDeleteRubric(item);
+              }}
+              key={item.flowId}
+              onPress={() => {
+                navigation.navigate('AdminFormList', {flowItem: item});
+              }}
+            />
+          ))}
+        </View>
+      </Layout>
+
+      <FloatingButton
+        icon='user_and_usergroup_icon'
+        onPress={() => {
+          setIsAssignFlowModalVisible(true);
+        }}
+        iconSize={20}
+      />
+    </>
   );
 };
 export default AdminFlowsMainPage;

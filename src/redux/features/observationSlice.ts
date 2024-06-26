@@ -373,7 +373,6 @@ const observationSlice = createSlice({
         // state.isLoading = true;
       })
       .addCase(getObservationById.fulfilled, (state, action) => {
-        // state.isLoading = false;
 
         state.observationById = action.payload.payload;
       })

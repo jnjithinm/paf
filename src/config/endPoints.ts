@@ -1,6 +1,8 @@
 const endPoints = {
   AUTHENTICATE_USER: `PAF/authenticate`,
   LOGIN_USER: `PAF/login`,
+  RESET_PASSWORD:`PAF/login/resetPassword/`,
+  FORGOT_PASSWORD:`PAF/login/forgotPassword/`,
   GET_INDICATORS_BY_DOMAIN_ID: `PAF/rubrics/indicatorsByDomainId/`,
   GET_DASHBOARD_DETAILS_OBSERVATION: 'PAF/teachers/observation/dashBoard/',
   GET_ALL_USERS: `PAF/users/all`,
@@ -25,6 +27,8 @@ const endPoints = {
   ACCEPTING_RESPONSES:`PAF/forms/acceptResponse`,
   GET_PENDING_USERS_LIST_FOR_SEND_REMINDER:`PAF/forms/getPendingUserListForSendReminder/`,
   SEND_REMINDER_TO_ALL_PENDING_USERS:`PAF/flows/sendReminder/`,
-  SEND_REMINDER_TO_USER_GROUPS:`PAF/flows/sendFormAssignmentReminder/`
+  SEND_REMINDER_TO_USER_GROUPS:`PAF/flows/sendFormAssignmentReminder/`,
+  ASSIGN_FLOW_TO_USERS_AND_USER_GROUPS:`PAF/flows/assignFlowToUsersAndGroups`,
+  ASSIGN_FORM_TO_USERS_AND_GROUPS:`PAF/forms/assignUsersAndGroups`
 };
 export default endPoints;
