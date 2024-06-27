@@ -15,13 +15,12 @@ import {ImageIconNames} from './Image';
 import Loading from './Loading';
 import {useAppSelector} from '../redux/store';
 import ShowToastMessage from './ShowToastMessage';
-
-// import  usePanResponder  from 'utils/functions/AutoLogoutManager'
-// import Loading from './Loading';
-// import { ScreenNames } from 'utils/helpers/navigationHelper';
+import {ScreenNames} from '../utils/helpers/navigationHelpers';
+import BottomTab from './BottomTab';
 
 interface LayoutPropsTypes extends ViewStyle {
   children: ReactNode;
+  focusedStack?: ScreenNames;
   backgroundColor?: ColorTypes;
   overridePaddingHorizontal?: boolean;
   overridePaddingVertical?: boolean;
@@ -31,8 +30,8 @@ interface LayoutPropsTypes extends ViewStyle {
   isLoading?: boolean[];
   hideHeader?: boolean;
   onPressMenuIcon?: () => void;
-  onPressBellIcon?:()=>void;
-  onPressProfileIcon?:()=>void;
+  onPressBellIcon?: () => void;
+  onPressProfileIcon?: () => void;
   onPressBackArrow?: () => void;
   onScrollToEnd?: () => void;
   onPressLogoutButton?: () => void;
@@ -41,10 +40,10 @@ interface LayoutPropsTypes extends ViewStyle {
   title?: string;
   icon?: ImageIconNames;
   titleTransition?: boolean;
-
 }
 const Layout: FC<LayoutPropsTypes> = ({
   children,
+  focusedStack,
   backgroundColor,
   overridePaddingHorizontal,
   overridePaddingVertical,
@@ -65,10 +64,9 @@ const Layout: FC<LayoutPropsTypes> = ({
   title,
   icon,
   titleTransition,
-
 }) => {
   const {isLoading} = useAppSelector(state => state.auth);
-  // const {isLoading}=useAppSelector(state=>state.observation);
+
   let backgroundStyle = backgroundColor
     ? colors[backgroundColor]
     : colors.backgroundColor;
@@ -145,41 +143,39 @@ const Layout: FC<LayoutPropsTypes> = ({
   };
 
   return (
-    <KeyboardAvoidingView
-      style={viewContainer}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}>
-      <StatusBar backgroundColor={colors.primaryLightColor} />
-      <ShowToastMessage/>
-      {!hideHeader && (
-        <Header
-          avoidBackButton={avoidBackButton}
-          dashboard={dashboard}
-          onPressBellIcon={onPressBellIcon}
-          onPressProfileIcon={onPressProfileIcon}
-          onPressBackArrow={onPressBackArrow}
-          onPressLogoutButton={onPressLogoutButton}
-          title={title}
-          onPressMenuIcon={onPressMenuIcon}
-          icon={icon}
-          scrollTransition={titleTransition}
-          isScrolled={isScrolled}
-        />
-      )}
-      <ScrollView
-        nestedScrollEnabled
-        contentContainerStyle={[
-          container,
-          // overridePaddingHorizontal ? padding : undefined,
-          style,
-        ]}
-        onScroll={handleScroll}
-        // {...panResponder?.panHandlers}
-        showsVerticalScrollIndicator={showsVerticalScrollIndicator}>
-        {  modifiedChildren}
-      </ScrollView>
-      {isLoading && <Loading />}
-    </KeyboardAvoidingView>
+    <>
+      <KeyboardAvoidingView
+        style={viewContainer}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}>
+        <StatusBar backgroundColor={colors.primaryLightColor} />
+        <ShowToastMessage />
+        {!hideHeader && (
+          <Header
+            avoidBackButton={avoidBackButton}
+            dashboard={dashboard}
+            onPressBellIcon={onPressBellIcon}
+            onPressProfileIcon={onPressProfileIcon}
+            onPressBackArrow={onPressBackArrow}
+            onPressLogoutButton={onPressLogoutButton}
+            title={title}
+            onPressMenuIcon={onPressMenuIcon}
+            icon={icon}
+            scrollTransition={titleTransition}
+            isScrolled={isScrolled}
+          />
+        )}
+        <ScrollView
+          nestedScrollEnabled
+          contentContainerStyle={[container, style]}
+          onScroll={handleScroll}
+          showsVerticalScrollIndicator={showsVerticalScrollIndicator}>
+          {modifiedChildren}
+        </ScrollView>
+        {isLoading && <Loading />}
+      </KeyboardAvoidingView>
+      {focusedStack && <BottomTab focusedStack={focusedStack} />}
+    </>
   );
 };
 

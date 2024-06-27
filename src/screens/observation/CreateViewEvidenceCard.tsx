@@ -177,8 +177,7 @@ const CreateViewEvidenceCard: FC<CreateViewEvidenceCardScreenProps> = ({
               label="Average Rating"
               rating={rating}
               onChangeRating={setRating}
-              disabled={observationStatus === 'Completed'}
-            />
+              disabled={observationStatus === 'Completed'}            />
           </View>
 
           <Text

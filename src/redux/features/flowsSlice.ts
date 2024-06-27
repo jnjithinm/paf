@@ -71,15 +71,14 @@ interface AssignFlowRequest {
   loggedInUserName: string;
 }
 
-interface AssignFlowResponse{
+interface AssignFlowResponse {
   payload: {
     message: string;
   };
   status: number;
 }
 
-type AssignFlowResponsePayload =
-AssignFlowResponse['payload'];
+type AssignFlowResponsePayload = AssignFlowResponse['payload'];
 
 export const setFlowsShowMessage = createAction<ErrorStatusObject | null>(
   'SET_FLOWS_SHOW_MESSAGE',
@@ -92,7 +91,6 @@ export const resetSendReminderToAllPendingUsers = createAction<void>(
 export const resetAssignFlowResponse = createAction<void>(
   'RESET_ASSIGN_FLOW_RESPONSE',
 );
-
 
 export const getAllFlows = createAsyncThunk<
   GetAllFlowsResponse,
@@ -145,12 +143,12 @@ export const getFlowById = createAsyncThunk<
 
 export const sendReminderToAllPendingUsers = createAsyncThunk<
   SendReminderToAllPendingUsersResponse,
-  [SendReminderMethods, number, string, string[]?],
+  [SendReminderMethods, number, string, string[]?, string?],
   {rejectValue: ErrorResponse}
 >(
   'forms/sendReminderToAllPendingUsers',
   async (
-    [sendReminderMethod, flowId, loggedInUserName, userGroupIds],
+    [sendReminderMethod, formId, loggedInUserName, userGroupIds, selectedDate],
     {dispatch, rejectWithValue},
   ) => {
     try {
@@ -160,19 +158,18 @@ export const sendReminderToAllPendingUsers = createAsyncThunk<
       if (sendReminderMethod === 'To All Pending Users') {
         response = await api.get(
           endPoints.SEND_REMINDER_TO_ALL_PENDING_USERS +
-            flowId +
+            formId +
             `?loggedInUserName=${loggedInUserName}`,
         );
       } else if (sendReminderMethod === 'By Date') {
-        response = await api.get(
-          endPoints.SEND_REMINDER_TO_ALL_PENDING_USERS +
-            flowId +
-            `loggedInUserName=${loggedInUserName}`,
+        response = await api.put(
+          endPoints.SCHEDULE_REMINDER_DATE +
+            `formId=${formId}&scheduleDate=${selectedDate}&loggedInUserName=${loggedInUserName}`,
         );
       } else {
         response = await api.get(
           endPoints.SEND_REMINDER_TO_USER_GROUPS +
-            flowId +
+            formId +
             `?userGroupIds=${userGroupIdsParam}&loggedInUserName=${loggedInUserName}`,
         );
       }
@@ -212,7 +209,7 @@ interface InitialState {
   allFlows: GetAllFlowsResponsePayload | null;
   flowById: GetFlowByIdResponsePayload | null;
   sendReminderToAllPendingUsersResponse: SendReminderToAllPendingUsersResponsePayload | null;
-  assignFlowResponse:AssignFlowResponsePayload|null;
+  assignFlowResponse: AssignFlowResponsePayload | null;
   flowsShowMessage: ErrorStatusObject | null;
   errorMessage: string;
 }
@@ -221,7 +218,7 @@ const initialState: InitialState = {
   allFlows: null,
   flowById: null,
   sendReminderToAllPendingUsersResponse: null,
-  assignFlowResponse:null,
+  assignFlowResponse: null,
   flowsShowMessage: null,
   errorMessage: '',
 };
@@ -278,8 +275,9 @@ const flowsSlice = createSlice({
           status: 'Failed',
           message: action?.payload?.error?.errorMessage,
         };
-      })     .addCase(assignFlowToUsersAndGroups.pending, state => {
-        state.assignFlowResponse =null;
+      })
+      .addCase(assignFlowToUsersAndGroups.pending, state => {
+        state.assignFlowResponse = null;
       })
       .addCase(assignFlowToUsersAndGroups.fulfilled, (state, action) => {
         state.assignFlowResponse = action.payload.payload;
@@ -289,7 +287,7 @@ const flowsSlice = createSlice({
           status: 'Failed',
           message: action?.payload?.error?.errorMessage,
         };
-      })
+      });
   },
 });
 

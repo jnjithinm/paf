@@ -29,6 +29,7 @@ const endPoints = {
   SEND_REMINDER_TO_ALL_PENDING_USERS:`PAF/flows/sendReminder/`,
   SEND_REMINDER_TO_USER_GROUPS:`PAF/flows/sendFormAssignmentReminder/`,
   ASSIGN_FLOW_TO_USERS_AND_USER_GROUPS:`PAF/flows/assignFlowToUsersAndGroups`,
-  ASSIGN_FORM_TO_USERS_AND_GROUPS:`PAF/forms/assignUsersAndGroups`
+  ASSIGN_FORM_TO_USERS_AND_GROUPS:`PAF/forms/assignUsersAndGroups`,
+  SCHEDULE_REMINDER_DATE:`PAF/flows/scheduleReminder?`
 };
 export default endPoints;

@@ -162,12 +162,12 @@ const AdminFormList: FC<AdminFormListScreenProps> = ({navigation, route}) => {
               <RenderFormItem
                 title={item.formName}
                 onPressItem={() => {
-                  // getRoleLevel(userData?.roleType) === UserTypes.PAF_USER
-                  //   ? 
-                  //   navigation.navigate('AdminFormResponses', {
-                  //       flowDetailItem: item,
-                  //     })
-                  //   :
+                  getRoleLevel(userData?.roleType) === UserTypes.PAF_USER
+                    ? 
+                    navigation.navigate('AdminFormResponses', {
+                        flowDetailItem: item,
+                      })
+                    :
                      navigation.navigate('EvaluationForm', {
                         flowDetailItem: item,
                       });

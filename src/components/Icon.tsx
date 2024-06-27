@@ -69,6 +69,12 @@ import facebook_icon from '../assets/svg/facebook_icon.svg'
 import rating_deselected_icon from '../assets/svg/rating_deselected_icon.svg'
 import print_icon from '../assets/svg/print_icon.svg'
 import user_and_usergroup_icon from '../assets/svg/user_and_usergroup_icon.svg'
+import  admin_dashboard_user_management_icon from '../assets/svg/admin_dashboard_user_management_icon.svg'
+import  admin_dashboard_location_management_icon from '../assets/svg/admin_dashboard_location_management_icon.svg'
+import  admin_dashboard_analytics_icon from '../assets/svg/admin_dashboard_analytics_icon.svg'
+import  admin_dashboard_schedules_icon from '../assets/svg/admin_dashboard_schedules_icon.svg'
+import  extend_item_level_1_icon from '../assets/svg/extend_item_level_1_icon.svg'
+import  extend_item_level_2_icon from '../assets/svg/extend_item_level_2_icon.svg'
 
 const Icons = {
   app_logo,
@@ -137,7 +143,13 @@ const Icons = {
   facebook_icon,
   rating_deselected_icon,
   print_icon,
-  user_and_usergroup_icon
+  user_and_usergroup_icon,
+  admin_dashboard_user_management_icon,
+  admin_dashboard_analytics_icon,
+  admin_dashboard_schedules_icon,
+  admin_dashboard_location_management_icon,
+  extend_item_level_1_icon,
+  extend_item_level_2_icon
 };
 
 export type IconTypes = keyof typeof Icons;

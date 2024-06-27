@@ -12,6 +12,14 @@ interface Indicator {
   indicatorName: string;
 }
 
+export interface IndicatorIndividualResponse {
+  domainId: number;
+  domainName: string;
+  indicatorId: number;
+  indicatorName: string;
+  avgRating: number;
+}
+
 export interface Question {
   questionId: number;
   questionText: string;
@@ -38,6 +46,7 @@ export interface IndividualResponse {
     questionText: string;
     responseValues: string;
     responseDate: string;
+    indicators: IndicatorIndividualResponse[];
   }[];
 }
 
@@ -96,13 +105,13 @@ export interface QuestionOption {
   optionText: string;
 }
 
-export interface IndicatorPreviewForm   {
+export interface IndicatorPreviewForm {
   domainId: number;
   indicatorId: number;
   indicatorName: string;
   indicatorDescription: string;
   status: boolean;
-};
+}
 
 type QuestionTypes =
   | 'Question 3 description'
@@ -129,7 +138,6 @@ interface Section {
   questions: QuestionPreviewForm[];
 }
 
-
 interface GetPreviewFormResponse {
   payload: {
     message: string;
@@ -149,14 +157,14 @@ interface GetPreviewFormResponse {
 
 type GetPreviewFormResponsePayload = GetPreviewFormResponse['payload'];
 
-export type IndicatorRatingType = Array<{ [key: number]: number }>;
+export type IndicatorRatingType = Array<{[key: number]: number}>;
 
 export type FormSubmission = {
   questionId: number;
   questionOptionId: number;
   optionMappingId: number | null;
   responseValue: string | null;
-  indicatorRating:string|null;
+  indicatorRating: string | null;
 };
 
 type SubmitPreviewFormRequest = {
@@ -199,15 +207,14 @@ interface AssignFormRequest {
   loggedInUserName: string;
 }
 
-interface AssignFormResponse{
+interface AssignFormResponse {
   payload: {
     message: string;
   };
   status: number;
 }
 
-type AssignFormResponsePayload =
-AssignFormResponse['payload'];
+type AssignFormResponsePayload = AssignFormResponse['payload'];
 
 export const setFormsShowMessage = createAction<ErrorStatusObject | null>(
   'SET_FORMS_SHOW_MESSAGE',
@@ -317,7 +324,7 @@ interface InitialState {
   previewForm: GetPreviewFormResponsePayload | null;
   submitPreviewFormResponse: SubmitPreviewFormResponsePayload | null;
   acceptingFormResponses: AcceptingFormResponsesResponsePayload | null;
-  assignFormResponse:AssignFormResponsePayload | null;
+  assignFormResponse: AssignFormResponsePayload | null;
   formsShowMessage: ErrorStatusObject | null;
   errorMessage: string;
 }
@@ -328,7 +335,7 @@ const initialState: InitialState = {
   submitPreviewFormResponse: null,
   acceptingFormResponses: null,
   formsShowMessage: null,
-  assignFormResponse:null,
+  assignFormResponse: null,
   errorMessage: '',
 };
 
@@ -409,7 +416,7 @@ const formsSlice = createSlice({
           status: 'Failed',
           message: action?.payload?.error?.errorMessage?.toString(),
         };
-      })
+      });
   },
 });
 

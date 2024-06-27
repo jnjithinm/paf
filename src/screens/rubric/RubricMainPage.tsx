@@ -1,5 +1,5 @@
 import React, {FC, useEffect, useState} from 'react';
-import { View} from 'react-native';
+import {View} from 'react-native';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import moment from 'moment';
@@ -15,6 +15,7 @@ import {
   getAllRubrics,
 } from '../../redux/features/rubricSlice';
 import Text from '../../components/Text';
+import {ItemType} from '../../config/types';
 
 type RubricMainPageNavigationProp = StackNavigationProp<
   RubricTabBarStackParamList,
@@ -30,20 +31,19 @@ interface RubricMainPageScreenProps {
   route: RubricMainPageRouteProp;
 }
 
-export const tabs: string[] = ['All', 'Active', 'Non-Active'];
+export const tabs: ItemType[] = [
+  {value: 'All', label: 'All'},
+  {value: 'Active', label: 'Active'},
+  {value: 'Non-Active', label: 'Non-Active'},
+];
 
-const RubricMainPage: FC<RubricMainPageScreenProps> = ({
-  navigation,
-  route,
-}) => {
+const RubricMainPage: FC<RubricMainPageScreenProps> = ({navigation, route}) => {
   const [rubricListData, setRubricListData] = useState<RubricItem[]>([]);
 
-  const {allRubrics, deleteSuccess} = useAppSelector(
-    state => state.rubric,
-  );
+  const {allRubrics, deleteSuccess} = useAppSelector(state => state.rubric);
   const {userData} = useAppSelector(state => state.auth);
   const dispatch = useAppDispatch();
-  
+
   const deleteItem = () => {
     console.log('delete press');
   };
@@ -78,8 +78,8 @@ const RubricMainPage: FC<RubricMainPageScreenProps> = ({
     );
   }, []);
 
-  const onPressDeleteRubric = async(item: RubricItem) => {
-   await dispatch(
+  const onPressDeleteRubric = async (item: RubricItem) => {
+    await dispatch(
       deleteRubric({ids: [item.rubricId], loggedInUserName: userData.userName}),
     );
   };
@@ -104,10 +104,10 @@ const RubricMainPage: FC<RubricMainPageScreenProps> = ({
       title="Evaluation Rubrics"
       icon="evaluation_icon"
       titleTransition
-    >
-        <Text size="body3" fontVariant="bold" style={{marginVertical: 10}}>
+      focusedStack="RubricStack">
+      <Text size="body3" fontVariant="bold" style={{marginVertical: 10}}>
         Evaluation Rubrics
-        </Text>
+      </Text>
       <View style={{marginVertical: 10}}>
         <Tab tabs={tabs} onClick={title => handleTabClick(title)} />
 

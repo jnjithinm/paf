@@ -18,11 +18,9 @@ import colors from '../../config/colors';
 import {normaliseDesigns} from '../../utils/helpers/responsiveHelpers';
 import DateTimePickerComponent from '../../components/DateTimePickerComponent';
 import Icon from '../../components/Icon';
-
 import {useAppDispatch, useAppSelector} from '../../redux/store';
 import {
   getAllUserGroups,
-  getAllUsers,
   getUserGroups,
 } from '../../redux/features/usersSlice';
 import LabeledDropdown, {

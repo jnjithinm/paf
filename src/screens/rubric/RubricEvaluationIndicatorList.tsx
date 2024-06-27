@@ -12,6 +12,7 @@ import {useAppDispatch, useAppSelector} from '../../redux/store';
 import {getRubric} from '../../redux/features/rubricSlice';
 import RubricIndicatorList from '../../components/RubricIndicatorList';
 import SearchWithFilter from '../../components/SearchWithFilter';
+import { FilterObject } from '../../components/Calendar';
 
 type RubricEvaluationIndicatorListNavigationProp = StackNavigationProp<
   RubricTabBarStackParamList,
@@ -49,7 +50,8 @@ const RubricEvaluationIndicatorList: FC<
       overridePaddingVertical
       style={{paddingHorizontal: 15}}
       title={rubric.rubricName}
-      icon="evaluation_icon">
+      icon="evaluation_icon"
+      focusedStack='RubricStack'>
       <View style={{marginVertical: 10}}>
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
           <Image name={'list_icon'} />
@@ -61,9 +63,11 @@ const RubricEvaluationIndicatorList: FC<
           </Text>
         </View>
         <SearchWithFilter
-          placeholder="Search domain"
-          onSearch={()=>{}}
-        />
+          placeHolder="Search domain" onTextChange={function (text: string): void {
+            throw new Error('Function not implemented.');
+          } } onProceed={function (filter: FilterObject): void {
+            throw new Error('Function not implemented.');
+          } }        />
         <View style={{marginVertical: 10}}>
           {rubricData?.dataList.indicators?.map(item => (
             <RubricIndicatorList

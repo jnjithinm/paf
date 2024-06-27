@@ -3,6 +3,7 @@ import {createAction, createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import api from '../../config/axios';
 import endPoints from '../../config/endPoints';
 import {ErrorStatusObject} from '../../config/types';
+import { ErrorResponse } from './authSlice';
 
 interface UserData {
   userId: number;
@@ -125,7 +126,8 @@ export const setUsersShowMessage = createAction<ErrorStatusObject | null>(
 
 export const getAllUsers = createAsyncThunk<
   GetAllUsersResponse,
-  PaginationRequest
+  PaginationRequest,
+  {rejectValue: ErrorResponse}
 >('users/getAllUsers', async (payload, {dispatch, rejectWithValue}) => {
   try {
     const response = await api.post(endPoints.GET_ALL_USERS, payload);
@@ -136,7 +138,7 @@ export const getAllUsers = createAsyncThunk<
   }
 });
 
-export const getUser = createAsyncThunk<GetAllUsersResponse, number>(
+export const getUser = createAsyncThunk<GetAllUsersResponse, number,  {rejectValue: ErrorResponse}>(
   'users/getUser',
   async (userId, {dispatch, rejectWithValue}) => {
     try {
@@ -150,7 +152,8 @@ export const getUser = createAsyncThunk<GetAllUsersResponse, number>(
 
 export const getAllUserGroups = createAsyncThunk<
   GetAllUserGroupsResponse,
-  PaginationRequest
+  PaginationRequest,
+  {rejectValue: ErrorResponse}
 >('users/getAllUserGroups', async (payload, {dispatch, rejectWithValue}) => {
   try {
     const response = await api.post(endPoints.GET_ALL_USER_GROUPS, payload);
@@ -162,7 +165,8 @@ export const getAllUserGroups = createAsyncThunk<
 
 export const getUserGroups = createAsyncThunk<
   GetUserGroupResponse,
-  [number, PaginationRequest]
+  [number, PaginationRequest],
+  {rejectValue: ErrorResponse}
 >(
   'users/getUserGroups',
   async ([userGroupId, payload], {dispatch, rejectWithValue}) => {
@@ -180,7 +184,8 @@ export const getUserGroups = createAsyncThunk<
 
 export const getPendingUsersListForSendReminder = createAsyncThunk<
   GetPendingUsersListForSendReminderResponse,
-  number
+  number,
+  {rejectValue: ErrorResponse}
 >(
   'users/getPendingUsersListForSendReminder',
   async (formId, {dispatch, rejectWithValue}) => {
@@ -195,22 +200,6 @@ export const getPendingUsersListForSendReminder = createAsyncThunk<
   },
 );
 
-// export const loginUser = createAsyncThunk<LoginResponse, AuthenticateRequest>(
-//   'auth/login',
-//   async (payload, {dispatch,rejectWithValue}) => {
-
-//     try {
-//       const response = await api.post(endPoints.LOGIN_USER, {
-//         username: payload.username,
-//         password: payload.password,
-//       });
-//       console.log("dsf",response.data)
-//       return response.data as LoginResponse;
-//     } catch (error: any) {
-//       return rejectWithValue(error.response.data);
-//     }
-//   },
-// );
 interface InitialState {
   GetAllUserGroupsData: GetAllUserGroupsResponsePayload | null;
   GetAllUserData: GetAllUsersResponsePayload | null;
@@ -239,10 +228,9 @@ const usersSlice = createSlice({
         state.usersShowMessage = action.payload;
       })
       .addCase(getAllUsers.pending, state => {
-        // state.isLoading = true;
+
       })
       .addCase(getAllUsers.fulfilled, (state, action) => {
-        // state.isLoading = false;
         state.GetAllUserData = {
           ...state.GetAllUserData,
           ...action.payload.payload,
@@ -252,7 +240,7 @@ const usersSlice = createSlice({
         // state.isLoading = false;
       })
       .addCase(getAllUserGroups.pending, state => {
-        // state.isLoading = true;
+
       })
       .addCase(getAllUserGroups.fulfilled, (state, action) => {
         // state.isLoading = false;

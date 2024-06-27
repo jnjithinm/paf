@@ -11,6 +11,7 @@ import {RubricTabBarStackParamList} from '../../navigation/RubricTabStack';
 import colors from '../../config/colors';
 import Icon from '../../components/Icon';
 import SearchWithFilter from '../../components/SearchWithFilter';
+import { FilterObject } from '../../components/Calendar';
 
 type RubricIndicatorDescriptionNavigationProp = StackNavigationProp<
   RubricTabBarStackParamList,
@@ -60,6 +61,7 @@ const RubricIndicatorDescription: FC<RubricIndicatorDescriptionScreenProps> = ({
       overridePaddingVertical
       style={{paddingHorizontal: 15}}
       title={title}
+      focusedStack='RubricStack'
       icon="evaluation_icon">
       <View style={{marginVertical: 10}}>
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
@@ -72,7 +74,11 @@ const RubricIndicatorDescription: FC<RubricIndicatorDescriptionScreenProps> = ({
             by Admin)
           </Text>
         </View>
-        <SearchWithFilter placeholder="Search domain" onSearch={()=>{}}  />
+        <SearchWithFilter placeHolder="Search domain" onTextChange={function (text: string): void {
+          throw new Error('Function not implemented.');
+        } } onProceed={function (filter: FilterObject): void {
+          throw new Error('Function not implemented.');
+        } } />
 
         <View style={{marginVertical: 5}}>
           <Text fontVariant="bold">Domain</Text>

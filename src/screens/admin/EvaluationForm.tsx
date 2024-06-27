@@ -658,7 +658,7 @@ const formatAnswer = (answers: AnswerObject[]): FormSubmission[] => {
         const shortAnswer = item.answer as ShortAnswer;
         if (shortAnswer.rating && shortAnswer.rating.length > 0) {
           const indicatorRatingString = shortAnswer.rating
-            .map(rating => `{[${rating.indicatorId},${rating.rating}.0]}`)
+            .map(rating => `{${rating.indicatorId},${rating.rating}.0}`)
             .join(',');
           formattedAnswer.push({
             questionId: item.questionId,

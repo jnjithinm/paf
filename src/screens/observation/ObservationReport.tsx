@@ -36,13 +36,13 @@ const ObservationReport: FC<ObservationReportScreenProps> = ({
   route,
 }) => {
   const [feedbackNote, setFeedbackNote] = useState('');
-  const {observationItem} = route.params;
+  const {observationId} = route.params;
   const dispatch = useAppDispatch();
   const {observationById} = useAppSelector(state => state.observation);
 
   useEffect(() => {
-    dispatch(getObservationById(observationItem.observationId));
-  }, [observationItem]);
+    dispatch(getObservationById(observationId));
+  }, [observationId]);
 
 
   return (

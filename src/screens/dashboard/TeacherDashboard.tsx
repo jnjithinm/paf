@@ -10,7 +10,6 @@ import {RouteProp, useFocusEffect} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {Drawer} from 'react-native-drawer-layout';
 
-import {DashboardTabBarStackParamList} from '../../navigation/DashboardTabStack';
 import Layout from '../../components/Layout';
 import Icon, {IconTypes} from '../../components/Icon';
 import Text from '../../components/Text';
@@ -20,15 +19,16 @@ import DrawerContent from '../../components/DrawerContent';
 import {useAppDispatch, useAppSelector} from '../../redux/store';
 import {getDashboardDetailsAndObservationList} from '../../redux/features/observationSlice';
 import {navigate} from '../../utils/helpers/navigationHelpers';
-import Calendar, {FilterObject} from '../../components/Calendar';
+import {FilterObject} from '../../components/Calendar';
 import SearchWithFilter from '../../components/SearchWithFilter';
+import {MainStackParamList} from '../../navigation/MainStack';
 
 type TeacherDashboardNavigationProp = StackNavigationProp<
-  DashboardTabBarStackParamList,
+  MainStackParamList,
   'TeacherDashboard'
 >;
 type TeacherDashboardRouteProp = RouteProp<
-  DashboardTabBarStackParamList,
+  MainStackParamList,
   'TeacherDashboard'
 >;
 
@@ -101,9 +101,10 @@ type ObservationTileTypes = {
   rating: string;
   userAssisted: string;
   image: string | null | undefined;
-  onPress: () => void;
+  onPress?: () => void;
   reportedBy: string;
   style?: ViewStyle;
+  disabled?:boolean
 };
 
 export const ObservationsTile: FC<ObservationTileTypes> = ({
@@ -113,6 +114,7 @@ export const ObservationsTile: FC<ObservationTileTypes> = ({
   onPress,
   reportedBy,
   style,
+  disabled
 }) => {
   const [isPressed, setIsPressed] = useState(false);
 
@@ -126,8 +128,11 @@ export const ObservationsTile: FC<ObservationTileTypes> = ({
     <TouchableOpacity
       onPress={() => {
         setIsPressed(true);
+        if(onPress){
         onPress();
+        }
       }}
+      disabled={disabled}
       style={{
         width: '100%',
         flexDirection: 'row',
@@ -458,6 +463,7 @@ const TeacherDashboard: FC<TeacherDashboardScreenProps> = ({
           navigate('Notifications');
         }}
         onPressProfileIcon={() => {}}
+        focusedStack={isDrawerOpen ? undefined : 'TeacherDashboard'}
         dashboard
         avoidBackButton>
         <View
@@ -570,14 +576,7 @@ const TeacherDashboard: FC<TeacherDashboardScreenProps> = ({
                 userAssisted={item.userAssessed}
                 image={item.reportedByImage}
                 reportedBy={item.reportedBy}
-                onPress={() => {
-                  navigation.navigate('ReportsStack', {
-                    screen: 'ObservationReport',
-                    params: {
-                      observationItem: item,
-                    },
-                  });
-                }}
+                disabled
               />
             ))}
           </View>

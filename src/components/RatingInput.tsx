@@ -11,7 +11,7 @@ type RatingInputTypes = {
   disabled?: boolean;
   showRating?: boolean;
   style?:ViewStyle
-  labelStyle:TextStyle
+  labelStyle?:TextStyle
 };
 
 const RatingInput: FC<RatingInputTypes> = ({

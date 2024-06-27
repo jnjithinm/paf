@@ -29,7 +29,7 @@ export type ReportsTabBarStackParamList = {
   //   selectedUser: ItemType;
   //   selectedDate: string;
   // };
-  ObservationReport: {observationItem: ObservationData};
+  ObservationReport: {observationId: number};
   PlayFile: {file: FileObject};
 };
 

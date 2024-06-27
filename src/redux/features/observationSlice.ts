@@ -108,6 +108,15 @@ export type ObservationData = {
   videoCount: number;
 };
 
+interface ObservationFilter{
+  userAssessed: string;
+  userImage: string | null;
+  reportedBy: string;
+  reportedByImage: string | null;
+  ratings: number;
+  observationId:number;
+}
+
 type GetAllObservationsResponse = {
   payload: {
     message: string;
@@ -115,9 +124,9 @@ type GetAllObservationsResponse = {
       averageRating: number | null;
       byMe: number;
       forMe: number;
-      observations: Observation[]; // Adjust based on the actual structure of observation elements
-      pointStatus: any | null; // Replace `any` with the correct type if known
-      progressPoint: any | null; // Replace `any` with the correct type if known
+      observations: ObservationFilter[]; 
+      pointStatus: any | null; 
+      progressPoint: any | null; 
       schoolName: string | null;
       total: number;
     };

@@ -1,7 +1,6 @@
 import React, {FC, useEffect, useState} from 'react';
 import {
   Platform,
-  TextInput,
   TouchableOpacity,
   View,
   ViewStyle,
@@ -16,16 +15,14 @@ import Icon, {IconTypes} from '../../components/Icon';
 import colors from '../../config/colors';
 import {ObservationsTile} from '../dashboard/TeacherDashboard';
 import {ReportsTabBarStackParamList} from '../../navigation/ReportsTabStack';
-import {normaliseDesigns} from '../../utils/helpers/responsiveHelpers';
-import Calendar, {FilterObject} from '../../components/Calendar';
 import {useAppDispatch, useAppSelector} from '../../redux/store';
 import {
   FilterType,
-  ObservationData,
   getAllObservations,
 } from '../../redux/features/observationSlice';
 import SearchWithFilter from '../../components/SearchWithFilter';
 import { ItemType } from '../../config/types';
+import { normaliseDesigns } from '../../utils/helpers/responsiveHelpers';
 
 
 type ObservationReportsMainPageNavigationProp = StackNavigationProp<
@@ -65,8 +62,8 @@ export const FloatingButton: FC<FloatingButtonTypes> = ({
         position: 'absolute',
         alignItems: 'center',
         justifyContent: 'space-between',
-        bottom: 30,
-        right: 20,
+        bottom:normaliseDesigns(75),
+        right: normaliseDesigns(20),
         flexDirection: 'row',
         backgroundColor: '#EA7804',
         borderRadius: 13,
@@ -133,6 +130,7 @@ const ObservationReportsMainPage: FC<ObservationReportsMainPageScreenProps> = ({
         overridePaddingVertical
         icon={'search_reports_icon'}
         title={'Observation Reports'}
+        focusedStack='ReportsStack'
         titleTransition>
         <Text size="body3" fontVariant="bold" style={{marginVertical: 10}}>
           Observation Reports
@@ -186,7 +184,7 @@ const ObservationReportsMainPage: FC<ObservationReportsMainPageScreenProps> = ({
               reportedBy={item.reportedBy}
               onPress={() => {
                 navigation.navigate('ObservationReport', {
-                  observationItem: item,
+                  observationId: item.observationId,
                 });
               }}
             />

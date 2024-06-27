@@ -184,6 +184,7 @@ const AdminFlowsMainPage: FC<AdminFlowsMainPageScreenProps> = ({
         style={{paddingHorizontal: 15}}
         title="Flows"
         icon="flow_icon"
+        focusedStack='AdminStack'
         titleTransition>
         <Modal
           onProceed={() => {}}

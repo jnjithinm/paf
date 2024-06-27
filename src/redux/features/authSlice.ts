@@ -146,6 +146,7 @@ interface initialState {
     isAdmin: boolean;
     userImage: string;
   };
+  isAdmin: boolean;
   forgotPasswordResponse: ForgotPasswordResponsePayload | null;
   authShowMessage: ErrorStatusObject | null;
   errorMessage: string;
@@ -164,6 +165,7 @@ const initialState: initialState = {
     isAdmin: false,
     userImage: '',
   },
+  isAdmin: false,
   forgotPasswordResponse: null,
   authShowMessage: null,
   errorMessage: '',
@@ -199,7 +201,7 @@ const authSlice = createSlice({
       .addCase(authenticateUser.fulfilled, (state, action) => {
         storeToken(action.payload?.payload?.token);
         state.isLoading = true;
-        state.errorMessage=''
+        state.errorMessage = '';
       })
       .addCase(authenticateUser.rejected, (state, action) => {
         state.isLoading = false;
@@ -220,6 +222,7 @@ const authSlice = createSlice({
         state.isLoading = false;
         state.isLoggedIn = true;
         state.userData = action.payload.payload;
+        state.isAdmin = action.payload.payload.isAdmin;
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.isLoading = false;

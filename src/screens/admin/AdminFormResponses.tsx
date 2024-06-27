@@ -56,10 +56,11 @@ import {FilterObject} from '../../components/Calendar';
 import {
   FlowDetailItem,
   SendReminderMethods,
-  resetSendReminderToAllPendingUsers,
   sendReminderToAllPendingUsers,
 } from '../../redux/features/flowsSlice';
 import {ItemType} from '../../config/types';
+import DateTimePickerComponent from '../../components/DateTimePickerComponent';
+import moment from 'moment';
 
 type AdminFormResponsesNavigationProp = StackNavigationProp<
   AdminTabStackTabBarStackParamList,
@@ -284,7 +285,7 @@ const LabeledSingleRadioButton: FC<LabeledSingleRadioButtonTypes> = ({
             },
             selectedValue === value && {borderColor: '#EA7804'},
           ]}>
-          {selectedValue === value && (
+          {selectedValue?.value === value?.value && (
             <View
               style={{
                 width: normaliseDesigns(9),
@@ -302,13 +303,17 @@ const LabeledSingleRadioButton: FC<LabeledSingleRadioButtonTypes> = ({
 
 type RenderSendReminderModalTypes = {
   flowDetailItem: FlowDetailItem;
+  onPressSendReminder: (selectedRemindMethod: SendReminderMethods) => void;
 };
 
 const RenderSendReminderModal: FC<RenderSendReminderModalTypes> = ({
   flowDetailItem,
+  onPressSendReminder,
 }) => {
   const [selectedRemindMethod, setSelectedRemindMethod] = useState<ItemType>();
   const [selectedUserGroups, setSelectedUserGroups] = useState<string[]>([]);
+  const [isPickeOpen, setIsPickerOpen] = useState<boolean>(false);
+  const [selectedDate, setSelectedDate] = useState<string>('');
 
   const dispatch = useAppDispatch();
 
@@ -320,8 +325,11 @@ const RenderSendReminderModal: FC<RenderSendReminderModalTypes> = ({
   useEffect(() => {
     if (selectedRemindMethod?.value === 'To All Pending Users') {
       setSelectedUserGroups([]);
+      setSelectedDate('');
     } else if (selectedRemindMethod?.value === 'By Date') {
+      setSelectedUserGroups([]);
     } else {
+      setSelectedDate('');
     }
   }, [selectedRemindMethod]);
 
@@ -340,13 +348,23 @@ const RenderSendReminderModal: FC<RenderSendReminderModalTypes> = ({
   }, []);
 
   const handleOnPressSend = () => {
+    onPressSendReminder(selectedRemindMethod?.value as SendReminderMethods);
     dispatch(
       sendReminderToAllPendingUsers([
         selectedRemindMethod?.value as SendReminderMethods,
         flowDetailItem.formId,
         userData.userName,
+        selectedUserGroups,
+        moment(selectedDate as string)
+          ?.format('YYYYMMDD')
+          ?.toString(),
       ]),
     );
+  };
+
+  const handleDateSelection = (date: string) => {
+    setIsPickerOpen(false);
+    setSelectedDate(date);
   };
 
   return (
@@ -356,6 +374,11 @@ const RenderSendReminderModal: FC<RenderSendReminderModalTypes> = ({
         paddingHorizontal: 10,
         width: '100%',
       }}>
+      <DateTimePickerComponent
+        selectedDate={selectedDate}
+        onDateChange={handleDateSelection}
+        showPicker={isPickeOpen}
+      />
       <View style={{width: '100%'}}>
         <LabeledSingleRadioButton
           selectedValue={selectedRemindMethod}
@@ -416,9 +439,20 @@ const RenderSendReminderModal: FC<RenderSendReminderModalTypes> = ({
               paddingHorizontal: 7,
               paddingVertical: 8,
             }}
+            onPress={() => {
+              setIsPickerOpen(true);
+            }}
             disabled={selectedRemindMethod?.value !== 'By Date'}>
-            <Text size="small3" style={{color: '#ABB4BD'}}>
-              Select date
+            <Text
+              style={{
+                color: selectedDate ? colors.blackColor : '#ABB4BD',
+              }}
+              size="small2">
+              {selectedDate
+                ? moment(selectedDate as string)
+                    ?.format('MM/DD/YYYY')
+                    ?.toString()
+                : 'Select date'}
             </Text>
             <Icon name="calendar_icon" />
           </TouchableOpacity>
@@ -456,7 +490,8 @@ const RenderSendReminderModal: FC<RenderSendReminderModalTypes> = ({
         active={Boolean(
           selectedRemindMethod?.value === 'To All Pending Users' ||
             (selectedRemindMethod?.value === 'By User Groups' &&
-              selectedUserGroups?.length > 0),
+              selectedUserGroups?.length > 0) ||
+            (selectedRemindMethod?.value === 'By Date' && selectedDate !== ''),
         )}
         onPress={handleOnPressSend}
       />
@@ -556,6 +591,8 @@ const AdminFormResponses: FC<AdminFormResponsesScreenProps> = ({
     isVisibleSendReminderSuccessModal,
     setIsVisibleSendReminderSuccessModal,
   ] = useState<boolean>(false);
+  const [selectedRemindMethod, setSelectedRemindMethod] =
+    useState<SendReminderMethods>();
 
   const {formById, assignFormResponse} = useAppSelector(state => state.forms);
 
@@ -582,7 +619,6 @@ const AdminFormResponses: FC<AdminFormResponsesScreenProps> = ({
 
   useEffect(() => {
     if (sendReminderToAllPendingUsersResponse) {
-      setIsSendReminderModalVisible(false);
       setIsVisibleSendReminderSuccessModal(true);
     }
   }, [sendReminderToAllPendingUsersResponse]);
@@ -602,6 +638,11 @@ const AdminFormResponses: FC<AdminFormResponsesScreenProps> = ({
       setIsVisibleAssignFormSuccessModal(true);
     }
   }, [assignFormResponse]);
+
+  const onPressSendReminder = (selectedRemindMethod: SendReminderMethods) => {
+    setIsSendReminderModalVisible(false);
+    setSelectedRemindMethod(selectedRemindMethod);
+  };
 
   const onPressAssignForm = (
     selectedUsers: number[],
@@ -767,7 +808,12 @@ const AdminFormResponses: FC<AdminFormResponsesScreenProps> = ({
             setIsSendReminderModalVisible(false);
           }}
           closeButton
-          content={<RenderSendReminderModal flowDetailItem={flowDetailItem} />}
+          content={
+            <RenderSendReminderModal
+              flowDetailItem={flowDetailItem}
+              onPressSendReminder={onPressSendReminder}
+            />
+          }
           title="Send reminder"
           isVisible={isSendReminderModalVisible}
           contentStyle={{width: '100%'}}
