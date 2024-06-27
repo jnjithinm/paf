@@ -12,7 +12,7 @@ import {
 } from '../../utils/functions/localStorageOperations';
 import endPoints from '../../config/endPoints';
 import {ErrorStatusObject} from '../../config/types';
-import {ParentRoles, RoleLevelTypes, UserTypes} from '../../config/constants';
+import {ParentRoles, UserTypes} from '../../config/constants';
 import { getRoleLevel } from '../../components/DrawerContent';
 
 interface AuthenticateRequest {
@@ -89,10 +89,7 @@ export const authenticateUser = createAsyncThunk<
   try {
     dispatch(setLoading(true))
     await removeToken();
-    const response = await api.post(endPoints.AUTHENTICATE_USER, {
-      username: payload.username,
-      password: payload.password,
-    });
+    const response = await api.post(endPoints.AUTHENTICATE_USER,payload);
     await storeToken(response.data.payload.token);
     return response.data as AuthenticateResponse;
   } catch (error: any) {
@@ -101,7 +98,7 @@ export const authenticateUser = createAsyncThunk<
   } finally {
     dispatch(setLoading(true))
     await dispatch(
-      loginUser({username: payload.username, password: payload.password}),
+      loginUser(payload),
     );
   }
 });
@@ -111,10 +108,7 @@ export const loginUser = createAsyncThunk<LoginResponse, AuthenticateRequest>(
   async (payload, {dispatch, rejectWithValue}) => {
     try {
       dispatch(setLoading(true))
-      const response = await api.post(endPoints.LOGIN_USER, {
-        username: payload.username,
-        password: payload.password,
-      });
+      const response = await api.post(endPoints.LOGIN_USER, payload);
       return response.data as LoginResponse;
     } catch (error: any) {
       return rejectWithValue(error.response.data);
