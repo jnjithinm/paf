@@ -7,15 +7,15 @@ import colors from '../config/colors';
 import {useAppSelector} from '../redux/store';
 import {ScreenNames, navigate} from '../utils/helpers/navigationHelpers';
 
-
 interface StackItem {
   stack: ScreenNames;
   icon: IconTypes;
+  disabled?: boolean;
 }
 
 const adminStack: StackItem[] = [
   {stack: 'AdminDashboard', icon: 'tabbar_icon_home'},
-  {stack: 'ReportsStack', icon: 'tabbar_icon_observation'},
+  {stack: 'ReportsStack', icon: 'user_management_tabbar_icon', disabled: true},
   {stack: 'RubricStack', icon: 'tabbar_icon_rubric'},
   {stack: 'AdminStack', icon: 'tabbar_icon_graph'},
 ];
@@ -77,17 +77,21 @@ const BottomTab: FC<BottomTabTypes> = ({focusedStack}) => {
               focused
                 ? {
                     alignItems: 'center',
-                    height: 45,
+                    height: 40,
                     aspectRatio: 1,
                     backgroundColor: '#F4C24A',
                     justifyContent: 'center',
                     borderRadius: 8,
                   }
-                : {alignItems: 'center',height:'100%',justifyContent:'center'}
+                : {
+                    alignItems: 'center',
+                    height: '100%',
+                    justifyContent: 'center',
+                  }
             }
             onPress={() => onTabPress(item.stack)}
             key={index}
-            disabled={focused}>
+            disabled={focused || item.disabled}>
             <Icon
               name={item.icon}
               stroke={focused ? colors.blackColor : '#ABB4BD'}

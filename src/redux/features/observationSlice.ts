@@ -2,10 +2,12 @@ import {createAction, createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 
 import api from '../../config/axios';
 import endPoints from '../../config/endPoints';
-import {ErrorStatusObject, FileObject} from '../../config/types';
+import {ErrorStatusObject, FileObject, ItemType} from '../../config/types';
 import {PaginationRequest} from './usersSlice';
 import {ErrorResponse, setLoading} from './authSlice';
 import {DateFilterOption} from '../../components/Calendar';
+import RNFetchBlob from 'rn-fetch-blob';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface Observation {
   userAssessed: string;
@@ -108,13 +110,13 @@ export type ObservationData = {
   videoCount: number;
 };
 
-interface ObservationFilter{
+interface ObservationFilter {
   userAssessed: string;
   userImage: string | null;
   reportedBy: string;
   reportedByImage: string | null;
   ratings: number;
-  observationId:number;
+  observationId: number;
 }
 
 type GetAllObservationsResponse = {
@@ -124,9 +126,9 @@ type GetAllObservationsResponse = {
       averageRating: number | null;
       byMe: number;
       forMe: number;
-      observations: ObservationFilter[]; 
-      pointStatus: any | null; 
-      progressPoint: any | null; 
+      observations: ObservationFilter[];
+      pointStatus: any | null;
+      progressPoint: any | null;
       schoolName: string | null;
       total: number;
     };
@@ -179,8 +181,48 @@ type ObservationRequest = {
   paginationRequest: PaginationRequest;
 };
 
+export type NewObservation = {
+  selectedDate: string;
+  selectedUser: ItemType;
+  selectedUserGroup: ItemType;
+};
+
+interface SaveObservationRequest {
+  observationDate: string;
+  userGroupId: number;
+  userId: number;
+  observationStatus: string;
+  feedbackDescription: string;
+  loggedInUserName: string;
+  evidenceRequestList: EvidenceRequest[];
+}
+
+interface EvidenceRequest {
+  domainId: number;
+  indicatorId: number;
+  averageRating: number;
+  loggedInUserName: string;
+  evidenceId: number;
+}
+
+interface SaveObservationResponse {
+  payload: {
+    id: number;
+    message: string;
+  };
+  status: number;
+}
+
 export const setObservationShowMessage = createAction<ErrorStatusObject | null>(
   'SET_OBSERVATION_SHOW_MESSAGE',
+);
+
+export const resetSaveEvidenceCardResponse = createAction<void>(
+  'RESET_SAVE_EVIDENCE_CARD_RESPONSE',
+);
+
+export const saveNewObservation = createAction<NewObservation | null>(
+  'SAVE_NEW_OBSERVATION',
 );
 
 export const getDashboardDetailsAndObservationList = createAsyncThunk<
@@ -281,27 +323,69 @@ export const getAllObservations = createAsyncThunk<
   },
 );
 
-
 export const saveEvidenceCard = createAsyncThunk<
   SaveEvidenceCardResponse,
-  [SaveEvidenceCardEvidenceInfoRequest, FileObject?],
+  [SaveEvidenceCardEvidenceInfoRequest, FileObject],
   {rejectValue: ErrorResponse}
 >(
   'observation/saveEvidenceCard',
   async ([evidenceInfo, file], {dispatch, rejectWithValue}) => {
     try {
+      const token = await AsyncStorage.getItem('token');
       dispatch(setLoading(true));
-      const formData = new FormData();
-      formData.append('evidenceInfo',JSON.stringify(evidenceInfo));
+      // const formData = new FormData();
+      // formData.append('evidenceInfo',JSON.stringify(evidenceInfo));
 
-      if(file){
-        formData.append('file',file);
-      }
-      const response = await api.post(endPoints.SAVE_EVIDENCE_CARD, formData);
+      // if(file){
+      //   formData.append('file',file);
+      // }
+      const formData = [];
+      formData.push({
+        name: 'evidenceInfo',
+        data: JSON.stringify(evidenceInfo),
+        type: 'application/json',
+      });
+
+      formData.push({
+        name: 'file',
+        filename: file.name,
+        type: file.type,
+        data: RNFetchBlob.wrap(file.uri),
+      });
+      const url = 'http://65.1.32.205:8080/' + endPoints.SAVE_EVIDENCE_CARD;
+
+      const response = await RNFetchBlob.fetch(
+        'POST',
+        url,
+        {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
+        },
+        formData,
+      );
 
       return response.data as SaveEvidenceCardResponse;
     } catch (error: any) {
       console.log('evidence card', error);
+      return rejectWithValue(error.response.data);
+    } finally {
+      dispatch(setLoading(false));
+    }
+  },
+);
+
+export const saveObservation = createAsyncThunk<
+  SaveObservationResponse,
+  SaveObservationRequest,
+  {rejectValue: ErrorResponse}
+>(
+  'observation/saveObservation',
+  async (payload, {dispatch, rejectWithValue}) => {
+    try {
+      dispatch(setLoading(true));
+      const response = await api.post(endPoints.SAVE_OBSERVATION, payload);
+      return response.data as SaveObservationResponse;
+    } catch (error: any) {
       return rejectWithValue(error.response.data);
     } finally {
       dispatch(setLoading(false));
@@ -314,6 +398,7 @@ interface InitialState {
   saveEvidenceCardResponse: SaveEvidenceCardResponsePayload | null;
   observationById: GetObservationByIdResponsePayload | null;
   allObservations: GetAllObservationsResponsePayload | null;
+  newObservation: NewObservation | null;
   observationShowMessage: ErrorStatusObject | null;
   errorMessage: string;
 }
@@ -324,6 +409,7 @@ const initialState: InitialState = {
   dashboardDetails: null,
   observationById: null,
   allObservations: null,
+  newObservation: null,
   observationShowMessage: null,
   errorMessage: '',
 };
@@ -339,14 +425,19 @@ const observationSlice = createSlice({
       .addCase(setObservationShowMessage, (state, action) => {
         state.observationShowMessage = action.payload;
       })
+      .addCase(saveNewObservation, (state, action) => {
+        state.newObservation = action.payload;
+      })
+      .addCase(resetSaveEvidenceCardResponse, (state, action) => {
+        state.saveEvidenceCardResponse = null;
+      })
+
       .addCase(getDashboardDetailsAndObservationList.pending, state => {
         // state.isLoading = true;
       })
       .addCase(
         getDashboardDetailsAndObservationList.fulfilled,
         (state, action) => {
-          // state.isLoading = false;
-
           state.dashboardDetails = {
             ...state.dashboardDetails,
             ...action.payload.payload,
@@ -382,7 +473,6 @@ const observationSlice = createSlice({
         // state.isLoading = true;
       })
       .addCase(getObservationById.fulfilled, (state, action) => {
-
         state.observationById = action.payload.payload;
       })
       .addCase(getObservationById.rejected, (state, action) => {
@@ -395,7 +485,6 @@ const observationSlice = createSlice({
         // state.isLoading = true;
       })
       .addCase(getAllObservations.fulfilled, (state, action) => {
-
         state.allObservations = {
           ...state.allObservations,
           ...action.payload.payload,

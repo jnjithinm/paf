@@ -1,4 +1,4 @@
-import {TouchableOpacity, View} from 'react-native';
+import {TouchableOpacity, View, ViewStyle} from 'react-native';
 
 import colors from '../config/colors';
 import Icon, {IconTypes} from './Icon';
@@ -9,23 +9,23 @@ import {logoutAndclearToken} from '../redux/features/authSlice';
 import {useAppDispatch, useAppSelector} from '../redux/store';
 import {navigate} from '../utils/helpers/navigationHelpers';
 import {RenderProfileIcon} from '../screens/dashboard/TeacherDashboard';
-import {
-  ParentRoles,
-  UserTypes,
-  roleLevels,
-} from '../config/constants';
+import {ParentRoles, UserTypes, roleLevels} from '../config/constants';
 
 type RenderItemTypes = {
   icon?: IconTypes;
   itemName: string;
-  expandItem?: RenderItemTypes;
+  expandItem?: RenderItemTypes[];
   onPressItem: () => void;
+  subMenuLevel?: 'one' | 'two';
+  style?: ViewStyle;
 };
 const RenderItem: FC<RenderItemTypes> = ({
   icon,
   itemName,
   onPressItem,
   expandItem,
+  subMenuLevel,
+  style,
 }) => {
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
 
@@ -41,60 +41,98 @@ const RenderItem: FC<RenderItemTypes> = ({
       <TouchableOpacity
         style={{
           flexDirection: 'row',
-          marginVertical: 8,
+          marginVertical: subMenuLevel==='one' ? -6 :subMenuLevel==='two'?-4 : 8,
           alignItems: 'center',
           justifyContent: 'space-between',
+          ...style,
         }}
         onPress={onPress}>
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <View
-            style={{
-              backgroundColor: '#F4C24A',
-              aspectRatio: 1,
-              height: normaliseDesigns(22),
-              alignItems: 'center',
-              justifyContent: 'center',
-              borderRadius: 10,
-            }}>
-            {icon && <Icon name={icon} />}
-          </View>
-          <Text fontVariant="bold" style={{marginLeft: 7}} size="body1">
-            {itemName}
-          </Text>
-        </View>
+        {icon ? (
+          subMenuLevel ? (
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'flex-end',
+                marginLeft: subMenuLevel === 'one' ? '3%' : '10%',
+              }}>
+              <Icon
+                name={icon}
+                width={subMenuLevel === 'one' ? 45 : 40}
+                height={subMenuLevel === 'one' ? 45 : 40}
+              />
+              <Text size={subMenuLevel === 'one' ? 'body1' : 'small3'} style={{letterSpacing:-0.27}}>
+                {itemName}
+              </Text>
+            </View>
+          ) : (
+            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+              <View
+                style={{
+                  backgroundColor: '#F4C24A',
+                  aspectRatio: 1,
+                  height: normaliseDesigns(22),
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: 10,
+                }}>
+                <Icon name={icon} />
+              </View>
+              <Text fontVariant="bold" style={{marginLeft: 7}} size="body1">
+                {itemName}
+              </Text>
+            </View>
+          )
+        ) : (
+          <></>
+        )}
         {expandItem && (
-          <View>
-            <Icon
-              name="chevron_up_black_icon"
-              style={{transform: [{rotate: isExpanded ? '0deg' : '180deg'}]}}
-            />
-          </View>
+          <Icon
+            name="chevron_up_black_icon"
+            style={{
+              transform: [{rotate: isExpanded ? '0deg' : '180deg'}],
+              alignSelf: subMenuLevel ? 'flex-end' : undefined,
+              bottom:subMenuLevel ?3 : undefined,
+            }}
+          />
         )}
       </TouchableOpacity>
-      {isExpanded && (
-        <TouchableOpacity
-          style={{marginLeft: '15%', marginVertical: 5}}
-          onPress={expandItem?.onPressItem}>
-          <Text fontVariant="bold" size="body1">
-            {expandItem?.itemName}
-          </Text>
-        </TouchableOpacity>
-      )}
+      {isExpanded &&
+        expandItem?.map(item => (
+          <RenderItem
+            // style={{marginLeft: '10%'}}
+            itemName={item.itemName}
+            expandItem={item.expandItem}
+            onPressItem={item.onPressItem}
+            key={item.itemName}
+            icon={item.icon}
+            subMenuLevel={item.subMenuLevel}
+          />
+          // <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          //   <TouchableOpacity
+          //     style={{marginLeft: '15%', marginVertical: 5}}
+          //     onPress={item?.onPressItem}>
+          //     <Text fontVariant="bold" size="body1">
+          //       {item?.itemName}
+          //     </Text>
+          //   </TouchableOpacity>
+          // </View>
+        ))}
     </>
   );
 };
 
-export const getRoleLevel = (role: ParentRoles|null): UserTypes | undefined => {
-  if(role){
-  for (const level of roleLevels) {
-    if (level.roles.includes(role)) {
-      return level.userType;
+export const getRoleLevel = (
+  role: ParentRoles | null,
+): UserTypes | undefined => {
+  if (role) {
+    for (const level of roleLevels) {
+      if (level.roles.includes(role)) {
+        return level.userType;
+      }
     }
   }
-}
   return undefined;
 };
-
 
 type DrawerContentTypes = {
   closeDrawer: () => void;
@@ -103,10 +141,10 @@ type DrawerContentTypes = {
 const DrawerContent: FC<DrawerContentTypes> = ({closeDrawer}) => {
   const dispatch = useAppDispatch();
 
-  const {userData} = useAppSelector(state => state.auth);
+  const {userData, isAdmin} = useAppSelector(state => state.auth);
   const {dashboardDetails} = useAppSelector(state => state.observation);
 
-  const itemsArrayUser: RenderItemTypes[] = [
+  const itemsArrayRegisteredUser: RenderItemTypes[] = [
     {
       icon: 'drawer_icon_home',
       itemName: 'Dashboard',
@@ -118,17 +156,21 @@ const DrawerContent: FC<DrawerContentTypes> = ({closeDrawer}) => {
       icon: 'drawer_icon_observation_reports',
       itemName: 'Observation Reports',
       onPressItem: () => {
-        navigate('DashboardTabStack', {screen: 'ReportsStack'});
+        navigate('ReportsStack', {screen: 'ReportsStack'});
       },
     },
     {
       icon: 'drawer_icon_teaching_aids',
       itemName: 'Teaching Aids',
       onPressItem: () => {},
-      expandItem: {
-        itemName: 'Resources',
-        onPressItem: () => {},
-      },
+      expandItem: [
+        {
+          itemName: 'Resources',
+          onPressItem: () => {},
+          icon: 'extend_item_level_1_icon',
+          subMenuLevel: 'one',
+        },
+      ],
     },
     {
       icon: 'drawer_icon_session_schedules',
@@ -137,7 +179,7 @@ const DrawerContent: FC<DrawerContentTypes> = ({closeDrawer}) => {
     },
     {
       icon: 'drawer_icon_give_feedback',
-      itemName: 'Give Feedback',
+      itemName: 'Analytics',
       onPressItem: () => {},
     },
   ];
@@ -151,51 +193,99 @@ const DrawerContent: FC<DrawerContentTypes> = ({closeDrawer}) => {
       },
     },
     {
-      icon: 'drawer_icon_observation_reports',
+      icon: 'drawer_icon_user_management',
       itemName: 'User Management',
-      onPressItem: () => {
-        navigate('DashboardTabStack', {screen: 'ReportsStack'});
-      },
-      expandItem: {
-        itemName: 'Resources',
-        onPressItem: () => {},
-      },
+      onPressItem: () => {},
+      expandItem: [
+        {
+          itemName: 'Resources',
+          onPressItem: () => {},
+          icon: 'extend_item_level_1_icon',
+          subMenuLevel: 'one',
+        },
+      ],
     },
     {
       icon: 'drawer_icon_observation_reports',
       itemName: 'Teacher Evaluation',
-      onPressItem: () => {
-        navigate('DashboardTabStack', {screen: 'ReportsStack'});
-      },
-      expandItem: {
-        itemName: 'Resources',
-        onPressItem: () => {},
-      },
+      onPressItem: () => {},
+      expandItem: [
+        {
+          itemName: 'Evaluation Form',
+          onPressItem: () => {},
+          icon: 'extend_item_level_1_icon',
+          subMenuLevel: 'one',
+        },
+        {
+          itemName: 'Evaluation Rubrics',
+          onPressItem: () => {},
+          icon: 'extend_item_level_1_icon',
+          subMenuLevel: 'one',
+        },
+      ],
     },
     {
-      icon: 'drawer_icon_observation_reports',
+      icon: 'drawer_icon_session_schedules',
       itemName: 'Schedules',
-      onPressItem: () => {
-        navigate('DashboardTabStack', {screen: 'ReportsStack'});
-      },
+      onPressItem: () => {},
     },
     {
-      icon: 'drawer_icon_observation_reports',
+      icon: 'drawer_icon_analytics',
       itemName: 'Analytics',
-      onPressItem: () => {
-        navigate('DashboardTabStack', {screen: 'ReportsStack'});
-      },
-      expandItem: {
-        itemName: 'Resources',
-        onPressItem: () => {},
-      },
+      onPressItem: () => {},
+      expandItem: [
+        {
+          itemName: 'Usage',
+          onPressItem: () => {},
+          icon: 'extend_item_level_1_icon',
+          subMenuLevel: 'one',
+        },
+        {
+          itemName: 'Product',
+          onPressItem: () => {},
+          icon: 'extend_item_level_1_icon',
+          subMenuLevel: 'one',
+          expandItem: [
+            {
+              itemName: 'User Analytics',
+              onPressItem: () => {},
+              icon: 'extend_item_level_2_icon',
+              subMenuLevel: 'two',
+            },
+            {
+              itemName: 'Classroom Resources',
+              onPressItem: () => {},
+              icon: 'extend_item_level_2_icon',
+              subMenuLevel: 'two',
+            },
+            {
+              itemName: 'Learning Management System',
+              onPressItem: () => {},
+              icon: 'extend_item_level_2_icon',
+              subMenuLevel: 'two',
+            },
+            {
+              itemName: 'Teacher Evalutaion',
+              onPressItem: () => {},
+              icon: 'extend_item_level_2_icon',
+              subMenuLevel: 'two',
+            },
+            {
+              itemName: 'Flows',
+              onPressItem: () => {},
+              icon: 'extend_item_level_2_icon',
+              subMenuLevel: 'two',
+            },
+          ],
+        },
+      ],
     },
   ];
 
   const settingsItemsUser: RenderItemTypes[] = [
     {
-      icon: 'drawer_icon_settings',
-      itemName: 'Settings',
+      icon: 'drawer_icon_give_feedback',
+      itemName: 'Give Feedback',
       onPressItem: () => {},
     },
     {
@@ -217,16 +307,9 @@ const DrawerContent: FC<DrawerContentTypes> = ({closeDrawer}) => {
     },
   ];
 
+  const settingsItems = isAdmin ? settingsItemsAdmin : settingsItemsUser;
 
-  const settingsItems =
-    getRoleLevel(userData.roleType) === UserTypes.REGISTERED_USER
-      ? settingsItemsUser
-      : settingsItemsAdmin;
-
-  const itemsArray=
-  getRoleLevel(userData.roleType) === UserTypes.REGISTERED_USER
-  ? itemsArrayUser
-  : itemsArrayAdmin;
+  const itemsArray = isAdmin ? itemsArrayAdmin : itemsArrayRegisteredUser;
 
   return (
     <View style={{height: '100%'}}>
@@ -255,7 +338,7 @@ const DrawerContent: FC<DrawerContentTypes> = ({closeDrawer}) => {
           style={{
             flexDirection: 'row',
             justifyContent: 'flex-start',
-            marginTop: 40,
+            marginTop: 30,
             alignItems: 'center',
             alignContent: 'center',
           }}>
@@ -266,18 +349,15 @@ const DrawerContent: FC<DrawerContentTypes> = ({closeDrawer}) => {
           />
           <View style={{marginLeft: 10}}>
             <Text fontVariant="bold" size="body2">
-              Hi,{' '}
-              {getRoleLevel(userData.roleType) === UserTypes.REGISTERED_USER
-                ? userData.userName
-                : 'Admin'}
+              Hi, {isAdmin ? 'Admin' : userData.name}
             </Text>
             <Text size="small1">{dashboardDetails?.schoolName}</Text>
           </View>
         </View>
         <View
-          style={{height: 1, backgroundColor: '#E4E7EB', marginVertical: 25}}
+          style={{height: 1, backgroundColor: '#E4E7EB', marginVertical: 15}}
         />
-        <View>
+        <View style={{paddingVertical:15}}> 
           {itemsArray.map(item => (
             <RenderItem
               icon={item.icon}
@@ -293,10 +373,10 @@ const DrawerContent: FC<DrawerContentTypes> = ({closeDrawer}) => {
             width: '100%',
             backgroundColor: '#CBD2D9',
             height: 1.5,
-            marginVertical: 5,
+            marginVertical:5
           }}
         />
-        <View>
+        <View >
           {settingsItems.map(item => (
             <RenderItem
               icon={item.icon}
@@ -312,29 +392,29 @@ const DrawerContent: FC<DrawerContentTypes> = ({closeDrawer}) => {
         style={{
           backgroundColor: '#FEF8EC',
           width: '100%',
-          height: normaliseDesigns(75),
           alignItems: 'center',
           justifyContent: 'center',
+          paddingVertical:15,
           bottom: 20,
-          position:'absolute'
+          position: 'absolute',
         }}>
         <TouchableOpacity
           style={{
             backgroundColor: '#EA7804',
-            width: '50%',
+            width: '40%',
             alignItems: 'center',
             justifyContent: 'center',
             padding: 10,
             borderRadius: 10,
           }}>
-          <Text color="backgroundColor" size="small2">
+          <Text color="backgroundColor" size="small1">
             Help Centre
           </Text>
         </TouchableOpacity>
         <View
           style={{flexDirection: 'row', alignItems: 'center', marginTop: 10}}>
           <TouchableOpacity>
-            <Text style={{color: '#ABB4BD'}} size="small2">
+            <Text style={{color: '#ABB4BD'}} fontVariant='bold' size="verysmall1">
               Terms & Conditions
             </Text>
           </TouchableOpacity>
@@ -342,12 +422,12 @@ const DrawerContent: FC<DrawerContentTypes> = ({closeDrawer}) => {
             style={{
               height: 10,
               backgroundColor: '#ABB4BD',
-              marginHorizontal: 5,
+              marginHorizontal: 10,
               width: 1,
             }}
           />
           <TouchableOpacity>
-            <Text style={{color: '#ABB4BD'}} size="small2">
+            <Text style={{color: '#ABB4BD'}} fontVariant='bold' size='verysmall1'>
               Privacy Policy
             </Text>
           </TouchableOpacity>

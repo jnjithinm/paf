@@ -13,7 +13,6 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import Layout from '../../components/Layout';
 import Tab from '../../components/Tab';
 import {useAppDispatch, useAppSelector} from '../../redux/store';
-import {AdminTabStackTabBarStackParamList} from '../../navigation/AdminTabStack';
 import {
   normaliseDesigns,
   normaliseFont,
@@ -61,19 +60,20 @@ import {
 import {ItemType} from '../../config/types';
 import DateTimePickerComponent from '../../components/DateTimePickerComponent';
 import moment from 'moment';
+import { FlowsAndFormsStackParamList } from '../../navigation/FlowsAndFormsStack';
 
-type AdminFormResponsesNavigationProp = StackNavigationProp<
-  AdminTabStackTabBarStackParamList,
-  'AdminFormResponses'
+type FormResponsesNavigationProp = StackNavigationProp<
+  FlowsAndFormsStackParamList,
+  'FormResponses'
 >;
-type AdminFormResponsesRouteProp = RouteProp<
-  AdminTabStackTabBarStackParamList,
-  'AdminFormResponses'
+type FormResponsesRouteProp = RouteProp<
+FlowsAndFormsStackParamList,
+  'FormResponses'
 >;
 
-interface AdminFormResponsesScreenProps {
-  navigation: AdminFormResponsesNavigationProp;
-  route: AdminFormResponsesRouteProp;
+interface FormResponsesScreenProps {
+  navigation: FormResponsesNavigationProp;
+  route: FormResponsesRouteProp;
 }
 
 type ResponseAccessToggleTypes = {
@@ -209,7 +209,7 @@ export const RenderAssignFormModalContent: FC<
       />
       <Button
         text="Assign"
-        active={selectedUsers.length !== 0 && selectedUserGroups.length !== 0}
+        active={selectedUsers.length !== 0 || selectedUserGroups.length !== 0}
         onPress={handlePress}
         style={{marginTop: normaliseDesigns(100)}}
       />
@@ -559,7 +559,7 @@ const ShowResponseCountAndActions: FC<ShowResponseCountAndActionsTypes> = ({
   </View>
 );
 
-const AdminFormResponses: FC<AdminFormResponsesScreenProps> = ({
+const FormResponses: FC<FormResponsesScreenProps> = ({
   navigation,
   route,
 }) => {
@@ -869,4 +869,4 @@ const AdminFormResponses: FC<AdminFormResponsesScreenProps> = ({
     </>
   );
 };
-export default AdminFormResponses;
+export default FormResponses;

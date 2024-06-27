@@ -4,6 +4,7 @@ import {
   KeyboardAvoidingView,
   TouchableOpacity,
   View,
+  TextInput as RNTextInput,
 } from 'react-native';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
@@ -13,27 +14,23 @@ import FooterWithButtons from '../../components/FooterWithButtons';
 import {FONT_SIZES, FONT_VARIANT} from '../../config/themes';
 import Layout from '../../components/Layout';
 import Text from '../../components/Text';
-import TextInput from '../../components/TextInput';
 import colors from '../../config/colors';
 import {normaliseDesigns} from '../../utils/helpers/responsiveHelpers';
 import DateTimePickerComponent from '../../components/DateTimePickerComponent';
 import Icon from '../../components/Icon';
 import {useAppDispatch, useAppSelector} from '../../redux/store';
-import {
-  getAllUserGroups,
-  getUserGroups,
-} from '../../redux/features/usersSlice';
-import LabeledDropdown, {
-} from '../../components/LabeledDropdown';
-import {ReportsTabBarStackParamList} from '../../navigation/ReportsTabStack';
-import { ItemType } from '../../config/types';
+import {getAllUserGroups, getUserGroups} from '../../redux/features/usersSlice';
+import LabeledDropdown from '../../components/LabeledDropdown';
+import {ItemType} from '../../config/types';
+import {saveNewObservation} from '../../redux/features/observationSlice';
+import { ObservationStackParamList } from '../../navigation/ObservationStack';
 
 type AddNewObservationNavigationProp = StackNavigationProp<
-  ReportsTabBarStackParamList,
+  ObservationStackParamList,
   'AddNewObservation'
 >;
 type AddNewObservationRouteProp = RouteProp<
-  ReportsTabBarStackParamList,
+ObservationStackParamList,
   'AddNewObservation'
 >;
 
@@ -65,13 +62,12 @@ const AddNewObservation: FC<AddNewObservationScreenProps> = ({
 
   const [isCalendarOpen, setIsCalendarOpen] = useState<boolean>(false);
   const dispatch = useAppDispatch();
-  
+
   const {GetAllUserGroupsData, GetUserGroupData} = useAppSelector(
     state => state.users,
   );
 
-
-  const handleDateSelection = (date: Date) => {
+  const handleDateSelection = (date: string) => {
     setIsCalendarOpen(!isCalendarOpen);
 
     setSelectedDate(date);
@@ -102,8 +98,9 @@ const AddNewObservation: FC<AddNewObservationScreenProps> = ({
     }
   }, [selectedUserGroup?.value]);
 
+  const onPressSaveAsDraft = () => {};
 
-let isActive=Boolean(selectedDate && selectedUserGroup && selectedUser)
+  let isActive = Boolean(selectedDate && selectedUserGroup && selectedUser);
 
   return (
     <KeyboardAvoidingView
@@ -127,7 +124,7 @@ let isActive=Boolean(selectedDate && selectedUserGroup && selectedUser)
               setIsCalendarOpen(!isCalendarOpen);
             }}
             style={{}}>
-            <Text fontVariant="bold" size="small3">
+            <Text fontVariant="bold" size="body1">
               Select date
             </Text>
             <View>
@@ -149,7 +146,7 @@ let isActive=Boolean(selectedDate && selectedUserGroup && selectedUser)
               >
                 <Text
                   style={{color: selectedDate ? colors.blackColor : '#ABB4BD'}}
-                  size="body2">
+                  size="body1">
                   {selectedDate
                     ? moment(selectedDate).format('DD-MM-YYYY').toString()
                     : 'Select date'}
@@ -215,10 +212,19 @@ let isActive=Boolean(selectedDate && selectedUserGroup && selectedUser)
 
           {feedbackNoteEnable && (
             <View style={{marginTop: 15}}>
-              <TextInput
-                label=""
+              <RNTextInput
                 value={feedbackNote}
-                setValue={setFeedbackNote}
+                onChangeText={text => {
+                  setFeedbackNote(text);
+                }}
+                style={{
+                  height: normaliseDesigns(40),
+                  borderWidth: 1,
+                  borderColor: '#CBD2D9',
+                  borderRadius:10,
+                  color:colors.blackColor,
+                  paddingHorizontal:5
+                }}
                 multiline
                 maxLength={200}
               />
@@ -234,13 +240,23 @@ let isActive=Boolean(selectedDate && selectedUserGroup && selectedUser)
       </Layout>
       <FooterWithButtons
         onPressProceedButton={() => {
-          selectedUserGroup?.value &&
-            selectedUser?.value &&
-            navigation.navigate('CreateViewEvidenceCard',{observationStatus:'New'});
+          if (selectedDate && selectedUser && selectedUserGroup) {
+            dispatch(
+              saveNewObservation({
+                selectedDate,
+                selectedUser,
+                selectedUserGroup,
+              }),
+            );
+            navigation.navigate('CreateViewEvidenceCard', {
+              observationStatus: 'New',
+            });
+          }
         }}
         proceedButtonText={'Create evidence card'}
         isActiveProceedButton={isActive}
-        cancelButtonText={'Cancel'}
+        isActiveCancelButton={false}
+        cancelButtonText={'Save as draft'}
         onPressCancelButton={() => {}}
         style={{}}
       />

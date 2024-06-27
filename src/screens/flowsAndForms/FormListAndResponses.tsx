@@ -6,23 +6,21 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import Layout from '../../components/Layout';
 import Tab from '../../components/Tab';
 import {useAppDispatch, useAppSelector} from '../../redux/store';
-import {AdminTabStackTabBarStackParamList} from '../../navigation/AdminTabStack';
 import {normaliseFont} from '../../utils/helpers/responsiveHelpers';
 import colors from '../../config/colors';
 import Icon from '../../components/Icon';
 import Text from '../../components/Text';
 import {getFlowById} from '../../redux/features/flowsSlice';
 import {ItemType} from '../../config/types';
-import {getRoleLevel} from '../../components/DrawerContent';
-import {UserTypes} from '../../config/constants';
+import { FlowsAndFormsStackParamList } from '../../navigation/FlowsAndFormsStack';
 
-type AdminFormListNavigationProp = StackNavigationProp<
-  AdminTabStackTabBarStackParamList,
-  'AdminFormList'
+type FormListAndResponsesNavigationProp = StackNavigationProp<
+  FlowsAndFormsStackParamList,
+  'FormListAndResponses'
 >;
-type AdminFormListRouteProp = RouteProp<
-  AdminTabStackTabBarStackParamList,
-  'AdminFormList'
+type FormListAndResponsesRouteProp = RouteProp<
+FlowsAndFormsStackParamList,
+  'FormListAndResponses'
 >;
 
 type RenderFormItemTypes = {
@@ -75,16 +73,17 @@ const FormListResponse: FC<FormListResponseTypes> = ({
 const tabs = ['Form list', 'Responses'] as const;
 type TabTypes = (typeof tabs)[number];
 
-interface AdminFormListScreenProps {
-  navigation: AdminFormListNavigationProp;
-  route: AdminFormListRouteProp;
+interface FormListAndResponsesScreenProps {
+  navigation: FormListAndResponsesNavigationProp;
+  route: FormListAndResponsesRouteProp;
 }
 
-const AdminFormList: FC<AdminFormListScreenProps> = ({navigation, route}) => {
+const FormListAndResponses: FC<FormListAndResponsesScreenProps> = ({navigation, route}) => {
   const {flowItem} = route.params;
+
   const [selectedTab, setSelectedTab] = useState<TabTypes>('Form list');
   const {flowById} = useAppSelector(state => state.flows);
-  const {userData} = useAppSelector(state => state.auth);
+  const {isAdmin} = useAppSelector(state => state.auth);
   const dispatch = useAppDispatch();
 
   const handleTabClick = (title: ItemType) => {
@@ -162,14 +161,15 @@ const AdminFormList: FC<AdminFormListScreenProps> = ({navigation, route}) => {
               <RenderFormItem
                 title={item.formName}
                 onPressItem={() => {
-                  getRoleLevel(userData?.roleType) === UserTypes.PAF_USER
+                  isAdmin
                     ? 
-                    navigation.navigate('AdminFormResponses', {
+                    navigation.navigate('FormResponses', {
                         flowDetailItem: item,
                       })
                     :
                      navigation.navigate('EvaluationForm', {
                         flowDetailItem: item,
+                        flowItem
                       });
                 }}
                 key={index}
@@ -183,4 +183,4 @@ const AdminFormList: FC<AdminFormListScreenProps> = ({navigation, route}) => {
     </Layout>
   );
 };
-export default AdminFormList;
+export default FormListAndResponses;

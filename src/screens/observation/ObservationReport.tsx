@@ -11,18 +11,18 @@ import Image from '../../components/Image';
 import colors from '../../config/colors';
 import Icon from '../../components/Icon';
 import EvidenceCard from '../../components/EvidenceCard';
-import {ReportsTabBarStackParamList} from '../../navigation/ReportsTabStack';
+import {ObservationStackParamList} from '../../navigation/ObservationStack';
 import {useAppDispatch, useAppSelector} from '../../redux/store';
 import {getObservationById} from '../../redux/features/observationSlice';
 import {RatingStars, RenderProfileIcon} from '../dashboard/TeacherDashboard';
 import FooterWithButtons from '../../components/FooterWithButtons';
 
 type ObservationReportNavigationProp = StackNavigationProp<
-  ReportsTabBarStackParamList,
+ObservationStackParamList,
   'ObservationReport'
 >;
 type ObservationReportRouteProp = RouteProp<
-  ReportsTabBarStackParamList,
+ObservationStackParamList,
   'ObservationReport'
 >;
 

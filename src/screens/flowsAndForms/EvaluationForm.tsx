@@ -12,7 +12,6 @@ import {StackNavigationProp} from '@react-navigation/stack';
 
 import Layout from '../../components/Layout';
 import {useAppDispatch, useAppSelector} from '../../redux/store';
-import {AdminTabStackTabBarStackParamList} from '../../navigation/AdminTabStack';
 import colors from '../../config/colors';
 import Text from '../../components/Text';
 import Icon from '../../components/Icon';
@@ -35,13 +34,14 @@ import {FONT_SIZES, FONT_VARIANT} from '../../config/themes';
 import DateTimePickerComponent from '../../components/DateTimePickerComponent';
 import moment from 'moment';
 import RatingInput from '../../components/RatingInput';
+import { FlowsAndFormsStackParamList } from '../../navigation/FlowsAndFormsStack';
 
 type EvaluationFormNavigationProp = StackNavigationProp<
-  AdminTabStackTabBarStackParamList,
+  FlowsAndFormsStackParamList,
   'EvaluationForm'
 >;
 type EvaluationFormRouteProp = RouteProp<
-  AdminTabStackTabBarStackParamList,
+FlowsAndFormsStackParamList,
   'EvaluationForm'
 >;
 
@@ -702,7 +702,7 @@ interface EvaluationFormScreenProps {
 }
 
 const EvaluationForm: FC<EvaluationFormScreenProps> = ({navigation, route}) => {
-  const {flowDetailItem} = route.params;
+  const {flowDetailItem,flowItem} = route.params;
 
   const [answers, setAnswers] = useState<AnswerObject[]>([]);
   const {userData} = useAppSelector(state => state.auth);
@@ -729,11 +729,11 @@ const EvaluationForm: FC<EvaluationFormScreenProps> = ({navigation, route}) => {
 
   useEffect(() => {
     if (submitPreviewFormResponse) {
-      navigation.navigate('AdminFormResponses', {flowDetailItem});
+      navigation.navigate('FormListAndResponses', {flowItem});
     }
   }, [submitPreviewFormResponse]);
 
-  console.log('ansewr', answers);
+
 
   return (
     <>

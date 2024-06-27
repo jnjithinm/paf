@@ -7,18 +7,18 @@ import moment from 'moment';
 import Layout from '../../components/Layout';
 import Image from '../../components/Image';
 import Text from '../../components/Text';
-import {RubricTabBarStackParamList} from '../../navigation/RubricTabStack';
+import {RubricStackParamList} from '../../navigation/RubricTabStack';
 import colors from '../../config/colors';
 import Icon from '../../components/Icon';
 import SearchWithFilter from '../../components/SearchWithFilter';
 import { FilterObject } from '../../components/Calendar';
 
 type RubricIndicatorDescriptionNavigationProp = StackNavigationProp<
-  RubricTabBarStackParamList,
+RubricStackParamList,
   'RubricIndicatorDescription'
 >;
 type RubricIndicatorDescriptionRouteProp = RouteProp<
-  RubricTabBarStackParamList,
+RubricStackParamList,
   'RubricIndicatorDescription'
 >;
 

@@ -7,7 +7,7 @@ import moment from 'moment';
 import Layout from '../../components/Layout';
 import Tab from '../../components/Tab';
 import RubricListModal from '../../components/RubricListModal';
-import {RubricTabBarStackParamList} from '../../navigation/RubricTabStack';
+import {RubricStackParamList} from '../../navigation/RubricTabStack';
 import {useAppDispatch, useAppSelector} from '../../redux/store';
 import {
   RubricItem,
@@ -18,11 +18,11 @@ import Text from '../../components/Text';
 import {ItemType} from '../../config/types';
 
 type RubricMainPageNavigationProp = StackNavigationProp<
-  RubricTabBarStackParamList,
+RubricStackParamList,
   'RubricMainPage'
 >;
 type RubricMainPageRouteProp = RouteProp<
-  RubricTabBarStackParamList,
+RubricStackParamList,
   'RubricMainPage'
 >;
 
@@ -48,18 +48,18 @@ const RubricMainPage: FC<RubricMainPageScreenProps> = ({navigation, route}) => {
     console.log('delete press');
   };
 
-  const handleTabClick = (title: string) => {
-    if (allRubrics?.dataList) {
-      title == 'Active'
-        ? setRubricListData(
-            allRubrics?.dataList?.filter(item => item.status === true),
-          )
-        : title == 'Non-Active'
-        ? setRubricListData(
-            allRubrics?.dataList.filter(item => item.status === false),
-          )
-        : setRubricListData(allRubrics?.dataList);
-    }
+  const handleTabClick = (title: ItemType) => {
+    // if (allRubrics?.dataList) {
+    //   title == 'Active'
+    //     ? setRubricListData(
+    //         allRubrics?.dataList?.filter(item => item.status === true),
+    //       )
+    //     : title == 'Non-Active'
+    //     ? setRubricListData(
+    //         allRubrics?.dataList.filter(item => item.status === false),
+    //       )
+    //     : setRubricListData(allRubrics?.dataList);
+    // }
   };
 
   useEffect(() => {

@@ -12,6 +12,7 @@ interface FooterWithButtonsProps {
   proceedButtonText: string;
   cancelButtonText?: string;
   isActiveProceedButton?: boolean;
+  isActiveCancelButton?:boolean;
   style?: ViewStyle;
   image?: ImageIconNames;
   icon?:IconTypes;
@@ -21,6 +22,7 @@ const FooterWithButtons: FC<FooterWithButtonsProps> = ({
   onPressProceedButton,
   onPressCancelButton,
   isActiveProceedButton = false,
+  isActiveCancelButton=true,
   proceedButtonText,
   cancelButtonText='Cancel',
   style,
@@ -34,7 +36,8 @@ const FooterWithButtons: FC<FooterWithButtonsProps> = ({
       alignItems: 'center',
       justifyContent: 'space-between',
       backgroundColor: 'white',
-      padding: 15,
+      paddingBottom: 30,
+      padding:15,
       ...Platform.select({
         ios: {
           shadowColor: 'black',
@@ -55,8 +58,8 @@ const FooterWithButtons: FC<FooterWithButtonsProps> = ({
       icon={icon}
       text={proceedButtonText}
       active={isActiveProceedButton}
-      textStyle={{ color: isActiveProceedButton? '#FFFFFF' : 'black'}}
-      style={{ backgroundColor: '#EA7804', height: normaliseDesigns(40) }}
+      textStyle={{ color: isActiveProceedButton? '#FFFFFF' : colors.blackColor}}
+      style={{ backgroundColor: '#EA7804', height: normaliseDesigns(33) }}
       halfSize
     />
 
@@ -66,9 +69,9 @@ const FooterWithButtons: FC<FooterWithButtonsProps> = ({
         borderWidth: 2,
         borderColor: '#EA7804',
         backgroundColor: colors.backgroundColor,
-        height: normaliseDesigns(40),
+        height: normaliseDesigns(33),
       }}
-      active
+      active={isActiveCancelButton}
       text={cancelButtonText}
       textStyle={{ color: '#EA7804' }}
       halfSize

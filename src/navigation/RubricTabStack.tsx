@@ -10,14 +10,14 @@ import RubricIndicatorDescription from '../screens/rubric/RubricIndicatorDescrip
 import RubricEvaluationIndicatorList from '../screens/rubric/RubricEvaluationIndicatorList';
 import RubricMainPage from '../screens/rubric/RubricMainPage';
 
-export type RubricTabBarStackParamList = {
+export type RubricStackParamList = {
   RubricMainPage: undefined;
   AddNewObservation: undefined;
   RubricEvaluationIndicatorList: {rubric: RubricItem};
   RubricIndicatorDescription: {indicator: RubricIndicatorItem; title: string};
 };
 
-const RubricStackTab = createStackNavigator<RubricTabBarStackParamList>();
+const RubricStackTab = createStackNavigator<RubricStackParamList>();
 
 const RubricStack = ({}) => {
   const customTransition = ({

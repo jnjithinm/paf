@@ -4,7 +4,7 @@ import Text from './Text';
 import colors from '../config/colors';
 import { normaliseDesigns } from '../utils/helpers/responsiveHelpers';
 import { QuestionOption } from '../redux/features/formsSlice';
-import { AnswerObject } from '../screens/admin/EvaluationForm';
+import { AnswerObject } from '../screens/flowsAndForms/EvaluationForm';
 import Icon from './Icon';
 
 type CheckboxGroupPropsTypes = {

@@ -12,7 +12,7 @@ import {
   deleteRubric,
   getAllRubrics,
 } from '../../redux/features/rubricSlice';
-import {AdminTabStackTabBarStackParamList} from '../../navigation/AdminTabStack';
+
 import {normaliseFont} from '../../utils/helpers/responsiveHelpers';
 import colors from '../../config/colors';
 import Icon from '../../components/Icon';
@@ -25,20 +25,24 @@ import {
 import {styles} from '../../components/RubricListModal';
 import {FloatingButton} from '../observation/ObservationReportsMainPage';
 import Modal from '../../components/Modal';
-import {RenderAssignFormModalContent, RenderSuccessModalContent} from './AdminFormResponses';
+import {
+  RenderAssignFormModalContent,
+  RenderSuccessModalContent,
+} from './FormResponses';
+import { FlowsAndFormsStackParamList } from '../../navigation/FlowsAndFormsStack';
 
-type AdminFlowsMainPageNavigationProp = StackNavigationProp<
-  AdminTabStackTabBarStackParamList,
-  'AdminFlowsMainPage'
+type FlowsMainPageNavigationProp = StackNavigationProp<
+  FlowsAndFormsStackParamList,
+  'FlowsMainPage'
 >;
-type AdminFlowsMainPageRouteProp = RouteProp<
-  AdminTabStackTabBarStackParamList,
-  'AdminFlowsMainPage'
+type FlowsMainPageRouteProp = RouteProp<
+FlowsAndFormsStackParamList,
+  'FlowsMainPage'
 >;
 
-interface AdminFlowsMainPageScreenProps {
-  navigation: AdminFlowsMainPageNavigationProp;
-  route: AdminFlowsMainPageRouteProp;
+interface FlowsMainPageScreenProps {
+  navigation: FlowsMainPageNavigationProp;
+  route: FlowsMainPageRouteProp;
 }
 
 interface FlowsItemProps {
@@ -49,6 +53,7 @@ interface FlowsItemProps {
   userCount: number;
   onDelete: () => void;
   onPress: () => void;
+  isAdmin: boolean;
 }
 
 const FlowsItem: React.FC<FlowsItemProps> = ({
@@ -59,6 +64,7 @@ const FlowsItem: React.FC<FlowsItemProps> = ({
   userCount,
   onDelete,
   onPress,
+  isAdmin,
 }) => {
   return (
     <TouchableOpacity style={styles.container} onPress={onPress}>
@@ -111,17 +117,19 @@ const FlowsItem: React.FC<FlowsItemProps> = ({
             <Text style={styles.subHeading}> {userCount}</Text>
           </View>
         </View>
-        <View style={styles.deleteButton}>
-          <TouchableOpacity onPress={onDelete}>
-            <Icon name="trash_icon" />
-          </TouchableOpacity>
-        </View>
+        {isAdmin && (
+          <View style={styles.deleteButton}>
+            <TouchableOpacity onPress={onDelete}>
+              <Icon name="trash_icon" />
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
     </TouchableOpacity>
   );
 };
 
-const AdminFlowsMainPage: FC<AdminFlowsMainPageScreenProps> = ({
+const FlowsMainPage: FC<FlowsMainPageScreenProps> = ({
   navigation,
   route,
 }) => {
@@ -129,8 +137,8 @@ const AdminFlowsMainPage: FC<AdminFlowsMainPageScreenProps> = ({
     useState<boolean>(false);
   const [isVisibleAssignFormSuccessModal, setIsVisibleAssignFormSuccessModal] =
     useState<boolean>(false);
-  const {allFlows,assignFlowResponse} = useAppSelector(state => state.flows);
-  const {userData} = useAppSelector(state => state.auth);
+  const {allFlows, assignFlowResponse} = useAppSelector(state => state.flows);
+  const {userData, isAdmin} = useAppSelector(state => state.auth);
   const dispatch = useAppDispatch();
 
   const handleTabClick = (title: string) => {};
@@ -148,12 +156,11 @@ const AdminFlowsMainPage: FC<AdminFlowsMainPageScreenProps> = ({
     );
   }, []);
 
-  useEffect(()=>{
-    if(assignFlowResponse){
+  useEffect(() => {
+    if (assignFlowResponse) {
       setIsVisibleAssignFormSuccessModal(true);
     }
-  },[assignFlowResponse])
-
+  }, [assignFlowResponse]);
 
   const onPressDeleteRubric = (item: RubricItem) => {
     dispatch(
@@ -184,7 +191,7 @@ const AdminFlowsMainPage: FC<AdminFlowsMainPageScreenProps> = ({
         style={{paddingHorizontal: 15}}
         title="Flows"
         icon="flow_icon"
-        focusedStack='AdminStack'
+        focusedStack="AdminStack"
         titleTransition>
         <Modal
           onProceed={() => {}}
@@ -199,7 +206,7 @@ const AdminFlowsMainPage: FC<AdminFlowsMainPageScreenProps> = ({
             <RenderAssignFormModalContent onPressAssign={onPressAssignFlow} />
           }
         />
-          <Modal
+        <Modal
           onProceed={() => {}}
           onClose={() => {
             setIsVisibleAssignFormSuccessModal(false);
@@ -208,7 +215,7 @@ const AdminFlowsMainPage: FC<AdminFlowsMainPageScreenProps> = ({
           closeButton
           content={
             <RenderSuccessModalContent
-              icon='flow_icon'
+              icon="flow_icon"
               highlightText="Success!"
               descriptionText="Form assigned to selected user and user groups."
             />
@@ -259,21 +266,24 @@ const AdminFlowsMainPage: FC<AdminFlowsMainPageScreenProps> = ({
               }}
               key={item.flowId}
               onPress={() => {
-                navigation.navigate('AdminFormList', {flowItem: item});
+                navigation.navigate('FormListAndResponses', {flowItem: item});
               }}
+              isAdmin={isAdmin}
             />
           ))}
         </View>
       </Layout>
 
-      <FloatingButton
-        icon='user_and_usergroup_icon'
-        onPress={() => {
-          setIsAssignFlowModalVisible(true);
-        }}
-        iconSize={20}
-      />
+      {isAdmin && (
+        <FloatingButton
+          icon="user_and_usergroup_icon"
+          onPress={() => {
+            setIsAssignFlowModalVisible(true);
+          }}
+          iconSize={20}
+        />
+      )}
     </>
   );
 };
-export default AdminFlowsMainPage;
+export default FlowsMainPage;

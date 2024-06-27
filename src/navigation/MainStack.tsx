@@ -12,11 +12,9 @@ import ResetPassword from '../screens/auth/ResetPassword';
 import CreateNewPassword from '../screens/auth/CreateNewPassword';
 import SignUp from '../screens/auth/SignUp';
 import Notifications from '../screens/dashboard/Notifications';
-import ReportsStack, {ReportsTabBarStackParamList} from './ReportsTabStack';
-import RubricStack, {RubricTabBarStackParamList} from './RubricTabStack';
-import AdminTabStack, {
-  AdminTabStackTabBarStackParamList,
-} from './AdminTabStack';
+import ReportsStack, { ObservationStackParamList } from './ObservationStack';
+import RubricStack,{ RubricStackParamList }  from './RubricTabStack';
+import AdminTabStack, { FlowsAndFormsStackParamList } from './FlowsAndFormsStack';
 import TeacherDashboard from '../screens/dashboard/TeacherDashboard';
 import AdminDashboard from '../screens/dashboard/AdminDashboard';
 
@@ -26,13 +24,12 @@ export type MainStackParamList = {
   ResetPassword: undefined;
   CreateNewPassword: undefined;
   SignUp: undefined;
-  // DashboardTabStack:  NavigatorScreenParams<DashboardTabBarStackParamList>;
   Notifications: undefined;
   TeacherDashboard: undefined;
   AdminDashboard: undefined;
-  ReportsStack: NavigatorScreenParams<ReportsTabBarStackParamList>;
-  RubricStack: NavigatorScreenParams<RubricTabBarStackParamList>;
-  AdminStack: NavigatorScreenParams<AdminTabStackTabBarStackParamList>;
+  ReportsStack: NavigatorScreenParams<ObservationStackParamList>;
+  RubricStack: NavigatorScreenParams<RubricStackParamList>;
+  AdminStack: NavigatorScreenParams<FlowsAndFormsStackParamList>;
 };
 
 const MainStack = createStackNavigator<MainStackParamList>();

@@ -117,14 +117,12 @@ const FileUpload: React.FC<FileUploadProps> = ({
       setFiles(newFiles);
 
       const filePaths = [];
-      // let sources:string[];
       for (const result of newFiles) {
         const sourceUri = result.uri;
         const fileName = result.name;
         const destPath = `${RNFS.DocumentDirectoryPath}/${fileName}`;
         await RNFS.copyFile(sourceUri, destPath);
         filePaths.push(destPath);
-        // filePaths.push(sourceUri);
       }
 
       const name = `${new Date().getTime()}.zip`;

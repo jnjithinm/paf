@@ -16,7 +16,7 @@ import ObservationReportsMainPage from '../screens/observation/ObservationReport
 import ObservationReport from '../screens/observation/ObservationReport';
 import CreateViewEvidenceCard from '../screens/observation/CreateViewEvidenceCard';
 
-export type ReportsTabBarStackParamList = {
+export type ObservationStackParamList = {
   ObservationReportsMainPage: undefined;
   ReportsEvidenceCard: {userAccessed: string};
   AddNewObservation: undefined;
@@ -24,18 +24,13 @@ export type ReportsTabBarStackParamList = {
     observationStatus: 'New' | 'Pending' | 'Completed';
     evidenceCardDetails?: EvidenceResponse;
   };
-  //  {
-  //   selectedUserGroup: ItemType;
-  //   selectedUser: ItemType;
-  //   selectedDate: string;
-  // };
   ObservationReport: {observationId: number};
   PlayFile: {file: FileObject};
 };
 
-const ReportsStackTab = createStackNavigator<ReportsTabBarStackParamList>();
+const ObservationStackTab = createStackNavigator<ObservationStackParamList>();
 
-const ReportsStack = () => {
+const ObservationStack = () => {
   const customTransition = ({
     current,
     layouts,
@@ -54,31 +49,31 @@ const ReportsStack = () => {
     };
   };
   return (
-    <ReportsStackTab.Navigator
+    <ObservationStackTab.Navigator
       screenOptions={({route}) => ({
         headerShown: false,
         keyboardHidesTabBar: true,
       })}>
-      <ReportsStackTab.Screen
+      <ObservationStackTab.Screen
         name="ObservationReportsMainPage"
         component={ObservationReportsMainPage}
       />
-      <ReportsStackTab.Screen
+      <ObservationStackTab.Screen
         name="AddNewObservation"
         component={AddNewObservation}
       />
-      <ReportsStackTab.Screen
+      <ObservationStackTab.Screen
         name="CreateViewEvidenceCard"
         component={CreateViewEvidenceCard}
       />
-      <ReportsStackTab.Screen
+      <ObservationStackTab.Screen
         name="ObservationReport"
         component={ObservationReport}
       />
 
-      <ReportsStackTab.Screen name="PlayFile" component={PlayFile} />
-    </ReportsStackTab.Navigator>
+      <ObservationStackTab.Screen name="PlayFile" component={PlayFile} />
+    </ObservationStackTab.Navigator>
   );
 };
 
-export default ReportsStack;
+export default ObservationStack;

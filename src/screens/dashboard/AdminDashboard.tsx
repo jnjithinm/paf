@@ -13,69 +13,89 @@ import {Drawer} from 'react-native-drawer-layout';
 import Layout from '../../components/Layout';
 import Icon, {IconTypes} from '../../components/Icon';
 import Text from '../../components/Text';
-import colors from '../../config/colors';
-import {normaliseDesigns} from '../../utils/helpers/responsiveHelpers';
 import DrawerContent from '../../components/DrawerContent';
 import {useAppDispatch, useAppSelector} from '../../redux/store';
 import {getDashboardDetailsAndObservationList} from '../../redux/features/observationSlice';
 import {navigate} from '../../utils/helpers/navigationHelpers';
-import Calendar, {FilterObject} from '../../components/Calendar';
-import SearchWithFilter from '../../components/SearchWithFilter';
-import { MainStackParamList } from '../../navigation/MainStack';
+import {MainStackParamList} from '../../navigation/MainStack';
 
 type AdminDashboardNavigationProp = StackNavigationProp<
   MainStackParamList,
   'AdminDashboard'
 >;
-type AdminDashboardRouteProp = RouteProp<
-MainStackParamList,
-  'AdminDashboard'
->;
+type AdminDashboardRouteProp = RouteProp<MainStackParamList, 'AdminDashboard'>;
 
 interface AdminDashboardScreenProps {
   navigation: AdminDashboardNavigationProp;
   route: AdminDashboardRouteProp;
 }
 
-type AdminDashboardMenuItemTypes={
-  icon:IconTypes;
-  onPress:()=>void;
-  label:string
-}
-const AdminDashboardMenuItem:FC<AdminDashboardMenuItemTypes>=({icon,onPress,label})=>(
-<TouchableOpacity>
-  <Icon name={icon}/>
-  <View style={{flexDirection:'row'}}>
-  <Text>{label}</Text>
-  <Icon name='arrow_narrow_right'/>
-  </View>
-</TouchableOpacity>
-)
-const AdminDashboard: FC<AdminDashboardScreenProps> = ({
-  navigation,
-  route,
-}) => {
+type AdminDashboardMenuItemTypes = {
+  icon: IconTypes;
+  onPress: () => void;
+  label: string;
+};
+const AdminDashboardMenuItem: FC<AdminDashboardMenuItemTypes> = ({
+  icon,
+  onPress,
+  label,
+}) => (
+  <TouchableOpacity
+    style={[
+      {
+        width: '47%',
+        paddingHorizontal: 12,
+        backgroundColor: '#FEF8EC',
+        borderWidth: 1,
+        borderColor: '#F4C24A',
+        marginVertical:5,
+        borderRadius:8,
+        paddingVertical:18
+      },
+    ]}
+    onPress={onPress}>
+    <Icon name={icon} />
+    <View style={{flexDirection: 'row', alignItems: 'center',justifyContent:'space-between'}}>
+      <Text fontVariant='bold' style={{width:'85%'}}>{label}</Text>
+      <Icon name='right_icon' />
+    </View>
+  </TouchableOpacity>
+);
+const AdminDashboard: FC<AdminDashboardScreenProps> = ({navigation, route}) => {
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
-  const [filter, setFilter] = useState<FilterObject>();
 
   const dispatch = useAppDispatch();
 
-  const {userData} = useAppSelector(state => state.auth);
-  const {dashboardDetails} = useAppSelector(state => state.observation);
-
-  useFocusEffect(
-    React.useCallback(() => {
-      dispatch(getDashboardDetailsAndObservationList(userData?.id));
-    }, []),
-  );
+  const {userData,isLoading} = useAppSelector(state => state.auth);
 
   const closeDrawer = () => {
     setIsDrawerOpen(false);
   };
 
-  const menuItemArray:AdminDashboardMenuItemTypes[]=[
-{icon:''}
-  ]
+  console.log("is",isLoading)
+
+  const menuItemArray: AdminDashboardMenuItemTypes[] = [
+    {
+      icon: 'admin_dashboard_user_management_icon',
+      label: 'User Management',
+      onPress: () => {},
+    },
+    {
+      icon: 'admin_dashboard_location_management_icon',
+      label: 'Location Management',
+      onPress: () => {},
+    },
+    {
+      icon: 'admin_dashboard_analytics_icon',
+      label: 'Analytics',
+      onPress: () => {},
+    },
+    {
+      icon: 'admin_dashboard_schedules_icon',
+      label: 'Schedules',
+      onPress: () => {},
+    },
+  ];
   return (
     <Drawer
       open={isDrawerOpen}
@@ -96,10 +116,18 @@ const AdminDashboard: FC<AdminDashboardScreenProps> = ({
         dashboard
         focusedStack={isDrawerOpen ? undefined : 'AdminDashboard'}
         avoidBackButton>
-          <Text style={{marginVertical:10}}>Welcome {userData.userName}!</Text>
-          <View style={{flexDirection:'row'}}>
-              
-          </View>
+        <Text fontVariant='bold' size='body3' style={{marginVertical: 20}}>Welcome {userData.name}!</Text>
+        <View
+          style={{flexDirection: 'row', flexWrap: 'wrap', alignSelf: 'center',justifyContent:'space-between'}}>
+          {menuItemArray.map((item, index) => (
+            <AdminDashboardMenuItem
+              key={index}
+              icon={item.icon}
+              label={item.label}
+              onPress={item.onPress}
+            />
+          ))}
+        </View>
       </Layout>
     </Drawer>
   );

@@ -184,7 +184,7 @@ const Login: FC<LoginScreenProps> = ({navigation, route}) => {
           active={Boolean(!usernameErrorMessage && !passwordErrorMessage)}
           onPress={onPressLogin}
         />
-        <View style={{marginVertical: 10}}>
+        {/* <View style={{marginVertical: 10}}>
           <Text style={{color: '#ABB4BD', marginVertical: 10}} size="body1">
             Or sign in with social account
           </Text>
@@ -220,11 +220,12 @@ const Login: FC<LoginScreenProps> = ({navigation, route}) => {
               <Icon name="facebook_icon" />
             </TouchableOpacity>
           </View>
-        </View>
+        </View> */}
         <View
           style={{
             flexDirection: 'row',
             alignItems: 'center',
+            marginTop:'15%'
           }}>
           <Text style={{color: '#ABB4BD'}} size="body1">
             Don't have an account ?
@@ -246,7 +247,7 @@ const Login: FC<LoginScreenProps> = ({navigation, route}) => {
         </View>
         <View
           style={{flexDirection: 'row', alignItems: 'center', marginTop: 5}}>
-          <Text style={{color: '#ABB4BD', marginVertical: 10}} size="body1">
+          <Text style={{color: '#ABB4BD', marginVertical: 20}} size="body1">
             Can't access your account ?
           </Text>
           <TouchableOpacity>

@@ -4,15 +4,15 @@ import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 
 import Layout from '../../components/Layout';
-import {ReportsTabBarStackParamList} from '../../navigation/ReportsTabStack';
+import {ObservationStackParamList} from '../../navigation/ObservationStack';
 import VideoPlayer from '../../components/VideoPlayer';
 import Button from '../../components/Button';
 
 type PlayFileNavigationProp = StackNavigationProp<
-  ReportsTabBarStackParamList,
+  ObservationStackParamList,
   'PlayFile'
 >;
-type PlayFileRouteProp = RouteProp<ReportsTabBarStackParamList, 'PlayFile'>;
+type PlayFileRouteProp = RouteProp<ObservationStackParamList, 'PlayFile'>;
 
 interface PlayFileScreenProps {
   navigation: PlayFileNavigationProp;

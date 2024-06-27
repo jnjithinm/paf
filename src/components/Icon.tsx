@@ -75,6 +75,12 @@ import  admin_dashboard_analytics_icon from '../assets/svg/admin_dashboard_analy
 import  admin_dashboard_schedules_icon from '../assets/svg/admin_dashboard_schedules_icon.svg'
 import  extend_item_level_1_icon from '../assets/svg/extend_item_level_1_icon.svg'
 import  extend_item_level_2_icon from '../assets/svg/extend_item_level_2_icon.svg'
+import user_management_tabbar_icon from '../assets/svg/user_management_tabbar_icon.svg';
+import user_management_tabbar_focused_icon from '../assets/svg/user_management_tabbar_focused_icon.svg'
+import drawer_icon_analytics from '../assets/svg/drawer_icon_analytics.svg'
+import drawer_icon_user_management from '../assets/svg/drawer_icon_user_management.svg'
+
+
 
 const Icons = {
   app_logo,
@@ -149,7 +155,11 @@ const Icons = {
   admin_dashboard_schedules_icon,
   admin_dashboard_location_management_icon,
   extend_item_level_1_icon,
-  extend_item_level_2_icon
+  extend_item_level_2_icon,
+  user_management_tabbar_icon,
+  user_management_tabbar_focused_icon,
+  drawer_icon_analytics,
+  drawer_icon_user_management
 };
 
 export type IconTypes = keyof typeof Icons;

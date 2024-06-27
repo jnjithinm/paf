@@ -7,19 +7,19 @@ import moment from 'moment';
 import Layout from '../../components/Layout';
 import Image from '../../components/Image';
 import Text from '../../components/Text';
-import {RubricTabBarStackParamList} from '../../navigation/RubricTabStack';
 import {useAppDispatch, useAppSelector} from '../../redux/store';
 import {getRubric} from '../../redux/features/rubricSlice';
 import RubricIndicatorList from '../../components/RubricIndicatorList';
 import SearchWithFilter from '../../components/SearchWithFilter';
 import { FilterObject } from '../../components/Calendar';
+import { RubricStackParamList } from '../../navigation/RubricTabStack';
 
 type RubricEvaluationIndicatorListNavigationProp = StackNavigationProp<
-  RubricTabBarStackParamList,
+  RubricStackParamList,
   'RubricEvaluationIndicatorList'
 >;
 type RubricEvaluationIndicatorListRouteProp = RouteProp<
-  RubricTabBarStackParamList,
+RubricStackParamList,
   'RubricEvaluationIndicatorList'
 >;
 

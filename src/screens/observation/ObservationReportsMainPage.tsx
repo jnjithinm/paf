@@ -14,7 +14,6 @@ import Text from '../../components/Text';
 import Icon, {IconTypes} from '../../components/Icon';
 import colors from '../../config/colors';
 import {ObservationsTile} from '../dashboard/TeacherDashboard';
-import {ReportsTabBarStackParamList} from '../../navigation/ReportsTabStack';
 import {useAppDispatch, useAppSelector} from '../../redux/store';
 import {
   FilterType,
@@ -23,14 +22,15 @@ import {
 import SearchWithFilter from '../../components/SearchWithFilter';
 import { ItemType } from '../../config/types';
 import { normaliseDesigns } from '../../utils/helpers/responsiveHelpers';
+import { ObservationStackParamList } from '../../navigation/ObservationStack';
 
 
 type ObservationReportsMainPageNavigationProp = StackNavigationProp<
-  ReportsTabBarStackParamList,
+ObservationStackParamList,
   'ObservationReportsMainPage'
 >;
 type ObservationReportsMainPageRouteProp = RouteProp<
-  ReportsTabBarStackParamList,
+ObservationStackParamList,
   'ObservationReportsMainPage'
 >;
 

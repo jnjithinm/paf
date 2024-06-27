@@ -15,17 +15,17 @@ import {
   getIndicatorsByDomainId,
 } from '../../redux/features/masterSlice';
 import LabeledDropdown from '../../components/LabeledDropdown';
-import {saveEvidenceCard} from '../../redux/features/observationSlice';
+import {resetSaveEvidenceCardResponse, saveEvidenceCard} from '../../redux/features/observationSlice';
 import {FileObject, ItemType} from '../../config/types';
-import {ReportsTabBarStackParamList} from '../../navigation/ReportsTabStack';
 import RatingInput from '../../components/RatingInput';
+import { ObservationStackParamList } from '../../navigation/ObservationStack';
 
 type CreateViewEvidenceCardNavigationProp = StackNavigationProp<
-  ReportsTabBarStackParamList,
+ObservationStackParamList,
   'CreateViewEvidenceCard'
 >;
 type CreateViewEvidenceCardRouteProp = RouteProp<
-  ReportsTabBarStackParamList,
+ObservationStackParamList,
   'CreateViewEvidenceCard'
 >;
 
@@ -81,19 +81,21 @@ const CreateViewEvidenceCard: FC<CreateViewEvidenceCardScreenProps> = ({
   }, [selectedDomain?.value]);
 
   const onPressSaveCard = () => {
-    dispatch(
-      saveEvidenceCard([
-        {
-          averageRating: rating,
-          domainId: Number(selectedDomain?.value),
-          indicatorId: Number(selectedIndicator?.value),
-          loggedInUserName: userData?.name,
-        },
-        zipfile,
-      ]),
-    );
+    if (zipfile) {
+      dispatch(
+        saveEvidenceCard([
+          {
+            averageRating: rating,
+            domainId: Number(selectedDomain?.value),
+            indicatorId: Number(selectedIndicator?.value),
+            loggedInUserName: userData?.name,
+          },
+          zipfile,
+        ]),
+      );
+    }
   };
-  // console.log("dasf",imageFiles)
+
   useEffect(() => {
     if (evidenceCardDetails) {
       setSelectedDomain({
@@ -105,15 +107,13 @@ const CreateViewEvidenceCard: FC<CreateViewEvidenceCardScreenProps> = ({
         label: evidenceCardDetails.indicatorName,
       });
       setRating(evidenceCardDetails.averageRating);
-      // setImageFiles(
-      //  ,
-      // );
     }
   }, [evidenceCardDetails]);
 
   useEffect(() => {
     if (saveEvidenceCardResponse) {
-      // navigation.navigate('ViewEvidenceCard');
+      dispatch(resetSaveEvidenceCardResponse());
+      navigation.navigate('ObservationReportsMainPage');
     }
   }, [saveEvidenceCardResponse]);
 
@@ -177,7 +177,8 @@ const CreateViewEvidenceCard: FC<CreateViewEvidenceCardScreenProps> = ({
               label="Average Rating"
               rating={rating}
               onChangeRating={setRating}
-              disabled={observationStatus === 'Completed'}            />
+              disabled={observationStatus === 'Completed'}
+            />
           </View>
 
           <Text
@@ -192,7 +193,7 @@ const CreateViewEvidenceCard: FC<CreateViewEvidenceCardScreenProps> = ({
             onFilesPicked={handleFilesPicked}
             filesArray={
               evidenceCardDetails
-                ? evidenceCardDetails.attachmentResponse.map(item => ({
+                ? evidenceCardDetails.attachmentResponse?.map(item => ({
                     uri: item.fileUrl,
                     name: item.fileName,
                     type: item.fileType,
@@ -203,11 +204,7 @@ const CreateViewEvidenceCard: FC<CreateViewEvidenceCardScreenProps> = ({
             onPressFile={item => {
               navigation.navigate('PlayFile', {file: item});
             }}
-            onRemoveItem={function (
-              value: React.SetStateAction<FileObject[]>,
-            ): void {
-              throw new Error('Function not implemented.');
-            }} // onRemoveItem={setImageFiles}
+            onRemoveItem={()=>{}}
           />
         </View>
       </Layout>

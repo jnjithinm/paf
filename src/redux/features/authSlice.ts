@@ -12,7 +12,8 @@ import {
 } from '../../utils/functions/localStorageOperations';
 import endPoints from '../../config/endPoints';
 import {ErrorStatusObject} from '../../config/types';
-import {ParentRoles, RoleLevelTypes} from '../../config/constants';
+import {ParentRoles, RoleLevelTypes, UserTypes} from '../../config/constants';
+import { getRoleLevel } from '../../components/DrawerContent';
 
 interface AuthenticateRequest {
   username: string;
@@ -86,7 +87,7 @@ export const authenticateUser = createAsyncThunk<
   {rejectValue: ErrorResponse}
 >('auth/authenticate', async (payload, {dispatch, rejectWithValue}) => {
   try {
-    setLoading(true);
+    dispatch(setLoading(true))
     await removeToken();
     const response = await api.post(endPoints.AUTHENTICATE_USER, {
       username: payload.username,
@@ -98,7 +99,7 @@ export const authenticateUser = createAsyncThunk<
     console.log('errr', error);
     return rejectWithValue(error.response.data);
   } finally {
-    setLoading(true);
+    dispatch(setLoading(true))
     await dispatch(
       loginUser({username: payload.username, password: payload.password}),
     );
@@ -109,6 +110,7 @@ export const loginUser = createAsyncThunk<LoginResponse, AuthenticateRequest>(
   'auth/login',
   async (payload, {dispatch, rejectWithValue}) => {
     try {
+      dispatch(setLoading(true))
       const response = await api.post(endPoints.LOGIN_USER, {
         username: payload.username,
         password: payload.password,
@@ -116,6 +118,8 @@ export const loginUser = createAsyncThunk<LoginResponse, AuthenticateRequest>(
       return response.data as LoginResponse;
     } catch (error: any) {
       return rejectWithValue(error.response.data);
+    } finally {
+      dispatch(setLoading(false))
     }
   },
 );
@@ -195,12 +199,12 @@ const authSlice = createSlice({
         state.errorMessage = action.payload;
       })
       .addCase(authenticateUser.pending, state => {
-        state.isLoading = true;
+        // state.isLoading = true;
         state.errorMessage = '';
       })
       .addCase(authenticateUser.fulfilled, (state, action) => {
         storeToken(action.payload?.payload?.token);
-        state.isLoading = true;
+        // state.isLoading = true;
         state.errorMessage = '';
       })
       .addCase(authenticateUser.rejected, (state, action) => {
@@ -222,7 +226,7 @@ const authSlice = createSlice({
         state.isLoading = false;
         state.isLoggedIn = true;
         state.userData = action.payload.payload;
-        state.isAdmin = action.payload.payload.isAdmin;
+        state.isAdmin = Boolean(getRoleLevel(action.payload.payload.roleType)===UserTypes.PAF_USER) ;
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.isLoading = false;
