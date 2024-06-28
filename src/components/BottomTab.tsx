@@ -15,16 +15,16 @@ interface StackItem {
 
 const adminStack: StackItem[] = [
   {stack: 'AdminDashboard', icon: 'tabbar_icon_home'},
-  {stack: 'ReportsStack', icon: 'user_management_tabbar_icon', disabled: true},
-  {stack: 'RubricStack', icon: 'tabbar_icon_rubric'},
-  {stack: 'AdminStack', icon: 'tabbar_icon_graph'},
+  {stack: 'UserManagementStack', icon: 'user_management_tabbar_icon'},
+  {stack: 'RubricStack', icon: 'tabbar_icon_observation'},
+  {stack: 'FlowsAndFormsStack', icon: 'tabbar_icon_graph'},
 ];
 
 const registeredUserStack: StackItem[] = [
   {stack: 'TeacherDashboard', icon: 'tabbar_icon_home'},
   {stack: 'ReportsStack', icon: 'tabbar_icon_observation'},
   {stack: 'RubricStack', icon: 'tabbar_icon_rubric'},
-  {stack: 'AdminStack', icon: 'tabbar_icon_graph'},
+  {stack: 'FlowsAndFormsStack', icon: 'tabbar_icon_graph'},
 ];
 
 type BottomTabTypes = {
@@ -38,8 +38,10 @@ const BottomTab: FC<BottomTabTypes> = ({focusedStack}) => {
     navigate(stack);
   };
 
-  const selectedTabStack = isAdmin ? adminStack : registeredUserStack;
+  // const selectedTabStack = isAdmin ? adminStack : registeredUserStack;
 
+
+  const selectedTabStack =  adminStack;
   return (
     <View
       style={{

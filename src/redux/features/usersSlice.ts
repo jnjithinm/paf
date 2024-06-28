@@ -5,7 +5,7 @@ import endPoints from '../../config/endPoints';
 import {ErrorStatusObject} from '../../config/types';
 import { ErrorResponse } from './authSlice';
 
-interface UserData {
+export interface User {
   userId: number;
   userName: string;
   name: string;
@@ -37,7 +37,7 @@ export interface PaginationRequest {
 interface GetAllUsersResponse {
   payload: {
     message: string;
-    dataList: UserData[];
+    dataList: User[];
     totalCount: number;
   };
   status: number;
@@ -63,28 +63,6 @@ interface GetAllUserGroupsResponse {
 }
 type GetAllUserGroupsResponsePayload = GetAllUserGroupsResponse['payload'];
 
-interface User {
-  userId: number;
-  userName: string;
-  name: string;
-  contactNumber: string;
-  email: string;
-  dateOfBirth: string;
-  role: string;
-  state: string;
-  district: string;
-  area: string;
-  school: string;
-  citizenship: string;
-  userType: string;
-  status: boolean;
-  roleId: number;
-  stateId: number;
-  districtId: number;
-  areaId: number;
-  schoolId: number;
-  createdDate: string;
-}
 
 interface GetUserGroupResponse {
   payload: {

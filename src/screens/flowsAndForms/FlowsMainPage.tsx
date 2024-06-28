@@ -29,14 +29,14 @@ import {
   RenderAssignFormModalContent,
   RenderSuccessModalContent,
 } from './FormResponses';
-import { FlowsAndFormsStackParamList } from '../../navigation/FlowsAndFormsStack';
+import {FlowsAndFormsStackParamList} from '../../navigation/FlowsAndFormsStack';
 
 type FlowsMainPageNavigationProp = StackNavigationProp<
   FlowsAndFormsStackParamList,
   'FlowsMainPage'
 >;
 type FlowsMainPageRouteProp = RouteProp<
-FlowsAndFormsStackParamList,
+  FlowsAndFormsStackParamList,
   'FlowsMainPage'
 >;
 
@@ -129,10 +129,7 @@ const FlowsItem: React.FC<FlowsItemProps> = ({
   );
 };
 
-const FlowsMainPage: FC<FlowsMainPageScreenProps> = ({
-  navigation,
-  route,
-}) => {
+const FlowsMainPage: FC<FlowsMainPageScreenProps> = ({navigation, route}) => {
   const [isAssignFlowModalVisible, setIsAssignFlowModalVisible] =
     useState<boolean>(false);
   const [isVisibleAssignFormSuccessModal, setIsVisibleAssignFormSuccessModal] =
@@ -191,7 +188,7 @@ const FlowsMainPage: FC<FlowsMainPageScreenProps> = ({
         style={{paddingHorizontal: 15}}
         title="Flows"
         icon="flow_icon"
-        focusedStack="AdminStack"
+        focusedStack="FlowsAndFormsStack"
         titleTransition>
         <Modal
           onProceed={() => {}}

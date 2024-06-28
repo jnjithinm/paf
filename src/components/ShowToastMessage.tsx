@@ -96,6 +96,7 @@ const ShowToastMessage: FC<ShowMessageTypes> = ({style}) => {
             showMessage.status === 'Failed' ? '#FFEDED' : '#EBF9D9',
           borderColor: showMessage.status === 'Failed' ? '#D62828' : '#749E35',
           borderWidth:1.5,
+          paddingVertical:4,
           ...style,
         },
       ]}>

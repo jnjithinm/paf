@@ -17,6 +17,7 @@ import RubricStack,{ RubricStackParamList }  from './RubricTabStack';
 import AdminTabStack, { FlowsAndFormsStackParamList } from './FlowsAndFormsStack';
 import TeacherDashboard from '../screens/dashboard/TeacherDashboard';
 import AdminDashboard from '../screens/dashboard/AdminDashboard';
+import UserManagementStack, { UserManagementStackParamList } from './UserManagementStack';
 
 export type MainStackParamList = {
   Splash: undefined;
@@ -29,7 +30,8 @@ export type MainStackParamList = {
   AdminDashboard: undefined;
   ReportsStack: NavigatorScreenParams<ObservationStackParamList>;
   RubricStack: NavigatorScreenParams<RubricStackParamList>;
-  AdminStack: NavigatorScreenParams<FlowsAndFormsStackParamList>;
+  FlowsAndFormsStack: NavigatorScreenParams<FlowsAndFormsStackParamList>;
+  UserManagementStack: NavigatorScreenParams<UserManagementStackParamList>;
 };
 
 const MainStack = createStackNavigator<MainStackParamList>();
@@ -68,7 +70,8 @@ const MainStackNavigator = () => {
         )}
         <MainStack.Screen name="ReportsStack" component={ReportsStack} />
         <MainStack.Screen name="RubricStack" component={RubricStack} />
-        <MainStack.Screen name="AdminStack" component={AdminTabStack} />
+        <MainStack.Screen name="FlowsAndFormsStack" component={AdminTabStack} />
+        <MainStack.Screen name='UserManagementStack' component={UserManagementStack} />
         <MainStack.Screen name="Notifications" component={Notifications} />
       </MainStack.Navigator>
     );
