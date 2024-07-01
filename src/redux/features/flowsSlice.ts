@@ -53,7 +53,7 @@ export type SendReminderMethods =
   | 'By Date'
   | 'By User Groups';
 
-interface SendReminderToAllPendingUsersResponse {
+interface sendReminderForm {
   payload: {
     id: number;
     message: string;
@@ -62,7 +62,7 @@ interface SendReminderToAllPendingUsersResponse {
 }
 
 type SendReminderToAllPendingUsersResponsePayload =
-  SendReminderToAllPendingUsersResponse['payload'];
+  sendReminderForm['payload'];
 
 interface AssignFlowRequest {
   userIds: number[];
@@ -141,12 +141,12 @@ export const getFlowById = createAsyncThunk<
   },
 );
 
-export const sendReminderToAllPendingUsers = createAsyncThunk<
-  SendReminderToAllPendingUsersResponse,
+export const sendReminderForm = createAsyncThunk<
+  sendReminderForm,
   [SendReminderMethods, number, string, string[]?, string?],
   {rejectValue: ErrorResponse}
 >(
-  'forms/sendReminderToAllPendingUsers',
+  'forms/sendReminderForm',
   async (
     [sendReminderMethod, formId, loggedInUserName, userGroupIds, selectedDate],
     {dispatch, rejectWithValue},
@@ -173,7 +173,7 @@ export const sendReminderToAllPendingUsers = createAsyncThunk<
             `?userGroupIds=${userGroupIdsParam}&loggedInUserName=${loggedInUserName}`,
         );
       }
-      return response.data as SendReminderToAllPendingUsersResponse;
+      return response.data as sendReminderForm;
     } catch (error: any) {
       return rejectWithValue(error.response.data);
     } finally {
@@ -208,7 +208,7 @@ export const assignFlowToUsersAndGroups = createAsyncThunk<
 interface InitialState {
   allFlows: GetAllFlowsResponsePayload | null;
   flowById: GetFlowByIdResponsePayload | null;
-  sendReminderToAllPendingUsersResponse: SendReminderToAllPendingUsersResponsePayload | null;
+  sendReminderFormResponse: SendReminderToAllPendingUsersResponsePayload | null;
   assignFlowResponse: AssignFlowResponsePayload | null;
   flowsShowMessage: ErrorStatusObject | null;
   errorMessage: string;
@@ -217,7 +217,7 @@ interface InitialState {
 const initialState: InitialState = {
   allFlows: null,
   flowById: null,
-  sendReminderToAllPendingUsersResponse: null,
+  sendReminderFormResponse: null,
   assignFlowResponse: null,
   flowsShowMessage: null,
   errorMessage: '',
@@ -236,7 +236,8 @@ const flowsSlice = createSlice({
         state.assignFlowResponse = null;
       })
       .addCase(resetSendReminderToAllPendingUsers, state => {
-        state.sendReminderToAllPendingUsersResponse = null;
+        state.sendReminderFormResponse = null;
+        
       })
       .addCase(getAllFlows.pending, state => {
         // state.isLoading = true;
@@ -264,13 +265,14 @@ const flowsSlice = createSlice({
       .addCase(getFlowById.rejected, (state, action) => {
         // state.isLoading = false;
       })
-      .addCase(sendReminderToAllPendingUsers.pending, state => {
-        state.sendReminderToAllPendingUsersResponse = null;
+      .addCase(sendReminderForm.pending, state => {
+        state.sendReminderFormResponse = null;
       })
-      .addCase(sendReminderToAllPendingUsers.fulfilled, (state, action) => {
-        state.sendReminderToAllPendingUsersResponse = action.payload.payload;
+      .addCase(sendReminderForm.fulfilled, (state, action) => {
+        state.sendReminderFormResponse = action.payload.payload;
       })
-      .addCase(sendReminderToAllPendingUsers.rejected, (state, action) => {
+      .addCase(sendReminderForm.rejected, (state, action) => {
+        state.sendReminderFormResponse = null;
         state.flowsShowMessage = {
           status: 'Error',
           message: action?.payload?.error?.errorMessage,

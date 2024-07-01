@@ -156,7 +156,7 @@ const ObservationReportsMainPage: FC<ObservationReportsMainPageScreenProps> = ({
         overridePaddingVertical
         icon={'search_reports_icon'}
         title={'Observation Reports'}
-        focusedStack='ReportsStack'
+        focusedStack='ObservationStack'
         titleTransition>
         <Text size="body3" fontVariant="bold" style={{marginVertical: 10}}>
           Observation Reports
@@ -181,6 +181,7 @@ const ObservationReportsMainPage: FC<ObservationReportsMainPageScreenProps> = ({
         <SearchWithFilter
           onTextChange={() => {}}
           onProceed={filter => {
+            console.log("filter",filter)
             dispatch(
               getAllObservations([
                 userData.id,

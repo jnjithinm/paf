@@ -44,47 +44,89 @@ const generateCalendar = (
 
 type RenderDropdownTypes = {
   label: 'Month' | 'Year';
+  selection: 'Start' | 'End';
   value: number | undefined;
+  selectedStartMonth?: number;
+  selectedStartYear?: number;
+  selectedEndYear?: number;
   onChange: (item: any) => void;
+  disabled?: boolean;
 };
 
-const RenderDropdown: FC<RenderDropdownTypes> = ({label, value, onChange}) => {
-  const months = [];
-  for (let i = 0; i < 12; i++) {
-    const monthNumber = i + 1;
-    months.push({
-      label: monthNumber?.toString(),
-      value: monthNumber?.toString(),
-    });
-  }
-  const startYear = 1900;
-  const endYear = new Date().getFullYear();
-  const years = [];
+const RenderDropdown: FC<RenderDropdownTypes> = ({
+  label,
+  selection,
+  value,
+  onChange,
+  selectedStartMonth = 1,
+  selectedStartYear,
+  selectedEndYear,
+  disabled,
+}) => {
+  const currentYear = moment().year();
+  const currentMonth = moment().month();
+  const generateMonths = () => {
+    const startMonth =
+      selection === 'End'
+        ? selectedEndYear === selectedStartYear
+          ? selectedStartMonth
+          : selectedEndYear === currentYear
+          ? currentMonth
+          : 1
+        : 1;
 
-  for (let year = endYear; year >= startYear; year--) {
-    years.push({label: year.toString(), value: year.toString()});
-  }
+    const endMonth =
+      selection === 'Start'
+        ? selectedStartYear === currentYear
+          ? currentMonth
+          : 12
+        : 12;
+
+    const months = [];
+    for (let i = startMonth; i <= endMonth; i++) {
+      months.push({
+        label: i.toString(),
+        value: i.toString(),
+      });
+    }
+    return months;
+  };
+
+  const generateYears = () => {
+    const startYear = 1950;
+    const endYear = new Date().getFullYear();
+
+    const years = [];
+    for (
+      let year = endYear;
+      year >=
+      (selection === 'End' ? selectedStartYear || startYear : startYear);
+      year--
+    ) {
+      years.push({
+        label: year.toString(),
+        value: year.toString(),
+      });
+    }
+
+    return years;
+  };
 
   return (
     <View style={{flexDirection: 'row', alignItems: 'center', width: '50%'}}>
       <Dropdown
-        data={label === 'Month' ? months : years}
+        data={label === 'Month' ? generateMonths() : generateYears()}
         labelField={'label'}
-        valueField={'label'}
+        valueField={'value'}
         onChange={onChange}
-        value={
-          value !== undefined
-            ? value?.toString()
-            : label === 'Year'
-            ? moment().year()
-            : moment().month()
-        }
+        value={value?.toString()}
         placeholder={label}
         placeholderStyle={{color: '#CBD2D9'}}
         iconColor="transparent"
         style={{width: '100%'}}
         itemTextStyle={{color: colors.blackColor}}
         selectedTextStyle={{color: colors.blackColor}}
+        disable={disabled}
       />
       <Icon name="up_and_down_selection" style={{right: 25}} />
     </View>
@@ -118,7 +160,7 @@ interface CalendarPropsTypes {
 }
 
 const Calendar: FC<CalendarPropsTypes> = ({onProceed, onClose, isVisible}) => {
-  const [rating, setRating] = useState<number>(0);
+  const [rating, setRating] = useState<number>();
   const [selectedStartMonth, setSelectedStartMonth] = useState<
     number | undefined
   >(undefined);
@@ -142,21 +184,25 @@ const Calendar: FC<CalendarPropsTypes> = ({onProceed, onClose, isVisible}) => {
   const [endDate, setEndDate] = useState<moment.Moment | undefined>(undefined);
 
   const weekdays = moment.weekdays();
-  const days = generateCalendar(selectedStartMonth, selectedStartYear);
+  const days = startDate && selectedEndMonth && selectedEndYear
+    ? generateCalendar(selectedEndMonth, selectedEndYear)
+    : generateCalendar(selectedStartMonth, selectedStartYear);
   const shortWeekdays = weekdays.map(day => day.slice(0, 2));
 
   const handleStartDateChange = (month: number, year: number) => {
     setSelectedStartMonth(month);
     setSelectedStartYear(year);
-    setStartDate(moment({year, month: month - 1}));
-    // Automatically set end date to the same as start date initially
-    setEndDate(moment({year, month: month - 1}));
+    setStartDate(undefined);
+    setSelectedEndMonth(undefined);
+    setSelectedEndYear(undefined);
+
   };
 
   const handleEndDateChange = (month: number, year: number) => {
     setSelectedEndMonth(month);
     setSelectedEndYear(year);
-    setEndDate(moment({year, month: month - 1}));
+    setEndDate(undefined);
+
   };
 
   const handleDateSelect = (day: moment.Moment) => {
@@ -187,6 +233,22 @@ const Calendar: FC<CalendarPropsTypes> = ({onProceed, onClose, isVisible}) => {
     return endDate && day.isSame(endDate, 'day');
   };
 
+  const months = [];
+  for (let i = 0; i < 12; i++) {
+    const monthNumber = i + 1;
+    months.push({
+      label: monthNumber?.toString(),
+      value: monthNumber?.toString(),
+    });
+  }
+  const initialYear = 1900;
+  const finalYear = new Date().getFullYear();
+  const years = [];
+
+  for (let year = finalYear; year >= initialYear; year--) {
+    years.push({label: year.toString(), value: year.toString()});
+  }
+
   return (
     <RNModal visible={isVisible} animationType="slide" transparent>
       <View style={styles.CalendarOverlay} />
@@ -210,7 +272,7 @@ const Calendar: FC<CalendarPropsTypes> = ({onProceed, onClose, isVisible}) => {
             <RatingInput
               label={'sort by filtering'}
               style={{marginVertical: 5}}
-              rating={rating}
+              rating={rating || 0}
               onChangeRating={setRating}
               showRating={false}
             />
@@ -266,6 +328,7 @@ const Calendar: FC<CalendarPropsTypes> = ({onProceed, onClose, isVisible}) => {
                         selectedStartYear || moment().year(),
                       )
                     }
+                    selection="Start"
                     value={selectedStartMonth}
                   />
                   <RenderDropdown
@@ -276,6 +339,7 @@ const Calendar: FC<CalendarPropsTypes> = ({onProceed, onClose, isVisible}) => {
                         Number(item.value),
                       )
                     }
+                    selection="Start"
                     value={selectedStartYear}
                   />
                 </View>
@@ -301,6 +365,11 @@ const Calendar: FC<CalendarPropsTypes> = ({onProceed, onClose, isVisible}) => {
                         selectedEndYear || moment().year(),
                       )
                     }
+                    selection="End"
+                    selectedStartMonth={selectedStartMonth || finalYear}
+                    selectedStartYear={selectedStartYear || initialYear}
+                    selectedEndYear={selectedEndYear}
+                    disabled={startDate == undefined}
                     value={selectedEndMonth}
                   />
                   <RenderDropdown
@@ -311,6 +380,10 @@ const Calendar: FC<CalendarPropsTypes> = ({onProceed, onClose, isVisible}) => {
                         Number(item.value),
                       )
                     }
+                    selection="End"
+                    selectedStartMonth={selectedStartMonth || finalYear}
+                    selectedEndYear={selectedEndYear}
+                    selectedStartYear={selectedStartYear || initialYear}
                     value={selectedEndYear}
                   />
                 </View>
@@ -354,7 +427,9 @@ const Calendar: FC<CalendarPropsTypes> = ({onProceed, onClose, isVisible}) => {
                     <Text
                       style={{
                         color: day.isSame(moment(), 'day') ? '#000' : '#ABB4BD',
-                        fontWeight: day.isSame(moment(), 'day') ? 'bold' : 'normal',
+                        fontWeight: day.isSame(moment(), 'day')
+                          ? 'bold'
+                          : 'normal',
                         textAlign: 'center',
                       }}
                       fontVariant="bold">
@@ -369,7 +444,9 @@ const Calendar: FC<CalendarPropsTypes> = ({onProceed, onClose, isVisible}) => {
               text="Apply"
               style={{marginTop: 20}}
               active={Boolean(
-                rating !== 0 || selectedFilterByDate !== undefined,
+                rating !== 0 ||
+                  selectedFilterByDate !== undefined ||
+                  Boolean(startDate && endDate),
               )}
               onPress={() => {
                 onProceed({

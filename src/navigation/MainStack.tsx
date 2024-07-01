@@ -12,7 +12,7 @@ import ResetPassword from '../screens/auth/ResetPassword';
 import CreateNewPassword from '../screens/auth/CreateNewPassword';
 import SignUp from '../screens/auth/SignUp';
 import Notifications from '../screens/dashboard/Notifications';
-import ReportsStack, {ObservationStackParamList} from './ObservationStack';
+import ObservationStack, {ObservationStackParamList} from './ObservationStack';
 import RubricStack, {RubricStackParamList} from './RubricStack';
 import AdminTabStack, {FlowsAndFormsStackParamList} from './FlowsAndFormsStack';
 import TeacherDashboard from '../screens/dashboard/TeacherDashboard';
@@ -20,6 +20,7 @@ import AdminDashboard from '../screens/dashboard/AdminDashboard';
 import UserManagementStack, {
   UserManagementStackParamList,
 } from './UserManagementStack';
+import FlowsAndFormsStack from './FlowsAndFormsStack';
 
 export type MainStackParamList = {
   Splash: undefined;
@@ -30,7 +31,7 @@ export type MainStackParamList = {
   Notifications: undefined;
   TeacherDashboard: undefined;
   AdminDashboard: undefined;
-  ReportsStack: NavigatorScreenParams<ObservationStackParamList>;
+  ObservationStack: NavigatorScreenParams<ObservationStackParamList>;
   RubricStack: NavigatorScreenParams<RubricStackParamList>;
   FlowsAndFormsStack: NavigatorScreenParams<FlowsAndFormsStackParamList>;
   UserManagementStack: NavigatorScreenParams<UserManagementStackParamList>;
@@ -70,9 +71,9 @@ const MainStackNavigator = () => {
             component={TeacherDashboard}
           />
         )}
-        <MainStack.Screen name="ReportsStack" component={ReportsStack} />
+        <MainStack.Screen name="ObservationStack" component={ObservationStack} />
         <MainStack.Screen name="RubricStack" component={RubricStack} />
-        <MainStack.Screen name="FlowsAndFormsStack" component={AdminTabStack} />
+        <MainStack.Screen name="FlowsAndFormsStack" component={FlowsAndFormsStack} />
         <MainStack.Screen
           name="UserManagementStack"
           component={UserManagementStack}

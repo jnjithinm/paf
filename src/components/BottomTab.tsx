@@ -45,7 +45,7 @@ const registeredUserStack: StackItem[] = [
     focusedIcon: 'tabbar_icon_home_focused',
   },
   {
-    stack: 'ReportsStack',
+    stack: 'ObservationStack',
     icon: 'tabbar_icon_observation',
     focusedIcon: 'tabbar_icon_observation_focused',
   },

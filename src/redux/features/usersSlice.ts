@@ -162,17 +162,20 @@ export const getUserGroups = createAsyncThunk<
 
 export const getPendingUsersListForSendReminder = createAsyncThunk<
   GetPendingUsersListForSendReminderResponse,
-  number,
+  [number,number],
   {rejectValue: ErrorResponse}
 >(
   'users/getPendingUsersListForSendReminder',
-  async (formId, {dispatch, rejectWithValue}) => {
+  async ([formId,flowId], {dispatch, rejectWithValue}) => {
     try {
       const response = await api.get(
-        endPoints.GET_PENDING_USERS_LIST_FOR_SEND_REMINDER + 77,
+        endPoints.GET_PENDING_USERS_LIST_FOR_SEND_REMINDER + formId+`?flowId=${flowId}`,
       );
+      console.log("re",response.data)
       return response.data as GetPendingUsersListForSendReminderResponse;
+      
     } catch (error: any) {
+      console.log("error",error)
       return rejectWithValue(error.response.data);
     }
   },
@@ -215,7 +218,10 @@ const usersSlice = createSlice({
         };
       })
       .addCase(getAllUsers.rejected, (state, action) => {
-        // state.isLoading = false;
+        state.usersShowMessage = {
+          status: 'Error',
+          message: action?.payload?.error?.errorMessage,
+        };
       })
       .addCase(getAllUserGroups.pending, state => {
 
@@ -228,7 +234,10 @@ const usersSlice = createSlice({
         };
       })
       .addCase(getAllUserGroups.rejected, (state, action) => {
-        // state.isLoading = false;
+        state.usersShowMessage = {
+          status: 'Error',
+          message: action?.payload?.error?.errorMessage,
+        };
       })
       .addCase(getUserGroups.pending, state => {
         // state.isLoading = true;
@@ -241,7 +250,10 @@ const usersSlice = createSlice({
         };
       })
       .addCase(getUserGroups.rejected, (state, action) => {
-        // state.isLoading = false;
+        state.usersShowMessage = {
+          status: 'Error',
+          message: action?.payload?.error?.errorMessage,
+        };
       })
       .addCase(getPendingUsersListForSendReminder.pending, state => {
         state.pendingUsersListForSendReminder = null;
@@ -254,6 +266,11 @@ const usersSlice = createSlice({
       )
       .addCase(getPendingUsersListForSendReminder.rejected, (state, action) => {
         state.pendingUsersListForSendReminder = null;
+        console.log('sd',action?.payload?.error?.errorMessage)
+        state.usersShowMessage = {
+          status: 'Error',
+          message: action?.payload?.error?.errorMessage,
+        };
       });
   },
 });

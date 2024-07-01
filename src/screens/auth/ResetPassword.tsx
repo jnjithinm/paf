@@ -14,7 +14,8 @@ import Image from '../../components/Image';
 import colors from '../../config/colors';
 import {normaliseDesigns} from '../../utils/helpers/responsiveHelpers';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
-import { forgotPassword } from '../../redux/features/authSlice';
+import { forgotPassword, resetPasswordResponse } from '../../redux/features/authSlice';
+import { openEmailApp } from '../../utils/functions/linkingUtils';
 
 type ResetPasswordNavigationProp = StackNavigationProp<
   MainStackParamList,
@@ -97,11 +98,16 @@ const {forgotPasswordResponse}=useAppSelector(state=>state.auth);
   useEffect(()=>{
     if(forgotPasswordResponse){
       setIsShowModal(true);
+      dispatch(resetPasswordResponse());
+      // navigation.navigate('Login');
     }
   },[forgotPasswordResponse])
 
   const onPressOpenEmail = () => {
-    navigation.navigate('CreateNewPassword');
+
+    openEmailApp();
+    setIsShowModal(false);
+    navigation.navigate('Login');
   };
 
   return (
@@ -119,7 +125,7 @@ const {forgotPasswordResponse}=useAppSelector(state=>state.auth);
         closeButton
         content={
           <RenderConfirmEmailModal
-            onPressOpen={() => {}}
+            onPressOpen={onPressOpenEmail}
             onPressCancel={() => {
               setIsShowModal(false);
             }}
@@ -136,8 +142,8 @@ const {forgotPasswordResponse}=useAppSelector(state=>state.auth);
         Reset Password
       </Text>
       <Text style={{color: '#4E565F'}} size="body1">
-        Enter the username associated with your account and we will send an
-        email with instructions to reset your password.
+        Enter the username and we will send an
+        email to the associated with your account with instructions to reset your password.
       </Text>
       <TextInput
         label="Username"

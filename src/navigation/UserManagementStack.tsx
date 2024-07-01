@@ -6,10 +6,12 @@ import {
 
 import UsersMainPage from '../screens/userManagement/UsersMainPage';
 import UserGroups from '../screens/userManagement/UserGroups';
+import RolesAndAppAccess from '../screens/userManagement/RolesAndAppAccess';
 
 export type UserManagementStackParamList = {
   UsersMainPage: undefined;
   UserGroups: undefined;
+  RolesAndAppAccess:undefined;
 };
 
 const UserManagementStack =
@@ -44,6 +46,7 @@ const UserManagementStackNavigator = ({}) => {
         component={UsersMainPage}
       />
       <UserManagementStack.Screen name="UserGroups" component={UserGroups} />
+      <UserManagementStack.Screen name='RolesAndAppAccess' component={RolesAndAppAccess} />
     </UserManagementStack.Navigator>
   );
 };

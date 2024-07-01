@@ -15,7 +15,8 @@ import {useAppDispatch, useAppSelector} from '../../redux/store';
 import {
   authenticateUser,
   logoutAndclearToken,
-  setErrorMessage,
+  resetUsernamePasswordErrorMessages,
+
 } from '../../redux/features/authSlice';
 import Layout from '../../components/Layout';
 import {
@@ -40,15 +41,15 @@ const Login: FC<LoginScreenProps> = ({navigation, route}) => {
   const [isShowError,setIsShowError]=useState<boolean>(false);
 
   const dispatch = useAppDispatch();
-  const {errorMessage} = useAppSelector(state => state.auth);
+  const {usernameErrorMessage,passwordErrorMessage} = useAppSelector(state => state.auth);
   const {validateField} = useValidation();
 
-  const usernameErrorMessage = validateField({
+  const usernameValidationErrorMessage = validateField({
     fieldName: 'Username',
     value: username,
   });
 
-  const passwordErrorMessage = validateField({
+  const passwordValidationErrorMessage = validateField({
     fieldName: 'Password',
     value: password,
   });
@@ -124,9 +125,9 @@ const Login: FC<LoginScreenProps> = ({navigation, route}) => {
           setValue={setUsername}
           onChange={() => {
             setIsChanged(true);
-            dispatch(setErrorMessage(''));
+            dispatch(resetUsernamePasswordErrorMessages());
           }}
-          errorMessage={usernameErrorMessage}
+          errorMessage={usernameValidationErrorMessage || usernameErrorMessage}
           placeholder="Enter your username"
           autoCapitalize="none"
         />
@@ -136,9 +137,9 @@ const Login: FC<LoginScreenProps> = ({navigation, route}) => {
           setValue={setPassword}
           onChange={() => {
             setIsChanged(true);
-            dispatch(setErrorMessage(''));
+            dispatch(resetUsernamePasswordErrorMessages());
           }}
-          errorMessage={passwordErrorMessage || errorMessage}
+          errorMessage={passwordValidationErrorMessage || passwordErrorMessage}
           placeholder="Enter your password"
           passwordVisibility
           style={{marginTop: 10}}
@@ -181,7 +182,7 @@ const Login: FC<LoginScreenProps> = ({navigation, route}) => {
         <Button
           style={{width: '100%'}}
           text="Log In"
-          active={Boolean(!usernameErrorMessage && !passwordErrorMessage)}
+          active={Boolean(!usernameValidationErrorMessage && !passwordValidationErrorMessage)}
           onPress={onPressLogin}
         />
         {/* <View style={{marginVertical: 10}}>

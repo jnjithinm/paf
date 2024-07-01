@@ -552,7 +552,7 @@ const TeacherDashboard: FC<TeacherDashboardScreenProps> = ({
             titleText="Observations"
             linkText="All Observations"
             onPress={() => {
-              navigation.navigate('ReportsStack', {
+              navigation.navigate('ObservationStack', {
                 screen: 'ObservationReportsMainPage',
               });
             }}

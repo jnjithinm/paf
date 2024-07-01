@@ -363,7 +363,8 @@ const CreateViewEvidenceCard: FC<CreateViewEvidenceCardScreenProps> = ({
         <FooterWithButtons
           onPressProceedButton={onPressSaveCard}
           proceedButtonText={'Save Card'}
-          isActiveProceedButton={isAllFieldsEntered && !evidenceCardDetails}
+          isActiveProceedButton
+          // isActiveProceedButton={isAllFieldsEntered && !evidenceCardDetails}
           cancelButtonText={'Cancel'}
           onPressCancelButton={() => {
             navigation.navigate('ObservationReportsMainPage');

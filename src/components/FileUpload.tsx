@@ -16,7 +16,7 @@ import {FileObject} from '../config/types';
 import RNFS from 'react-native-fs';
 import {useAppDispatch} from '../redux/store';
 import {setLoading} from '../redux/features/authSlice';
-import { setObservationShowMessage } from '../redux/features/observationSlice';
+import {setObservationShowMessage} from '../redux/features/observationSlice';
 
 type ImageItemProps = {
   item: FileObject;
@@ -87,8 +87,11 @@ const createZipFile = async (
   files: FileObject[],
 ): Promise<FileObject | undefined> => {
   const filePaths = [];
+
+  console.log('sssss sdf coming');
   try {
     for (const result of files) {
+      console.log('sss coming');
       const sourceUri = result.uri;
       const fileName = result.name;
       const destPath = `${RNFS.DocumentDirectoryPath}/${fileName}`;
@@ -107,6 +110,7 @@ const createZipFile = async (
     };
     return zipFile;
   } catch (err) {
+    console.log('errr', err);
     return undefined;
   }
 };
@@ -141,14 +145,15 @@ const FileUpload: React.FC<FileUploadProps> = ({
           DocumentPicker.types.doc,
         ],
       });
-
       const newFiles: FileObject[] = [];
       for (const result of results) {
-        const fileStat = await RNFS.stat(result.uri);
-        if (fileStat.size > 20 * 1024 * 1024) {
-          console.log(`File ${result.name} is larger than 20 MB`);
-
-          setObservationShowMessage({status:'Failed',})
+        if (result.size && result.size > 20 * 1024 * 1024) {
+          dispatch(
+            setObservationShowMessage({
+              status: 'Error',
+              message: `File ${result.name} is larger than 20 MB`,
+            }),
+          );
         } else {
           newFiles.push({
             uri: result.uri,

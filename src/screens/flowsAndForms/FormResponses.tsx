@@ -55,19 +55,19 @@ import {FilterObject} from '../../components/Calendar';
 import {
   FlowDetailItem,
   SendReminderMethods,
-  sendReminderToAllPendingUsers,
+  sendReminderForm,
 } from '../../redux/features/flowsSlice';
 import {ItemType} from '../../config/types';
 import DateTimePickerComponent from '../../components/DateTimePickerComponent';
 import moment from 'moment';
-import { FlowsAndFormsStackParamList } from '../../navigation/FlowsAndFormsStack';
+import {FlowsAndFormsStackParamList} from '../../navigation/FlowsAndFormsStack';
 
 type FormResponsesNavigationProp = StackNavigationProp<
   FlowsAndFormsStackParamList,
   'FormResponses'
 >;
 type FormResponsesRouteProp = RouteProp<
-FlowsAndFormsStackParamList,
+  FlowsAndFormsStackParamList,
   'FormResponses'
 >;
 
@@ -154,9 +154,7 @@ export const RenderAssignFormModalContent: FC<
 > = ({onPressAssign}) => {
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [selectedUserGroups, setSelectedUserGroups] = useState<string[]>([]);
-  const {allUserGroups, allUsers} = useAppSelector(
-    state => state.users,
-  );
+  const {allUserGroups, allUsers} = useAppSelector(state => state.users);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -334,7 +332,12 @@ const RenderSendReminderModal: FC<RenderSendReminderModalTypes> = ({
   }, [selectedRemindMethod]);
 
   useEffect(() => {
-    dispatch(getPendingUsersListForSendReminder(flowDetailItem.formId));
+    dispatch(
+      getPendingUsersListForSendReminder([
+        flowDetailItem.formId,
+        flowDetailItem.flowId,
+      ]),
+    );
   }, []);
 
   useEffect(() => {
@@ -350,7 +353,7 @@ const RenderSendReminderModal: FC<RenderSendReminderModalTypes> = ({
   const handleOnPressSend = () => {
     onPressSendReminder(selectedRemindMethod?.value as SendReminderMethods);
     dispatch(
-      sendReminderToAllPendingUsers([
+      sendReminderForm([
         selectedRemindMethod?.value as SendReminderMethods,
         flowDetailItem.formId,
         userData.userName,
@@ -391,35 +394,37 @@ const RenderSendReminderModal: FC<RenderSendReminderModalTypes> = ({
             setSelectedRemindMethod(value);
           }}
         />
-        {selectedRemindMethod?.value === 'To All Pending Users' && (
-          <View
-            style={{
-              borderWidth: 1,
-              borderColor: '#F4C24A',
-              width: '80%',
-              borderRadius: 8,
-              padding: 8,
-            }}>
-            <Text size="small3" fontVariant="bold">
-              List of pending users
-            </Text>
-            <ScrollView
-              style={{marginTop: 5, maxHeight: normaliseDesigns(75)}}
-              showsVerticalScrollIndicator>
-              {pendingUsersListForSendReminder?.dataList?.Users?.map(
-                (item, index) => (
-                  <View
-                    style={{flexDirection: 'row', marginVertical: 2}}
-                    key={index}>
-                    <Text size="small2" fontVariant="semiBold">
-                      {item.name}
-                    </Text>
-                  </View>
-                ),
-              )}
-            </ScrollView>
-          </View>
-        )}
+        {selectedRemindMethod?.value === 'To All Pending Users' &&
+          pendingUsersListForSendReminder &&
+          pendingUsersListForSendReminder?.dataList?.Users?.length > 0 && (
+            <View
+              style={{
+                borderWidth: 1,
+                borderColor: '#F4C24A',
+                width: '80%',
+                borderRadius: 8,
+                padding: 8,
+              }}>
+              <Text size="small3" fontVariant="bold">
+                List of pending users
+              </Text>
+              <ScrollView
+                style={{marginTop: 5, maxHeight: normaliseDesigns(75)}}
+                showsVerticalScrollIndicator>
+                {pendingUsersListForSendReminder?.dataList?.Users?.map(
+                  (item, index) => (
+                    <View
+                      style={{flexDirection: 'row', marginVertical: 2}}
+                      key={index}>
+                      <Text size="small2" fontVariant="semiBold">
+                        {item.name}
+                      </Text>
+                    </View>
+                  ),
+                )}
+              </ScrollView>
+            </View>
+          )}
         <View style={{marginVertical: 3}}>
           <LabeledSingleRadioButton
             selectedValue={selectedRemindMethod}
@@ -488,7 +493,9 @@ const RenderSendReminderModal: FC<RenderSendReminderModalTypes> = ({
         text="Send"
         style={{marginTop: normaliseDesigns(150)}}
         active={Boolean(
-          selectedRemindMethod?.value === 'To All Pending Users' ||
+          (selectedRemindMethod?.value === 'To All Pending Users' &&
+            pendingUsersListForSendReminder &&
+            pendingUsersListForSendReminder?.dataList?.Users?.length > 0) ||
             (selectedRemindMethod?.value === 'By User Groups' &&
               selectedUserGroups?.length > 0) ||
             (selectedRemindMethod?.value === 'By Date' && selectedDate !== ''),
@@ -559,10 +566,7 @@ const ShowResponseCountAndActions: FC<ShowResponseCountAndActionsTypes> = ({
   </View>
 );
 
-const FormResponses: FC<FormResponsesScreenProps> = ({
-  navigation,
-  route,
-}) => {
+const FormResponses: FC<FormResponsesScreenProps> = ({navigation, route}) => {
   const {flowDetailItem} = route.params;
   const [selectedTab, setSelectedTab] = useState<TabTypes>('Individual');
   const [individualScreen, setIndividualScreen] =
@@ -596,9 +600,7 @@ const FormResponses: FC<FormResponsesScreenProps> = ({
 
   const {formById, assignFormResponse} = useAppSelector(state => state.forms);
 
-  const {sendReminderToAllPendingUsersResponse} = useAppSelector(
-    state => state.flows,
-  );
+  const {sendReminderFormResponse} = useAppSelector(state => state.flows);
   const {userData} = useAppSelector(state => state.auth);
 
   const dispatch = useAppDispatch();
@@ -618,10 +620,10 @@ const FormResponses: FC<FormResponsesScreenProps> = ({
   }, []);
 
   useEffect(() => {
-    if (sendReminderToAllPendingUsersResponse) {
+    if (sendReminderFormResponse) {
       setIsVisibleSendReminderSuccessModal(true);
     }
-  }, [sendReminderToAllPendingUsersResponse]);
+  }, [sendReminderFormResponse]);
 
   useEffect(() => {
     dispatch(
@@ -684,9 +686,8 @@ const FormResponses: FC<FormResponsesScreenProps> = ({
         if (individualScreen === 'main') {
           renderal = (
             <IndividualMainPageRenderal
-              key={0}
               onPress={onPressItem}
-              individualResponse={formById?.dataList.individualResponses || []}
+              individualResponse={formById?.dataList?.individualResponses || []}
             />
           );
         } else {
@@ -728,7 +729,7 @@ const FormResponses: FC<FormResponsesScreenProps> = ({
         screen = rubricWiseScreen;
         setScreen = setRubricWiseScreen;
         if (rubricWiseScreen === 'main') {
-          renderal = <RubricWiseMainPageRenderal onPressItem={onPressItem}  />;
+          renderal = <RubricWiseMainPageRenderal onPressItem={onPressItem} />;
         } else {
           renderal = <RubricWiseDescriptionRenderal />;
         }
@@ -791,10 +792,14 @@ const FormResponses: FC<FormResponsesScreenProps> = ({
           closeButton
           content={
             <RenderSuccessModalContent
-              icon="send_reminder_success_icon"
+              icon={
+                selectedRemindMethod === 'By Date'
+                  ? 'calendar_reminder_success_icon'
+                  : 'send_reminder_success_icon'
+              }
               highlightText="Great"
               descriptionText={
-                sendReminderToAllPendingUsersResponse?.message?.toString() || ''
+                sendReminderFormResponse?.message?.toString() || ''
               }
             />
           }
@@ -842,8 +847,8 @@ const FormResponses: FC<FormResponsesScreenProps> = ({
           {isMainPage && (
             <SearchWithFilter
               placeHolder={'Search by user name'}
-              onTextChange={()=>{}}
-              onProceed={()=>{}}
+              onTextChange={() => {}}
+              onProceed={() => {}}
             />
           )}
         </View>

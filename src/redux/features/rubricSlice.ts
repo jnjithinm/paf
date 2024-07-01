@@ -3,7 +3,7 @@ import {createAction, createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import api from '../../config/axios';
 import endPoints from '../../config/endPoints';
 import {PaginationRequest} from './usersSlice';
-import {setLoading} from './authSlice';
+import {ErrorResponse, setLoading} from './authSlice';
 import {ErrorStatusObject} from '../../config/types';
 
 export type RubricItem = {
@@ -93,7 +93,8 @@ export const getAllRubrics = createAsyncThunk<
 
 export const deleteRubric = createAsyncThunk<
   RubricsDeleteResponse,
-  DeleteRubricRequest
+  DeleteRubricRequest,
+  {rejectValue: ErrorResponse}
 >('rubric/deleteRubric', async (payload, {dispatch, rejectWithValue}) => {
   try {
     dispatch(setLoading(true));

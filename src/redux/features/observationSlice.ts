@@ -304,7 +304,7 @@ export const getAllObservations = createAsyncThunk<
       if (payload.userGroupId !== undefined) {
         filteredPayload.userGroupId = payload.userGroupId;
       }
-      if (payload.ratings !== undefined) {
+      if (payload.ratings !== 0 && payload.ratings!==undefined) {
         filteredPayload.ratings = payload.ratings;
       }
       if (payload.dateType !== undefined) {

@@ -94,7 +94,6 @@ const RenderItem: FC<RenderItemTypes> = ({
             style={{
               transform: [{rotate: isExpanded ? '0deg' : '180deg'}],
               alignSelf: subMenuLevel ? 'flex-end' : undefined,
-              bottom: subMenuLevel ? 3 : undefined,
             }}
           />
         )}
@@ -151,7 +150,7 @@ const DrawerContent: FC<DrawerContentTypes> = ({closeDrawer}) => {
       itemName: 'Observation Reports',
       onPressItem: () => {
         closeDrawer();
-        navigate('ReportsStack', {screen: 'ReportsStack'});
+        navigate('ObservationStack');
       },
     },
     {
@@ -162,6 +161,21 @@ const DrawerContent: FC<DrawerContentTypes> = ({closeDrawer}) => {
         {
           itemName: 'Resources',
           onPressItem: () => {},
+          icon: 'extend_item_level_1_icon',
+          subMenuLevel: 'one',
+        },
+      ],
+    },
+    {
+      icon: 'drawer_icon_user_management',
+      itemName: 'Teacher Evaluation',
+      onPressItem: () => {},
+      expandItem: [
+        {
+          itemName: 'Evaluation Flows',
+          onPressItem: () => {
+            navigate('FlowsAndFormsStack');
+          },
           icon: 'extend_item_level_1_icon',
           subMenuLevel: 'one',
         },
@@ -195,7 +209,8 @@ const DrawerContent: FC<DrawerContentTypes> = ({closeDrawer}) => {
         {
           itemName: 'Users',
           onPressItem: () => {
-            navigate('UserManagementStack',{screen:'UsersMainPage'})
+            closeDrawer();
+            navigate('UserManagementStack', {screen: 'UsersMainPage'});
           },
           icon: 'extend_item_level_1_icon',
           subMenuLevel: 'one',
@@ -203,7 +218,8 @@ const DrawerContent: FC<DrawerContentTypes> = ({closeDrawer}) => {
         {
           itemName: 'User Groups',
           onPressItem: () => {
-            navigate('UserManagementStack',{screen:'UserGroups'})
+            closeDrawer();
+            navigate('UserManagementStack', {screen: 'UserGroups'});
           },
           icon: 'extend_item_level_1_icon',
           subMenuLevel: 'one',
@@ -211,7 +227,8 @@ const DrawerContent: FC<DrawerContentTypes> = ({closeDrawer}) => {
         {
           itemName: 'Roles & App Access',
           onPressItem: () => {
-
+            closeDrawer();
+            navigate('UserManagementStack', {screen: 'UserGroups'});
           },
           icon: 'extend_item_level_1_icon',
           subMenuLevel: 'one',
@@ -246,7 +263,7 @@ const DrawerContent: FC<DrawerContentTypes> = ({closeDrawer}) => {
           onPressItem: () => {},
           icon: 'extend_item_level_1_icon',
           subMenuLevel: 'one',
-        }
+        },
       ],
     },
     {
@@ -256,13 +273,17 @@ const DrawerContent: FC<DrawerContentTypes> = ({closeDrawer}) => {
       expandItem: [
         {
           itemName: 'Evaluation Flows',
-          onPressItem: () => {},
+          onPressItem: () => {
+            navigate('FlowsAndFormsStack');
+          },
           icon: 'extend_item_level_1_icon',
           subMenuLevel: 'one',
         },
         {
           itemName: 'Evaluation Rubrics',
-          onPressItem: () => {},
+          onPressItem: () => {
+            navigate('RubricStack');
+          },
           icon: 'extend_item_level_1_icon',
           subMenuLevel: 'one',
         },

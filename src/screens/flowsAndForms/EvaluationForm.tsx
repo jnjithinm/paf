@@ -34,14 +34,14 @@ import {FONT_SIZES, FONT_VARIANT} from '../../config/themes';
 import DateTimePickerComponent from '../../components/DateTimePickerComponent';
 import moment from 'moment';
 import RatingInput from '../../components/RatingInput';
-import { FlowsAndFormsStackParamList } from '../../navigation/FlowsAndFormsStack';
+import {FlowsAndFormsStackParamList} from '../../navigation/FlowsAndFormsStack';
 
 type EvaluationFormNavigationProp = StackNavigationProp<
   FlowsAndFormsStackParamList,
   'EvaluationForm'
 >;
 type EvaluationFormRouteProp = RouteProp<
-FlowsAndFormsStackParamList,
+  FlowsAndFormsStackParamList,
   'EvaluationForm'
 >;
 
@@ -378,11 +378,20 @@ const RenderDateSelector: FC<RenderDateSelectorTypes> = ({
     if (itemAnswer) {
       setAnswers(
         answers.map(item =>
-          item === itemAnswer ? {...item, answer: date} : item,
+          item === itemAnswer
+            ? {...item, answer: moment(date).format('DD-MM-YYYY')}
+            : item,
         ),
       );
     } else {
-      setAnswers([...answers, {questionId, questionOptionId, answer: date}]);
+      setAnswers([
+        ...answers,
+        {
+          questionId,
+          questionOptionId,
+          answer: moment(date).format('DD-MM-YYYY'),
+        },
+      ]);
     }
   };
 
@@ -702,7 +711,7 @@ interface EvaluationFormScreenProps {
 }
 
 const EvaluationForm: FC<EvaluationFormScreenProps> = ({navigation, route}) => {
-  const {flowDetailItem,flowItem} = route.params;
+  const {flowDetailItem, flowItem} = route.params;
 
   const [answers, setAnswers] = useState<AnswerObject[]>([]);
   const {userData} = useAppSelector(state => state.auth);
@@ -732,8 +741,6 @@ const EvaluationForm: FC<EvaluationFormScreenProps> = ({navigation, route}) => {
       navigation.navigate('FormListAndResponses', {flowItem});
     }
   }, [submitPreviewFormResponse]);
-
-
 
   return (
     <>

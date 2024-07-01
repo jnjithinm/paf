@@ -41,7 +41,7 @@ const DashboardTabBar = ({state, navigation}: BottomTabBarProps) => {
         iconName = 'tabbar_icon_home';
 
         break;
-      case 'ReportsStack':
+      case 'ObservationStack':
         iconName = 'tabbar_icon_observation';
 
         break;
@@ -51,7 +51,6 @@ const DashboardTabBar = ({state, navigation}: BottomTabBarProps) => {
         break;
       case 'AdminStack':
         iconName = 'tabbar_icon_graph';
-
         break;
     }
     return {iconName};
