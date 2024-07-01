@@ -154,7 +154,7 @@ export const RenderAssignFormModalContent: FC<
 > = ({onPressAssign}) => {
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [selectedUserGroups, setSelectedUserGroups] = useState<string[]>([]);
-  const {GetAllUserGroupsData, GetAllUserData} = useAppSelector(
+  const {allUserGroups, allUsers} = useAppSelector(
     state => state.users,
   );
   const dispatch = useAppDispatch();
@@ -188,7 +188,7 @@ export const RenderAssignFormModalContent: FC<
       <MultiSelectDropdown
         label="Select user"
         options={
-          GetAllUserData?.dataList.map(item => ({
+          allUsers?.dataList.map(item => ({
             value: item.userId?.toString(),
             label: item.userName,
           })) || []
@@ -199,7 +199,7 @@ export const RenderAssignFormModalContent: FC<
       <MultiSelectDropdown
         label="Select user groups"
         options={
-          GetAllUserGroupsData?.dataList.map(item => ({
+          allUserGroups?.dataList.map(item => ({
             value: item.userGroupId?.toString(),
             label: item.groupName,
           })) || []
@@ -672,7 +672,7 @@ const FormResponses: FC<FormResponsesScreenProps> = ({
     let renderal: JSX.Element = (
       <IndividualMainPageRenderal
         onPress={onPressItem}
-        individualResponse={formById?.dataList.individualResponses || []}
+        individualResponse={formById?.dataList?.individualResponses || []}
       />
     );
     let setScreen: Dispatch<SetStateAction<ScreenSelectiontypes>> =
@@ -728,7 +728,7 @@ const FormResponses: FC<FormResponsesScreenProps> = ({
         screen = rubricWiseScreen;
         setScreen = setRubricWiseScreen;
         if (rubricWiseScreen === 'main') {
-          renderal = <RubricWiseMainPageRenderal onPressItem={onPressItem} />;
+          renderal = <RubricWiseMainPageRenderal onPressItem={onPressItem}  />;
         } else {
           renderal = <RubricWiseDescriptionRenderal />;
         }
@@ -842,12 +842,8 @@ const FormResponses: FC<FormResponsesScreenProps> = ({
           {isMainPage && (
             <SearchWithFilter
               placeHolder={'Search by user name'}
-              onTextChange={function (text: string): void {
-                throw new Error('Function not implemented.');
-              }}
-              onProceed={function (filter: FilterObject): void {
-                throw new Error('Function not implemented.');
-              }}
+              onTextChange={()=>{}}
+              onProceed={()=>{}}
             />
           )}
         </View>

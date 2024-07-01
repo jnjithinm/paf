@@ -8,10 +8,16 @@ import security_question from '../assets/svg/security_question.svg';
 import back_button from '../assets/svg/back_button.svg'
 import tabbar_icon_home from '../assets/svg/tabbar_icon_home.svg';
 import tabbar_icon_graph from '../assets/svg/tabbar_icon_graph.svg'
+import tabbar_icon_graph_focused from '../assets/svg/tabbar_icon_graph_focused.svg'
 import tabbar_icon_observation from '../assets/svg/tabbar_icon_observation.svg';
 import tabbar_icon_rubric from '../assets/svg/tabbar_icon_rubric.svg';
+import tabbar_icon_rubric_focused from '../assets/svg/tabbar_icon_rubric_focused.svg';
 import tabbar_icon_home_focused from '../assets/svg/tabbar_icon_home_focused.svg'
-import tabbar_icon_observation_focused from '../assets/svg/tabbar_icon_observation_focused.svg'
+import tabbar_icon_observation_focused from '../assets/svg/tabbar_icon_observation_focused.svg';
+import tabbar_icon_flows_and_forms from '../assets/svg/tabbar_icon_flows_and_forms.svg';
+import tabbar_icon_flows_and_forms_focused from '../assets/svg/tabbar_icon_flows_and_forms_focused.svg';
+import tabbar_icon_user_management from '../assets/svg/tabbar_icon_user_management.svg';
+import tabbar_icon_user_management_focused from '../assets/svg/tabbar_icon_user_management_focused.svg';
 import profile_icon from '../assets/svg/profile_icon.svg';
 import bell_icon from '../assets/svg/bell_icon.svg'
 import menu_icon from '../assets/svg/menu_icon.svg'
@@ -75,11 +81,11 @@ import  admin_dashboard_analytics_icon from '../assets/svg/admin_dashboard_analy
 import  admin_dashboard_schedules_icon from '../assets/svg/admin_dashboard_schedules_icon.svg'
 import  extend_item_level_1_icon from '../assets/svg/extend_item_level_1_icon.svg'
 import  extend_item_level_2_icon from '../assets/svg/extend_item_level_2_icon.svg'
-import user_management_tabbar_icon from '../assets/svg/user_management_tabbar_icon.svg';
-import user_management_tabbar_focused_icon from '../assets/svg/user_management_tabbar_focused_icon.svg'
 import drawer_icon_analytics from '../assets/svg/drawer_icon_analytics.svg'
 import drawer_icon_user_management from '../assets/svg/drawer_icon_user_management.svg'
-
+import music_player_icon from '../assets/svg/music_player_icon.svg'
+import play_button_music_player_icon from '../assets/svg/play_button_music_player_icon.svg'
+import toast_message_warning_icon from '../assets/svg/toast_message_warning_icon.svg'
 
 
 const Icons = {
@@ -90,10 +96,17 @@ const Icons = {
   back_button,
   tabbar_icon_home,
   tabbar_icon_graph,
+
+  tabbar_icon_graph_focused,
   tabbar_icon_observation,
   tabbar_icon_rubric,
+  tabbar_icon_rubric_focused,
   tabbar_icon_home_focused,
   tabbar_icon_observation_focused,
+  tabbar_icon_user_management_focused,
+  tabbar_icon_user_management,
+  tabbar_icon_flows_and_forms_focused,
+  tabbar_icon_flows_and_forms,
   profile_icon,
   bell_icon,
   menu_icon,
@@ -156,10 +169,12 @@ const Icons = {
   admin_dashboard_location_management_icon,
   extend_item_level_1_icon,
   extend_item_level_2_icon,
-  user_management_tabbar_icon,
-  user_management_tabbar_focused_icon,
   drawer_icon_analytics,
-  drawer_icon_user_management
+  drawer_icon_user_management,
+  music_player_icon,
+  play_button_music_player_icon,
+  toast_message_warning_icon
+  
 };
 
 export type IconTypes = keyof typeof Icons;

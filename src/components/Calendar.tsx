@@ -159,6 +159,34 @@ const Calendar: FC<CalendarPropsTypes> = ({onProceed, onClose, isVisible}) => {
     setEndDate(moment({year, month: month - 1}));
   };
 
+  const handleDateSelect = (day: moment.Moment) => {
+    if (!startDate || (startDate && endDate)) {
+      setStartDate(day);
+      setEndDate(undefined);
+    } else if (startDate && !endDate) {
+      if (day.isBefore(startDate, 'day')) {
+        setStartDate(day);
+      } else {
+        setEndDate(day);
+      }
+    }
+  };
+
+  const isDateInRange = (day: moment.Moment) => {
+    if (startDate && endDate) {
+      return day.isBetween(startDate, endDate, 'day', '[]');
+    }
+    return false;
+  };
+
+  const isStartDate = (day: moment.Moment) => {
+    return startDate && day.isSame(startDate, 'day');
+  };
+
+  const isEndDate = (day: moment.Moment) => {
+    return endDate && day.isSame(endDate, 'day');
+  };
+
   return (
     <RNModal visible={isVisible} animationType="slide" transparent>
       <View style={styles.CalendarOverlay} />
@@ -315,28 +343,18 @@ const Calendar: FC<CalendarPropsTypes> = ({onProceed, onClose, isVisible}) => {
               <View style={styles.daysRow}>
                 {days.map((day, index) => (
                   <TouchableOpacity
-                    style={styles.day}
-                    onPress={() => {
-                      if (startDate && !endDate) {
-                        setEndDate(day);
-                      } else {
-                        setStartDate(day);
-                        setEndDate(undefined);
-                      }
-                    }}>
+                    key={index}
+                    style={[
+                      styles.day,
+                      isStartDate(day) && styles.startDate,
+                      isEndDate(day) && styles.endDate,
+                      isDateInRange(day) && styles.inRangeDate,
+                    ]}
+                    onPress={() => handleDateSelect(day)}>
                     <Text
-                      key={index}
                       style={{
-                        color:
-                          selectedStartMonth !== undefined &&
-                          selectedStartYear !== undefined &&
-                          day.month() === selectedStartMonth - 1 &&
-                          day.year() === selectedStartYear
-                            ? '#000'
-                            : '#ABB4BD',
-                        fontWeight: day.isSame(moment(), 'day')
-                          ? 'bold'
-                          : 'normal',
+                        color: day.isSame(moment(), 'day') ? '#000' : '#ABB4BD',
+                        fontWeight: day.isSame(moment(), 'day') ? 'bold' : 'normal',
                         textAlign: 'center',
                       }}
                       fontVariant="bold">
@@ -434,5 +452,16 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     paddingVertical: 10,
     alignItems: 'center',
+  },
+  startDate: {
+    backgroundColor: '#F4C24A',
+    borderRadius: 20,
+  },
+  endDate: {
+    backgroundColor: '#F4C24A',
+    borderRadius: 20,
+  },
+  inRangeDate: {
+    backgroundColor: '#FCEBC5',
   },
 });

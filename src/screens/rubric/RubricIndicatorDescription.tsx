@@ -7,7 +7,7 @@ import moment from 'moment';
 import Layout from '../../components/Layout';
 import Image from '../../components/Image';
 import Text from '../../components/Text';
-import {RubricStackParamList} from '../../navigation/RubricTabStack';
+import {RubricStackParamList} from '../../navigation/RubricStack';
 import colors from '../../config/colors';
 import Icon from '../../components/Icon';
 import SearchWithFilter from '../../components/SearchWithFilter';

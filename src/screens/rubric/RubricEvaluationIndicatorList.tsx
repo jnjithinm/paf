@@ -12,7 +12,7 @@ import {getRubric} from '../../redux/features/rubricSlice';
 import RubricIndicatorList from '../../components/RubricIndicatorList';
 import SearchWithFilter from '../../components/SearchWithFilter';
 import { FilterObject } from '../../components/Calendar';
-import { RubricStackParamList } from '../../navigation/RubricTabStack';
+import { RubricStackParamList } from '../../navigation/RubricStack';
 
 type RubricEvaluationIndicatorListNavigationProp = StackNavigationProp<
   RubricStackParamList,

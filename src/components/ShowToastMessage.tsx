@@ -1,8 +1,8 @@
 import {StyleSheet, TouchableOpacity, View, ViewStyle} from 'react-native';
-import {ErrorStatusObject} from '../config/types';
+import {ErrorStatus, ErrorStatusObject} from '../config/types';
 import {FC, useEffect} from 'react';
 import {normaliseDesigns} from '../utils/helpers/responsiveHelpers';
-import Icon from './Icon';
+import Icon, {IconTypes} from './Icon';
 import Text from './Text';
 import {setUsersShowMessage} from '../redux/features/usersSlice';
 import {setRubricShowMessage} from '../redux/features/rubricSlice';
@@ -85,18 +85,51 @@ const ShowToastMessage: FC<ShowMessageTypes> = ({style}) => {
     resetShowMessage(showMessage);
   };
 
-  
+  const selectColor = (
+    status: ErrorStatus,
+  ): {textColor: string; backgroundColor: string; icon: IconTypes} => {
+    let textColor, backgroundColor, icon: IconTypes;
+    switch (status) {
+      case 'Success':
+        textColor = '#749E35';
+        backgroundColor = '#EBF9D9';
+        icon = 'checkbox';
+        break;
+      case 'Informative':
+        textColor = '#2F68C4';
+        backgroundColor = '#EAF1FE';
+        icon = 'checkbox';
+        break;
+      case 'Warning':
+        textColor = '#EA7804';
+        backgroundColor = '#EA7804';
+        icon = 'toast_message_warning_icon';
+        break;
+      case 'Error':
+        textColor = '#D62828';
+        backgroundColor = '#FFEDED';
+        icon = 'cross_icon_white';
+        break;
+      default:
+        textColor = '#D62828';
+        backgroundColor = '#FFEDED';
+        icon = 'cross_icon_white';
+        break;
+    }
+    return {textColor, backgroundColor, icon};
+  };
+
+  const {textColor, backgroundColor, icon} = selectColor(showMessage.status);
 
   return (
     <View
       style={[
         styles.showMessage,
         {
-          backgroundColor:
-            showMessage.status === 'Failed' ? '#FFEDED' : '#EBF9D9',
-          borderColor: showMessage.status === 'Failed' ? '#D62828' : '#749E35',
-          borderWidth:1.5,
-          paddingVertical:4,
+          backgroundColor,
+          borderColor: textColor,
+          borderWidth: 1.5,
+          paddingVertical: 4,
           ...style,
         },
       ]}>
@@ -110,23 +143,17 @@ const ShowToastMessage: FC<ShowMessageTypes> = ({style}) => {
         <View
           style={{
             padding: 9,
-            backgroundColor:
-              showMessage.status === 'Failed' ? '#D62828' : '#749E35',
+            backgroundColor:textColor,
             alignItems: 'center',
             justifyContent: 'center',
             borderRadius: 7,
           }}>
-          <Icon
-            name={showMessage.status === 'Failed' ? 'cross_icon_white' : 'checkbox'}
-            stroke={'white'}
-            width={10}
-            height={10}
-          />
+          <Icon name={icon} stroke={'white'} width={10} height={10} />
         </View>
         <Text
           style={{
             width: '90%',
-            color: showMessage.status === 'Failed' ? '#D62828' : '#749E35',
+            color: textColor,
           }}
           size="small3">
           {showMessage.message || commonErrorMessage}

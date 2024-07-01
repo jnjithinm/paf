@@ -12,12 +12,14 @@ import ResetPassword from '../screens/auth/ResetPassword';
 import CreateNewPassword from '../screens/auth/CreateNewPassword';
 import SignUp from '../screens/auth/SignUp';
 import Notifications from '../screens/dashboard/Notifications';
-import ReportsStack, { ObservationStackParamList } from './ObservationStack';
-import RubricStack,{ RubricStackParamList }  from './RubricTabStack';
-import AdminTabStack, { FlowsAndFormsStackParamList } from './FlowsAndFormsStack';
+import ReportsStack, {ObservationStackParamList} from './ObservationStack';
+import RubricStack, {RubricStackParamList} from './RubricStack';
+import AdminTabStack, {FlowsAndFormsStackParamList} from './FlowsAndFormsStack';
 import TeacherDashboard from '../screens/dashboard/TeacherDashboard';
 import AdminDashboard from '../screens/dashboard/AdminDashboard';
-import UserManagementStack, { UserManagementStackParamList } from './UserManagementStack';
+import UserManagementStack, {
+  UserManagementStackParamList,
+} from './UserManagementStack';
 
 export type MainStackParamList = {
   Splash: undefined;
@@ -71,7 +73,10 @@ const MainStackNavigator = () => {
         <MainStack.Screen name="ReportsStack" component={ReportsStack} />
         <MainStack.Screen name="RubricStack" component={RubricStack} />
         <MainStack.Screen name="FlowsAndFormsStack" component={AdminTabStack} />
-        <MainStack.Screen name='UserManagementStack' component={UserManagementStack} />
+        <MainStack.Screen
+          name="UserManagementStack"
+          component={UserManagementStack}
+        />
         <MainStack.Screen name="Notifications" component={Notifications} />
       </MainStack.Navigator>
     );

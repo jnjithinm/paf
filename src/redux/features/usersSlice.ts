@@ -44,7 +44,7 @@ interface GetAllUsersResponse {
 }
 type GetAllUsersResponsePayload = GetAllUsersResponse['payload'];
 
-interface UserGroup {
+export interface UserGroup {
   userGroupId: number;
   groupName: string;
   createdBy: string;
@@ -179,18 +179,18 @@ export const getPendingUsersListForSendReminder = createAsyncThunk<
 );
 
 interface InitialState {
-  GetAllUserGroupsData: GetAllUserGroupsResponsePayload | null;
-  GetAllUserData: GetAllUsersResponsePayload | null;
-  GetUserGroupData: GetUserGroupsResponsePayload | null;
+  allUserGroups: GetAllUserGroupsResponsePayload | null;
+  allUsers: GetAllUsersResponsePayload | null;
+  userGroups: GetUserGroupsResponsePayload | null;
   pendingUsersListForSendReminder: GetPendingUsersListForSendReminderResponsePayload | null;
   usersShowMessage: ErrorStatusObject | null;
   errorMessage: string;
 }
 
 const initialState: InitialState = {
-  GetAllUserGroupsData: null,
-  GetAllUserData: null,
-  GetUserGroupData: null,
+  allUserGroups: null,
+  allUsers: null,
+  userGroups: null,
   pendingUsersListForSendReminder: null,
   usersShowMessage: null,
   errorMessage: '',
@@ -209,8 +209,8 @@ const usersSlice = createSlice({
 
       })
       .addCase(getAllUsers.fulfilled, (state, action) => {
-        state.GetAllUserData = {
-          ...state.GetAllUserData,
+        state.allUsers = {
+          ...state.allUsers,
           ...action.payload.payload,
         };
       })
@@ -222,8 +222,8 @@ const usersSlice = createSlice({
       })
       .addCase(getAllUserGroups.fulfilled, (state, action) => {
         // state.isLoading = false;
-        state.GetAllUserGroupsData = {
-          ...state.GetAllUserGroupsData,
+        state.allUserGroups = {
+          ...state.allUserGroups,
           ...action.payload.payload,
         };
       })
@@ -235,8 +235,8 @@ const usersSlice = createSlice({
       })
       .addCase(getUserGroups.fulfilled, (state, action) => {
         // state.isLoading = false;
-        state.GetUserGroupData = {
-          ...state.GetAllUserGroupsData,
+        state.userGroups = {
+          ...state.allUserGroups,
           ...action.payload.payload,
         };
       })

@@ -25,7 +25,7 @@ import users_icon from '../assets/images/users_icon.png';
 import user_groups_icon from '../assets/images/user_groups_icon.png';
 import role_and_app_access_icon from '../assets/images/role_and_app_access_icon.png';
 import location_icon from '../assets/images/location_icon.png';
-
+import calendar_reminder_success_icon from  '../assets/images/calendar_reminder_success_icon.png';
 
 export type ImageIconNames =
   | 'evaluation_icon'
@@ -51,7 +51,8 @@ export type ImageIconNames =
   |'users_icon'
   |'user_groups_icon'
   |'role_and_app_access_icon'
-  |'location_icon';
+  |'location_icon'
+  |'calendar_reminder_success_icon';
 
 type ImagePropsTypes = {
   name: ImageIconNames;
@@ -135,6 +136,11 @@ const Image: FC<ImagePropsTypes> = ({name, size = 1, style, ...rest}) => {
                 width = 91.2 * size;
                 height = 64 * size;
                 return {Src: location_icon, StyleConst: {width, height}};
+                case 'calendar_reminder_success_icon':
+                  width = 91.2 * size;
+                  height = 51.2 * size;
+                  return {Src: calendar_reminder_success_icon, StyleConst: {width, height}};
+          
       default:
         return {Src: evaluation_icon, StyleConst: {width, height}};
     }

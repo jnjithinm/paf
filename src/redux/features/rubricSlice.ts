@@ -178,7 +178,7 @@ const rubricSlice = createSlice({
       })
       .addCase(deleteRubric.rejected, (state, action) => {
         state.rubricShowMessage = {
-          status: 'Failed',
+          status: 'Error',
           message: action?.payload?.error?.errorMessage,
         };
       });

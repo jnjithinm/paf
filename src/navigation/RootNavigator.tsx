@@ -1,6 +1,5 @@
 import * as React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
-// import FlashMessage from 'react-native-flash-message';
 
 import {navigationRef} from '../utils/helpers/navigationHelpers';
 import MainStack from './MainStack';

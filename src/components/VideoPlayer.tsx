@@ -4,12 +4,10 @@ import Video from 'react-native-video';
 import Orientation from 'react-native-orientation-locker';
 
 interface VideoPlayerProps {
-  source: {
     uri: string;
-  };
 }
 
-const VideoPlayer: React.FC<VideoPlayerProps> = ({ source }) => {
+const VideoPlayer: React.FC<VideoPlayerProps> = ({ uri }) => {
   const [isFullscreen, setIsFullscreen] = useState(false);
 
   const onEnterFullscreen = () => {
@@ -25,7 +23,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ source }) => {
   return (
     <View style={isFullscreen ? styles.fullscreenContainer : styles.container}>
       <Video
-        source={source}
+        source={{uri}}
         style={isFullscreen ? styles.fullscreenVideo : styles.video}
         controls={true}
         resizeMode="contain"
@@ -54,7 +52,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#000',
   },
   video: {
-    width: '100%',
+    width: Dimensions.get('window').width,
     height: 200,
   },
   fullscreenVideo: {

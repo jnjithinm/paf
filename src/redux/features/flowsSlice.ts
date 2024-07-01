@@ -272,7 +272,7 @@ const flowsSlice = createSlice({
       })
       .addCase(sendReminderToAllPendingUsers.rejected, (state, action) => {
         state.flowsShowMessage = {
-          status: 'Failed',
+          status: 'Error',
           message: action?.payload?.error?.errorMessage,
         };
       })
@@ -284,7 +284,7 @@ const flowsSlice = createSlice({
       })
       .addCase(assignFlowToUsersAndGroups.rejected, (state, action) => {
         state.flowsShowMessage = {
-          status: 'Failed',
+          status: 'Error',
           message: action?.payload?.error?.errorMessage,
         };
       });

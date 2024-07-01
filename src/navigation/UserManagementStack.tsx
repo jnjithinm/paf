@@ -4,21 +4,18 @@ import {
   createStackNavigator,
 } from '@react-navigation/stack';
 
-import AddNewObservation from '../screens/observation/AddNewObservation';
-import {RubricIndicatorItem, RubricItem} from '../redux/features/rubricSlice';
-import RubricIndicatorDescription from '../screens/rubric/RubricIndicatorDescription';
-import RubricEvaluationIndicatorList from '../screens/rubric/RubricEvaluationIndicatorList';
-import RubricMainPage from '../screens/rubric/RubricMainPage';
 import UsersMainPage from '../screens/userManagement/UsersMainPage';
+import UserGroups from '../screens/userManagement/UserGroups';
 
 export type UserManagementStackParamList = {
-UsersMainPage:undefined;
-
+  UsersMainPage: undefined;
+  UserGroups: undefined;
 };
 
-const UserManagementStackTab = createStackNavigator<UserManagementStackParamList>();
+const UserManagementStack =
+  createStackNavigator<UserManagementStackParamList>();
 
-const UserManagementStack = ({}) => {
+const UserManagementStackNavigator = ({}) => {
   const customTransition = ({
     current,
     layouts,
@@ -37,15 +34,18 @@ const UserManagementStack = ({}) => {
     };
   };
   return (
-    <UserManagementStackTab.Navigator
+    <UserManagementStack.Navigator
       screenOptions={({route}) => ({
         headerShown: false,
         keyboardHidesTabBar: true,
       })}>
-      <UserManagementStackTab.Screen name='UsersMainPage' component={UsersMainPage} />
-
-    </UserManagementStackTab.Navigator>
+      <UserManagementStack.Screen
+        name="UsersMainPage"
+        component={UsersMainPage}
+      />
+      <UserManagementStack.Screen name="UserGroups" component={UserGroups} />
+    </UserManagementStack.Navigator>
   );
 };
 
-export default UserManagementStack;
+export default UserManagementStackNavigator;

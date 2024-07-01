@@ -10,6 +10,16 @@ export const storeToken = async (token: string) => {
   }
 };
 
+export const getToken = async (): Promise<string | null> => {
+  try {
+    const token = await AsyncStorage.getItem('token');
+    return token;
+  } catch (error) {
+    console.log('Error saving screen name: ', error);
+    return null;
+  }
+};
+
 export const removeToken = async () => {
   try {
     await AsyncStorage.removeItem('token');

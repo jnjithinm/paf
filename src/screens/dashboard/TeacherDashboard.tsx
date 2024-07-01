@@ -1,7 +1,5 @@
 import React, {FC, useEffect, useState} from 'react';
 import {
-  Image,
-  TextInput,
   TouchableOpacity,
   View,
   ViewStyle,
@@ -22,6 +20,7 @@ import {navigate} from '../../utils/helpers/navigationHelpers';
 import {FilterObject} from '../../components/Calendar';
 import SearchWithFilter from '../../components/SearchWithFilter';
 import {MainStackParamList} from '../../navigation/MainStack';
+import FastImage from 'react-native-fast-image';
 
 type TeacherDashboardNavigationProp = StackNavigationProp<
   MainStackParamList,
@@ -191,6 +190,7 @@ type ObservationFilterTileTypes = {
   color: 'green' | 'yellow' | 'orange';
   count: number;
   onPress: () => void;
+  disabled?:boolean;
 };
 
 export const ObservationFilterTile: FC<ObservationFilterTileTypes> = ({
@@ -198,6 +198,7 @@ export const ObservationFilterTile: FC<ObservationFilterTileTypes> = ({
   color,
   count,
   onPress,
+  disabled
 }) => (
   <TouchableOpacity
     style={{
@@ -222,6 +223,7 @@ export const ObservationFilterTile: FC<ObservationFilterTileTypes> = ({
       height: 40,
       borderRadius: 10,
     }}
+    disabled={disabled}
     onPress={() => {}}>
     <Text
       style={{
@@ -399,9 +401,16 @@ export const RenderProfileIcon: FC<RenderProfileIconTypes> = ({
 }) => {
   if (image) {
     return (
-      <Image
-        source={{uri: image}}
-        style={{width: size, height: size, borderRadius: size / 2}}
+      <FastImage
+        style={{ width: size, height: size, borderRadius: size / 2 }}
+        source={{
+          uri: image,
+          priority: FastImage.priority.normal,
+        }}
+        resizeMode={FastImage.resizeMode.cover}
+        onLoadStart={() => console.log('Loading started')}
+        onLoadEnd={() => console.log('Loading finished')}
+        onError={() => console.log('Failed to load image')}
       />
     );
   } else {
@@ -554,18 +563,21 @@ const TeacherDashboard: FC<TeacherDashboardScreenProps> = ({
               color="green"
               text="All"
               onPress={() => {}}
+              disabled
             />
             <ObservationFilterTile
               count={Number(dashboardDetails?.byMe) || 0}
               color="orange"
               text="By Me"
               onPress={() => {}}
+              disabled
             />
             <ObservationFilterTile
               count={Number(dashboardDetails?.forMe) || 0}
               color="yellow"
               text="For Me"
               onPress={() => {}}
+              disabled
             />
           </View>
           <View style={{marginTop: 20}}>
@@ -574,7 +586,7 @@ const TeacherDashboard: FC<TeacherDashboardScreenProps> = ({
                 key={index}
                 rating={item.ratings?.toString()}
                 userAssisted={item.userAssessed}
-                image={item.reportedByImage}
+                image={item.userImage}
                 reportedBy={item.reportedBy}
                 disabled
               />

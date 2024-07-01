@@ -14,7 +14,7 @@ export type FlowsAndFormsStackParamList = {
   FlowsMainPage: undefined;
   FormListAndResponses: {flowItem: FlowItem};
   FormResponses: {flowDetailItem: FlowDetailItem};
-  EvaluationForm: {flowDetailItem: FlowDetailItem,flowItem: FlowItem};
+  EvaluationForm: {flowDetailItem: FlowDetailItem; flowItem: FlowItem};
 };
 
 const FlowsAndFormsStackTab =
@@ -48,7 +48,10 @@ const FlowsAndFormsStack = () => {
         name="FlowsMainPage"
         component={FlowsMainPage}
       />
-      <FlowsAndFormsStackTab.Screen name="FormListAndResponses" component={FormListAndResponses} />
+      <FlowsAndFormsStackTab.Screen
+        name="FormListAndResponses"
+        component={FormListAndResponses}
+      />
       <FlowsAndFormsStackTab.Screen
         name="FormResponses"
         component={FormResponses}

@@ -41,7 +41,8 @@ const RenderItem: FC<RenderItemTypes> = ({
       <TouchableOpacity
         style={{
           flexDirection: 'row',
-          marginVertical: subMenuLevel==='one' ? -6 :subMenuLevel==='two'?-4 : 8,
+          marginVertical:
+            subMenuLevel === 'one' ? -13 : subMenuLevel === 'two' ? -9 : 7,
           alignItems: 'center',
           justifyContent: 'space-between',
           ...style,
@@ -53,14 +54,16 @@ const RenderItem: FC<RenderItemTypes> = ({
               style={{
                 flexDirection: 'row',
                 alignItems: 'flex-end',
-                marginLeft: subMenuLevel === 'one' ? '3%' : '10%',
+                marginLeft: subMenuLevel === 'one' ? '2%' : '10%',
               }}>
               <Icon
                 name={icon}
                 width={subMenuLevel === 'one' ? 45 : 40}
                 height={subMenuLevel === 'one' ? 45 : 40}
               />
-              <Text size={subMenuLevel === 'one' ? 'body1' : 'small3'} style={{letterSpacing:-0.27}}>
+              <Text
+                size={subMenuLevel === 'one' ? 'body1' : 'small3'}
+                style={{letterSpacing: -0.27}}>
                 {itemName}
               </Text>
             </View>
@@ -91,31 +94,22 @@ const RenderItem: FC<RenderItemTypes> = ({
             style={{
               transform: [{rotate: isExpanded ? '0deg' : '180deg'}],
               alignSelf: subMenuLevel ? 'flex-end' : undefined,
-              bottom:subMenuLevel ?3 : undefined,
+              bottom: subMenuLevel ? 3 : undefined,
             }}
           />
         )}
       </TouchableOpacity>
       {isExpanded &&
-        expandItem?.map(item => (
+        expandItem?.map((item, index) => (
           <RenderItem
-            // style={{marginLeft: '10%'}}
             itemName={item.itemName}
             expandItem={item.expandItem}
             onPressItem={item.onPressItem}
             key={item.itemName}
             icon={item.icon}
             subMenuLevel={item.subMenuLevel}
+            style={{marginBottom: index === expandItem.length - 1 ? 4 : 0}}
           />
-          // <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          //   <TouchableOpacity
-          //     style={{marginLeft: '15%', marginVertical: 5}}
-          //     onPress={item?.onPressItem}>
-          //     <Text fontVariant="bold" size="body1">
-          //       {item?.itemName}
-          //     </Text>
-          //   </TouchableOpacity>
-          // </View>
         ))}
     </>
   );
@@ -156,6 +150,7 @@ const DrawerContent: FC<DrawerContentTypes> = ({closeDrawer}) => {
       icon: 'drawer_icon_observation_reports',
       itemName: 'Observation Reports',
       onPressItem: () => {
+        closeDrawer();
         navigate('ReportsStack', {screen: 'ReportsStack'});
       },
     },
@@ -178,7 +173,7 @@ const DrawerContent: FC<DrawerContentTypes> = ({closeDrawer}) => {
       onPressItem: () => {},
     },
     {
-      icon: 'drawer_icon_give_feedback',
+      icon: 'drawer_icon_analytics',
       itemName: 'Analytics',
       onPressItem: () => {},
     },
@@ -198,8 +193,26 @@ const DrawerContent: FC<DrawerContentTypes> = ({closeDrawer}) => {
       onPressItem: () => {},
       expandItem: [
         {
-          itemName: 'Resources',
-          onPressItem: () => {},
+          itemName: 'Users',
+          onPressItem: () => {
+            navigate('UserManagementStack',{screen:'UsersMainPage'})
+          },
+          icon: 'extend_item_level_1_icon',
+          subMenuLevel: 'one',
+        },
+        {
+          itemName: 'User Groups',
+          onPressItem: () => {
+            navigate('UserManagementStack',{screen:'UserGroups'})
+          },
+          icon: 'extend_item_level_1_icon',
+          subMenuLevel: 'one',
+        },
+        {
+          itemName: 'Roles & App Access',
+          onPressItem: () => {
+
+          },
           icon: 'extend_item_level_1_icon',
           subMenuLevel: 'one',
         },
@@ -207,11 +220,42 @@ const DrawerContent: FC<DrawerContentTypes> = ({closeDrawer}) => {
     },
     {
       icon: 'drawer_icon_observation_reports',
+      itemName: 'Location Management',
+      onPressItem: () => {},
+      expandItem: [
+        {
+          itemName: 'States',
+          onPressItem: () => {},
+          icon: 'extend_item_level_1_icon',
+          subMenuLevel: 'one',
+        },
+        {
+          itemName: 'Districts',
+          onPressItem: () => {},
+          icon: 'extend_item_level_1_icon',
+          subMenuLevel: 'one',
+        },
+        {
+          itemName: 'Areas',
+          onPressItem: () => {},
+          icon: 'extend_item_level_1_icon',
+          subMenuLevel: 'one',
+        },
+        {
+          itemName: 'Schools',
+          onPressItem: () => {},
+          icon: 'extend_item_level_1_icon',
+          subMenuLevel: 'one',
+        }
+      ],
+    },
+    {
+      icon: 'drawer_icon_user_management',
       itemName: 'Teacher Evaluation',
       onPressItem: () => {},
       expandItem: [
         {
-          itemName: 'Evaluation Form',
+          itemName: 'Evaluation Flows',
           onPressItem: () => {},
           icon: 'extend_item_level_1_icon',
           subMenuLevel: 'one',
@@ -357,7 +401,7 @@ const DrawerContent: FC<DrawerContentTypes> = ({closeDrawer}) => {
         <View
           style={{height: 1, backgroundColor: '#E4E7EB', marginVertical: 15}}
         />
-        <View style={{paddingVertical:15}}> 
+        <View style={{paddingVertical: 15}}>
           {itemsArray.map(item => (
             <RenderItem
               icon={item.icon}
@@ -373,10 +417,10 @@ const DrawerContent: FC<DrawerContentTypes> = ({closeDrawer}) => {
             width: '100%',
             backgroundColor: '#CBD2D9',
             height: 1.5,
-            marginVertical:5
+            marginVertical: 5,
           }}
         />
-        <View >
+        <View>
           {settingsItems.map(item => (
             <RenderItem
               icon={item.icon}
@@ -394,7 +438,7 @@ const DrawerContent: FC<DrawerContentTypes> = ({closeDrawer}) => {
           width: '100%',
           alignItems: 'center',
           justifyContent: 'center',
-          paddingVertical:15,
+          paddingVertical: 15,
           bottom: 20,
           position: 'absolute',
         }}>
@@ -414,7 +458,10 @@ const DrawerContent: FC<DrawerContentTypes> = ({closeDrawer}) => {
         <View
           style={{flexDirection: 'row', alignItems: 'center', marginTop: 10}}>
           <TouchableOpacity>
-            <Text style={{color: '#ABB4BD'}} fontVariant='bold' size="verysmall1">
+            <Text
+              style={{color: '#ABB4BD'}}
+              fontVariant="bold"
+              size="verysmall1">
               Terms & Conditions
             </Text>
           </TouchableOpacity>
@@ -427,7 +474,10 @@ const DrawerContent: FC<DrawerContentTypes> = ({closeDrawer}) => {
             }}
           />
           <TouchableOpacity>
-            <Text style={{color: '#ABB4BD'}} fontVariant='bold' size='verysmall1'>
+            <Text
+              style={{color: '#ABB4BD'}}
+              fontVariant="bold"
+              size="verysmall1">
               Privacy Policy
             </Text>
           </TouchableOpacity>

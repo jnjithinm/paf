@@ -15,6 +15,7 @@ const endPoints = {
   GET_OBSERVATION_BY_ID: `PAF/teachers/observation/`,
   GET_ALL_OBSERVATIONS: `PAF/teachers/observation/getAllObservation/search/`,
   GET_EVIDENCE_BY_ID: `PAF/teachers/evidence/`,
+  DELETE_ATTACHMENTS:`PAF/teachers/deleteAttachment`,
   GET_ALL_RUBRICS: `PAF/rubrics/all`,
   DELETE_RUBRIC: `PAF/rubrics`,
   GET_RUBRIC: `PAF/rubrics/`,

@@ -206,7 +206,7 @@ const authSlice = createSlice({
         state.isLoggedIn = false;
         action?.payload?.error?.errorMessage
           ? (state.authShowMessage = {
-              status: 'Failed',
+              status: 'Error',
               message: action?.payload?.error?.errorMessage?.toString(),
             })
           : (state.errorMessage = 'Invalid password entered');

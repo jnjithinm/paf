@@ -10,7 +10,6 @@ import {useAppDispatch, useAppSelector} from '../../redux/store';
 import {
   RubricItem,
   deleteRubric,
-  getAllRubrics,
 } from '../../redux/features/rubricSlice';
 
 import {normaliseFont} from '../../utils/helpers/responsiveHelpers';

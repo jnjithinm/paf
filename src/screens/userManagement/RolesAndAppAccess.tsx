@@ -1,25 +1,23 @@
 import React, {FC, useEffect, useState} from 'react';
-import {TextInput, TouchableOpacity, View, ViewStyle} from 'react-native';
+import {TouchableOpacity, View, ViewStyle} from 'react-native';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
-import moment from 'moment';
 
 import Layout from '../../components/Layout';
 import {UserManagementStackParamList} from '../../navigation/UserManagementStack';
 import Icon from '../../components/Icon';
 import Text from '../../components/Text';
 import {useAppDispatch, useAppSelector} from '../../redux/store';
-import {User, getAllUsers} from '../../redux/features/usersSlice';
-import {normaliseDesigns} from '../../utils/helpers/responsiveHelpers';
+import {User, getAllUserGroups} from '../../redux/features/usersSlice';
 import colors from '../../config/colors';
 
-type UsersMainPageNavigationProp = StackNavigationProp<
+type UserGroupsNavigationProp = StackNavigationProp<
   UserManagementStackParamList,
-  'UsersMainPage'
+  'UserGroups'
 >;
-type UsersMainPageRouteProp = RouteProp<
+type UserGroupsRouteProp = RouteProp<
   UserManagementStackParamList,
-  'UsersMainPage'
+  'UserGroups'
 >;
 
 const users: User[] = [
@@ -224,7 +222,7 @@ const UserTile: FC<UserTileTypes> = ({user, selectedItem, onPressItem}) => (
           borderBottomRightRadius: 10,
           borderBottomLeftRadius: 10,
           flexWrap: 'wrap',
-          justifyContent: 'space-between',
+          justifyContent: 'flex-start',
         }}>
         <RenderLabelAndValue
           label={'Email'}
@@ -266,40 +264,41 @@ const UserTile: FC<UserTileTypes> = ({user, selectedItem, onPressItem}) => (
   </TouchableOpacity>
 );
 
-interface UsersMainPageScreenProps {
-  navigation: UsersMainPageNavigationProp;
-  route: UsersMainPageRouteProp;
+interface UserGroupsScreenProps {
+  navigation: UserGroupsNavigationProp;
+  route: UserGroupsRouteProp;
 }
 
-const UsersMainPage: FC<UsersMainPageScreenProps> = ({navigation, route}) => {
+const UserGroups: FC<UserGroupsScreenProps> = ({navigation, route}) => {
   const [selectedItem, setSelectedItem] = useState<User>();
+
+  const {allUserGroups}=useAppSelector(state=>state.users)
   const dispatch = useAppDispatch();
-  const {allUsers}=useAppSelector(state=>state.users);
+
 
   useEffect(() => {
     dispatch(
-      getAllUsers({
-        page: 0,
-        size: 15,
-        type: 'all',
-      }),
-    );
+        getAllUserGroups({
+          page: 0,
+          size: 15,
+          type: 'all',
+        }),
+      );
   }, []);
-  
   return (
     <Layout
       overridePaddingHorizontal
       overridePaddingVertical
       style={{paddingHorizontal: 15}}
-      title="Users"
-      icon="users_icon"
+      title="User Groups"
+      icon='user_groups_icon'
       focusedStack="UserManagementStack"
       titleTransition>
       <Text size="body3" fontVariant="bold" style={{marginVertical: 10}}>
         Users
       </Text>
-      <View style={{marginVertical:10}}>
-        {allUsers?.dataList.map(item => (
+      <View>
+        {allUserGroups?.dataList.map(item => (
           <UserTile
             user={item}
             onPressItem={user => {
@@ -312,4 +311,4 @@ const UsersMainPage: FC<UsersMainPageScreenProps> = ({navigation, route}) => {
     </Layout>
   );
 };
-export default UsersMainPage;
+export default UserGroups;

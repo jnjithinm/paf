@@ -1,6 +1,7 @@
 import axios, {AxiosInstance, AxiosError} from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import endPoints from './endPoints';
+import { getToken } from '../utils/functions/localStorageOperations';
 
 
 const api: AxiosInstance = axios.create({
@@ -10,7 +11,7 @@ const api: AxiosInstance = axios.create({
 
 api.interceptors.request.use(
   async config => {
-    const token = await AsyncStorage.getItem('token');
+    const token = await getToken();
 
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`;
@@ -49,7 +50,7 @@ api.interceptors.response.use(
       } else if (error.message === 'Network Error') {
         message = 'Please check your internet connection.';
       }
-      // store.dispatch(setShowMessage({status: 'Failed', message}));
+      // store.dispatch(setShowMessage({status: 'Error', message}));
       return Promise.reject(error); // Return the errorMessage
     } else {
       // const status = error.response.status;

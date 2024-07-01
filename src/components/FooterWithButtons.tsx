@@ -34,7 +34,7 @@ const FooterWithButtons: FC<FooterWithButtonsProps> = ({
       width: '100%', 
       flexDirection: 'row',
       alignItems: 'center',
-      justifyContent: 'space-between',
+      justifyContent: 'space-around',
       backgroundColor: 'white',
       paddingBottom: 30,
       padding:15,

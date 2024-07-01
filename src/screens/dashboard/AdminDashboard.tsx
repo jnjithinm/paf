@@ -48,16 +48,23 @@ const AdminDashboardMenuItem: FC<AdminDashboardMenuItemTypes> = ({
         backgroundColor: '#FEF8EC',
         borderWidth: 1,
         borderColor: '#F4C24A',
-        marginVertical:5,
-        borderRadius:8,
-        paddingVertical:18
+        marginVertical: 5,
+        borderRadius: 8,
+        paddingVertical: 18,
       },
     ]}
     onPress={onPress}>
     <Icon name={icon} />
-    <View style={{flexDirection: 'row', alignItems: 'center',justifyContent:'space-between'}}>
-      <Text fontVariant='bold' style={{width:'85%'}}>{label}</Text>
-      <Icon name='right_icon' />
+    <View
+      style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+      }}>
+      <Text fontVariant="bold" style={{width: '85%'}}>
+        {label}
+      </Text>
+      <Icon name="right_icon" />
     </View>
   </TouchableOpacity>
 );
@@ -66,19 +73,21 @@ const AdminDashboard: FC<AdminDashboardScreenProps> = ({navigation, route}) => {
 
   const dispatch = useAppDispatch();
 
-  const {userData,isLoading} = useAppSelector(state => state.auth);
+  const {userData, isLoading} = useAppSelector(state => state.auth);
 
   const closeDrawer = () => {
     setIsDrawerOpen(false);
   };
 
-  console.log("is",isLoading)
+  console.log('is', isLoading);
 
   const menuItemArray: AdminDashboardMenuItemTypes[] = [
     {
       icon: 'admin_dashboard_user_management_icon',
       label: 'User Management',
-      onPress: () => {},
+      onPress: () => {
+        navigation.navigate('UserManagementStack',{screen:'UsersMainPage'})
+      },
     },
     {
       icon: 'admin_dashboard_location_management_icon',
@@ -116,9 +125,16 @@ const AdminDashboard: FC<AdminDashboardScreenProps> = ({navigation, route}) => {
         dashboard
         focusedStack={isDrawerOpen ? undefined : 'AdminDashboard'}
         avoidBackButton>
-        <Text fontVariant='bold' size='body3' style={{marginVertical: 20}}>Welcome {userData.name}!</Text>
+        <Text fontVariant="bold" size="body3" style={{marginVertical: 20}}>
+          Welcome {userData.name}!
+        </Text>
         <View
-          style={{flexDirection: 'row', flexWrap: 'wrap', alignSelf: 'center',justifyContent:'space-between'}}>
+          style={{
+            flexDirection: 'row',
+            flexWrap: 'wrap',
+            alignSelf: 'center',
+            justifyContent: 'space-between',
+          }}>
           {menuItemArray.map((item, index) => (
             <AdminDashboardMenuItem
               key={index}

@@ -7,7 +7,7 @@ import {PaginationRequest} from './usersSlice';
 import {ErrorResponse, setLoading} from './authSlice';
 import {DateFilterOption} from '../../components/Calendar';
 import RNFetchBlob from 'rn-fetch-blob';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getToken } from '../../utils/functions/localStorageOperations';
 
 interface Observation {
   userAssessed: string;
@@ -41,17 +41,21 @@ interface SaveEvidenceCardResponse {
   payload: {
     evidenceId: number;
     domainName: string;
+    domainId: number;
+    indicatorId: number;
     indicatorName: string;
     averageRating: number;
-    attachmentResponse: any[];
+    attachmentResponse: AttachmentResponse[];
+    fileCount: FileCount;
     message: string;
   };
+
   status: number;
 }
 
 type SaveEvidenceCardResponsePayload = SaveEvidenceCardResponse['payload'];
 
-type AttachmentResponse = {
+export type AttachmentResponse = {
   attachmentId: number;
   fileName: string;
   fileType: string;
@@ -77,6 +81,8 @@ export type EvidenceResponse = {
   fileCount: FileCount;
 };
 
+export type ObservationStatus= 'Completed' | 'Pending';
+
 type GetObservationByIdResponse = {
   payload: {
     observationId: number;
@@ -86,7 +92,7 @@ type GetObservationByIdResponse = {
     userName: string;
     userGroup: string;
     feedbackDescription: string;
-    observationStatus: 'Completed' | 'Pending';
+    observationStatus:ObservationStatus;
     observationAvgRatings: number;
     userImage: string | null;
     evidenceResponseList: EvidenceResponse[];
@@ -191,7 +197,7 @@ interface SaveObservationRequest {
   observationDate: string;
   userGroupId: number;
   userId: number;
-  observationStatus: string;
+  observationStatus: 'Pending'|'Completed';
   feedbackDescription: string;
   loggedInUserName: string;
   evidenceRequestList: EvidenceRequest[];
@@ -212,6 +218,7 @@ interface SaveObservationResponse {
   };
   status: number;
 }
+type SaveObservationResponsePayload = SaveObservationResponse['payload'];
 
 export const setObservationShowMessage = createAction<ErrorStatusObject | null>(
   'SET_OBSERVATION_SHOW_MESSAGE',
@@ -225,6 +232,9 @@ export const saveNewObservation = createAction<NewObservation | null>(
   'SAVE_NEW_OBSERVATION',
 );
 
+export const resetSaveObservationResponse = createAction<void>(
+  'RESET_SAVE_OBSERVATION_RESPONSE',
+);
 export const getDashboardDetailsAndObservationList = createAsyncThunk<
   GetDashboardDetailsAndObservationListResponse,
   number,
@@ -331,14 +341,8 @@ export const saveEvidenceCard = createAsyncThunk<
   'observation/saveEvidenceCard',
   async ([evidenceInfo, file], {dispatch, rejectWithValue}) => {
     try {
-      const token = await AsyncStorage.getItem('token');
+      const token = await getToken();
       dispatch(setLoading(true));
-      // const formData = new FormData();
-      // formData.append('evidenceInfo',JSON.stringify(evidenceInfo));
-
-      // if(file){
-      //   formData.append('file',file);
-      // }
       const formData = [];
       formData.push({
         name: 'evidenceInfo',
@@ -352,8 +356,8 @@ export const saveEvidenceCard = createAsyncThunk<
         type: file.type,
         data: RNFetchBlob.wrap(file.uri),
       });
-      const url = 'http://65.1.32.205:8080/' + endPoints.SAVE_EVIDENCE_CARD;
 
+      const url = 'http://65.1.32.205:8080/' + endPoints.SAVE_EVIDENCE_CARD;
       const response = await RNFetchBlob.fetch(
         'POST',
         url,
@@ -364,7 +368,10 @@ export const saveEvidenceCard = createAsyncThunk<
         formData,
       );
 
-      return response.data as SaveEvidenceCardResponse;
+      const parsedResponse = JSON.parse(response.data);
+      console.log("res", parsedResponse);
+      
+      return parsedResponse as SaveEvidenceCardResponse;
     } catch (error: any) {
       console.log('evidence card', error);
       return rejectWithValue(error.response.data);
@@ -384,6 +391,7 @@ export const saveObservation = createAsyncThunk<
     try {
       dispatch(setLoading(true));
       const response = await api.post(endPoints.SAVE_OBSERVATION, payload);
+      console.log(":ressss",response.data)
       return response.data as SaveObservationResponse;
     } catch (error: any) {
       return rejectWithValue(error.response.data);
@@ -399,6 +407,7 @@ interface InitialState {
   observationById: GetObservationByIdResponsePayload | null;
   allObservations: GetAllObservationsResponsePayload | null;
   newObservation: NewObservation | null;
+  saveObservationResponse: SaveObservationResponsePayload | null;
   observationShowMessage: ErrorStatusObject | null;
   errorMessage: string;
 }
@@ -410,6 +419,7 @@ const initialState: InitialState = {
   observationById: null,
   allObservations: null,
   newObservation: null,
+  saveObservationResponse: null,
   observationShowMessage: null,
   errorMessage: '',
 };
@@ -431,7 +441,9 @@ const observationSlice = createSlice({
       .addCase(resetSaveEvidenceCardResponse, (state, action) => {
         state.saveEvidenceCardResponse = null;
       })
-
+      .addCase(resetSaveObservationResponse, (state, action) => {
+        state.saveObservationResponse = null;
+      })
       .addCase(getDashboardDetailsAndObservationList.pending, state => {
         // state.isLoading = true;
       })
@@ -448,7 +460,7 @@ const observationSlice = createSlice({
         getDashboardDetailsAndObservationList.rejected,
         (state, action) => {
           state.observationShowMessage = {
-            status: 'Failed',
+            status: 'Error',
             message: action?.payload?.error?.errorMessage,
           };
         },
@@ -457,27 +469,30 @@ const observationSlice = createSlice({
         // state.isLoading = true;
       })
       .addCase(saveEvidenceCard.fulfilled, (state, action) => {
-        // state.isLoading = false;
-        state.saveEvidenceCardResponse = {
-          ...state.saveEvidenceCardResponse,
-          ...action.payload.payload,
+        state.observationShowMessage = {
+          status: 'Success',
+          message: action?.payload?.payload?.message,
         };
+        state.saveEvidenceCardResponse = action.payload.payload;
+        console.log("save evid res",action.payload.payload)
       })
       .addCase(saveEvidenceCard.rejected, (state, action) => {
+          state.saveEvidenceCardResponse=null;
         state.observationShowMessage = {
-          status: 'Failed',
+          status: 'Error',
           message: action?.payload?.error?.errorMessage,
         };
       })
       .addCase(getObservationById.pending, state => {
-        // state.isLoading = true;
+        state.saveEvidenceCardResponse=null;
       })
       .addCase(getObservationById.fulfilled, (state, action) => {
+      
         state.observationById = action.payload.payload;
       })
       .addCase(getObservationById.rejected, (state, action) => {
         state.observationShowMessage = {
-          status: 'Failed',
+          status: 'Error',
           message: action?.payload?.error?.errorMessage,
         };
       })
@@ -492,7 +507,22 @@ const observationSlice = createSlice({
       })
       .addCase(getAllObservations.rejected, (state, action) => {
         state.observationShowMessage = {
-          status: 'Failed',
+          status: 'Error',
+          message: action?.payload?.error?.errorMessage,
+        };
+      })
+      .addCase(saveObservation.pending, state => {})
+      .addCase(saveObservation.fulfilled, (state, action) => {
+        state.saveObservationResponse = action.payload.payload;
+        state.observationShowMessage = {
+          status: 'Success',
+          message: action?.payload?.payload?.message,
+        };
+      })
+      .addCase(saveObservation.rejected, (state, action) => {
+        console.log("error",action.payload?.error)
+        state.observationShowMessage = {
+          status: 'Error',
           message: action?.payload?.error?.errorMessage,
         };
       });

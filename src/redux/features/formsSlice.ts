@@ -360,7 +360,7 @@ const formsSlice = createSlice({
       })
       .addCase(getFormById.rejected, (state, action) => {
         state.formsShowMessage = {
-          status: 'Failed',
+          status: 'Error',
           message: action?.payload?.error?.errorMessage?.toString(),
         };
       })
@@ -373,7 +373,7 @@ const formsSlice = createSlice({
       .addCase(getPreviewForm.rejected, (state, action) => {
         state.previewForm = null;
         state.formsShowMessage = {
-          status: 'Failed',
+          status: 'Error',
           message: action?.payload?.error?.errorMessage?.toString(),
         };
       })
@@ -389,7 +389,7 @@ const formsSlice = createSlice({
       })
       .addCase(submitPreviewForm.rejected, (state, action) => {
         state.formsShowMessage = {
-          status: 'Failed',
+          status: 'Error',
           message: action?.payload?.error?.errorMessage?.toString(),
         };
       })
@@ -401,7 +401,7 @@ const formsSlice = createSlice({
       })
       .addCase(acceptingFormResponses.rejected, (state, action) => {
         state.formsShowMessage = {
-          status: 'Failed',
+          status: 'Error',
           message: action?.payload?.error?.errorMessage?.toString(),
         };
       })
@@ -413,7 +413,7 @@ const formsSlice = createSlice({
       })
       .addCase(assignFormToUsersAndGroups.rejected, (state, action) => {
         state.formsShowMessage = {
-          status: 'Failed',
+          status: 'Error',
           message: action?.payload?.error?.errorMessage?.toString(),
         };
       });

@@ -5,7 +5,7 @@ import {
   View,
   ViewStyle,
 } from 'react-native';
-import {RouteProp} from '@react-navigation/native';
+import {RouteProp, useFocusEffect} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 
 import Layout from '../../components/Layout';
@@ -102,7 +102,32 @@ const ObservationReportsMainPage: FC<ObservationReportsMainPageScreenProps> = ({
     setSelectedFilter(title?.value as FilterType);
   };
 
+  useFocusEffect(
+    React.useCallback(() => {
+      dispatch(
+        getAllObservations([
+          userData.id,
+          {
+            filterType: selectedFilter,
+            // userId: undefined,
+            // userGroupId:undefined,
+            // ratings:filter?.rating,
+            // dateType: filter?.dateFilterOption,
+            // startDate: filter?.date?.startDate,
+            // endDate: filter?.date?.endDate,
+            paginationRequest: {
+              page: 0,
+              size: 15,
+              type: 'all',
+            },
+          },
+        ]),
+      );
+    }, []),
+  );
+  
   useEffect(() => {
+    if(selectedFilter){
     dispatch(
       getAllObservations([
         userData.id,
@@ -122,6 +147,7 @@ const ObservationReportsMainPage: FC<ObservationReportsMainPageScreenProps> = ({
         },
       ]),
     );
+  }
   }, [selectedFilter]);
 
   return (

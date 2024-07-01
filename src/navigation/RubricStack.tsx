@@ -45,10 +45,6 @@ const RubricStack = ({}) => {
       })}>
       <RubricStackTab.Screen name="RubricMainPage" component={RubricMainPage} />
       <RubricStackTab.Screen
-        name="AddNewObservation"
-        component={AddNewObservation}
-      />
-      <RubricStackTab.Screen
         name="RubricEvaluationIndicatorList"
         component={RubricEvaluationIndicatorList}
       />

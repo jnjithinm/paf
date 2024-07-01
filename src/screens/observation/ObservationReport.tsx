@@ -13,16 +13,17 @@ import Icon from '../../components/Icon';
 import EvidenceCard from '../../components/EvidenceCard';
 import {ObservationStackParamList} from '../../navigation/ObservationStack';
 import {useAppDispatch, useAppSelector} from '../../redux/store';
-import {getObservationById} from '../../redux/features/observationSlice';
+import {getObservationById, saveNewObservation} from '../../redux/features/observationSlice';
 import {RatingStars, RenderProfileIcon} from '../dashboard/TeacherDashboard';
 import FooterWithButtons from '../../components/FooterWithButtons';
+import {FloatingButton} from './ObservationReportsMainPage';
 
 type ObservationReportNavigationProp = StackNavigationProp<
-ObservationStackParamList,
+  ObservationStackParamList,
   'ObservationReport'
 >;
 type ObservationReportRouteProp = RouteProp<
-ObservationStackParamList,
+  ObservationStackParamList,
   'ObservationReport'
 >;
 
@@ -43,7 +44,6 @@ const ObservationReport: FC<ObservationReportScreenProps> = ({
   useEffect(() => {
     dispatch(getObservationById(observationId));
   }, [observationId]);
-
 
   return (
     <KeyboardAvoidingView
@@ -94,29 +94,30 @@ const ObservationReport: FC<ObservationReportScreenProps> = ({
                 alignSelf: 'center',
                 fontFamily: FONT_VARIANT.bold,
                 fontSize: FONT_SIZES.body1,
+                marginLeft: 3,
               }}>
               {`Evidence cards (${observationById?.evidenceResponseList?.length})`}
             </Text>
           </View>
-
-          {observationById?.evidenceResponseList?.map((item, index) => (
-            <EvidenceCard
-              key={index}
-              title={`Evidence Card ${index + 1}`}
-              description={item?.domainName}
-              voiceClipCount={item?.fileCount?.Audio}
-              videoClipCount={item?.fileCount?.Video}
-              noteCount={item?.fileCount?.Document}
-              photoCount={item?.fileCount?.Image}
-              onPressEvidenceCard={() => {
-                navigation.navigate('CreateViewEvidenceCard', {
-                  observationStatus: observationById?.observationStatus,
-                  evidenceCardDetails: item,
-                });
-              }}
-            />
-          ))}
-
+          <View style={{marginVertical: 15}}>
+            {observationById?.evidenceResponseList?.map((item, index) => (
+              <EvidenceCard
+                key={index}
+                title={`Evidence Card ${index + 1}`}
+                description={item?.domainName}
+                voiceClipCount={item?.fileCount?.Audio}
+                videoClipCount={item?.fileCount?.Video}
+                noteCount={item?.fileCount?.Document}
+                photoCount={item?.fileCount?.Image}
+                onPressEvidenceCard={() => {
+                  navigation.navigate('CreateViewEvidenceCard', {
+                    evidenceCardDetails: item,
+                    observationStatus:observationById.observationStatus
+                  });
+                }}
+              />
+            ))}
+          </View>
           {observationById?.feedbackDescription && (
             <View style={{marginTop: 10}}>
               <Text
@@ -139,13 +140,15 @@ const ObservationReport: FC<ObservationReportScreenProps> = ({
           )}
         </View>
       </Layout>
-      <FooterWithButtons
-        onPressProceedButton={() => {}}
-        onPressCancelButton={() => {}}
-        icon="edit_icon"
-        proceedButtonText="Edit card"
-        isActiveProceedButton
-      />
+      {observationById?.observationStatus === 'Pending' && (
+        <FloatingButton
+          icon="edit_icon"
+          onPress={() => {
+            navigation.navigate('CreateViewEvidenceCard');
+          }}
+          iconSize={20}
+        />
+      )}
     </KeyboardAvoidingView>
   );
 };

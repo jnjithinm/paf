@@ -4,11 +4,10 @@ import {
   createStackNavigator,
 } from '@react-navigation/stack';
 
-import ReportsMainPage from '../screens/observation/ObservationReportsMainPage';
 import AddNewObservation from '../screens/observation/AddNewObservation';
 import {
   EvidenceResponse,
-  ObservationData,
+  ObservationStatus,
 } from '../redux/features/observationSlice';
 import {FileObject} from '../config/types';
 import PlayFile from '../screens/observation/PlayFile';
@@ -19,11 +18,11 @@ import CreateViewEvidenceCard from '../screens/observation/CreateViewEvidenceCar
 export type ObservationStackParamList = {
   ObservationReportsMainPage: undefined;
   ReportsEvidenceCard: {userAccessed: string};
-  AddNewObservation: undefined;
+  AddNewObservation: {isEvidenceCardCreated: boolean}|undefined;
   CreateViewEvidenceCard: {
-    observationStatus: 'New' | 'Pending' | 'Completed';
-    evidenceCardDetails?: EvidenceResponse;
-  };
+    evidenceCardDetails: EvidenceResponse;
+    observationStatus:ObservationStatus;
+  }|undefined;
   ObservationReport: {observationId: number};
   PlayFile: {file: FileObject};
 };

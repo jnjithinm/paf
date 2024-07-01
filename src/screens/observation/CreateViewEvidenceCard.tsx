@@ -1,5 +1,11 @@
-import React, {FC, useEffect, useState} from 'react';
-import {KeyboardAvoidingView, Platform, StyleSheet, View} from 'react-native';
+import React, {FC, useEffect, useRef, useState} from 'react';
+import {
+  KeyboardAvoidingView,
+  Platform,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 
@@ -7,7 +13,7 @@ import {FONT_SIZES, FONT_VARIANT} from '../../config/themes';
 import Layout from '../../components/Layout';
 import Text from '../../components/Text';
 import Image from '../../components/Image';
-import FileUpload from '../../components/FileUpload';
+import FileUpload, {FileItem} from '../../components/FileUpload';
 import FooterWithButtons from '../../components/FooterWithButtons';
 import {useAppDispatch, useAppSelector} from '../../redux/store';
 import {
@@ -15,19 +21,140 @@ import {
   getIndicatorsByDomainId,
 } from '../../redux/features/masterSlice';
 import LabeledDropdown from '../../components/LabeledDropdown';
-import {resetSaveEvidenceCardResponse, saveEvidenceCard} from '../../redux/features/observationSlice';
+import {saveEvidenceCard} from '../../redux/features/observationSlice';
 import {FileObject, ItemType} from '../../config/types';
 import RatingInput from '../../components/RatingInput';
-import { ObservationStackParamList } from '../../navigation/ObservationStack';
+import {ObservationStackParamList} from '../../navigation/ObservationStack';
+import Modal from '../../components/Modal';
+import Sound from 'react-native-sound';
+import Button from '../../components/Button';
+import Icon from '../../components/Icon';
+import Slider from '../../components/Slider';
+import { setLoading } from '../../redux/features/authSlice';
 
 type CreateViewEvidenceCardNavigationProp = StackNavigationProp<
-ObservationStackParamList,
+  ObservationStackParamList,
   'CreateViewEvidenceCard'
 >;
 type CreateViewEvidenceCardRouteProp = RouteProp<
-ObservationStackParamList,
+  ObservationStackParamList,
   'CreateViewEvidenceCard'
 >;
+type RenderMusicPlayerModalContentTypes = {
+  file: FileObject | undefined;
+};
+
+const RenderMusicPlayerModalContent: FC<RenderMusicPlayerModalContentTypes> = ({
+  file,
+}) => {
+  const [sound, setSound] = useState<Sound | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [duration, setDuration] = useState<number | null>(null);
+  const [currentTime, setCurrentTime] = useState(0);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    if (file) {
+      const soundInstance = new Sound(file.uri, '', error => {
+        if (error) {
+          console.log('Failed to load the sound', error);
+          return;
+        }
+        setSound(soundInstance);
+        setDuration(soundInstance.getDuration());
+   
+      });
+
+      return () => {
+        soundInstance.release();
+        if (intervalRef.current) {
+          clearInterval(intervalRef.current);
+        }
+      };
+    }
+  }, [file?.uri]);
+
+  const handlePlayPause = () => {
+    if (sound) {
+      if (isPlaying) {
+        sound.pause();
+        setIsPlaying(false);
+        if (intervalRef.current) {
+          clearInterval(intervalRef.current);
+        }
+      } else {
+        sound.play(success => {
+          if (!success) {
+            console.log('Sound playback failed');
+          }
+          setIsPlaying(false);
+          if (intervalRef.current) {
+            clearInterval(intervalRef.current);
+          }
+        });
+        setIsPlaying(true);
+        intervalRef.current = setInterval(() => {
+          sound.getCurrentTime(time => {
+            setCurrentTime(time);
+          });
+        }, 1000);
+      }
+    }
+  };
+
+  const handleSliderChange = (value: number) => {
+    if (sound) {
+      sound.setCurrentTime(value);
+      setCurrentTime(value);
+    }
+  };
+
+  const renderTime = (seconds: number) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainderSeconds = Math.floor(seconds % 60);
+    return `${minutes}:${remainderSeconds < 10 ? '0' : ''}${remainderSeconds}`;
+  };
+
+  return (
+    <View
+      style={{
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingBottom: 50,
+      }}>
+      <View style={{backgroundColor: '#FCEBC5', padding: 5, borderRadius: 10}}>
+        <Icon name="music_player_icon" />
+      </View>
+      <Text
+        size="small1"
+        style={{paddingHorizontal: '20%', marginVertical: 20}}
+        fontVariant="bold">
+        {file?.name}
+      </Text>
+      <TouchableOpacity onPress={handlePlayPause}>
+        <Icon name={'play_button_music_player_icon'} />
+      </TouchableOpacity>
+      {duration !== null && (
+        <View style={{width: '80%', marginTop: 20}}>
+          <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+            <Text fontVariant="bold" style={{color: '#4E565F'}}>
+              {renderTime(currentTime)}
+            </Text>
+            <Text fontVariant="bold" style={{color: '#ABB4BD'}}>
+              {renderTime(duration)}
+            </Text>
+          </View>
+          <Slider
+            value={currentTime}
+            onChange={handleSliderChange}
+            maxValue={duration}
+            minValue={0}
+          />
+        </View>
+      )}
+    </View>
+  );
+};
 
 interface CreateViewEvidenceCardScreenProps {
   navigation: CreateViewEvidenceCardNavigationProp;
@@ -38,7 +165,8 @@ const CreateViewEvidenceCard: FC<CreateViewEvidenceCardScreenProps> = ({
   navigation,
   route,
 }) => {
-  const {observationStatus, evidenceCardDetails} = route.params;
+  const evidenceCardDetails = route.params?.evidenceCardDetails;
+  const observationStatus = route.params?.observationStatus;
   const [selectedIndicator, setSelectedIndicator] = useState<
     ItemType | undefined
   >(undefined);
@@ -46,7 +174,10 @@ const CreateViewEvidenceCard: FC<CreateViewEvidenceCardScreenProps> = ({
     undefined,
   );
   const [rating, setRating] = useState<number>(0);
-  // const [imageFiles, setImageFiles] = useState<FileObject[]>([]);
+  const [selectedMusicFile, setSelectedMusicFile] = useState<FileObject>();
+  const [isVisibleMusicPlayerModal, setIsVisibleMusicPlayerModal] =
+    useState<boolean>(false);
+  const [files, setFiles] = useState<FileObject[]>([]);
   const [zipfile, setZipFile] = useState<FileObject>();
 
   const dispatch = useAppDispatch();
@@ -80,6 +211,18 @@ const CreateViewEvidenceCard: FC<CreateViewEvidenceCardScreenProps> = ({
     }
   }, [selectedDomain?.value]);
 
+  useEffect(() => {
+    if (evidenceCardDetails) {
+      setFiles(
+        evidenceCardDetails?.attachmentResponse.map((item, index) => ({
+          uri: item.fileUrl,
+          type: item.fileType,
+          name: item.fileName,
+        })),
+      );
+    }
+  }, [evidenceCardDetails]);
+
   const onPressSaveCard = () => {
     if (zipfile) {
       dispatch(
@@ -112,13 +255,12 @@ const CreateViewEvidenceCard: FC<CreateViewEvidenceCardScreenProps> = ({
 
   useEffect(() => {
     if (saveEvidenceCardResponse) {
-      dispatch(resetSaveEvidenceCardResponse());
-      navigation.navigate('ObservationReportsMainPage');
+      navigation.navigate('AddNewObservation', {isEvidenceCardCreated: true});
     }
   }, [saveEvidenceCardResponse]);
 
   let isAllFieldsEntered = Boolean(
-    selectedDomain?.value && selectedIndicator?.value && rating,
+    selectedDomain?.value && selectedIndicator?.value && rating && zipfile,
   );
 
   return (
@@ -131,6 +273,19 @@ const CreateViewEvidenceCard: FC<CreateViewEvidenceCardScreenProps> = ({
         style={{paddingHorizontal: 15, paddingVertical: 0}}
         icon="reports_icon"
         title={evidenceCardDetails ? 'Evidence Card' : 'New Observation'}>
+        <Modal
+          onProceed={function (): void {
+            throw new Error('Function not implemented.');
+          }}
+          onClose={() => {
+            setIsVisibleMusicPlayerModal(false);
+          }}
+          content={<RenderMusicPlayerModalContent file={selectedMusicFile} />}
+          contentStyle={{width: '100%'}}
+          title="Audio"
+          closeButton
+          isVisible={isVisibleMusicPlayerModal}
+        />
         <View style={{marginVertical: 20}}>
           <View style={{flexDirection: 'row'}}>
             <Image name="evidence_icon" />
@@ -156,7 +311,7 @@ const CreateViewEvidenceCard: FC<CreateViewEvidenceCardScreenProps> = ({
             }
             setSelectedItem={setSelectedDomain}
             defaultValue={selectedDomain?.value?.toString() || ''}
-            disabled={observationStatus === 'Completed'}
+            disabled={evidenceCardDetails !== undefined}
           />
           <LabeledDropdown
             label="Select indicator"
@@ -169,7 +324,7 @@ const CreateViewEvidenceCard: FC<CreateViewEvidenceCardScreenProps> = ({
               })) || []
             }
             setSelectedItem={setSelectedIndicator}
-            disabled={observationStatus === 'Completed'}
+            disabled={evidenceCardDetails !== undefined}
           />
 
           <View style={{marginTop: 8}}>
@@ -177,10 +332,9 @@ const CreateViewEvidenceCard: FC<CreateViewEvidenceCardScreenProps> = ({
               label="Average Rating"
               rating={rating}
               onChangeRating={setRating}
-              disabled={observationStatus === 'Completed'}
+              disabled={evidenceCardDetails !== undefined}
             />
           </View>
-
           <Text
             style={{
               fontFamily: FONT_VARIANT.bold,
@@ -189,37 +343,34 @@ const CreateViewEvidenceCard: FC<CreateViewEvidenceCardScreenProps> = ({
             }}>
             {'Upload Files'}
           </Text>
-          <FileUpload
-            onFilesPicked={handleFilesPicked}
-            filesArray={
-              evidenceCardDetails
-                ? evidenceCardDetails.attachmentResponse?.map(item => ({
-                    uri: item.fileUrl,
-                    name: item.fileName,
-                    type: item.fileType,
-                  }))
-                : []
-            }
-            disabled={observationStatus === 'Completed'}
-            onPressFile={item => {
-              navigation.navigate('PlayFile', {file: item});
-            }}
-            onRemoveItem={()=>{}}
-          />
+          <View>
+            <FileUpload
+              setZipFile={setZipFile}
+              files={files}
+              setFiles={setFiles}
+              disabled={observationStatus === 'Completed'}
+              onPressFile={file => {
+                file?.uri?.includes('mp3')
+                  ? (setSelectedMusicFile(file),
+                    setIsVisibleMusicPlayerModal(true))
+                  : navigation.navigate('PlayFile', {file});
+              }}
+            />
+          </View>
         </View>
       </Layout>
-      <FooterWithButtons
-        onPressProceedButton={onPressSaveCard}
-        proceedButtonText={'Save Card'}
-        isActiveProceedButton={
-          isAllFieldsEntered && observationStatus === 'New'
-        }
-        cancelButtonText={'Cancel'}
-        onPressCancelButton={() => {
-          navigation.navigate('ObservationReportsMainPage');
-        }}
-        style={{}}
-      />
+      {observationStatus !== 'Completed' && (
+        <FooterWithButtons
+          onPressProceedButton={onPressSaveCard}
+          proceedButtonText={'Save Card'}
+          isActiveProceedButton={isAllFieldsEntered && !evidenceCardDetails}
+          cancelButtonText={'Cancel'}
+          onPressCancelButton={() => {
+            navigation.navigate('ObservationReportsMainPage');
+          }}
+          style={{}}
+        />
+      )}
     </KeyboardAvoidingView>
   );
 };

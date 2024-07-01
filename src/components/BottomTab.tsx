@@ -8,23 +8,59 @@ import {useAppSelector} from '../redux/store';
 import {ScreenNames, navigate} from '../utils/helpers/navigationHelpers';
 
 interface StackItem {
-  stack: ScreenNames;
+  stack: ScreenNames|undefined;
   icon: IconTypes;
+  focusedIcon: IconTypes;
   disabled?: boolean;
 }
 
 const adminStack: StackItem[] = [
-  {stack: 'AdminDashboard', icon: 'tabbar_icon_home'},
-  {stack: 'UserManagementStack', icon: 'user_management_tabbar_icon'},
-  {stack: 'RubricStack', icon: 'tabbar_icon_observation'},
-  {stack: 'FlowsAndFormsStack', icon: 'tabbar_icon_graph'},
+  {
+    stack: 'AdminDashboard',
+    icon: 'tabbar_icon_home',
+    focusedIcon: 'tabbar_icon_home_focused',
+  },
+  {
+    stack: 'UserManagementStack',
+    icon: 'tabbar_icon_user_management',
+    focusedIcon: 'tabbar_icon_user_management_focused',
+  },
+  {
+    stack: 'FlowsAndFormsStack',
+    icon: 'tabbar_icon_flows_and_forms',
+    focusedIcon: 'tabbar_icon_flows_and_forms',
+  },
+  {
+    stack:undefined,
+    icon: 'tabbar_icon_graph',
+    focusedIcon: 'tabbar_icon_graph_focused',
+    disabled: true,
+  },
 ];
 
 const registeredUserStack: StackItem[] = [
-  {stack: 'TeacherDashboard', icon: 'tabbar_icon_home'},
-  {stack: 'ReportsStack', icon: 'tabbar_icon_observation'},
-  {stack: 'RubricStack', icon: 'tabbar_icon_rubric'},
-  {stack: 'FlowsAndFormsStack', icon: 'tabbar_icon_graph'},
+  {
+    stack: 'TeacherDashboard',
+    icon: 'tabbar_icon_home',
+    focusedIcon: 'tabbar_icon_home_focused',
+  },
+  {
+    stack: 'ReportsStack',
+    icon: 'tabbar_icon_observation',
+    focusedIcon: 'tabbar_icon_observation_focused',
+  },
+  {
+    stack: 'RubricStack',
+    icon: 'tabbar_icon_rubric',
+    focusedIcon: 'tabbar_icon_rubric_focused',
+    disabled: true,
+  },
+  {
+    stack: 'FlowsAndFormsStack',
+    icon: 'tabbar_icon_graph',
+    focusedIcon: 'tabbar_icon_graph_focused',
+    disabled: true,
+  },
 ];
 
 type BottomTabTypes = {
@@ -38,10 +74,9 @@ const BottomTab: FC<BottomTabTypes> = ({focusedStack}) => {
     navigate(stack);
   };
 
-  // const selectedTabStack = isAdmin ? adminStack : registeredUserStack;
+  const selectedTabStack = isAdmin ? adminStack : registeredUserStack;
 
-
-  const selectedTabStack =  adminStack;
+  // const selectedTabStack =  adminStack;
   return (
     <View
       style={{
@@ -91,12 +126,15 @@ const BottomTab: FC<BottomTabTypes> = ({focusedStack}) => {
                     justifyContent: 'center',
                   }
             }
-            onPress={() => onTabPress(item.stack)}
+            onPress={() => {
+              if(item.stack){
+                onTabPress(item.stack)
+              }
+              }}
             key={index}
             disabled={focused || item.disabled}>
             <Icon
-              name={item.icon}
-              stroke={focused ? colors.blackColor : '#ABB4BD'}
+              name={focused ? item.focusedIcon:item.icon  }
               strokeWidth={2}
               width={size}
               height={size}

@@ -15,10 +15,6 @@ import Button from '../../components/Button';
 import {useAppDispatch, useAppSelector} from '../../redux/store';
 import {authenticateUser, setErrorMessage} from '../../redux/features/authSlice';
 import Layout from '../../components/Layout';
-import {
-  getUserCredentials,
-  storeUserCredentials,
-} from '../../utils/functions/localStorageOperations';
 import useValidation from '../../utils/hooks/useValidation';
 
 type SignUpNavigationProp = StackNavigationProp<MainStackParamList, 'SignUp'>;

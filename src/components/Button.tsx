@@ -50,7 +50,7 @@ const Button: FC<ButtonPropsType> = ({
         justifyContent: 'center',
         backgroundColor: bgColor,
         flexDirection: 'row',
-        width: halfSize ? '48%' : '100%',
+        width: halfSize ? '45%' : '100%',
         opacity: active ? undefined : 0.3,
         marginVertical,
         ...style,

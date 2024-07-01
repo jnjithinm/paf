@@ -7,7 +7,7 @@ import moment from 'moment';
 import Layout from '../../components/Layout';
 import Tab from '../../components/Tab';
 import RubricListModal from '../../components/RubricListModal';
-import {RubricStackParamList} from '../../navigation/RubricTabStack';
+import {RubricStackParamList} from '../../navigation/RubricStack';
 import {useAppDispatch, useAppSelector} from '../../redux/store';
 import {
   RubricItem,
@@ -49,17 +49,17 @@ const RubricMainPage: FC<RubricMainPageScreenProps> = ({navigation, route}) => {
   };
 
   const handleTabClick = (title: ItemType) => {
-    // if (allRubrics?.dataList) {
-    //   title == 'Active'
-    //     ? setRubricListData(
-    //         allRubrics?.dataList?.filter(item => item.status === true),
-    //       )
-    //     : title == 'Non-Active'
-    //     ? setRubricListData(
-    //         allRubrics?.dataList.filter(item => item.status === false),
-    //       )
-    //     : setRubricListData(allRubrics?.dataList);
-    // }
+    if (allRubrics?.dataList) {
+      title.value == 'Active'
+        ? setRubricListData(
+            allRubrics?.dataList?.filter(item => item.status === true),
+          )
+        : title.value == 'Non-Active'
+        ? setRubricListData(
+            allRubrics?.dataList.filter(item => item.status === false),
+          )
+        : setRubricListData(allRubrics?.dataList);
+    }
   };
 
   useEffect(() => {

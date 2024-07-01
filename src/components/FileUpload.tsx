@@ -14,33 +14,36 @@ import ZipArchive, {zip} from 'react-native-zip-archive';
 import Text from './Text';
 import {FileObject} from '../config/types';
 import RNFS from 'react-native-fs';
+import {useAppDispatch} from '../redux/store';
+import {setLoading} from '../redux/features/authSlice';
+import { setObservationShowMessage } from '../redux/features/observationSlice';
 
 type ImageItemProps = {
-  item: DocumentPickerResponse;
-  onRemove: (item: DocumentPickerResponse) => void;
-  onPressFile: (item: FileObject) => void;
-  // disabled?: boolean;
+  item: FileObject;
+  onRemove: (item: FileObject) => void;
+  onPressFile?: (item: FileObject) => void;
+  disabled?: boolean;
 };
 
-const ImageItem: FC<ImageItemProps> = ({
+export const FileItem: FC<ImageItemProps> = ({
   item,
   onRemove,
   onPressFile,
-  // disabled,
+  disabled,
 }) => {
   return (
-    <TouchableOpacity
-      style={styles.progressContainer}
-      onPress={() =>
-        onPressFile({
-          uri: item.uri,
-          name: item.name?.toString() || '',
-          type: item.type?.toString() || '',
-        })
-      }
-      // disabled={disabled}
-    >
-      <View style={{flexDirection: 'row', width: '90%', alignItems: 'center'}}>
+    <View style={styles.progressContainer}>
+      <TouchableOpacity
+        style={{flexDirection: 'row', width: '90%', alignItems: 'center'}}
+        onPress={() => {
+          if (onPressFile) {
+            onPressFile({
+              uri: item.uri,
+              name: item.name?.toString() || '',
+              type: item.type?.toString() || '',
+            });
+          }
+        }}>
         <View>
           {item.type?.startsWith('image') ? (
             <Image name="img_upload_icon" />
@@ -52,20 +55,21 @@ const ImageItem: FC<ImageItemProps> = ({
             <Image name="attachment" />
           )}
         </View>
-        <View>
+        <View style={{paddingRight: 15, paddingLeft: 10}}>
           <Text style={styles.dropZoneText}>{item.name}</Text>
         </View>
-      </View>
+      </TouchableOpacity>
       <TouchableOpacity
         style={{
           alignItems: 'center',
           justifyContent: 'flex-end',
           width: '10%',
         }}
+        disabled={disabled}
         onPress={() => onRemove(item)}>
         <Image name="cross_icon" />
       </TouchableOpacity>
-    </TouchableOpacity>
+    </View>
   );
 };
 
@@ -79,29 +83,54 @@ const zipFiles = async (filePaths: string | string[], targetPath: string) => {
   }
 };
 
+const createZipFile = async (
+  files: FileObject[],
+): Promise<FileObject | undefined> => {
+  const filePaths = [];
+  try {
+    for (const result of files) {
+      const sourceUri = result.uri;
+      const fileName = result.name;
+      const destPath = `${RNFS.DocumentDirectoryPath}/${fileName}`;
+      await RNFS.copyFile(sourceUri, destPath);
+      filePaths.push(destPath);
+    }
+
+    const name = `${new Date().getTime()}.zip`;
+    const targetPath = `${RNFS.DocumentDirectoryPath}/${name}`;
+    await zipFiles(filePaths, targetPath);
+
+    const zipFile = {
+      uri: targetPath,
+      name,
+      type: 'application/zip',
+    };
+    return zipFile;
+  } catch (err) {
+    return undefined;
+  }
+};
+
 interface FileUploadProps {
-  onFilesPicked?: (files: FileObject) => void;
-  filesArray?: FileObject[];
-  onPressFile: (item: FileObject) => void;
-  onRemoveItem: Dispatch<SetStateAction<FileObject[]>>;
+  setZipFile: Dispatch<SetStateAction<FileObject | undefined>>;
+  files: FileObject[];
+  onPressFile?: (item: FileObject) => void;
+  setFiles: Dispatch<SetStateAction<FileObject[]>>;
   disabled?: boolean;
 }
 
 const FileUpload: React.FC<FileUploadProps> = ({
-  onFilesPicked,
-  filesArray,
+  setZipFile,
+  files,
   onPressFile,
-  onRemoveItem,
+  setFiles,
   disabled,
 }) => {
-  const [files, setFiles] = useState<DocumentPickerResponse[]>([]);
-  const getContentUriPath = async (contentUri: any) => {
-    const fileInfo = await RNFS.stat(contentUri);
-    return fileInfo.originalFilepath || contentUri;
-  };
+  const dispatch = useAppDispatch();
 
   const pickFiles = async () => {
     try {
+      dispatch(setLoading(true));
       const results = await DocumentPicker.pick({
         allowMultiSelection: true,
         type: [
@@ -113,72 +142,71 @@ const FileUpload: React.FC<FileUploadProps> = ({
         ],
       });
 
-      const newFiles = [...files, ...results];
-      setFiles(newFiles);
+      const newFiles: FileObject[] = [];
+      for (const result of results) {
+        const fileStat = await RNFS.stat(result.uri);
+        if (fileStat.size > 20 * 1024 * 1024) {
+          console.log(`File ${result.name} is larger than 20 MB`);
 
-      const filePaths = [];
-      for (const result of newFiles) {
-        const sourceUri = result.uri;
-        const fileName = result.name;
-        const destPath = `${RNFS.DocumentDirectoryPath}/${fileName}`;
-        await RNFS.copyFile(sourceUri, destPath);
-        filePaths.push(destPath);
+          setObservationShowMessage({status:'Failed',})
+        } else {
+          newFiles.push({
+            uri: result.uri,
+            type: result.type ?? '',
+            name: result.name ?? '',
+          });
+        }
       }
-
-      const name = `${new Date().getTime()}.zip`;
-      const targetPath = `${RNFS.DocumentDirectoryPath}/${name}`;
-      await zipFiles(filePaths, targetPath);
-
-      const zipFile = {
-        uri: targetPath,
-        name,
-        type: 'application/zip',
-      };
-      if (onFilesPicked) {
-        onFilesPicked(zipFile);
+      const zipFile = await createZipFile([...newFiles, ...files]);
+      if (zipFile) {
+        setZipFile(zipFile);
       }
+      setFiles(prevFiles => [...prevFiles, ...newFiles]);
+      dispatch(setLoading(false));
     } catch (err) {
+      dispatch(setLoading(false));
       console.error('Error picking files:', err);
-      Alert.alert('Error', 'Failed to pick files');
     }
   };
-  const handleRemoveItem = (item: DocumentPickerResponse) => {
-    const updatedFiles = files.filter(file => file !== item);
-    setFiles(updatedFiles);
-    onRemoveItem(updatedFiles);
+  const handleRemoveItem = async (item: FileObject) => {
+    const updatedFiles = files.filter(file => file.uri !== item.uri);
+    try {
+      const zip = await createZipFile(updatedFiles);
+      setZipFile(zip);
+      setFiles(updatedFiles);
+    } catch (err) {
+      console.log('err', err);
+    }
   };
-
-  // useEffect(() => {
-  //   if (filesArray) {
-  //     setFiles(filesArray);
-  //   }
-  // }, [filesArray]);
 
   return (
     <View>
       <View style={styles.container}>
-        <TouchableOpacity
-          style={styles.dropZone}
-          onPress={pickFiles}
-          disabled={disabled}>
-          <Image name="upload_icon" />
-          <Text style={styles.dropZoneText}>
-            Drag and drop or <Text style={styles.browseText}>Browse</Text> your
-            files
-          </Text>
-          <Text style={styles.supportedTypes}>
-            Supported file types: jpg, mp4, mp3
-          </Text>
-        </TouchableOpacity>
+        {!disabled && (
+          <TouchableOpacity style={styles.dropZone} onPress={pickFiles}>
+            <Image name="upload_icon" />
+            <Text style={styles.dropZoneText}>
+              Drag and drop or <Text style={styles.browseText}>Browse</Text>{' '}
+              your files
+            </Text>
+            <Text style={styles.supportedTypes}>
+              Supported file types: jpg, mp4, mp3
+            </Text>
+          </TouchableOpacity>
+        )}
       </View>
       <View style={{marginVertical: 10}}>
         {files.map(item => (
-          <ImageItem
+          <FileItem
             key={item.name}
-            item={item}
+            item={{
+              uri: item.uri,
+              name: item?.name || '',
+              type: item?.type || '',
+            }}
+            disabled={disabled}
             onRemove={handleRemoveItem}
             onPressFile={onPressFile}
-            // disabled={disabled}
           />
         ))}
       </View>

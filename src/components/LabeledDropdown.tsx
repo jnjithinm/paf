@@ -6,9 +6,7 @@ import {FONT_VARIANT, FONT_SIZES} from '../config/themes';
 
 import {Dropdown} from 'react-native-element-dropdown';
 import {normaliseFont} from '../utils/helpers/responsiveHelpers';
-import { ItemType } from '../config/types';
-
-
+import {ItemType} from '../config/types';
 
 interface DropdownProps {
   label?: string;
@@ -78,7 +76,13 @@ const LabelDropdown: FC<DropdownProps> = ({
       )}
       <>
         <Dropdown
-          style={[styles.Container]}
+          style={[
+            styles.Container,
+            {
+              backgroundColor: disabled ? '#FDF0E3' : colors.backgroundColor,
+              borderColor: disabled ? '#CBD2D9' : '#CBD2D9',
+            },
+          ]}
           selectedTextStyle={styles.selectedTextStyle}
           dropdownPosition={dropDownDirection}
           itemTextStyle={styles.dropdownText}

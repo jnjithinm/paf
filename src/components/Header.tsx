@@ -9,9 +9,6 @@ import {FONT_SIZES, FONT_VARIANT} from '../config/themes';
 import Images, {ImageIconNames} from '../components/Image';
 import Text from './Text';
 
-
-
-
 type HeaderPropsTypes = {
   title?: string;
   avoidBackButton?: boolean;
@@ -40,7 +37,6 @@ const Header: FC<HeaderPropsTypes> = ({
   isScrolled,
 }) => {
   const navigation = useNavigation();
- 
 
   return (
     <View style={styles.headerContainer}>
@@ -60,7 +56,11 @@ const Header: FC<HeaderPropsTypes> = ({
         </View>
       )}
       <View style={styles.mainHeader}>
-        <View style={styles.titleContainer}>
+        <View
+          style={[
+            styles.titleContainer,
+            {top: scrollTransition && !isScrolled ? 20 : 0},
+          ]}>
           {!avoidBackButton && (
             <TouchableOpacity
               onPress={() => {
@@ -93,7 +93,6 @@ const Header: FC<HeaderPropsTypes> = ({
 };
 
 const styles = StyleSheet.create({
-
   headerContainer: {
     justifyContent: 'flex-end',
     width: '100%',
@@ -121,15 +120,20 @@ const styles = StyleSheet.create({
   titleContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    alignSelf: 'flex-end',
+    paddingHorizontal: 20,
   },
   backButton: {
-    marginRight: 20,
+    right: 15,
+    width: 25,
+    height: 25,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   title: {
     fontSize: FONT_SIZES.body3,
     fontFamily: FONT_VARIANT.bold,
     color: colors.blackColor,
+    paddingRight: 20,
   },
   iconScrolled: {
     top: 35,

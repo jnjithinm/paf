@@ -22,15 +22,20 @@ import {useAppDispatch, useAppSelector} from '../../redux/store';
 import {getAllUserGroups, getUserGroups} from '../../redux/features/usersSlice';
 import LabeledDropdown from '../../components/LabeledDropdown';
 import {ItemType} from '../../config/types';
-import {saveNewObservation} from '../../redux/features/observationSlice';
-import { ObservationStackParamList } from '../../navigation/ObservationStack';
+import {
+  resetSaveEvidenceCardResponse,
+  resetSaveObservationResponse,
+  saveNewObservation,
+  saveObservation,
+} from '../../redux/features/observationSlice';
+import {ObservationStackParamList} from '../../navigation/ObservationStack';
 
 type AddNewObservationNavigationProp = StackNavigationProp<
   ObservationStackParamList,
   'AddNewObservation'
 >;
 type AddNewObservationRouteProp = RouteProp<
-ObservationStackParamList,
+  ObservationStackParamList,
   'AddNewObservation'
 >;
 
@@ -56,16 +61,21 @@ const AddNewObservation: FC<AddNewObservationScreenProps> = ({
   const [selectedUser, setSelectedUser] = useState<ItemType | undefined>(
     undefined,
   );
-  const [selectedDate, setSelectedDate] = useState<any>('');
+  const [selectedDate, setSelectedDate] = useState<string>('');
   const [feedbackNote, setFeedbackNote] = useState('');
   const [feedbackNoteEnable, setFeedbackNoteEnable] = useState<boolean>(false);
 
   const [isCalendarOpen, setIsCalendarOpen] = useState<boolean>(false);
   const dispatch = useAppDispatch();
 
-  const {GetAllUserGroupsData, GetUserGroupData} = useAppSelector(
+  const {userData} = useAppSelector(state => state.auth);
+
+  const {allUserGroups, userGroups} = useAppSelector(
     state => state.users,
   );
+
+  const {saveEvidenceCardResponse, newObservation, saveObservationResponse} =
+    useAppSelector(state => state.observation);
 
   const handleDateSelection = (date: string) => {
     setIsCalendarOpen(!isCalendarOpen);
@@ -84,6 +94,14 @@ const AddNewObservation: FC<AddNewObservationScreenProps> = ({
   }, []);
 
   useEffect(() => {
+    if (newObservation) {
+      setSelectedUserGroup(newObservation?.selectedUserGroup);
+      setSelectedUser(newObservation?.selectedUser);
+      setSelectedDate(newObservation?.selectedDate);
+    }
+  }, [newObservation]);
+
+  useEffect(() => {
     if (selectedUserGroup?.value) {
       dispatch(
         getUserGroups([
@@ -98,9 +116,75 @@ const AddNewObservation: FC<AddNewObservationScreenProps> = ({
     }
   }, [selectedUserGroup?.value]);
 
-  const onPressSaveAsDraft = () => {};
+  useEffect(() => {
+    if (saveObservationResponse) {
+      if (saveEvidenceCardResponse) {
+        dispatch(resetSaveEvidenceCardResponse());
+        dispatch(resetSaveObservationResponse());
+        dispatch(saveNewObservation(null));
+        navigation.navigate('ObservationReportsMainPage');
+      } else {
+        dispatch(resetSaveObservationResponse());
+        dispatch(saveNewObservation(null));
+        navigation.navigate('ObservationReportsMainPage');
+      }
+    }
+  }, [saveObservationResponse]);
+
+  const onPressSaveAsDraft = () => {
+    if (selectedUser && selectedUserGroup && selectedDate) {
+      dispatch(
+        saveObservation({
+          observationDate: moment(selectedDate).format('YYYY-MM-DD'),
+          userGroupId: Number(selectedUserGroup?.value),
+          userId: Number(selectedUser?.value),
+          observationStatus: 'Pending',
+          feedbackDescription: feedbackNote,
+          loggedInUserName: userData.userName,
+          evidenceRequestList: [],
+        }),
+      );
+    }
+  };
 
   let isActive = Boolean(selectedDate && selectedUserGroup && selectedUser);
+
+  const onPressCreateEvidenceCardButton = () => {
+    if (selectedDate && selectedUser && selectedUserGroup) {
+      dispatch(
+        saveNewObservation({
+          selectedDate,
+          selectedUser,
+          selectedUserGroup,
+        }),
+      );
+      navigation.navigate('CreateViewEvidenceCard');
+    }
+  };
+
+  const onPressSubmit = () => {
+    if (saveEvidenceCardResponse) {
+      dispatch(
+        saveObservation({
+          observationDate: moment(selectedDate).format('YYYY-MM-DD'),
+          userGroupId: Number(selectedUserGroup?.value),
+          userId: Number(selectedUser?.value),
+          observationStatus: 'Completed',
+          feedbackDescription: feedbackNote,
+          loggedInUserName: userData.userName,
+          evidenceRequestList: [
+            {
+              domainId: saveEvidenceCardResponse.domainId,
+              indicatorId: saveEvidenceCardResponse.indicatorId,
+              averageRating: saveEvidenceCardResponse.averageRating,
+              evidenceId:saveEvidenceCardResponse.evidenceId,
+              loggedInUserName: userData.userName,
+            },
+          ],
+        }),
+      );
+    }
+  };
 
   return (
     <KeyboardAvoidingView
@@ -166,7 +250,7 @@ const AddNewObservation: FC<AddNewObservationScreenProps> = ({
             label="Select user group"
             placeHolder="Select user group"
             options={
-              GetAllUserGroupsData?.dataList.map(item => ({
+              allUserGroups?.dataList.map(item => ({
                 value: item.userGroupId?.toString(),
                 label: item.groupName,
               })) || []
@@ -179,7 +263,7 @@ const AddNewObservation: FC<AddNewObservationScreenProps> = ({
             placeHolder="Select user"
             defaultValue={selectedUser?.value || ''}
             options={
-              GetUserGroupData?.dataList.map(item => ({
+              userGroups?.dataList.map(item => ({
                 value: item.userId?.toString(),
                 label: item.name,
               })) || []
@@ -221,9 +305,9 @@ const AddNewObservation: FC<AddNewObservationScreenProps> = ({
                   height: normaliseDesigns(40),
                   borderWidth: 1,
                   borderColor: '#CBD2D9',
-                  borderRadius:10,
-                  color:colors.blackColor,
-                  paddingHorizontal:5
+                  borderRadius: 10,
+                  color: colors.blackColor,
+                  paddingHorizontal: 5,
                 }}
                 multiline
                 maxLength={200}
@@ -239,25 +323,18 @@ const AddNewObservation: FC<AddNewObservationScreenProps> = ({
         </View>
       </Layout>
       <FooterWithButtons
-        onPressProceedButton={() => {
-          if (selectedDate && selectedUser && selectedUserGroup) {
-            dispatch(
-              saveNewObservation({
-                selectedDate,
-                selectedUser,
-                selectedUserGroup,
-              }),
-            );
-            navigation.navigate('CreateViewEvidenceCard', {
-              observationStatus: 'New',
-            });
-          }
-        }}
-        proceedButtonText={'Create evidence card'}
+        onPressProceedButton={
+          saveEvidenceCardResponse
+            ? onPressSubmit
+            : onPressCreateEvidenceCardButton
+        }
+        proceedButtonText={
+          saveEvidenceCardResponse ? 'Submit' : 'Create evidence card'
+        }
         isActiveProceedButton={isActive}
-        isActiveCancelButton={false}
-        cancelButtonText={'Save as draft'}
-        onPressCancelButton={() => {}}
+        isActiveCancelButton={isActive}
+        cancelButtonText={saveEvidenceCardResponse ? 'Cancel' : 'Save as draft'}
+        onPressCancelButton={onPressSaveAsDraft}
         style={{}}
       />
     </KeyboardAvoidingView>

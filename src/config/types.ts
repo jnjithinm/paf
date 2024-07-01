@@ -1,7 +1,6 @@
 import {ViewComponent} from 'react-native';
 import colors from './colors';
 import {FONT_SIZES, FONT_STYLES, FONT_VARIANT, OPACITY} from './themes';
-import { ParentRoles, RoleLevelTypes, UserTypes } from './constants';
 
 
 export type CustomNumericFieldRef = {
@@ -26,7 +25,7 @@ export type UserCredentialTypes = {
   password: string;
 };
 
-export type ErrorStatus = 'Success' | 'Failed';
+export type ErrorStatus = 'Success' | 'Informative' | 'Warning' | 'Error';
 
 export interface ErrorStatusObject {
   status: ErrorStatus;
