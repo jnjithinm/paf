@@ -232,6 +232,7 @@ const Login: FC<LoginScreenProps> = ({navigation, route}) => {
             Don't have an account ?
           </Text>
           <TouchableOpacity
+          disabled
             onPress={() => {
               navigation.navigate('SignUp');
             }}>
@@ -251,7 +252,7 @@ const Login: FC<LoginScreenProps> = ({navigation, route}) => {
           <Text style={{color: '#ABB4BD', marginVertical: 20}} size="body1">
             Can't access your account ?
           </Text>
-          <TouchableOpacity>
+          <TouchableOpacity disabled>
             <Text
               style={{
                 textDecorationLine: 'underline',

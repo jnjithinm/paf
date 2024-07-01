@@ -56,7 +56,7 @@ const registeredUserStack: StackItem[] = [
     disabled: true,
   },
   {
-    stack: 'FlowsAndFormsStack',
+    stack: 'RubricStack',
     icon: 'tabbar_icon_graph',
     focusedIcon: 'tabbar_icon_graph_focused',
     disabled: true,

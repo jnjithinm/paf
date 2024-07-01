@@ -51,7 +51,6 @@ import {
   resetAssignFormResponse,
 } from '../../redux/features/formsSlice';
 import SearchWithFilter from '../../components/SearchWithFilter';
-import {FilterObject} from '../../components/Calendar';
 import {
   FlowDetailItem,
   SendReminderMethods,
@@ -656,7 +655,8 @@ const FormResponses: FC<FormResponsesScreenProps> = ({navigation, route}) => {
         userIds: selectedUsers,
         userGroupIds: selectedUserGroups,
         loggedInUserName: userData.userName,
-        id: userData.id,
+        formId: flowDetailItem.formId,
+        flowId:flowDetailItem.flowId
       }),
     );
   };

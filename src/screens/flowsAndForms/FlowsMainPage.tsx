@@ -256,7 +256,7 @@ const FlowsMainPage: FC<FlowsMainPageScreenProps> = ({navigation, route}) => {
               createdBy={item.createdBy}
               createdDate={moment(item.createdDate).format('DD/MM/YYYY')}
               title={item.flowName}
-              userCount={55}
+              userCount={item.responses}
               onDelete={() => {
                 // onPressDeleteRubric(item);
               }}

@@ -203,7 +203,8 @@ type AcceptingFormResponsesResponsePayload =
 interface AssignFormRequest {
   userIds: number[];
   userGroupIds: number[];
-  id: number;
+  flowId: number;
+  formId: number;
   loggedInUserName: string;
 }
 

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState,FC} from 'react';
 import {
   View,
   Text,
@@ -20,7 +20,7 @@ interface TabsProps {
   textStyle?:TextStyle
 }
 
-const Tabs: React.FC<TabsProps> = ({tabs, onClick, style,textStyle}) => {
+const Tabs: FC<TabsProps> = ({tabs, onClick, style,textStyle}) => {
   const [selectedTab, setSelectedTab] = useState(0);
 
   const handleTabPress = (tabIndex: number, tabName: ItemType) => {

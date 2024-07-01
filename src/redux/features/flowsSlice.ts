@@ -35,6 +35,8 @@ export interface FlowDetailItem {
   flowName: string;
   formName: string;
   responses: number;
+  createdDate:string;
+  responseDate:string;
 }
 
 interface GetFlowByIdResponse {

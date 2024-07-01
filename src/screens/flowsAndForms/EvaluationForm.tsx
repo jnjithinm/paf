@@ -714,6 +714,8 @@ const EvaluationForm: FC<EvaluationFormScreenProps> = ({navigation, route}) => {
   const {flowDetailItem, flowItem} = route.params;
 
   const [answers, setAnswers] = useState<AnswerObject[]>([]);
+  const [canSubmit, setCanSubmit] = useState(false);
+
   const {userData} = useAppSelector(state => state.auth);
   const {previewForm, submitPreviewFormResponse} = useAppSelector(
     state => state.forms,
@@ -741,6 +743,47 @@ const EvaluationForm: FC<EvaluationFormScreenProps> = ({navigation, route}) => {
       navigation.navigate('FormListAndResponses', {flowItem});
     }
   }, [submitPreviewFormResponse]);
+  
+  useEffect(() => {
+    validateSubmission();
+  }, [answers]);
+
+  // Validate submission logic
+  const validateSubmission = () => {
+    let canProceed = true;
+
+    previewForm?.dataList?.sections?.forEach(section => {
+      section?.questions?.forEach(question => {
+        if(question.isRequired){
+        if (
+          !answers.some(ans => ans.questionId === question.questionId)
+        ) {
+          canProceed = false;
+        }
+
+        if (question.questionOptionId === 4) {
+          const requiredIndicatorsFilled = question.indicators.every(
+            indicator => {
+              return answers.some(
+                ans =>
+                  ans.questionId === question.questionId &&
+                  (ans.answer as ShortAnswer).rating?.find(
+                    ind => ind.indicatorId === indicator.indicatorId,
+                  ),
+              );
+            },
+          );
+
+          if (!requiredIndicatorsFilled) {
+            canProceed = false;
+          }
+        }
+      }
+      });
+    });
+
+    setCanSubmit(canProceed);
+  };
 
   return (
     <>
@@ -780,7 +823,7 @@ const EvaluationForm: FC<EvaluationFormScreenProps> = ({navigation, route}) => {
         ))}
       </Layout>
       <FooterWithButtons
-        isActiveProceedButton
+        isActiveProceedButton={canSubmit}
         onPressProceedButton={onPressSubmit}
         onPressCancelButton={() => {
           setAnswers([]);

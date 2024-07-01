@@ -12,14 +12,15 @@ import Icon from '../../components/Icon';
 import Text from '../../components/Text';
 import {getFlowById} from '../../redux/features/flowsSlice';
 import {ItemType} from '../../config/types';
-import { FlowsAndFormsStackParamList } from '../../navigation/FlowsAndFormsStack';
+import {FlowsAndFormsStackParamList} from '../../navigation/FlowsAndFormsStack';
+import moment from 'moment';
 
 type FormListAndResponsesNavigationProp = StackNavigationProp<
   FlowsAndFormsStackParamList,
   'FormListAndResponses'
 >;
 type FormListAndResponsesRouteProp = RouteProp<
-FlowsAndFormsStackParamList,
+  FlowsAndFormsStackParamList,
   'FormListAndResponses'
 >;
 
@@ -51,7 +52,7 @@ const RenderFormItem: FC<RenderFormItemTypes> = ({title, onPressItem}) => (
 type FormListResponseTypes = {
   label: string;
   creationDate: string;
-  responses: string;
+  responses: number;
 };
 const FormListResponse: FC<FormListResponseTypes> = ({
   label,
@@ -62,11 +63,21 @@ const FormListResponse: FC<FormListResponseTypes> = ({
     style={{
       borderWidth: 1,
       borderColor: '#F4C24A',
-      borderRadius: 5,
+      borderRadius: 7,
       padding: 10,
       marginBottom: 10,
     }}>
-    <Text></Text>
+    <Text fontVariant='bold'>{label}</Text>
+    <View style={{flexDirection: 'row',marginTop:10}}>
+      <View>
+        <Text size='small2'>Creation Date</Text>
+        <Text size='small2'>{creationDate}</Text>
+      </View>
+      <View style={{paddingHorizontal:10}}>
+        <Text size='small2'>Responses</Text>
+        <Text size='small2'>{responses}</Text>
+      </View>
+    </View>
   </TouchableOpacity>
 );
 
@@ -78,7 +89,10 @@ interface FormListAndResponsesScreenProps {
   route: FormListAndResponsesRouteProp;
 }
 
-const FormListAndResponses: FC<FormListAndResponsesScreenProps> = ({navigation, route}) => {
+const FormListAndResponses: FC<FormListAndResponsesScreenProps> = ({
+  navigation,
+  route,
+}) => {
   const {flowItem} = route.params;
 
   const [selectedTab, setSelectedTab] = useState<TabTypes>('Form list');
@@ -102,7 +116,6 @@ const FormListAndResponses: FC<FormListAndResponsesScreenProps> = ({navigation, 
       ]),
     );
   }, []);
-
 
   return (
     <Layout
@@ -157,19 +170,17 @@ const FormListAndResponses: FC<FormListAndResponsesScreenProps> = ({navigation, 
         </View>
         {selectedTab === 'Form list' ? (
           <View>
-            {flowById?.dataList.map((item, index) => (
+            {flowById?.dataList?.map((item, index) => (
               <RenderFormItem
                 title={item.formName}
                 onPressItem={() => {
                   isAdmin
-                    ? 
-                    navigation.navigate('FormResponses', {
+                    ? navigation.navigate('FormResponses', {
                         flowDetailItem: item,
                       })
-                    :
-                     navigation.navigate('EvaluationForm', {
+                    : navigation.navigate('EvaluationForm', {
                         flowDetailItem: item,
-                        flowItem
+                        flowItem,
                       });
                 }}
                 key={index}
@@ -177,7 +188,16 @@ const FormListAndResponses: FC<FormListAndResponsesScreenProps> = ({navigation, 
             ))}
           </View>
         ) : (
-          <></>
+          <View>
+            {flowById?.dataList?.map((item, index) => (
+              <FormListResponse
+                label={item.formName}
+                responses={item.responses}
+                creationDate={moment(item.createdDate).format('DD/MM/YYYY')}
+                key={index}
+              />
+            ))}
+          </View>
         )}
       </View>
     </Layout>

@@ -13,9 +13,12 @@ import {View} from 'react-native';
 import Image from '../../components/Image';
 import colors from '../../config/colors';
 import {normaliseDesigns} from '../../utils/helpers/responsiveHelpers';
-import { useAppDispatch, useAppSelector } from '../../redux/store';
-import { forgotPassword, resetPasswordResponse } from '../../redux/features/authSlice';
-import { openEmailApp } from '../../utils/functions/linkingUtils';
+import {useAppDispatch, useAppSelector} from '../../redux/store';
+import {
+  forgotPassword,
+  resetPasswordResponse,
+} from '../../redux/features/authSlice';
+import {openEmailApp} from '../../utils/functions/linkingUtils';
 
 type ResetPasswordNavigationProp = StackNavigationProp<
   MainStackParamList,
@@ -79,9 +82,9 @@ const RenderConfirmEmailModal: FC<RenderConfirmEmailModalTypes> = ({
 const ResetPassword: FC<ResetPasswordScreenProps> = ({navigation, route}) => {
   const [username, setUsername] = useState<string>('');
   const [isShowModal, setIsShowModal] = useState<boolean>(false);
-const dispatch=useAppDispatch();
+  const dispatch = useAppDispatch();
 
-const {forgotPasswordResponse}=useAppSelector(state=>state.auth);
+  const {forgotPasswordResponse} = useAppSelector(state => state.auth);
 
   const {validateField} = useValidation();
 
@@ -92,19 +95,16 @@ const {forgotPasswordResponse}=useAppSelector(state=>state.auth);
 
   const onPressSendButton = () => {
     dispatch(forgotPassword(username));
-
   };
 
-  useEffect(()=>{
-    if(forgotPasswordResponse){
+  useEffect(() => {
+    if (forgotPasswordResponse) {
       setIsShowModal(true);
       dispatch(resetPasswordResponse());
-      // navigation.navigate('Login');
     }
-  },[forgotPasswordResponse])
+  }, [forgotPasswordResponse]);
 
   const onPressOpenEmail = () => {
-
     openEmailApp();
     setIsShowModal(false);
     navigation.navigate('Login');
@@ -142,8 +142,8 @@ const {forgotPasswordResponse}=useAppSelector(state=>state.auth);
         Reset Password
       </Text>
       <Text style={{color: '#4E565F'}} size="body1">
-        Enter the username and we will send an
-        email to the associated with your account with instructions to reset your password.
+        Enter the username and we will send an email to the associated with your
+        account with instructions to reset your password.
       </Text>
       <TextInput
         label="Username"
@@ -152,7 +152,6 @@ const {forgotPasswordResponse}=useAppSelector(state=>state.auth);
         errorMessage={usernameErrorMessage}
         placeholder="Enter your username"
         autoCapitalize="none"
-
         style={{marginVertical: '10%'}}
       />
       <Button
