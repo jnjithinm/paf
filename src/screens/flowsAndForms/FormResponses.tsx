@@ -221,7 +221,7 @@ type RenderSuccessModalContentTypes = {
 };
 
 export const RenderSuccessModalContent: FC<RenderSuccessModalContentTypes> = ({
-  icon,
+  icon = 'success_icon',
   highlightText = 'Success!',
   descriptionText,
 }) => (
@@ -229,9 +229,11 @@ export const RenderSuccessModalContent: FC<RenderSuccessModalContentTypes> = ({
     style={{
       alignItems: 'center',
       justifyContent: 'center',
-      paddingHorizontal: 30,
+      paddingHorizontal: 20,
+      paddingBottom: 15,
+      marginTop: -15,
     }}>
-    <Image name="success_icon" />
+    <Image name={icon} />
     <Text size="body2" fontVariant="bold" style={{marginVertical: 5}}>
       {highlightText}
     </Text>
@@ -656,7 +658,7 @@ const FormResponses: FC<FormResponsesScreenProps> = ({navigation, route}) => {
         userGroupIds: selectedUserGroups,
         loggedInUserName: userData.userName,
         formId: flowDetailItem.formId,
-        flowId:flowDetailItem.flowId
+        flowId: flowDetailItem.flowId,
       }),
     );
   };
@@ -675,6 +677,7 @@ const FormResponses: FC<FormResponsesScreenProps> = ({navigation, route}) => {
       <IndividualMainPageRenderal
         onPress={onPressItem}
         individualResponse={formById?.dataList?.individualResponses || []}
+        flowDetailItem={flowDetailItem}
       />
     );
     let setScreen: Dispatch<SetStateAction<ScreenSelectiontypes>> =
@@ -688,6 +691,7 @@ const FormResponses: FC<FormResponsesScreenProps> = ({navigation, route}) => {
             <IndividualMainPageRenderal
               onPress={onPressItem}
               individualResponse={formById?.dataList?.individualResponses || []}
+              flowDetailItem={flowDetailItem}
             />
           );
         } else {
@@ -744,6 +748,8 @@ const FormResponses: FC<FormResponsesScreenProps> = ({navigation, route}) => {
   const isMainPage: boolean = Boolean(screen === 'main');
 
   const Renderal: JSX.Element = renderal;
+
+  console.log('sdffdssaaaa', formById);
 
   return (
     <>

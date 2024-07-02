@@ -35,8 +35,8 @@ export interface FlowDetailItem {
   flowName: string;
   formName: string;
   responses: number;
-  createdDate:string;
-  responseDate:string;
+  createdDate: string;
+  responseDate: string;
 }
 
 interface GetFlowByIdResponse {
@@ -63,13 +63,13 @@ interface sendReminderForm {
   status: number;
 }
 
-type SendReminderToAllPendingUsersResponsePayload =
-  sendReminderForm['payload'];
+type SendReminderToAllPendingUsersResponsePayload = sendReminderForm['payload'];
 
 interface AssignFlowRequest {
   userIds: number[];
   userGroupIds: number[];
-  id: number;
+  flowId: number;
+  formId: number;
   loggedInUserName: string;
 }
 
@@ -81,6 +81,19 @@ interface AssignFlowResponse {
 }
 
 type AssignFlowResponsePayload = AssignFlowResponse['payload'];
+
+interface DeleteFlowRequest {
+  flowIds: number[];
+  forceDelete: boolean;
+  loggedInUserName: string;
+}
+
+interface DeleteFlowResponse {
+  payload: {
+    message: string;
+  };
+  status: number;
+}
 
 export const setFlowsShowMessage = createAction<ErrorStatusObject | null>(
   'SET_FLOWS_SHOW_MESSAGE',
@@ -96,15 +109,15 @@ export const resetAssignFlowResponse = createAction<void>(
 
 export const getAllFlows = createAsyncThunk<
   GetAllFlowsResponse,
-  [string, PaginationRequest],
+  [string,number, PaginationRequest],
   {rejectValue: ErrorResponse}
 >(
   'flows/getAllFlows',
-  async ([loggedInUserName, payload], {dispatch, rejectWithValue}) => {
+  async ([loggedInUserName,userId, payload], {dispatch, rejectWithValue}) => {
     try {
       dispatch(setLoading(true));
       const response = await api.post(
-        endPoints.GET_ALL_FLOWS + loggedInUserName,
+        endPoints.GET_ALL_FLOWS + loggedInUserName+`&userId=${userId}`,
         payload,
       );
       return response.data as GetAllFlowsResponse;
@@ -118,15 +131,15 @@ export const getAllFlows = createAsyncThunk<
 
 export const getFlowById = createAsyncThunk<
   GetFlowByIdResponse,
-  [number, PaginationRequest],
+  [number,number, PaginationRequest],
   {rejectValue: ErrorResponse}
 >(
   'flows/getFlowById',
-  async ([flowId, payload], {dispatch, rejectWithValue}) => {
+  async ([flowId,userId, payload], {dispatch, rejectWithValue}) => {
     try {
       dispatch(setLoading(true));
       const response = await api.post(
-        endPoints.GET_FLOW_BY_ID + flowId,
+        endPoints.GET_FLOW_BY_ID + flowId+`userId=${userId}`,
         payload,
       );
 
@@ -207,11 +220,30 @@ export const assignFlowToUsersAndGroups = createAsyncThunk<
   },
 );
 
+export const deleteFlow = createAsyncThunk<
+  DeleteFlowResponse,
+  DeleteFlowRequest,
+  {rejectValue: ErrorResponse}
+>('flows/deleteFlow', async (payload, {dispatch, rejectWithValue}) => {
+  try {
+    dispatch(setLoading(true));
+    const response = await api.delete(endPoints.DELETE_FLOWS, {data: payload});
+
+    return response.data as DeleteFlowResponse;
+  } catch (error: any) {
+    console.log('error.response?.data?.message', error.response?.data?.message);
+    return rejectWithValue(error.response.data);
+  } finally {
+    dispatch(setLoading(false));
+  }
+});
+
 interface InitialState {
   allFlows: GetAllFlowsResponsePayload | null;
   flowById: GetFlowByIdResponsePayload | null;
   sendReminderFormResponse: SendReminderToAllPendingUsersResponsePayload | null;
   assignFlowResponse: AssignFlowResponsePayload | null;
+  deleteFlowResponse: DeleteFlowResponse | null;
   flowsShowMessage: ErrorStatusObject | null;
   errorMessage: string;
 }
@@ -221,6 +253,7 @@ const initialState: InitialState = {
   flowById: null,
   sendReminderFormResponse: null,
   assignFlowResponse: null,
+  deleteFlowResponse: null,
   flowsShowMessage: null,
   errorMessage: '',
 };
@@ -239,7 +272,6 @@ const flowsSlice = createSlice({
       })
       .addCase(resetSendReminderToAllPendingUsers, state => {
         state.sendReminderFormResponse = null;
-        
       })
       .addCase(getAllFlows.pending, state => {
         // state.isLoading = true;
@@ -287,6 +319,23 @@ const flowsSlice = createSlice({
         state.assignFlowResponse = action.payload.payload;
       })
       .addCase(assignFlowToUsersAndGroups.rejected, (state, action) => {
+        state.flowsShowMessage = {
+          status: 'Error',
+          message: action?.payload?.error?.errorMessage,
+        };
+      })
+      .addCase(deleteFlow.pending, state => {
+        // state.isLoading = true;
+      })
+      .addCase(deleteFlow.fulfilled, (state, action) => {
+        // state.isLoading = false;
+        state.deleteFlowResponse = action.payload;
+        state.flowsShowMessage = {
+          status: 'Success',
+          message: action?.payload?.payload?.message,
+        };
+      })
+      .addCase(deleteFlow.rejected, (state, action) => {
         state.flowsShowMessage = {
           status: 'Error',
           message: action?.payload?.error?.errorMessage,

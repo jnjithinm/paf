@@ -41,6 +41,7 @@ export interface IndividualResponse {
   userId: number;
   userName: string;
   name: string;
+  questionAvgRating:number;
   responses: {
     questionId: number;
     questionText: string;
@@ -217,12 +218,29 @@ interface AssignFormResponse {
 
 type AssignFormResponsePayload = AssignFormResponse['payload'];
 
+
+interface DeleteFormRequest{
+  ids: number[];
+  loggedInUserName: string;
+}
+
+interface DeleteFormResponse{
+  payload: {
+    message: string;
+  };
+  status: number;
+}
+
 export const setFormsShowMessage = createAction<ErrorStatusObject | null>(
   'SET_FORMS_SHOW_MESSAGE',
 );
 
 export const resetAssignFormResponse = createAction<void>(
   'RESET_ASSIGN_FORM_RESPONSE',
+);
+
+export const resetDeleteFormResponse = createAction<void>(
+  'RESET_DELETE_FORM_RESPONSE',
 );
 
 export const getFormById = createAsyncThunk<
@@ -320,12 +338,37 @@ export const assignFormToUsersAndGroups = createAsyncThunk<
   },
 );
 
+export const deleteForm = createAsyncThunk<
+  DeleteFormResponse,
+  [number,number,DeleteFormRequest],
+  {rejectValue: ErrorResponse}
+>(
+  'forms/deleteForm',
+  async ([forceDelete,flowId,payload], {dispatch, rejectWithValue}) => {
+    try {
+      dispatch(setLoading(true));
+      const response = await api.delete(
+        endPoints.DELETE_FORMS+`forceDelete=${forceDelete}&flowId=${flowId}`,{data:payload}
+        ,
+      );
+      console.log('re', response.data);
+      return response.data as DeleteFormResponse;
+    } catch (error: any) {
+      return rejectWithValue(error.response.data);
+    } finally {
+      dispatch(setLoading(false));
+    }
+  },
+);
+
+
 interface InitialState {
   formById: GetAllFlowsResponsePayload | null;
   previewForm: GetPreviewFormResponsePayload | null;
   submitPreviewFormResponse: SubmitPreviewFormResponsePayload | null;
   acceptingFormResponses: AcceptingFormResponsesResponsePayload | null;
   assignFormResponse: AssignFormResponsePayload | null;
+  deleteFormResponse:DeleteFormResponse|null;
   formsShowMessage: ErrorStatusObject | null;
   errorMessage: string;
 }
@@ -335,6 +378,7 @@ const initialState: InitialState = {
   previewForm: null,
   submitPreviewFormResponse: null,
   acceptingFormResponses: null,
+  deleteFormResponse:null,
   formsShowMessage: null,
   assignFormResponse: null,
   errorMessage: '',
@@ -351,6 +395,9 @@ const formsSlice = createSlice({
       })
       .addCase(resetAssignFormResponse, (state, action) => {
         state.assignFormResponse = null;
+      })
+      .addCase(resetDeleteFormResponse, (state, action) => {
+        state.deleteFormResponse = null;
       })
       .addCase(getFormById.pending, state => {
         // state.isLoading = true;
@@ -417,7 +464,23 @@ const formsSlice = createSlice({
           status: 'Error',
           message: action?.payload?.error?.errorMessage?.toString(),
         };
-      });
+      })
+      .addCase(deleteForm.pending, state => {
+        state.deleteFormResponse=null;
+      })
+      .addCase(deleteForm.fulfilled, (state, action) => {
+        state.deleteFormResponse = action.payload;
+        state.formsShowMessage = {
+          status: 'Success',
+          message:  action.payload?.payload?.message
+        };
+      })
+      .addCase(deleteForm.rejected, (state, action) => {
+        state.formsShowMessage = {
+          status: 'Error',
+          message: action?.payload?.error?.errorMessage?.toString(),
+        };
+      })
   },
 });
 

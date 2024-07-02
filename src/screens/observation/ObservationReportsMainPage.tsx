@@ -18,6 +18,9 @@ import {useAppDispatch, useAppSelector} from '../../redux/store';
 import {
   FilterType,
   getAllObservations,
+  resetSaveEvidenceCardResponse,
+  resetSaveObservationResponse,
+  saveNewObservation,
 } from '../../redux/features/observationSlice';
 import SearchWithFilter from '../../components/SearchWithFilter';
 import { ItemType } from '../../config/types';
@@ -104,6 +107,7 @@ const ObservationReportsMainPage: FC<ObservationReportsMainPageScreenProps> = ({
 
   useFocusEffect(
     React.useCallback(() => {
+
       dispatch(
         getAllObservations([
           userData.id,
@@ -123,6 +127,9 @@ const ObservationReportsMainPage: FC<ObservationReportsMainPageScreenProps> = ({
           },
         ]),
       );
+      dispatch(resetSaveEvidenceCardResponse());
+      dispatch(resetSaveObservationResponse());
+      dispatch(saveNewObservation(null));
     }, []),
   );
   

@@ -28,7 +28,7 @@ const adminStack: StackItem[] = [
   {
     stack: 'FlowsAndFormsStack',
     icon: 'tabbar_icon_flows_and_forms',
-    focusedIcon: 'tabbar_icon_flows_and_forms',
+    focusedIcon: 'tabbar_icon_flows_and_forms_focused',
   },
   {
     stack:undefined,
@@ -50,13 +50,13 @@ const registeredUserStack: StackItem[] = [
     focusedIcon: 'tabbar_icon_observation_focused',
   },
   {
-    stack: 'RubricStack',
+    stack: undefined,
     icon: 'tabbar_icon_rubric',
     focusedIcon: 'tabbar_icon_rubric_focused',
     disabled: true,
   },
   {
-    stack: 'RubricStack',
+    stack: undefined,
     icon: 'tabbar_icon_graph',
     focusedIcon: 'tabbar_icon_graph_focused',
     disabled: true,

@@ -151,6 +151,7 @@ export const ObservationsTile: FC<ObservationTileTypes> = ({
           padding: 8,
           backgroundColor: '#EAF1FE',
           borderRadius: 10,
+      
           alignSelf: 'flex-start',
           alignItems: 'center',
           flex: 1,
@@ -494,7 +495,7 @@ const TeacherDashboard: FC<TeacherDashboardScreenProps> = ({
                 alignItems: 'center',
               }}>
               <RenderProfileIcon
-                image={userData?.userImage}
+                image={userData?.userImageUrl || userData.userImageUrl}
                 name={userData?.name || ''}
                 size={45}
               />

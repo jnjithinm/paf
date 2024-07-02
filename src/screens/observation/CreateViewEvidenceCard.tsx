@@ -21,7 +21,10 @@ import {
   getIndicatorsByDomainId,
 } from '../../redux/features/masterSlice';
 import LabeledDropdown from '../../components/LabeledDropdown';
-import {saveEvidenceCard} from '../../redux/features/observationSlice';
+import {
+  saveEvidenceCard,
+  saveObservation,
+} from '../../redux/features/observationSlice';
 import {FileObject, ItemType} from '../../config/types';
 import RatingInput from '../../components/RatingInput';
 import {ObservationStackParamList} from '../../navigation/ObservationStack';
@@ -30,7 +33,8 @@ import Sound from 'react-native-sound';
 import Button from '../../components/Button';
 import Icon from '../../components/Icon';
 import Slider from '../../components/Slider';
-import { setLoading } from '../../redux/features/authSlice';
+import {setLoading} from '../../redux/features/authSlice';
+import moment from 'moment';
 
 type CreateViewEvidenceCardNavigationProp = StackNavigationProp<
   ObservationStackParamList,
@@ -62,7 +66,6 @@ const RenderMusicPlayerModalContent: FC<RenderMusicPlayerModalContentTypes> = ({
         }
         setSound(soundInstance);
         setDuration(soundInstance.getDuration());
-   
       });
 
       return () => {
@@ -185,22 +188,10 @@ const CreateViewEvidenceCard: FC<CreateViewEvidenceCardScreenProps> = ({
   const {allDomains, indicatorsByDomain} = useAppSelector(
     state => state.master,
   );
-  const {saveEvidenceCardResponse} = useAppSelector(state => state.observation);
+  const {saveEvidenceCardResponse, newObservation, saveObservationResponse} =
+    useAppSelector(state => state.observation);
   const {userData} = useAppSelector(state => state.auth);
 
-  // function mergeArrays(...arrays: FileObject[][]): FileObject[] {
-  //   return arrays.reduce((acc, curr) => [...acc, ...curr], []);
-  // }
-
-  // const handleFilesPicked = (files: FileObject[]) => {
-  //   const mergedArray: FileObject[] = mergeArrays(imageFiles, files);
-  //   console.log(':fd', imageFiles, files);
-  //   setImageFiles(mergedArray);
-  // };
-
-  const handleFilesPicked = (files: FileObject) => {
-    setZipFile(files);
-  };
   useEffect(() => {
     dispatch(getAllDomains());
   }, []);
@@ -222,6 +213,15 @@ const CreateViewEvidenceCard: FC<CreateViewEvidenceCardScreenProps> = ({
       );
     }
   }, [evidenceCardDetails]);
+
+  useEffect(() => {
+    if (saveObservationResponse) {
+      console.log("is it coming here ?")
+      navigation.navigate('ObservationReport', {
+        observationId: saveObservationResponse.id,
+      });
+    }
+  }, [saveObservationResponse]);
 
   const onPressSaveCard = () => {
     if (zipfile) {
@@ -254,10 +254,33 @@ const CreateViewEvidenceCard: FC<CreateViewEvidenceCardScreenProps> = ({
   }, [evidenceCardDetails]);
 
   useEffect(() => {
-    if (saveEvidenceCardResponse) {
-      navigation.navigate('AddNewObservation', {isEvidenceCardCreated: true});
+    if (saveEvidenceCardResponse && newObservation) {
+      dispatch(
+        saveObservation([
+          'Add',
+          {
+            observationDate: moment(newObservation?.selectedDate).format(
+              'YYYY-MM-DD',
+            ),
+            userGroupId: Number(newObservation?.selectedUserGroup.value),
+            userId: Number(newObservation?.selectedUser.value),
+            observationStatus: 'Completed',
+            feedbackDescription: newObservation?.feedbackNote,
+            loggedInUserName: userData.userName,
+            evidenceRequestList: [
+              {
+                domainId: saveEvidenceCardResponse.domainId,
+                indicatorId: saveEvidenceCardResponse.indicatorId,
+                averageRating: saveEvidenceCardResponse.averageRating,
+                evidenceId: saveEvidenceCardResponse.evidenceId,
+                loggedInUserName: userData.userName,
+              },
+            ],
+          },
+        ]),
+      );
     }
-  }, [saveEvidenceCardResponse]);
+  }, [saveEvidenceCardResponse,newObservation]);
 
   let isAllFieldsEntered = Boolean(
     selectedDomain?.value && selectedIndicator?.value && rating && zipfile,
@@ -363,10 +386,10 @@ const CreateViewEvidenceCard: FC<CreateViewEvidenceCardScreenProps> = ({
         <FooterWithButtons
           onPressProceedButton={onPressSaveCard}
           proceedButtonText={'Save Card'}
-          isActiveProceedButton
-          // isActiveProceedButton={isAllFieldsEntered && !evidenceCardDetails}
+          isActiveProceedButton={isAllFieldsEntered && !evidenceCardDetails}
           cancelButtonText={'Cancel'}
           onPressCancelButton={() => {
+            console.log("in cancel")
             navigation.navigate('ObservationReportsMainPage');
           }}
           style={{}}

@@ -167,7 +167,7 @@ const DrawerContent: FC<DrawerContentTypes> = ({closeDrawer}) => {
       ],
     },
     {
-      icon: 'drawer_icon_user_management',
+      icon: 'drawer_icon_teacher_evaluation',
       itemName: 'Teacher Evaluation',
       onPressItem: () => {},
       expandItem: [
@@ -267,7 +267,7 @@ const DrawerContent: FC<DrawerContentTypes> = ({closeDrawer}) => {
       ],
     },
     {
-      icon: 'drawer_icon_user_management',
+      icon: 'drawer_icon_teacher_evaluation',
       itemName: 'Teacher Evaluation',
       onPressItem: () => {},
       expandItem: [
@@ -408,7 +408,7 @@ const DrawerContent: FC<DrawerContentTypes> = ({closeDrawer}) => {
             alignContent: 'center',
           }}>
           <RenderProfileIcon
-            image={userData?.userImage}
+            image={userData?.userImageUrl || userData.userImage}
             name={userData?.name}
             size={40}
           />

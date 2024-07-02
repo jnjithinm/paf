@@ -55,7 +55,9 @@ const Login: FC<LoginScreenProps> = ({navigation, route}) => {
   });
 
   const onPressLogin = async () => {
+    dispatch(resetUsernamePasswordErrorMessages());
     if (!usernameErrorMessage && !passwordErrorMessage) {
+
       setIsShowError(true);
       if (isRememberMe && isChanged) {
         setIsChanged(false);
@@ -170,6 +172,7 @@ const Login: FC<LoginScreenProps> = ({navigation, route}) => {
           </View>
           <TouchableOpacity
             onPress={() => {
+              dispatch(resetUsernamePasswordErrorMessages());
               navigation.navigate('ResetPassword');
             }}>
             <Text size="small2" style={{textDecorationLine: 'underline'}}>

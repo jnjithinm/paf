@@ -86,7 +86,7 @@ import drawer_icon_user_management from '../assets/svg/drawer_icon_user_manageme
 import music_player_icon from '../assets/svg/music_player_icon.svg'
 import play_button_music_player_icon from '../assets/svg/play_button_music_player_icon.svg'
 import toast_message_warning_icon from '../assets/svg/toast_message_warning_icon.svg'
-
+import drawer_icon_teacher_evaluation from '../assets/svg/drawer_icon_teacher_evaluation.svg'
 
 const Icons = {
   app_logo,
@@ -173,7 +173,8 @@ const Icons = {
   drawer_icon_user_management,
   music_player_icon,
   play_button_music_player_icon,
-  toast_message_warning_icon
+  toast_message_warning_icon,
+  drawer_icon_teacher_evaluation
   
 };
 

@@ -9,13 +9,14 @@ import Layout from '../../components/Layout';
 import Text from '../../components/Text';
 import Image from '../../components/Image';
 import colors from '../../config/colors';
-import Icon from '../../components/Icon';
 import EvidenceCard from '../../components/EvidenceCard';
 import {ObservationStackParamList} from '../../navigation/ObservationStack';
 import {useAppDispatch, useAppSelector} from '../../redux/store';
-import {getObservationById, saveNewObservation} from '../../redux/features/observationSlice';
+import {
+  getObservationById,
+  saveNewObservation,
+} from '../../redux/features/observationSlice';
 import {RatingStars, RenderProfileIcon} from '../dashboard/TeacherDashboard';
-import FooterWithButtons from '../../components/FooterWithButtons';
 import {FloatingButton} from './ObservationReportsMainPage';
 
 type ObservationReportNavigationProp = StackNavigationProp<
@@ -36,10 +37,11 @@ const ObservationReport: FC<ObservationReportScreenProps> = ({
   navigation,
   route,
 }) => {
-  const [feedbackNote, setFeedbackNote] = useState('');
   const {observationId} = route.params;
   const dispatch = useAppDispatch();
-  const {observationById} = useAppSelector(state => state.observation);
+  const {observationById, newObservation} = useAppSelector(
+    state => state.observation,
+  );
 
   useEffect(() => {
     dispatch(getObservationById(observationId));
@@ -52,6 +54,11 @@ const ObservationReport: FC<ObservationReportScreenProps> = ({
       <Layout
         overridePaddingHorizontal
         overridePaddingVertical
+        onPressBackArrow={() => {
+          newObservation
+            ? navigation.navigate('AddNewObservation')
+            : navigation.navigate('ObservationReportsMainPage');
+        }}
         style={{paddingHorizontal: 15, paddingVertical: 0}}
         icon="reports_icon"
         title="Observation Report">
@@ -112,7 +119,7 @@ const ObservationReport: FC<ObservationReportScreenProps> = ({
                 onPressEvidenceCard={() => {
                   navigation.navigate('CreateViewEvidenceCard', {
                     evidenceCardDetails: item,
-                    observationStatus:observationById.observationStatus
+                    observationStatus: observationById.observationStatus,
                   });
                 }}
               />
@@ -130,7 +137,6 @@ const ObservationReport: FC<ObservationReportScreenProps> = ({
               </Text>
               <RNTextInput
                 value={observationById?.feedbackDescription?.toString() || ''}
-                onChangeText={setFeedbackNote}
                 style={{color: '#4E565F'}}
                 multiline
                 maxLength={200}
@@ -140,15 +146,13 @@ const ObservationReport: FC<ObservationReportScreenProps> = ({
           )}
         </View>
       </Layout>
-      {observationById?.observationStatus === 'Pending' && (
-        <FloatingButton
-          icon="edit_icon"
-          onPress={() => {
-            navigation.navigate('CreateViewEvidenceCard');
-          }}
-          iconSize={20}
-        />
-      )}
+      <FloatingButton
+        icon="edit_icon"
+        onPress={() => {
+          navigation.navigate('CreateViewEvidenceCard');
+        }}
+        iconSize={20}
+      />
     </KeyboardAvoidingView>
   );
 };

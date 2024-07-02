@@ -10,10 +10,13 @@ import {normaliseFont} from '../../utils/helpers/responsiveHelpers';
 import colors from '../../config/colors';
 import Icon from '../../components/Icon';
 import Text from '../../components/Text';
-import {getFlowById} from '../../redux/features/flowsSlice';
+import {assignFlowToUsersAndGroups, getFlowById, resetAssignFlowResponse} from '../../redux/features/flowsSlice';
 import {ItemType} from '../../config/types';
 import {FlowsAndFormsStackParamList} from '../../navigation/FlowsAndFormsStack';
 import moment from 'moment';
+import { RenderAssignFormModalContent, RenderSuccessModalContent } from './FormResponses';
+import Modal from '../../components/Modal';
+import { FloatingButton } from '../observation/ObservationReportsMainPage';
 
 type FormListAndResponsesNavigationProp = StackNavigationProp<
   FlowsAndFormsStackParamList,
@@ -96,8 +99,14 @@ const FormListAndResponses: FC<FormListAndResponsesScreenProps> = ({
   const {flowItem} = route.params;
 
   const [selectedTab, setSelectedTab] = useState<TabTypes>('Form list');
-  const {flowById} = useAppSelector(state => state.flows);
-  const {isAdmin} = useAppSelector(state => state.auth);
+  const [isAssignFlowModalVisible, setIsAssignFlowModalVisible] =
+  useState<boolean>(false);
+const [isVisibleAssignFormSuccessModal, setIsVisibleAssignFormSuccessModal] =
+  useState<boolean>(false);
+
+
+  const {flowById,assignFlowResponse} = useAppSelector(state => state.flows);
+  const {userData, isAdmin} = useAppSelector(state => state.auth);
   const dispatch = useAppDispatch();
 
   const handleTabClick = (title: ItemType) => {
@@ -108,6 +117,7 @@ const FormListAndResponses: FC<FormListAndResponsesScreenProps> = ({
     dispatch(
       getFlowById([
         flowItem.flowId,
+        userData.id,
         {
           page: 0,
           size: 15,
@@ -117,12 +127,67 @@ const FormListAndResponses: FC<FormListAndResponsesScreenProps> = ({
     );
   }, []);
 
+
+  useEffect(() => {
+    if (assignFlowResponse) {
+      setIsVisibleAssignFormSuccessModal(true);
+    }
+  }, [assignFlowResponse]);
+
+  const onPressAssignFlow = (
+    selectedUsers: number[],
+    selectedUserGroups: number[],
+  ) => {
+    setIsAssignFlowModalVisible(false);
+    dispatch(
+      assignFlowToUsersAndGroups({
+        userIds: selectedUsers,
+        userGroupIds: selectedUserGroups,
+        loggedInUserName: userData.userName,
+        flowId:flowItem.flowId,
+        formId:flowItem.flowId
+      }),
+    );
+  };
+
   return (
+    <>
     <Layout
       overridePaddingHorizontal
       overridePaddingVertical
       style={{paddingHorizontal: 15}}
       title={flowItem.flowName}>
+           <Modal
+          onProceed={() => {}}
+          onClose={() => {
+            setIsAssignFlowModalVisible(false);
+          }}
+          isVisible={isAssignFlowModalVisible}
+          title="Assign flow"
+          closeButton
+          contentStyle={{width: '100%'}}
+          content={
+            <RenderAssignFormModalContent onPressAssign={onPressAssignFlow} />
+          }
+        />
+           <Modal
+          onProceed={() => {}}
+          onClose={() => {
+            setIsVisibleAssignFormSuccessModal(false);
+            dispatch(resetAssignFlowResponse());
+          }}
+          closeButton
+          content={
+            <RenderSuccessModalContent
+              icon="flow_icon"
+              highlightText="Success!"
+              descriptionText="Form assigned to selected user and user groups."
+            />
+          }
+          isVisible={isVisibleAssignFormSuccessModal}
+          containerStyle={{justifyContent: 'center'}}
+          contentStyle={{width: '70%'}}
+        />
       <View style={{marginVertical: 10}}>
         <Tab
           tabs={[
@@ -201,6 +266,16 @@ const FormListAndResponses: FC<FormListAndResponsesScreenProps> = ({
         )}
       </View>
     </Layout>
+          {isAdmin && (
+            <FloatingButton
+              icon="user_and_usergroup_icon"
+              onPress={() => {
+                setIsAssignFlowModalVisible(true);
+              }}
+              iconSize={20}
+            />
+          )}
+          </>
   );
 };
 export default FormListAndResponses;

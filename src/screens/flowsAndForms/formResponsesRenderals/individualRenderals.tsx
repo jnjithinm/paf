@@ -7,11 +7,16 @@ import Icon from '../../../components/Icon';
 import Image from '../../../components/Image';
 import {normaliseDesigns} from '../../../utils/helpers/responsiveHelpers';
 import colors from '../../../config/colors';
-import {IndividualResponse} from '../../../redux/features/formsSlice';
+import {IndividualResponse, resetDeleteFormResponse} from '../../../redux/features/formsSlice';
 import RatingInput from '../../../components/RatingInput';
+import { useAppDispatch, useAppSelector } from '../../../redux/store';
+import {deleteForm} from '../../../redux/features/formsSlice'
+import { FlowDetailItem } from '../../../redux/features/flowsSlice';
 
 type AdminIndividualTileTypes = {
-  rating: string;
+  flowDetailItem:FlowDetailItem;
+  id:number;
+  rating: number;
   name: string;
   image: string;
   creationDate: string;
@@ -22,6 +27,8 @@ type AdminIndividualTileTypes = {
 };
 
 const AdminIndividualTile: FC<AdminIndividualTileTypes> = ({
+  flowDetailItem,
+  id,
   rating,
   name,
   image,
@@ -32,6 +39,25 @@ const AdminIndividualTile: FC<AdminIndividualTileTypes> = ({
   style,
 }) => {
   const [isPressed, setIsPressed] = useState(false);
+  const dispatch=useAppDispatch();
+  const {userData}=useAppSelector(state=>state.auth);
+  const {deleteFormResponse}=useAppSelector(state=>state.forms)
+
+  const onPressDeleteFormResponse=()=>{
+    dispatch(
+      deleteForm([flowDetailItem.flowId,0,{
+        ids: [id],
+        loggedInUserName: userData.userName,
+      }]),
+    );
+  }
+
+useEffect(()=>{
+  if(deleteFormResponse){
+    dispatch(resetDeleteFormResponse())
+  }
+
+},[deleteFormResponse])
 
   useEffect(() => {
     return () => {
@@ -84,6 +110,7 @@ const AdminIndividualTile: FC<AdminIndividualTileTypes> = ({
             flexDirection: 'row',
             width: '100%',
             justifyContent: 'space-between',
+            marginTop:7
           }}>
           <View>
             <Text size="verysmall3" opacity="0.50">
@@ -111,21 +138,24 @@ const AdminIndividualTile: FC<AdminIndividualTileTypes> = ({
 type IndividualMainPageRenderalTypes = {
   onPress: (item: IndividualResponse) => void;
   individualResponse: IndividualResponse[];
+  flowDetailItem:FlowDetailItem
 };
 
 //IndividualMainScreen Renderals
 export const IndividualMainPageRenderal: FC<
   IndividualMainPageRenderalTypes
-> = ({onPress, individualResponse}) => (
+> = ({onPress, individualResponse,flowDetailItem}) => (
   <View>
     {individualResponse.map(item => (
       <AdminIndividualTile
-        rating={'4.5'}
-        creationDate={moment(new Date('12-04-2024')).format('DD/MM/YYYY')}
+        rating={item.questionAvgRating}
+        creationDate={'10/06/2024'}
         onPress={() => {
           onPress(item);
           // navigation.navigate('AdminFormList');
         }}
+        flowDetailItem={flowDetailItem}
+        id={item.userId}
         key={item.userId}
         name={item.name}
         image={''}

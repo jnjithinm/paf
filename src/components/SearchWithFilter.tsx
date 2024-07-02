@@ -8,6 +8,7 @@ type RenderSearchTypes = {
   placeHolder?: string;
   onTextChange: (text: string) => void;
   onProceed: (filter: FilterObject) => void;
+  filterNotNeeded?: boolean;
   style?: ViewStyle;
 };
 
@@ -15,6 +16,7 @@ const SearchWithFilter: FC<RenderSearchTypes> = ({
   placeHolder = 'Search',
   onTextChange,
   onProceed,
+  filterNotNeeded,
   style,
 }) => {
   const [isOpenCalendar, setIsOpenCalendar] = useState<boolean>(false);
@@ -41,7 +43,7 @@ const SearchWithFilter: FC<RenderSearchTypes> = ({
           style={{
             flexDirection: 'row',
             alignItems: 'center',
-            width: '85%',
+            width: filterNotNeeded ? '100%' : '85%',
             backgroundColor: '#F5F7FA',
             borderRadius: 10,
             paddingHorizontal: 10,
@@ -56,18 +58,20 @@ const SearchWithFilter: FC<RenderSearchTypes> = ({
           />
           <Icon name="search_icon" />
         </View>
-        <TouchableOpacity
-          style={{
-            borderWidth: 1,
-            borderColor: colors.primaryColor,
-            padding: 8,
-            borderRadius: 10,
-          }}
-          onPress={() => {
-            setIsOpenCalendar(true);
-          }}>
-          <Icon name="filter_icon" />
-        </TouchableOpacity>
+        {!filterNotNeeded && (
+          <TouchableOpacity
+            style={{
+              borderWidth: 1,
+              borderColor: colors.primaryColor,
+              padding: 8,
+              borderRadius: 10,
+            }}
+            onPress={() => {
+              setIsOpenCalendar(true);
+            }}>
+            <Icon name="filter_icon" />
+          </TouchableOpacity>
+        )}
       </View>
     </>
   );

@@ -7,28 +7,23 @@ import moment from 'moment';
 import Layout from '../../components/Layout';
 import Tab from '../../components/Tab';
 import {useAppDispatch, useAppSelector} from '../../redux/store';
-import {
-  RubricItem,
-  deleteRubric,
-} from '../../redux/features/rubricSlice';
+import {RubricItem, deleteRubric} from '../../redux/features/rubricSlice';
 
 import {normaliseFont} from '../../utils/helpers/responsiveHelpers';
 import colors from '../../config/colors';
 import Icon from '../../components/Icon';
 import Text from '../../components/Text';
 import {
+  FlowItem,
   assignFlowToUsersAndGroups,
+  deleteFlow,
   getAllFlows,
   resetAssignFlowResponse,
 } from '../../redux/features/flowsSlice';
 import {styles} from '../../components/RubricListModal';
-import {FloatingButton} from '../observation/ObservationReportsMainPage';
-import Modal from '../../components/Modal';
-import {
-  RenderAssignFormModalContent,
-  RenderSuccessModalContent,
-} from './FormResponses';
 import {FlowsAndFormsStackParamList} from '../../navigation/FlowsAndFormsStack';
+import SearchWithFilter from '../../components/SearchWithFilter';
+import {FilterObject} from '../../components/Calendar';
 
 type FlowsMainPageNavigationProp = StackNavigationProp<
   FlowsAndFormsStackParamList,
@@ -129,11 +124,7 @@ const FlowsItem: React.FC<FlowsItemProps> = ({
 };
 
 const FlowsMainPage: FC<FlowsMainPageScreenProps> = ({navigation, route}) => {
-  const [isAssignFlowModalVisible, setIsAssignFlowModalVisible] =
-    useState<boolean>(false);
-  const [isVisibleAssignFormSuccessModal, setIsVisibleAssignFormSuccessModal] =
-    useState<boolean>(false);
-  const {allFlows, assignFlowResponse} = useAppSelector(state => state.flows);
+  const {allFlows,} = useAppSelector(state => state.flows);
   const {userData, isAdmin} = useAppSelector(state => state.auth);
   const dispatch = useAppDispatch();
 
@@ -143,6 +134,7 @@ const FlowsMainPage: FC<FlowsMainPageScreenProps> = ({navigation, route}) => {
     dispatch(
       getAllFlows([
         userData.userName,
+        userData.id,
         {
           page: 0,
           size: 15,
@@ -152,29 +144,15 @@ const FlowsMainPage: FC<FlowsMainPageScreenProps> = ({navigation, route}) => {
     );
   }, []);
 
-  useEffect(() => {
-    if (assignFlowResponse) {
-      setIsVisibleAssignFormSuccessModal(true);
-    }
-  }, [assignFlowResponse]);
 
-  const onPressDeleteRubric = (item: RubricItem) => {
-    dispatch(
-      deleteRubric({ids: [item.rubricId], loggedInUserName: userData.userName}),
-    );
-  };
+  useEffect(()=>{},[])
 
-  const onPressAssignFlow = (
-    selectedUsers: number[],
-    selectedUserGroups: number[],
-  ) => {
-    setIsAssignFlowModalVisible(false);
+  const onPressDeleteFlow = (item: FlowItem) => {
     dispatch(
-      assignFlowToUsersAndGroups({
-        userIds: selectedUsers,
-        userGroupIds: selectedUserGroups,
+      deleteFlow({
+        flowIds: [item.flowId],
+        forceDelete: false,
         loggedInUserName: userData.userName,
-        id: userData.id,
       }),
     );
   };
@@ -189,37 +167,6 @@ const FlowsMainPage: FC<FlowsMainPageScreenProps> = ({navigation, route}) => {
         icon="flow_icon"
         focusedStack="FlowsAndFormsStack"
         titleTransition>
-        <Modal
-          onProceed={() => {}}
-          onClose={() => {
-            setIsAssignFlowModalVisible(false);
-          }}
-          isVisible={isAssignFlowModalVisible}
-          title="Assign flow"
-          closeButton
-          contentStyle={{width: '100%'}}
-          content={
-            <RenderAssignFormModalContent onPressAssign={onPressAssignFlow} />
-          }
-        />
-        <Modal
-          onProceed={() => {}}
-          onClose={() => {
-            setIsVisibleAssignFormSuccessModal(false);
-            dispatch(resetAssignFlowResponse());
-          }}
-          closeButton
-          content={
-            <RenderSuccessModalContent
-              icon="flow_icon"
-              highlightText="Success!"
-              descriptionText="Form assigned to selected user and user groups."
-            />
-          }
-          isVisible={isVisibleAssignFormSuccessModal}
-          containerStyle={{justifyContent: 'center'}}
-          contentStyle={{width: '70%'}}
-        />
         <Text size="body3" fontVariant="bold" style={{marginVertical: 10}}>
           Flows
         </Text>
@@ -233,22 +180,16 @@ const FlowsMainPage: FC<FlowsMainPageScreenProps> = ({navigation, route}) => {
             textStyle={{fontSize: normaliseFont(12)}}
             onClick={title => handleTabClick(title?.value)}
           />
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              backgroundColor: '#F5F7FA',
-              borderRadius: 10,
-              paddingHorizontal: 10,
-              marginVertical: 10,
-            }}>
-            <TextInput
-              style={{flex: 1, color: colors.blackColor, paddingVertical: 5}}
-              placeholder="Search by flow name"
-              placeholderTextColor={colors.darkGrey}
-            />
-            <Icon name="search_icon" />
-          </View>
+
+          <SearchWithFilter
+            filterNotNeeded
+            onTextChange={function (text: string): void {
+              throw new Error('Function not implemented.');
+            }}
+            onProceed={function (filter: FilterObject): void {
+              throw new Error('Function not implemented.');
+            }}
+          />
 
           {allFlows?.dataList?.map(item => (
             <FlowsItem
@@ -258,7 +199,7 @@ const FlowsMainPage: FC<FlowsMainPageScreenProps> = ({navigation, route}) => {
               title={item.flowName}
               userCount={item.responses}
               onDelete={() => {
-                // onPressDeleteRubric(item);
+                onPressDeleteFlow(item);
               }}
               key={item.flowId}
               onPress={() => {
@@ -269,16 +210,6 @@ const FlowsMainPage: FC<FlowsMainPageScreenProps> = ({navigation, route}) => {
           ))}
         </View>
       </Layout>
-
-      {isAdmin && (
-        <FloatingButton
-          icon="user_and_usergroup_icon"
-          onPress={() => {
-            setIsAssignFlowModalVisible(true);
-          }}
-          iconSize={20}
-        />
-      )}
     </>
   );
 };

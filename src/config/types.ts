@@ -32,6 +32,9 @@ export interface ErrorStatusObject {
   message?: string;
 }
 
+export type RequestType='Add'|'Update';
+
+
 export type FontSizeValuesTypes = keyof typeof FONT_SIZES;
 export type OpacityValuesTypes = keyof typeof OPACITY;
 export type FontVariantValuesTypes = keyof typeof FONT_VARIANT;

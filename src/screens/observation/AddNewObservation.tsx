@@ -116,25 +116,25 @@ const AddNewObservation: FC<AddNewObservationScreenProps> = ({
     }
   }, [selectedUserGroup?.value]);
 
-  useEffect(() => {
-    if (saveObservationResponse) {
-      if (saveEvidenceCardResponse) {
-        dispatch(resetSaveEvidenceCardResponse());
-        dispatch(resetSaveObservationResponse());
-        dispatch(saveNewObservation(null));
-        navigation.navigate('ObservationReportsMainPage');
-      } else {
-        dispatch(resetSaveObservationResponse());
-        dispatch(saveNewObservation(null));
-        navigation.navigate('ObservationReportsMainPage');
-      }
-    }
-  }, [saveObservationResponse]);
+  // useEffect(() => {
+  //   if (saveObservationResponse) {
+  //     if (saveEvidenceCardResponse) {
+  //       dispatch(resetSaveEvidenceCardResponse());
+  //       dispatch(resetSaveObservationResponse());
+  //       dispatch(saveNewObservation(null));
+  //       navigation.navigate('ObservationReportsMainPage');
+  //     } else {
+  //       dispatch(resetSaveObservationResponse());
+  //       dispatch(saveNewObservation(null));
+  //       navigation.navigate('ObservationReportsMainPage');
+  //     }
+  //   }
+  // }, [saveObservationResponse]);
 
   const onPressSaveAsDraft = () => {
     if (selectedUser && selectedUserGroup && selectedDate) {
       dispatch(
-        saveObservation({
+        saveObservation(['Update',{
           observationDate: moment(selectedDate).format('YYYY-MM-DD'),
           userGroupId: Number(selectedUserGroup?.value),
           userId: Number(selectedUser?.value),
@@ -142,7 +142,7 @@ const AddNewObservation: FC<AddNewObservationScreenProps> = ({
           feedbackDescription: feedbackNote,
           loggedInUserName: userData.userName,
           evidenceRequestList: [],
-        }),
+        }]),
       );
     }
   };
@@ -156,6 +156,7 @@ const AddNewObservation: FC<AddNewObservationScreenProps> = ({
           selectedDate,
           selectedUser,
           selectedUserGroup,
+          feedbackNote
         }),
       );
       navigation.navigate('CreateViewEvidenceCard');
@@ -165,7 +166,8 @@ const AddNewObservation: FC<AddNewObservationScreenProps> = ({
   const onPressSubmit = () => {
     if (saveEvidenceCardResponse) {
       dispatch(
-        saveObservation({
+        
+        saveObservation(['Add',{
           observationDate: moment(selectedDate).format('YYYY-MM-DD'),
           userGroupId: Number(selectedUserGroup?.value),
           userId: Number(selectedUser?.value),
@@ -181,7 +183,7 @@ const AddNewObservation: FC<AddNewObservationScreenProps> = ({
               loggedInUserName: userData.userName,
             },
           ],
-        }),
+        }]),
       );
     }
   };

@@ -36,7 +36,8 @@ interface LoginResponse {
     roleId: number;
     roleType: ParentRoles;
     isAdmin: boolean;
-    userImage: string;
+    userImage:string;
+    userImageUrl: string;
     status: boolean;
     pageData: {
       ObservationReports: [];
@@ -154,7 +155,8 @@ interface initialState {
     roleId: number;
     roleType: ParentRoles | null;
     isAdmin: boolean;
-    userImage: string;
+    userImage:string;
+    userImageUrl: string;
   };
   isAdmin: boolean;
   forgotPasswordResponse: ForgotPasswordResponsePayload | null;
@@ -174,7 +176,8 @@ const initialState: initialState = {
     roleId: 0,
     roleType: null,
     isAdmin: false,
-    userImage: '',
+    userImage:'',
+    userImageUrl: '',
   },
   isAdmin: false,
   forgotPasswordResponse: null,
