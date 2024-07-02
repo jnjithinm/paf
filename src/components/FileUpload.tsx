@@ -119,7 +119,9 @@ interface FileUploadProps {
   setZipFile: Dispatch<SetStateAction<FileObject | undefined>>;
   files: FileObject[];
   onPressFile?: (item: FileObject) => void;
+  onPressDelete:(item:FileObject)=>void;
   setFiles: Dispatch<SetStateAction<FileObject[]>>;
+
   disabled?: boolean;
 }
 
@@ -127,6 +129,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
   setZipFile,
   files,
   onPressFile,
+  onPressDelete,
   setFiles,
   disabled,
 }) => {
@@ -154,6 +157,8 @@ const FileUpload: React.FC<FileUploadProps> = ({
               message: `File ${result.name} is larger than 20 MB`,
             }),
           );
+          dispatch(setLoading(false));
+          return;
         } else {
           newFiles.push({
             uri: result.uri,
@@ -179,6 +184,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
       const zip = await createZipFile(updatedFiles);
       setZipFile(zip);
       setFiles(updatedFiles);
+      onPressDelete(item)
     } catch (err) {
       console.log('err', err);
     }

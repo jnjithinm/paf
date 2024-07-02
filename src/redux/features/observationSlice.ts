@@ -13,6 +13,7 @@ import {ErrorResponse, setLoading} from './authSlice';
 import {DateFilterOption} from '../../components/Calendar';
 import RNFetchBlob from 'rn-fetch-blob';
 import {getToken} from '../../utils/functions/localStorageOperations';
+import { logRequest } from '../../utils/functions/logs';
 
 interface Observation {
   userAssessed: string;
@@ -42,19 +43,19 @@ interface SaveEvidenceCardEvidenceInfoRequest {
   loggedInUserName: string;
 }
 
-interface SaveEvidenceCardResponse {
-  payload: {
-    evidenceId: number;
-    domainName: string;
-    domainId: number;
-    indicatorId: number;
-    indicatorName: string;
-    averageRating: number;
-    attachmentResponse: AttachmentResponse[];
-    fileCount: FileCount;
-    message: string;
-  };
+export type EvidenceResponse = {
+  evidenceId: number;
+  domainName: string;
+  domainId: number;
+  indicatorId: number;
+  indicatorName: string;
+  averageRating: number;
+  attachmentResponse: AttachmentResponse[];
+  fileCount: FileCount;
+};
 
+interface SaveEvidenceCardResponse {
+  payload: EvidenceResponse & {message: string};
   status: number;
 }
 
@@ -73,17 +74,6 @@ type FileCount = {
   Audio: number;
   Image: number;
   Document: number;
-};
-
-export type EvidenceResponse = {
-  evidenceId: number;
-  domainName: string;
-  domainId: number;
-  indicatorId: number;
-  indicatorName: string;
-  averageRating: number;
-  attachmentResponse: AttachmentResponse[];
-  fileCount: FileCount;
 };
 
 export type ObservationStatus = 'Completed' | 'Pending';
@@ -155,30 +145,6 @@ type FilterTypes = 'All' | 'byMe' | 'forMe';
 
 type FilterObservationRequest = {filterType: FilterTypes; userId: number};
 
-// type AttachmentResponse = {
-//   attachmentId: number;
-//   fileName: string;
-//   fileType: string;
-//   fileUrl: string;
-//   evidenceId: number;
-// };
-
-// type EvidencePayload = {
-//   evidenceId: number;
-//   domainName: string;
-//   domainId: number;
-//   indicatorId: number;
-//   indicatorName: string;
-//   averageRating: number;
-//   attachmentResponse: AttachmentResponse[];
-//   message: string;
-// };
-
-// type EvidenceResponse = {
-//   payload: EvidencePayload;
-//   status: number;
-// };
-
 export type FilterType = 'All' | 'byMe' | 'forMe';
 
 type ObservationRequest = {
@@ -209,7 +175,7 @@ export interface SaveObservationRequest {
   evidenceRequestList: EvidenceRequest[];
 }
 
-interface EvidenceRequest {
+export interface EvidenceRequest {
   domainId: number;
   indicatorId: number;
   averageRating: number;
@@ -238,13 +204,27 @@ export const saveNewObservation = createAction<NewObservation | null>(
   'SAVE_NEW_OBSERVATION',
 );
 
+export const saveNewEvidenceCardList = createAction<EvidenceResponse[] | null>(
+  'SAVE_NEW_EVIDENCE_CARD_LIST',
+);
+
+export const saveObservationId = createAction<number | null>(
+  'SAVE_OBSERVATION_ID',
+);
+
 export const resetSaveObservationResponse = createAction<void>(
   'RESET_SAVE_OBSERVATION_RESPONSE',
 );
 
-export const saveExistingObservationRequest = createAction<SaveObservationRequest|null>(
-  'SAVE_EXISTING_OBSERVATION_REQUEST',
+export const resetObservationById= createAction<void>(
+  'RESET_OBSERVATION_BY_ID',
 );
+
+export const saveEvidenceCardDetails =
+  createAction<EvidenceResponse | null>(
+    'SAVE_EVIDENCE_CARD_DETAILS',
+  );
+
 export const getDashboardDetailsAndObservationList = createAsyncThunk<
   GetDashboardDetailsAndObservationListResponse,
   number,
@@ -345,11 +325,11 @@ export const getAllObservations = createAsyncThunk<
 
 export const saveEvidenceCard = createAsyncThunk<
   SaveEvidenceCardResponse,
-  [SaveEvidenceCardEvidenceInfoRequest, FileObject],
+  [SaveEvidenceCardEvidenceInfoRequest, FileObject, number?],
   {rejectValue: ErrorResponse}
 >(
   'observation/saveEvidenceCard',
-  async ([evidenceInfo, file], {dispatch, rejectWithValue}) => {
+  async ([evidenceInfo, file, evidenceId], {dispatch, rejectWithValue}) => {
     try {
       const token = await getToken();
       dispatch(setLoading(true));
@@ -368,17 +348,35 @@ export const saveEvidenceCard = createAsyncThunk<
       });
 
       const url = 'http://65.1.32.205:8080/' + endPoints.SAVE_EVIDENCE_CARD;
-      const response = await RNFetchBlob.fetch(
-        'POST',
-        url,
-        {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'multipart/form-data',
-        },
-        formData,
-      );
+      const updateUrl =
+        'http://65.1.32.205:8080/' + endPoints.UPDATE_EVIDENCE_CARD;
+      let response, parsedResponse;
+      if (evidenceId) {
+        const requestUrl = updateUrl + evidenceId;
+        response = await RNFetchBlob.fetch(
+          'PUT',
+          updateUrl + evidenceId,
+          {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data',
+          },
+          formData,
+        );
+        logRequest('PUT',requestUrl,JSON.stringify(formData))
+      } else {
+        response = await RNFetchBlob.fetch(
+          'POST',
+          url,
+          {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data',
+          },
+          formData,
+        );
+        logRequest('POST',url,JSON.stringify(formData))
+      }
 
-      const parsedResponse = JSON.parse(response.data);
+      parsedResponse = JSON.parse(response.data);
       console.log('res', parsedResponse);
 
       return parsedResponse as SaveEvidenceCardResponse;
@@ -393,18 +391,22 @@ export const saveEvidenceCard = createAsyncThunk<
 
 export const saveObservation = createAsyncThunk<
   SaveObservationResponse,
-  [RequestType, SaveObservationRequest],
+  [SaveObservationRequest, number?],
   {rejectValue: ErrorResponse}
 >(
   'observation/saveObservation',
-  async ([requestType, payload], {dispatch, rejectWithValue}) => {
+  async ([payload, observationId], {dispatch, rejectWithValue}) => {
     try {
       dispatch(setLoading(true));
       let response;
-      if (requestType === 'Add') {
-        response = await api.post(endPoints.SAVE_OBSERVATION, payload);
+      if (observationId) {
+        response = await api.put(
+          endPoints.UPDATE_OBSERVATION + observationId,
+          payload,
+        );
+
       } else {
-        response = await api.put(endPoints.SAVE_OBSERVATION, payload);
+        response = await api.post(endPoints.SAVE_OBSERVATION, payload);
       }
       console.log(':ressss', response.data);
       return response.data as SaveObservationResponse;
@@ -418,11 +420,13 @@ export const saveObservation = createAsyncThunk<
 
 interface InitialState {
   dashboardDetails: ObservationsResponse | null;
-  saveEvidenceCardResponse: SaveEvidenceCardResponsePayload | null;
+  saveEvidenceCardResponse: EvidenceResponse | null;
   observationById: GetObservationByIdResponsePayload | null;
   allObservations: GetAllObservationsResponsePayload | null;
   newObservation: NewObservation | null;
-  existingObservationRequest:SaveObservationRequest|null;
+  newEvidenceCardsList: EvidenceResponse[] | null;
+  evidenceCardDetails: EvidenceResponse | null;
+  observationId: number | null;
   saveObservationResponse: SaveObservationResponsePayload | null;
   observationShowMessage: ErrorStatusObject | null;
   errorMessage: string;
@@ -435,7 +439,9 @@ const initialState: InitialState = {
   observationById: null,
   allObservations: null,
   newObservation: null,
-  existingObservationRequest:null,
+  newEvidenceCardsList: null,
+  evidenceCardDetails: null,
+  observationId: null,
   saveObservationResponse: null,
   observationShowMessage: null,
   errorMessage: '',
@@ -455,8 +461,14 @@ const observationSlice = createSlice({
       .addCase(saveNewObservation, (state, action) => {
         state.newObservation = action.payload;
       })
-      .addCase(saveExistingObservationRequest, (state, action) => {
-        state.existingObservationRequest = action.payload;
+      .addCase(saveNewEvidenceCardList, (state, action) => {
+        state.newEvidenceCardsList = action.payload;
+      })
+      .addCase(saveObservationId, (state, action) => {
+        state.observationId = action.payload;
+      })
+      .addCase(saveEvidenceCardDetails, (state, action) => {
+        state.evidenceCardDetails = action.payload;
       })
       .addCase(resetSaveEvidenceCardResponse, (state, action) => {
         state.saveEvidenceCardResponse = null;
@@ -464,6 +476,11 @@ const observationSlice = createSlice({
       .addCase(resetSaveObservationResponse, (state, action) => {
         state.saveObservationResponse = null;
       })
+      .addCase(resetObservationById, (state, action) => {
+        state.observationById = null;
+        state.observationId=null;
+      })
+      
       .addCase(getDashboardDetailsAndObservationList.pending, state => {
         // state.isLoading = true;
       })
@@ -494,7 +511,23 @@ const observationSlice = createSlice({
           message: action?.payload?.payload?.message,
         };
         state.saveEvidenceCardResponse = action.payload.payload;
-        console.log('save evid res', action.payload.payload);
+        let evidenceRes = action.payload.payload;
+        if (!state.newEvidenceCardsList) {
+          state.newEvidenceCardsList = [];
+        }
+        state.newEvidenceCardsList = [
+          ...state.newEvidenceCardsList,
+          {
+            evidenceId: evidenceRes.evidenceId,
+            attachmentResponse: evidenceRes.attachmentResponse,
+            averageRating: evidenceRes.averageRating,
+            domainId: evidenceRes.domainId,
+            domainName: evidenceRes.domainName,
+            fileCount: evidenceRes.fileCount,
+            indicatorId: evidenceRes.indicatorId,
+            indicatorName: evidenceRes.indicatorName,
+          },
+        ];
       })
       .addCase(saveEvidenceCard.rejected, (state, action) => {
         state.saveEvidenceCardResponse = null;
@@ -504,7 +537,7 @@ const observationSlice = createSlice({
         };
       })
       .addCase(getObservationById.pending, state => {
-        state.saveEvidenceCardResponse = null;
+        state.observationById = null;
       })
       .addCase(getObservationById.fulfilled, (state, action) => {
         state.observationById = action.payload.payload;
@@ -531,9 +564,10 @@ const observationSlice = createSlice({
         };
       })
       .addCase(saveObservation.pending, state => {
-        state.saveObservationResponse =null;
+        state.saveObservationResponse = null;
       })
       .addCase(saveObservation.fulfilled, (state, action) => {
+        console.log('dsfsdf',action.payload.payload)
         state.saveObservationResponse = action.payload.payload;
         state.observationShowMessage = {
           status: 'Success',

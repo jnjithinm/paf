@@ -44,6 +44,14 @@ interface GetAllUsersResponse {
 }
 type GetAllUsersResponsePayload = GetAllUsersResponse['payload'];
 
+
+interface GetUserResponse {
+  payload: User;
+  status: number;
+}
+
+type GetUserResponsePayload = GetUserResponse['payload'];
+
 export interface UserGroup {
   userGroupId: number;
   groupName: string;
@@ -116,12 +124,12 @@ export const getAllUsers = createAsyncThunk<
   }
 });
 
-export const getUser = createAsyncThunk<GetAllUsersResponse, number,  {rejectValue: ErrorResponse}>(
+export const getUser = createAsyncThunk<GetUserResponse, number,  {rejectValue: ErrorResponse}>(
   'users/getUser',
   async (userId, {dispatch, rejectWithValue}) => {
     try {
       const response = await api.post(endPoints.GET_ALL_USERS + userId);
-      return response.data as GetAllUsersResponse;
+      return response.data as GetUserResponse;
     } catch (error: any) {
       return rejectWithValue(error.response.data);
     }
@@ -184,6 +192,7 @@ export const getPendingUsersListForSendReminder = createAsyncThunk<
 interface InitialState {
   allUserGroups: GetAllUserGroupsResponsePayload | null;
   allUsers: GetAllUsersResponsePayload | null;
+  user:GetUserResponsePayload|null;
   userGroups: GetUserGroupsResponsePayload | null;
   pendingUsersListForSendReminder: GetPendingUsersListForSendReminderResponsePayload | null;
   usersShowMessage: ErrorStatusObject | null;
@@ -193,6 +202,7 @@ interface InitialState {
 const initialState: InitialState = {
   allUserGroups: null,
   allUsers: null,
+  user:null,
   userGroups: null,
   pendingUsersListForSendReminder: null,
   usersShowMessage: null,
@@ -222,7 +232,22 @@ const usersSlice = createSlice({
           status: 'Error',
           message: action?.payload?.error?.errorMessage,
         };
+        state.user=null;
       })
+      .addCase(getUser.pending, state => {
+        state.user=null;
+      })
+      .addCase(getUser.fulfilled, (state, action) => {
+        state.user =action.payload.payload;
+      })
+      .addCase(getUser.rejected, (state, action) => {
+        state.usersShowMessage = {
+          status: 'Error',
+          message: action?.payload?.error?.errorMessage,
+        };
+      })
+
+      
       .addCase(getAllUserGroups.pending, state => {
 
       })

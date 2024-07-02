@@ -18,9 +18,13 @@ import {useAppDispatch, useAppSelector} from '../../redux/store';
 import {
   FilterType,
   getAllObservations,
+  resetObservationById,
   resetSaveEvidenceCardResponse,
   resetSaveObservationResponse,
+  saveEvidenceCardDetails,
+  saveNewEvidenceCardList,
   saveNewObservation,
+  saveObservationId,
 } from '../../redux/features/observationSlice';
 import SearchWithFilter from '../../components/SearchWithFilter';
 import { ItemType } from '../../config/types';
@@ -130,6 +134,10 @@ const ObservationReportsMainPage: FC<ObservationReportsMainPageScreenProps> = ({
       dispatch(resetSaveEvidenceCardResponse());
       dispatch(resetSaveObservationResponse());
       dispatch(saveNewObservation(null));
+      dispatch(saveObservationId(null));
+      dispatch(saveEvidenceCardDetails(null));
+      dispatch(saveNewEvidenceCardList(null));
+      dispatch(resetObservationById())
     }, []),
   );
   
@@ -217,9 +225,8 @@ const ObservationReportsMainPage: FC<ObservationReportsMainPageScreenProps> = ({
               image={item.userImage}
               reportedBy={item.reportedBy}
               onPress={() => {
-                navigation.navigate('ObservationReport', {
-                  observationId: item.observationId,
-                });
+                dispatch(saveObservationId(item.observationId));
+                navigation.navigate('ObservationReport');
               }}
             />
           ))}

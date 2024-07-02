@@ -1,4 +1,4 @@
-import React, {FC, useEffect, useState} from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import {
   Platform,
   KeyboardAvoidingView,
@@ -6,29 +6,31 @@ import {
   View,
   TextInput as RNTextInput,
 } from 'react-native';
-import {RouteProp} from '@react-navigation/native';
-import {StackNavigationProp} from '@react-navigation/stack';
+import { RouteProp } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 import moment from 'moment';
 
 import FooterWithButtons from '../../components/FooterWithButtons';
-import {FONT_SIZES, FONT_VARIANT} from '../../config/themes';
+import { FONT_SIZES, FONT_VARIANT } from '../../config/themes';
 import Layout from '../../components/Layout';
 import Text from '../../components/Text';
 import colors from '../../config/colors';
-import {normaliseDesigns} from '../../utils/helpers/responsiveHelpers';
+import { normaliseDesigns } from '../../utils/helpers/responsiveHelpers';
 import DateTimePickerComponent from '../../components/DateTimePickerComponent';
 import Icon from '../../components/Icon';
-import {useAppDispatch, useAppSelector} from '../../redux/store';
-import {getAllUserGroups, getUserGroups} from '../../redux/features/usersSlice';
+import { useAppDispatch, useAppSelector } from '../../redux/store';
+import { getAllUserGroups, getUserGroups } from '../../redux/features/usersSlice';
 import LabeledDropdown from '../../components/LabeledDropdown';
-import {ItemType} from '../../config/types';
+import { ItemType } from '../../config/types';
 import {
+  EvidenceRequest,
+  EvidenceResponse,
   resetSaveEvidenceCardResponse,
   resetSaveObservationResponse,
   saveNewObservation,
   saveObservation,
 } from '../../redux/features/observationSlice';
-import {ObservationStackParamList} from '../../navigation/ObservationStack';
+import { ObservationStackParamList } from '../../navigation/ObservationStack';
 
 type AddNewObservationNavigationProp = StackNavigationProp<
   ObservationStackParamList,
@@ -46,10 +48,70 @@ interface AddNewObservationScreenProps {
 
 export const tabs: string[] = ['All', 'Active', 'Non-Active'];
 export const dropdownData = [
-  {label: `What's your pet's name ?`, value: `What's your pet's name ?`},
-  {label: `What's your name ?`, value: `What's your name ?`},
-  {label: `What's your pet's ?`, value: `What's your pet's ?`},
+  { label: `What's your pet's name ?`, value: `What's your pet's name ?` },
+  { label: `What's your name ?`, value: `What's your name ?` },
+  { label: `What's your pet's ?`, value: `What's your pet's ?` },
 ];
+
+type RenderFeedbackNoteTypes = {
+  feedback: string;
+  onChangeFeedback?: (feedback: string) => void;
+  disabled?: boolean;
+  showLabel?: boolean;
+};
+export const RenderFeedbackNote: FC<RenderFeedbackNoteTypes> = ({
+  feedback,
+  onChangeFeedback,
+  disabled = false,
+  showLabel = false,
+}) => (
+  <View style={{ marginTop: 15 }}>
+    {showLabel &&
+      <Text
+        style={{
+          color: colors.blackColor,
+          marginBottom: 5,
+        }}
+        size='body1'
+        fontVariant="bold">
+        Feedback note
+      </Text>
+    }
+    <RNTextInput
+      value={feedback}
+      editable={!disabled}
+      onChangeText={onChangeFeedback}
+      style={{
+        height: normaliseDesigns(40),
+        borderWidth: 1,
+        borderColor: '#CBD2D9',
+        borderRadius: 10,
+        color: colors.blackColor,
+        paddingHorizontal: 5,
+      }}
+      multiline
+      maxLength={200}
+    />
+    <Text
+      style={{
+        alignSelf: 'flex-end',
+        fontFamily: FONT_VARIANT.regular,
+        fontSize: FONT_SIZES.small2,
+      }}>{`${feedback.length}/200`}</Text>
+  </View>
+);
+export const convertEvidenceCardListToRequest = (
+  evidenceCardList: EvidenceResponse[],
+  loggedInUserName: string,
+): EvidenceRequest[] => {
+  return evidenceCardList.map(evidence => ({
+    evidenceId: evidence.evidenceId,
+    domainId: evidence.domainId,
+    indicatorId: evidence.indicatorId,
+    averageRating: evidence.averageRating,
+    loggedInUserName: loggedInUserName,
+  }));
+};
 
 const AddNewObservation: FC<AddNewObservationScreenProps> = ({
   navigation,
@@ -68,14 +130,17 @@ const AddNewObservation: FC<AddNewObservationScreenProps> = ({
   const [isCalendarOpen, setIsCalendarOpen] = useState<boolean>(false);
   const dispatch = useAppDispatch();
 
-  const {userData} = useAppSelector(state => state.auth);
+  const { userData } = useAppSelector(state => state.auth);
 
-  const {allUserGroups, userGroups} = useAppSelector(
-    state => state.users,
-  );
+  const { allUserGroups, userGroups } = useAppSelector(state => state.users);
 
-  const {saveEvidenceCardResponse, newObservation, saveObservationResponse} =
-    useAppSelector(state => state.observation);
+  const {
+    saveEvidenceCardResponse,
+    newEvidenceCardsList,
+    newObservation,
+    observationId,
+    saveObservationResponse,
+  } = useAppSelector(state => state.observation);
 
   const handleDateSelection = (date: string) => {
     setIsCalendarOpen(!isCalendarOpen);
@@ -101,6 +166,14 @@ const AddNewObservation: FC<AddNewObservationScreenProps> = ({
     }
   }, [newObservation]);
 
+
+  useEffect(()=>{
+    if(saveObservationResponse){
+      dispatch(resetSaveObservationResponse());
+      navigation.navigate('ObservationReportsMainPage')
+    }
+
+  },[saveObservationResponse])
   useEffect(() => {
     if (selectedUserGroup?.value) {
       dispatch(
@@ -116,34 +189,44 @@ const AddNewObservation: FC<AddNewObservationScreenProps> = ({
     }
   }, [selectedUserGroup?.value]);
 
-  // useEffect(() => {
-  //   if (saveObservationResponse) {
-  //     if (saveEvidenceCardResponse) {
-  //       dispatch(resetSaveEvidenceCardResponse());
-  //       dispatch(resetSaveObservationResponse());
-  //       dispatch(saveNewObservation(null));
-  //       navigation.navigate('ObservationReportsMainPage');
-  //     } else {
-  //       dispatch(resetSaveObservationResponse());
-  //       dispatch(saveNewObservation(null));
-  //       navigation.navigate('ObservationReportsMainPage');
-  //     }
-  //   }
-  // }, [saveObservationResponse]);
-
   const onPressSaveAsDraft = () => {
     if (selectedUser && selectedUserGroup && selectedDate) {
-      dispatch(
-        saveObservation(['Update',{
-          observationDate: moment(selectedDate).format('YYYY-MM-DD'),
-          userGroupId: Number(selectedUserGroup?.value),
-          userId: Number(selectedUser?.value),
-          observationStatus: 'Pending',
-          feedbackDescription: feedbackNote,
-          loggedInUserName: userData.userName,
-          evidenceRequestList: [],
-        }]),
-      );
+      if (observationId) {
+        dispatch(
+          saveObservation([
+            {
+              observationDate: moment(selectedDate).format('YYYY-MM-DD'),
+              userGroupId: Number(selectedUserGroup?.value),
+              userId: Number(selectedUser?.value),
+              observationStatus: 'Pending',
+              feedbackDescription: feedbackNote,
+              loggedInUserName: userData.userName,
+              evidenceRequestList: convertEvidenceCardListToRequest(
+                newEvidenceCardsList || [],
+                userData.userName,
+              ),
+            },
+            observationId,
+          ]),
+        );
+      } else {
+        dispatch(
+          saveObservation([
+            {
+              observationDate: moment(selectedDate).format('YYYY-MM-DD'),
+              userGroupId: Number(selectedUserGroup?.value),
+              userId: Number(selectedUser?.value),
+              observationStatus: 'Pending',
+              feedbackDescription: feedbackNote,
+              loggedInUserName: userData.userName,
+              evidenceRequestList: convertEvidenceCardListToRequest(
+                newEvidenceCardsList || [],
+                userData.userName,
+              ),
+            },
+          ]),
+        );
+      }
     }
   };
 
@@ -156,7 +239,7 @@ const AddNewObservation: FC<AddNewObservationScreenProps> = ({
           selectedDate,
           selectedUser,
           selectedUserGroup,
-          feedbackNote
+          feedbackNote,
         }),
       );
       navigation.navigate('CreateViewEvidenceCard');
@@ -166,36 +249,39 @@ const AddNewObservation: FC<AddNewObservationScreenProps> = ({
   const onPressSubmit = () => {
     if (saveEvidenceCardResponse) {
       dispatch(
-        
-        saveObservation(['Add',{
-          observationDate: moment(selectedDate).format('YYYY-MM-DD'),
-          userGroupId: Number(selectedUserGroup?.value),
-          userId: Number(selectedUser?.value),
-          observationStatus: 'Completed',
-          feedbackDescription: feedbackNote,
-          loggedInUserName: userData.userName,
-          evidenceRequestList: [
-            {
-              domainId: saveEvidenceCardResponse.domainId,
-              indicatorId: saveEvidenceCardResponse.indicatorId,
-              averageRating: saveEvidenceCardResponse.averageRating,
-              evidenceId:saveEvidenceCardResponse.evidenceId,
-              loggedInUserName: userData.userName,
-            },
-          ],
-        }]),
+        saveObservation([
+          {
+            observationDate: moment(selectedDate).format('YYYY-MM-DD'),
+            userGroupId: Number(selectedUserGroup?.value),
+            userId: Number(selectedUser?.value),
+            observationStatus: 'Completed',
+            feedbackDescription: feedbackNote,
+            loggedInUserName: userData.userName,
+            evidenceRequestList: [
+              {
+                domainId: saveEvidenceCardResponse.domainId,
+                indicatorId: saveEvidenceCardResponse.indicatorId,
+                averageRating: saveEvidenceCardResponse.averageRating,
+                evidenceId: saveEvidenceCardResponse.evidenceId,
+                loggedInUserName: userData.userName,
+              },
+            ],
+          },
+        ]),
       );
     }
   };
-
+  const onPressCancel = () => {
+    navigation.navigate('ObservationReportsMainPage');
+  };
   return (
     <KeyboardAvoidingView
-      style={{flex: 1}}
+      style={{ flex: 1 }}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <Layout
         overridePaddingHorizontal
         overridePaddingVertical
-        style={{paddingVertical: 0}}
+        style={{ paddingVertical: 0 }}
         icon="reports_icon"
         title="New Observation">
         <DateTimePickerComponent
@@ -204,7 +290,7 @@ const AddNewObservation: FC<AddNewObservationScreenProps> = ({
           showPicker={isCalendarOpen}
         />
 
-        <View style={{marginVertical: 20, paddingHorizontal: 15}}>
+        <View style={{ marginVertical: 20, paddingHorizontal: 15 }}>
           <TouchableOpacity
             onPress={() => {
               setIsCalendarOpen(!isCalendarOpen);
@@ -227,11 +313,11 @@ const AddNewObservation: FC<AddNewObservationScreenProps> = ({
                   alignItems: 'center',
                   height: normaliseDesigns(40),
                 }}
-                // editable={false}
-                // placeholder="Select date"
+              // editable={false}
+              // placeholder="Select date"
               >
                 <Text
-                  style={{color: selectedDate ? colors.blackColor : '#ABB4BD'}}
+                  style={{ color: selectedDate ? colors.blackColor : '#ABB4BD' }}
                   size="body1">
                   {selectedDate
                     ? moment(selectedDate).format('DD-MM-YYYY').toString()
@@ -291,51 +377,27 @@ const AddNewObservation: FC<AddNewObservationScreenProps> = ({
               borderBottomColor: isActive ? colors.blackColor : '#CBD2D9',
               borderBottomWidth: 1,
             }}>
-            <Text style={{color: isActive ? colors.blackColor : '#CBD2D9'}}>
+            <Text style={{ color: isActive ? colors.blackColor : '#CBD2D9' }}>
               + Add feedback note
             </Text>
           </TouchableOpacity>
 
           {feedbackNoteEnable && (
-            <View style={{marginTop: 15}}>
-              <RNTextInput
-                value={feedbackNote}
-                onChangeText={text => {
-                  setFeedbackNote(text);
-                }}
-                style={{
-                  height: normaliseDesigns(40),
-                  borderWidth: 1,
-                  borderColor: '#CBD2D9',
-                  borderRadius: 10,
-                  color: colors.blackColor,
-                  paddingHorizontal: 5,
-                }}
-                multiline
-                maxLength={200}
-              />
-              <Text
-                style={{
-                  alignSelf: 'flex-end',
-                  fontFamily: FONT_VARIANT.regular,
-                  fontSize: FONT_SIZES.small2,
-                }}>{`${feedbackNote.length}/200`}</Text>
-            </View>
+            <RenderFeedbackNote
+              feedback={feedbackNote}
+              onChangeFeedback={text => {
+                setFeedbackNote(text);
+              }}
+            />
           )}
         </View>
       </Layout>
       <FooterWithButtons
-        onPressProceedButton={
-          saveEvidenceCardResponse
-            ? onPressSubmit
-            : onPressCreateEvidenceCardButton
-        }
-        proceedButtonText={
-          saveEvidenceCardResponse ? 'Submit' : 'Create evidence card'
-        }
+        onPressProceedButton={onPressCreateEvidenceCardButton}
+        proceedButtonText={'Create evidence card'}
         isActiveProceedButton={isActive}
-        isActiveCancelButton={isActive}
-        cancelButtonText={saveEvidenceCardResponse ? 'Cancel' : 'Save as draft'}
+        isActiveCancelButton={saveEvidenceCardResponse ? true : isActive}
+        cancelButtonText={'Save as draft'}
         onPressCancelButton={onPressSaveAsDraft}
         style={{}}
       />

@@ -22,8 +22,11 @@ import {
 } from '../../redux/features/masterSlice';
 import LabeledDropdown from '../../components/LabeledDropdown';
 import {
+  resetSaveObservationResponse,
   saveEvidenceCard,
+  saveNewEvidenceCardList,
   saveObservation,
+  saveObservationId,
 } from '../../redux/features/observationSlice';
 import {FileObject, ItemType} from '../../config/types';
 import RatingInput from '../../components/RatingInput';
@@ -35,6 +38,8 @@ import Icon from '../../components/Icon';
 import Slider from '../../components/Slider';
 import {setLoading} from '../../redux/features/authSlice';
 import moment from 'moment';
+import {convertEvidenceCardListToRequest} from './AddNewObservation';
+import colors from '../../config/colors';
 
 type CreateViewEvidenceCardNavigationProp = StackNavigationProp<
   ObservationStackParamList,
@@ -168,8 +173,8 @@ const CreateViewEvidenceCard: FC<CreateViewEvidenceCardScreenProps> = ({
   navigation,
   route,
 }) => {
-  const evidenceCardDetails = route.params?.evidenceCardDetails;
-  const observationStatus = route.params?.observationStatus;
+
+
   const [selectedIndicator, setSelectedIndicator] = useState<
     ItemType | undefined
   >(undefined);
@@ -188,12 +193,35 @@ const CreateViewEvidenceCard: FC<CreateViewEvidenceCardScreenProps> = ({
   const {allDomains, indicatorsByDomain} = useAppSelector(
     state => state.master,
   );
-  const {saveEvidenceCardResponse, newObservation, saveObservationResponse} =
-    useAppSelector(state => state.observation);
+  const {
+    saveEvidenceCardResponse,
+    evidenceCardDetails,
+    newObservation,
+    observationId,
+    observationById,
+    saveObservationResponse,
+    newEvidenceCardsList
+  } = useAppSelector(state => state.observation);
   const {userData} = useAppSelector(state => state.auth);
 
   useEffect(() => {
     dispatch(getAllDomains());
+  }, []);
+
+  const resetState = () => {
+    setSelectedIndicator(undefined);
+    setSelectedDomain(undefined);
+    setRating(0);
+    setSelectedMusicFile(undefined);
+    setIsVisibleMusicPlayerModal(false);
+    setFiles([]);
+    setZipFile(undefined);
+  };
+
+  useEffect(() => {
+    return () => {
+      resetState();
+    };
   }, []);
 
   useEffect(() => {
@@ -201,43 +229,6 @@ const CreateViewEvidenceCard: FC<CreateViewEvidenceCardScreenProps> = ({
       dispatch(getIndicatorsByDomainId(Number(selectedDomain.value)));
     }
   }, [selectedDomain?.value]);
-
-  useEffect(() => {
-    if (evidenceCardDetails) {
-      setFiles(
-        evidenceCardDetails?.attachmentResponse.map((item, index) => ({
-          uri: item.fileUrl,
-          type: item.fileType,
-          name: item.fileName,
-        })),
-      );
-    }
-  }, [evidenceCardDetails]);
-
-  useEffect(() => {
-    if (saveObservationResponse) {
-      console.log("is it coming here ?")
-      navigation.navigate('ObservationReport', {
-        observationId: saveObservationResponse.id,
-      });
-    }
-  }, [saveObservationResponse]);
-
-  const onPressSaveCard = () => {
-    if (zipfile) {
-      dispatch(
-        saveEvidenceCard([
-          {
-            averageRating: rating,
-            domainId: Number(selectedDomain?.value),
-            indicatorId: Number(selectedIndicator?.value),
-            loggedInUserName: userData?.name,
-          },
-          zipfile,
-        ]),
-      );
-    }
-  };
 
   useEffect(() => {
     if (evidenceCardDetails) {
@@ -250,41 +241,113 @@ const CreateViewEvidenceCard: FC<CreateViewEvidenceCardScreenProps> = ({
         label: evidenceCardDetails.indicatorName,
       });
       setRating(evidenceCardDetails.averageRating);
+      setFiles(
+        evidenceCardDetails?.attachmentResponse.map((item, index) => ({
+          uri: item.fileUrl,
+          type: item.fileType,
+          name: item.fileName,
+        })),
+
+      );
     }
   }, [evidenceCardDetails]);
 
   useEffect(() => {
-    if (saveEvidenceCardResponse && newObservation) {
-      dispatch(
-        saveObservation([
-          'Add',
-          {
-            observationDate: moment(newObservation?.selectedDate).format(
-              'YYYY-MM-DD',
-            ),
-            userGroupId: Number(newObservation?.selectedUserGroup.value),
-            userId: Number(newObservation?.selectedUser.value),
-            observationStatus: 'Completed',
-            feedbackDescription: newObservation?.feedbackNote,
-            loggedInUserName: userData.userName,
-            evidenceRequestList: [
-              {
-                domainId: saveEvidenceCardResponse.domainId,
-                indicatorId: saveEvidenceCardResponse.indicatorId,
-                averageRating: saveEvidenceCardResponse.averageRating,
-                evidenceId: saveEvidenceCardResponse.evidenceId,
-                loggedInUserName: userData.userName,
-              },
-            ],
-          },
-        ]),
-      );
+    if (saveObservationResponse) {
+      dispatch(saveObservationId(saveObservationResponse.id));
+      resetState();
+      navigation.navigate('ObservationReport');
     }
-  }, [saveEvidenceCardResponse,newObservation]);
+  }, [saveObservationResponse]);
+
+  const onPressSaveCard = () => {
+    if (zipfile) {
+      if (evidenceCardDetails) {
+        dispatch(
+          saveEvidenceCard([
+            {
+              averageRating: rating,
+              domainId: Number(selectedDomain?.value),
+              indicatorId: Number(selectedIndicator?.value),
+              loggedInUserName: userData?.name,
+            },
+            zipfile,
+            evidenceCardDetails.evidenceId,
+          ]),
+        );
+      } else {
+        dispatch(
+          saveEvidenceCard([
+            {
+              averageRating: rating,
+              domainId: Number(selectedDomain?.value),
+              indicatorId: Number(selectedIndicator?.value),
+              loggedInUserName: userData?.name,
+            },
+            zipfile,
+          ]),
+        );
+      }
+    }
+  };
+
+  // useEffect(() => {
+  //   if (evidenceCardDetails) {
+  //     setSelectedDomain({
+  //       value: evidenceCardDetails.domainId?.toString(),
+  //       label: evidenceCardDetails.domainName,
+  //     });
+  //     setSelectedIndicator({
+  //       value: evidenceCardDetails.indicatorId?.toString(),
+  //       label: evidenceCardDetails.indicatorName,
+  //     });
+  //     setRating(evidenceCardDetails.averageRating);
+  //   }
+  // }, [evidenceCardDetails]);
+
+  useEffect(() => {
+    if (saveEvidenceCardResponse) {
+      if (observationId && observationById) {
+        dispatch(
+          saveObservation([
+            {
+              observationDate: observationById?.observationDate,
+              observationStatus: observationById.observationStatus,
+              feedbackDescription: observationById.feedbackDescription,
+              userGroupId: observationById.userGroupId,
+              userId: observationById.userId,
+              loggedInUserName: observationById.userName,
+              evidenceRequestList: [
+                ...convertEvidenceCardListToRequest(
+                  newEvidenceCardsList || [],
+                  observationById.userName,
+                ),
+                ...convertEvidenceCardListToRequest(
+                  observationById.evidenceResponseList,
+                  observationById.userName,
+                ),
+              ],
+            },
+            observationId
+          ]),
+        );
+      } else {
+        resetState();
+        navigation.navigate('ObservationReport');
+      }
+    }
+  }, [saveEvidenceCardResponse]);
 
   let isAllFieldsEntered = Boolean(
     selectedDomain?.value && selectedIndicator?.value && rating && zipfile,
   );
+
+  let isDisabledFields = Boolean(
+    observationById !== null &&
+      !evidenceCardDetails !== undefined &&
+      observationById.observationStatus !== 'Completed',
+  );
+
 
   return (
     <KeyboardAvoidingView
@@ -294,8 +357,12 @@ const CreateViewEvidenceCard: FC<CreateViewEvidenceCardScreenProps> = ({
         overridePaddingHorizontal
         overridePaddingVertical
         style={{paddingHorizontal: 15, paddingVertical: 0}}
+        onPressBackArrow={()=>{
+          resetState();
+          navigation.goBack();
+        }}
         icon="reports_icon"
-        title={evidenceCardDetails ? 'Evidence Card' : 'New Observation'}>
+        title={newObservation ? 'New Observation' : 'Evidence Card'}>
         <Modal
           onProceed={function (): void {
             throw new Error('Function not implemented.');
@@ -334,7 +401,7 @@ const CreateViewEvidenceCard: FC<CreateViewEvidenceCardScreenProps> = ({
             }
             setSelectedItem={setSelectedDomain}
             defaultValue={selectedDomain?.value?.toString() || ''}
-            disabled={evidenceCardDetails !== undefined}
+            disabled={isDisabledFields}
           />
           <LabeledDropdown
             label="Select indicator"
@@ -347,7 +414,7 @@ const CreateViewEvidenceCard: FC<CreateViewEvidenceCardScreenProps> = ({
               })) || []
             }
             setSelectedItem={setSelectedIndicator}
-            disabled={evidenceCardDetails !== undefined}
+            disabled={isDisabledFields}
           />
 
           <View style={{marginTop: 8}}>
@@ -355,7 +422,7 @@ const CreateViewEvidenceCard: FC<CreateViewEvidenceCardScreenProps> = ({
               label="Average Rating"
               rating={rating}
               onChangeRating={setRating}
-              disabled={evidenceCardDetails !== undefined}
+              disabled={isDisabledFields}
             />
           </View>
           <Text
@@ -371,7 +438,9 @@ const CreateViewEvidenceCard: FC<CreateViewEvidenceCardScreenProps> = ({
               setZipFile={setZipFile}
               files={files}
               setFiles={setFiles}
-              disabled={observationStatus === 'Completed'}
+              onPressDelete={(item)=>{
+                // dispatch(delete)
+              }}
               onPressFile={file => {
                 file?.uri?.includes('mp3')
                   ? (setSelectedMusicFile(file),
@@ -382,15 +451,17 @@ const CreateViewEvidenceCard: FC<CreateViewEvidenceCardScreenProps> = ({
           </View>
         </View>
       </Layout>
-      {observationStatus !== 'Completed' && (
+      {!isDisabledFields && (
         <FooterWithButtons
           onPressProceedButton={onPressSaveCard}
           proceedButtonText={'Save Card'}
-          isActiveProceedButton={isAllFieldsEntered && !evidenceCardDetails}
+          isActiveProceedButton={isAllFieldsEntered}
           cancelButtonText={'Cancel'}
           onPressCancelButton={() => {
-            console.log("in cancel")
-            navigation.navigate('ObservationReportsMainPage');
+            // console.log('in cancel');
+            newObservation?
+            navigation.navigate('AddNewObservation'):
+            navigation.navigate('ObservationReport')
           }}
           style={{}}
         />

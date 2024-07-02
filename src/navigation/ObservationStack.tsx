@@ -19,11 +19,8 @@ export type ObservationStackParamList = {
   ObservationReportsMainPage: undefined;
   ReportsEvidenceCard: {userAccessed: string};
   AddNewObservation: {isEvidenceCardCreated: boolean}|undefined;
-  CreateViewEvidenceCard: {
-    evidenceCardDetails: EvidenceResponse;
-    observationStatus:ObservationStatus;
-  }|undefined;
-  ObservationReport: {observationId: number};
+  CreateViewEvidenceCard: undefined;
+  ObservationReport: undefined;
   PlayFile: {file: FileObject};
 };
 

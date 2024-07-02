@@ -14,6 +14,9 @@ const endPoints = {
   SAVE_EVIDENCE_CARD: `PAF/teachers/saveEvidence`,
   GET_OBSERVATION_BY_ID: `PAF/teachers/observation/`,
   GET_ALL_OBSERVATIONS: `PAF/teachers/observation/getAllObservation/search/`,
+  UPDATE_EVIDENCE_CARD:`PAF/teachers/updateEvidence/`,
+  SAVE_OBSERVATION:`PAF/teachers/saveObservation`,
+  UPDATE_OBSERVATION:`PAF/teachers/updateObservation/`,
   GET_EVIDENCE_BY_ID: `PAF/teachers/evidence/`,
   DELETE_ATTACHMENTS:`PAF/teachers/deleteAttachment`,
   GET_ALL_RUBRICS: `PAF/rubrics/all`,
@@ -34,6 +37,6 @@ const endPoints = {
   ASSIGN_FLOW_TO_USERS_AND_USER_GROUPS:`PAF/flows/assignFlowToUsersAndGroups`,
   ASSIGN_FORM_TO_USERS_AND_GROUPS:`PAF/forms/assignUsersAndGroups`,
   SCHEDULE_REMINDER_DATE:`PAF/flows/scheduleReminder?`,
-  SAVE_OBSERVATION:`PAF/teachers/saveObservation`
+
 };
 export default endPoints;

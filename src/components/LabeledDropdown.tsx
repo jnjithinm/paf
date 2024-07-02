@@ -1,5 +1,5 @@
 import React, {FC, Dispatch, SetStateAction} from 'react';
-import {View, Text, StyleSheet, ViewStyle} from 'react-native';
+import {View, Text, StyleSheet, ViewStyle, TextStyle} from 'react-native';
 
 import colors from '../config/colors';
 import {FONT_VARIANT, FONT_SIZES} from '../config/themes';
@@ -25,6 +25,7 @@ interface DropdownProps {
   dropDownDirection?: 'auto' | 'top' | 'bottom';
   searchable?: boolean;
   style?: ViewStyle;
+  textStyle?:TextStyle
 }
 
 const LabelDropdown: FC<DropdownProps> = ({
@@ -44,6 +45,7 @@ const LabelDropdown: FC<DropdownProps> = ({
   searchable,
   placeHolder,
   style,
+  textStyle
 }) => {
   function isDropdownItem(item: any): item is ItemType {
     return typeof item === 'object' && item !== null;
@@ -81,9 +83,10 @@ const LabelDropdown: FC<DropdownProps> = ({
             {
               backgroundColor: disabled ? '#FDF0E3' : colors.backgroundColor,
               borderColor: disabled ? '#CBD2D9' : '#CBD2D9',
+
             },
           ]}
-          selectedTextStyle={styles.selectedTextStyle}
+          selectedTextStyle={[styles.selectedTextStyle,{...textStyle}]}
           dropdownPosition={dropDownDirection}
           itemTextStyle={styles.dropdownText}
           data={options}
@@ -93,6 +96,7 @@ const LabelDropdown: FC<DropdownProps> = ({
           labelField="label"
           valueField="value"
           placeholder={placeHolder}
+          placeholderStyle={{color:'#ABB4BD'}}
           searchPlaceholder="Search..."
           value={defaultValue}
           onChange={item => {
@@ -148,7 +152,6 @@ const styles = StyleSheet.create({
   selectedTextStyle: {
     fontSize: normaliseFont(15),
     justifyContent: 'center',
-    // paddingHorizontal: 5,
     color: colors.blackColor,
     textTransform: 'capitalize',
   },

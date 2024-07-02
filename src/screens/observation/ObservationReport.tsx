@@ -8,16 +8,25 @@ import {FONT_SIZES, FONT_VARIANT} from '../../config/themes';
 import Layout from '../../components/Layout';
 import Text from '../../components/Text';
 import Image from '../../components/Image';
-import colors from '../../config/colors';
 import EvidenceCard from '../../components/EvidenceCard';
 import {ObservationStackParamList} from '../../navigation/ObservationStack';
 import {useAppDispatch, useAppSelector} from '../../redux/store';
 import {
+  EvidenceResponse,
   getObservationById,
-  saveNewObservation,
+  resetSaveObservationResponse,
+  saveEvidenceCardDetails,
+  saveNewEvidenceCardList,
+  saveObservation,
 } from '../../redux/features/observationSlice';
 import {RatingStars, RenderProfileIcon} from '../dashboard/TeacherDashboard';
 import {FloatingButton} from './ObservationReportsMainPage';
+import FooterWithButtons from '../../components/FooterWithButtons';
+import {
+  RenderFeedbackNote,
+  convertEvidenceCardListToRequest,
+} from './AddNewObservation';
+import moment from 'moment';
 
 type ObservationReportNavigationProp = StackNavigationProp<
   ObservationStackParamList,
@@ -37,15 +46,92 @@ const ObservationReport: FC<ObservationReportScreenProps> = ({
   navigation,
   route,
 }) => {
-  const {observationId} = route.params;
   const dispatch = useAppDispatch();
-  const {observationById, newObservation} = useAppSelector(
-    state => state.observation,
+  const {
+    observationId,
+    observationById,
+    newObservation,
+    newEvidenceCardsList,
+    saveObservationResponse,
+  } = useAppSelector(state => state.observation);
+
+  const {user} = useAppSelector(state => state.users);
+
+  const {userData} = useAppSelector(state => state.auth);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      if (observationId) {
+        dispatch(saveEvidenceCardDetails(null))
+        dispatch(resetSaveObservationResponse())
+        dispatch(getObservationById(observationId));
+      }
+    }, []),
   );
 
   useEffect(() => {
-    dispatch(getObservationById(observationId));
-  }, [observationId]);
+    if (saveObservationResponse) {
+      console.log("dsfsdfsdsdfsdfdfsddsdsfs",saveObservationResponse)
+     !observationById && navigation.navigate('ObservationReportsMainPage');
+    }
+  }, [saveObservationResponse]);
+
+  const onPressCreateEvidenceCard = () => {
+    navigation.navigate('CreateViewEvidenceCard');
+  };
+
+  const onPressSubmit = () => {
+    if (newEvidenceCardsList) {
+      dispatch(
+        saveObservation([
+          {
+            observationDate: moment(newObservation?.selectedDate).format(
+              'YYYY-MM-DD',
+            ),
+            userGroupId: Number(newObservation?.selectedUserGroup?.value),
+            userId: Number(newObservation?.selectedUser?.value),
+            observationStatus: 'Completed',
+            feedbackDescription: newObservation?.feedbackNote?.toString() || '',
+            loggedInUserName: userData.userName,
+            evidenceRequestList: convertEvidenceCardListToRequest(
+              newEvidenceCardsList,
+              userData.userName,
+            ),
+          },
+        ]),
+      );
+    }
+  };
+
+  const onPressSaveAsDraft = () => {
+    if (newEvidenceCardsList) {
+      dispatch(
+        saveObservation([
+          {
+            observationDate: moment(newObservation?.selectedDate).format(
+              'YYYY-MM-DD',
+            ),
+            userGroupId: Number(newObservation?.selectedUserGroup?.value),
+            userId: Number(newObservation?.selectedUser?.value),
+            observationStatus: 'Pending',
+            feedbackDescription: newObservation?.feedbackNote?.toString() || '',
+            loggedInUserName: userData.userName,
+            evidenceRequestList: convertEvidenceCardListToRequest(
+              newEvidenceCardsList,
+              userData.userName,
+            ),
+          },
+        ]),
+      );
+    }
+  };
+
+  const showResponse: EvidenceResponse[] = observationById
+    ? observationById?.evidenceResponseList
+    : newEvidenceCardsList || [];
+
+  const feedback: string =
+    observationById?.feedbackDescription || newObservation?.feedbackNote || '';
 
   return (
     <KeyboardAvoidingView
@@ -55,9 +141,9 @@ const ObservationReport: FC<ObservationReportScreenProps> = ({
         overridePaddingHorizontal
         overridePaddingVertical
         onPressBackArrow={() => {
-          newObservation
-            ? navigation.navigate('AddNewObservation')
-            : navigation.navigate('ObservationReportsMainPage');
+          observationId
+            ? navigation.navigate('ObservationReportsMainPage')
+            : navigation.navigate('AddNewObservation');
         }}
         style={{paddingHorizontal: 15, paddingVertical: 0}}
         icon="reports_icon"
@@ -66,13 +152,19 @@ const ObservationReport: FC<ObservationReportScreenProps> = ({
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
             <RenderProfileIcon
               image={observationById?.userImage}
-              name={observationById?.userName?.toString() || ''}
+              name={
+                observationById?.userName?.toString() ||
+                newObservation?.selectedUser?.label?.toString() ||
+                ''
+              }
               size={50}
             />
             <View style={{flex: 1, justifyContent: 'center', marginLeft: 10}}>
               <View>
                 <Text fontVariant="bold" size="body2">
-                  {observationById?.userName} ({observationById?.userGroup})
+                  {observationById
+                    ? `${observationById?.userName} (${observationById?.userGroup})`
+                    : `${newObservation?.selectedUser.label} (${newObservation?.selectedUserGroup.label})`}
                 </Text>
               </View>
               <View style={{flexDirection: 'row', alignItems: 'center'}}>
@@ -101,13 +193,16 @@ const ObservationReport: FC<ObservationReportScreenProps> = ({
                 alignSelf: 'center',
                 fontFamily: FONT_VARIANT.bold,
                 fontSize: FONT_SIZES.body1,
-                marginLeft: 3,
+                marginLeft: 5,
               }}>
-              {`Evidence cards (${observationById?.evidenceResponseList?.length})`}
+              Evidence cards{' '}
+              {observationById
+                ? `(${observationById?.evidenceResponseList?.length})`
+                : `(${newEvidenceCardsList?.length})`}
             </Text>
           </View>
           <View style={{marginVertical: 15}}>
-            {observationById?.evidenceResponseList?.map((item, index) => (
+            {showResponse?.map((item, index) => (
               <EvidenceCard
                 key={index}
                 title={`Evidence Card ${index + 1}`}
@@ -117,42 +212,41 @@ const ObservationReport: FC<ObservationReportScreenProps> = ({
                 noteCount={item?.fileCount?.Document}
                 photoCount={item?.fileCount?.Image}
                 onPressEvidenceCard={() => {
-                  navigation.navigate('CreateViewEvidenceCard', {
-                    evidenceCardDetails: item,
-                    observationStatus: observationById.observationStatus,
-                  });
+                  dispatch(saveEvidenceCardDetails(item))
+                  navigation.navigate('CreateViewEvidenceCard');
                 }}
               />
             ))}
           </View>
-          {observationById?.feedbackDescription && (
-            <View style={{marginTop: 10}}>
-              <Text
-                style={{
-                  color: colors.blackColor,
-                  marginBottom: 0,
-                }}
-                fontVariant="bold">
-                Feedback note for teacher
-              </Text>
-              <RNTextInput
-                value={observationById?.feedbackDescription?.toString() || ''}
-                style={{color: '#4E565F'}}
-                multiline
-                maxLength={200}
-                editable={false}
-              />
-            </View>
+          {feedback && (
+            <RenderFeedbackNote showLabel disabled feedback={feedback} />
           )}
         </View>
       </Layout>
-      <FloatingButton
-        icon="edit_icon"
-        onPress={() => {
-          navigation.navigate('CreateViewEvidenceCard');
-        }}
-        iconSize={20}
-      />
+      {newObservation ? (
+        <View>
+          <FloatingButton
+            icon="edit_icon"
+            onPress={onPressCreateEvidenceCard}
+            iconSize={20}
+            style={{bottom: 100}}
+          />
+          <FooterWithButtons
+            onPressProceedButton={onPressSubmit}
+            proceedButtonText={'Submit'}
+            isActiveProceedButton
+            cancelButtonText={'Save as Draft'}
+            onPressCancelButton={onPressSaveAsDraft}
+            style={{}}
+          />
+        </View>
+      ) : (
+        <FloatingButton
+          icon="edit_icon"
+          onPress={onPressCreateEvidenceCard}
+          iconSize={20}
+        />
+      )}
     </KeyboardAvoidingView>
   );
 };
