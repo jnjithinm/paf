@@ -17,6 +17,7 @@ import moment from 'moment';
 import { RenderAssignFormModalContent, RenderSuccessModalContent } from './FormResponses';
 import Modal from '../../components/Modal';
 import { FloatingButton } from '../observation/ObservationReportsMainPage';
+import { getFormById } from '../../redux/features/formsSlice';
 
 type FormListAndResponsesNavigationProp = StackNavigationProp<
   FlowsAndFormsStackParamList,
@@ -125,7 +126,12 @@ const [isVisibleAssignFormSuccessModal, setIsVisibleAssignFormSuccessModal] =
         },
       ]),
     );
+
   }, []);
+
+    //   useEffect(() => {
+    //   dispatch(getFormById([flowItem.formId, flowItem.flowId]));
+    // }, []);
 
 
   useEffect(() => {
@@ -189,14 +195,14 @@ const [isVisibleAssignFormSuccessModal, setIsVisibleAssignFormSuccessModal] =
           contentStyle={{width: '70%'}}
         />
       <View style={{marginVertical: 10}}>
-        <Tab
+        {/* <Tab
           tabs={[
             {label: 'Form list', value: 'Form list'},
             {label: 'Responses', value: 'Responses'},
           ]}
           textStyle={{fontSize: normaliseFont(12)}}
           onClick={title => handleTabClick(title)}
-        />
+        /> */}
         <View
           style={{
             flexDirection: 'row',
@@ -239,6 +245,7 @@ const [isVisibleAssignFormSuccessModal, setIsVisibleAssignFormSuccessModal] =
               <RenderFormItem
                 title={item.formName}
                 onPressItem={() => {
+                  console.log('dsffsds',isAdmin,flowItem,item)
                   isAdmin
                     ? navigation.navigate('FormResponses', {
                         flowDetailItem: item,

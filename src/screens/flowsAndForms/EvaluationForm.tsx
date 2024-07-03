@@ -86,12 +86,14 @@ type RenderTaskItemTypes = {
   index: number;
   question: string;
   renderSelection: JSX.Element;
+  isRequired:boolean
 };
 
 const RenderTaskItem: FC<RenderTaskItemTypes> = ({
   index,
   question,
   renderSelection,
+  isRequired
 }) => (
   <View
     style={{
@@ -118,7 +120,10 @@ const RenderTaskItem: FC<RenderTaskItemTypes> = ({
       </View>
     </View>
     <View style={{flex: 7}}>
+      <View style={{flexDirection:'row'}}>
       <Text size="small3">{question}</Text>
+      {isRequired && <Text style={{color:'red',left:4}}>*</Text>}
+      </View>
       <View style={{marginVertical: 5}}>{renderSelection}</View>
     </View>
   </View>
@@ -804,6 +809,7 @@ const EvaluationForm: FC<EvaluationFormScreenProps> = ({navigation, route}) => {
                 index={indexx}
                 key={indexx}
                 question={ele.questionText}
+                isRequired={ele.isRequired}
                 renderSelection={
                   (
                     <QuestionTypeSelector
@@ -829,6 +835,7 @@ const EvaluationForm: FC<EvaluationFormScreenProps> = ({navigation, route}) => {
           setAnswers([]);
         }}
         proceedButtonText={'Submit'}
+        isActiveCancelButton={answers.length!==0}
         cancelButtonText={'Clear Form'}
       />
     </>

@@ -17,6 +17,7 @@ import RNFS from 'react-native-fs';
 import {useAppDispatch} from '../redux/store';
 import {setLoading} from '../redux/features/authSlice';
 import {setObservationShowMessage} from '../redux/features/observationSlice';
+import RNFetchBlob from 'rn-fetch-blob';
 
 type ImageItemProps = {
   item: FileObject;
@@ -83,6 +84,25 @@ const zipFiles = async (filePaths: string | string[], targetPath: string) => {
   }
 };
 
+const downloadFile = async (sourceUri: string, fileName: string) => {
+  const destPath = `${RNFS.DocumentDirectoryPath}/${fileName}`;
+  const res = await RNFetchBlob.config({
+    path: destPath,
+  }).fetch('GET', sourceUri);
+
+  if (res.respInfo.status === 200) {
+    return destPath;
+  } else {
+    throw new Error(`Failed to download file: ${sourceUri}`);
+  }
+};
+
+const copyLocalFile = async (sourceUri: string, fileName: string) => {
+  const destPath = `${RNFS.DocumentDirectoryPath}/${fileName}`;
+  await RNFS.copyFile(sourceUri, destPath);
+  return destPath;
+};
+
 const createZipFile = async (
   files: FileObject[],
 ): Promise<FileObject | undefined> => {
@@ -90,13 +110,21 @@ const createZipFile = async (
 
   console.log('sssss sdf coming');
   try {
+
     for (const result of files) {
       console.log('sss coming');
       const sourceUri = result.uri;
       const fileName = result.name;
-      const destPath = `${RNFS.DocumentDirectoryPath}/${fileName}`;
-      await RNFS.copyFile(sourceUri, destPath);
-      filePaths.push(destPath);
+      let filePath;
+      if (sourceUri.startsWith('http://') || sourceUri.startsWith('https://')) {
+        filePath = await downloadFile(sourceUri, fileName);
+      } else {
+        filePath = await copyLocalFile(sourceUri, fileName);
+      }
+
+      // const destPath = `${RNFS.DocumentDirectoryPath}/${fileName}`;
+      // await RNFS.copyFile(sourceUri, destPath);
+      filePaths.push(filePath);
     }
 
     const name = `${new Date().getTime()}.zip`;
@@ -119,9 +147,9 @@ interface FileUploadProps {
   setZipFile: Dispatch<SetStateAction<FileObject | undefined>>;
   files: FileObject[];
   onPressFile?: (item: FileObject) => void;
+  onSelectFile?:()=>void
   onPressDelete:(item:FileObject)=>void;
   setFiles: Dispatch<SetStateAction<FileObject[]>>;
-
   disabled?: boolean;
 }
 
@@ -129,6 +157,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
   setZipFile,
   files,
   onPressFile,
+  onSelectFile,
   onPressDelete,
   setFiles,
   disabled,
@@ -169,6 +198,9 @@ const FileUpload: React.FC<FileUploadProps> = ({
       }
       const zipFile = await createZipFile([...newFiles, ...files]);
       if (zipFile) {
+        if(onSelectFile){
+        onSelectFile();
+        }
         setZipFile(zipFile);
       }
       setFiles(prevFiles => [...prevFiles, ...newFiles]);
@@ -194,7 +226,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
     <View>
       <View style={styles.container}>
         {!disabled && (
-          <TouchableOpacity style={styles.dropZone} onPress={pickFiles}>
+          <TouchableOpacity style={styles.dropZone} onPress={pickFiles} disabled={disabled}>
             <Image name="upload_icon" />
             <Text style={styles.dropZoneText}>
               Drag and drop or <Text style={styles.browseText}>Browse</Text>{' '}

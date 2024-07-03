@@ -32,6 +32,7 @@ export interface PaginationRequest {
   page: number;
   size: number;
   type: string;
+  search?: string;
 }
 
 interface GetAllUsersResponse {

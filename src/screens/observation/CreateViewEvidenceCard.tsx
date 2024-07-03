@@ -22,6 +22,8 @@ import {
 } from '../../redux/features/masterSlice';
 import LabeledDropdown from '../../components/LabeledDropdown';
 import {
+  deleteAttachments,
+  resetSaveEvidenceCardResponse,
   resetSaveObservationResponse,
   saveEvidenceCard,
   saveNewEvidenceCardList,
@@ -173,8 +175,6 @@ const CreateViewEvidenceCard: FC<CreateViewEvidenceCardScreenProps> = ({
   navigation,
   route,
 }) => {
-
-
   const [selectedIndicator, setSelectedIndicator] = useState<
     ItemType | undefined
   >(undefined);
@@ -185,8 +185,10 @@ const CreateViewEvidenceCard: FC<CreateViewEvidenceCardScreenProps> = ({
   const [selectedMusicFile, setSelectedMusicFile] = useState<FileObject>();
   const [isVisibleMusicPlayerModal, setIsVisibleMusicPlayerModal] =
     useState<boolean>(false);
+  const [isChanged, setIsChanged] = useState<boolean>(false);
   const [files, setFiles] = useState<FileObject[]>([]);
   const [zipfile, setZipFile] = useState<FileObject>();
+  const [deleteAttachmentIds, setDeleteAttachmentIds] = useState<number[]>([]);
 
   const dispatch = useAppDispatch();
 
@@ -200,7 +202,7 @@ const CreateViewEvidenceCard: FC<CreateViewEvidenceCardScreenProps> = ({
     observationId,
     observationById,
     saveObservationResponse,
-    newEvidenceCardsList
+    newEvidenceCardsList,
   } = useAppSelector(state => state.observation);
   const {userData} = useAppSelector(state => state.auth);
 
@@ -216,6 +218,7 @@ const CreateViewEvidenceCard: FC<CreateViewEvidenceCardScreenProps> = ({
     setIsVisibleMusicPlayerModal(false);
     setFiles([]);
     setZipFile(undefined);
+    setDeleteAttachmentIds([]);
   };
 
   useEffect(() => {
@@ -247,13 +250,14 @@ const CreateViewEvidenceCard: FC<CreateViewEvidenceCardScreenProps> = ({
           type: item.fileType,
           name: item.fileName,
         })),
-
       );
     }
   }, [evidenceCardDetails]);
 
   useEffect(() => {
     if (saveObservationResponse) {
+      console.log('sdfsdfdfsdfsdfsdf,', saveObservationResponse);
+      dispatch(resetSaveObservationResponse());
       dispatch(saveObservationId(saveObservationResponse.id));
       resetState();
       navigation.navigate('ObservationReport');
@@ -263,13 +267,21 @@ const CreateViewEvidenceCard: FC<CreateViewEvidenceCardScreenProps> = ({
   const onPressSaveCard = () => {
     if (zipfile) {
       if (evidenceCardDetails) {
+        if (deleteAttachmentIds.length !== 0) {
+          dispatch(
+            deleteAttachments({
+              ids: deleteAttachmentIds,
+              loggedInUserName: userData.userName,
+            }),
+          );
+        }
         dispatch(
           saveEvidenceCard([
             {
               averageRating: rating,
               domainId: Number(selectedDomain?.value),
               indicatorId: Number(selectedIndicator?.value),
-              loggedInUserName: userData?.name,
+              loggedInUserName: userData?.userName,
             },
             zipfile,
             evidenceCardDetails.evidenceId,
@@ -282,7 +294,7 @@ const CreateViewEvidenceCard: FC<CreateViewEvidenceCardScreenProps> = ({
               averageRating: rating,
               domainId: Number(selectedDomain?.value),
               indicatorId: Number(selectedIndicator?.value),
-              loggedInUserName: userData?.name,
+              loggedInUserName: userData?.userName,
             },
             zipfile,
           ]),
@@ -316,19 +328,19 @@ const CreateViewEvidenceCard: FC<CreateViewEvidenceCardScreenProps> = ({
               feedbackDescription: observationById.feedbackDescription,
               userGroupId: observationById.userGroupId,
               userId: observationById.userId,
-              loggedInUserName: observationById.userName,
+              loggedInUserName: userData.userName,
               evidenceRequestList: [
                 ...convertEvidenceCardListToRequest(
                   newEvidenceCardsList || [],
-                  observationById.userName,
+                  userData.userName,
                 ),
                 ...convertEvidenceCardListToRequest(
                   observationById.evidenceResponseList,
-                  observationById.userName,
+                  userData.userName,
                 ),
               ],
             },
-            observationId
+            observationId,
           ]),
         );
       } else {
@@ -339,13 +351,17 @@ const CreateViewEvidenceCard: FC<CreateViewEvidenceCardScreenProps> = ({
   }, [saveEvidenceCardResponse]);
 
   let isAllFieldsEntered = Boolean(
-    selectedDomain?.value && selectedIndicator?.value && rating && zipfile,
+    selectedDomain?.value &&
+      selectedIndicator?.value &&
+      rating &&
+      files.length !== 0 &&
+      isChanged,
   );
 
   let isDisabledFields = Boolean(
     observationById !== null &&
-      !evidenceCardDetails !== undefined &&
-      observationById.observationStatus !== 'Completed',
+      evidenceCardDetails  &&
+      observationById?.observationStatus === 'Completed',
   );
 
 
@@ -357,7 +373,7 @@ const CreateViewEvidenceCard: FC<CreateViewEvidenceCardScreenProps> = ({
         overridePaddingHorizontal
         overridePaddingVertical
         style={{paddingHorizontal: 15, paddingVertical: 0}}
-        onPressBackArrow={()=>{
+        onPressBackArrow={() => {
           resetState();
           navigation.goBack();
         }}
@@ -399,6 +415,9 @@ const CreateViewEvidenceCard: FC<CreateViewEvidenceCardScreenProps> = ({
                 label: item.domainName,
               })) || []
             }
+            onChangeItem={item => {
+              setIsChanged(true);
+            }}
             setSelectedItem={setSelectedDomain}
             defaultValue={selectedDomain?.value?.toString() || ''}
             disabled={isDisabledFields}
@@ -407,6 +426,9 @@ const CreateViewEvidenceCard: FC<CreateViewEvidenceCardScreenProps> = ({
             label="Select indicator"
             placeHolder="Select indicator"
             defaultValue={selectedIndicator?.value || ''}
+            onChangeItem={item => {
+              setIsChanged(true);
+            }}
             options={
               indicatorsByDomain?.dataList?.map(item => ({
                 value: item.indicatorId?.toString(),
@@ -438,8 +460,23 @@ const CreateViewEvidenceCard: FC<CreateViewEvidenceCardScreenProps> = ({
               setZipFile={setZipFile}
               files={files}
               setFiles={setFiles}
-              onPressDelete={(item)=>{
-                // dispatch(delete)
+              disabled={isDisabledFields}
+              onPressDelete={item => {
+                if (evidenceCardDetails) {
+                  setIsChanged(true);
+             
+                  let idToDelete =
+                    evidenceCardDetails?.attachmentResponse?.find(
+                      ele => ele.fileUrl === item.uri,
+                    )?.attachmentId;
+                    console.log('isss',idToDelete)
+                  if (idToDelete) {
+                    setDeleteAttachmentIds(prev => [...prev, idToDelete]);
+                  }
+                }
+              }}
+              onSelectFile={() => {
+                setIsChanged(true);
               }}
               onPressFile={file => {
                 file?.uri?.includes('mp3')
@@ -458,10 +495,9 @@ const CreateViewEvidenceCard: FC<CreateViewEvidenceCardScreenProps> = ({
           isActiveProceedButton={isAllFieldsEntered}
           cancelButtonText={'Cancel'}
           onPressCancelButton={() => {
-            // console.log('in cancel');
-            newObservation?
-            navigation.navigate('AddNewObservation'):
-            navigation.navigate('ObservationReport')
+            newObservation
+              ? navigation.navigate('AddNewObservation')
+              : navigation.navigate('ObservationReport');
           }}
           style={{}}
         />

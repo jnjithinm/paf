@@ -151,15 +151,13 @@ export const ObservationsTile: FC<ObservationTileTypes> = ({
           padding: 8,
           backgroundColor: '#EAF1FE',
           borderRadius: 10,
-      
           alignSelf: 'flex-start',
           alignItems: 'center',
           flex: 1,
           justifyContent: 'center',
-          // flex:1
         }}>
         <Text size="small1" fontVariant="bold">
-          {rating}
+          {Number(rating).toFixed(1)}
         </Text>
         <Icon style={{marginLeft: 5}} name="star_icon" width={10} />
       </View>
@@ -517,7 +515,7 @@ const TeacherDashboard: FC<TeacherDashboardScreenProps> = ({
                 justifyContent: 'space-between',
               }}>
               <Text size="body5" fontVariant="bold">
-                {dashboardDetails?.averageRating}
+              {dashboardDetails?.averageRating?.toFixed(1)}
               </Text>
               <View style={{justifyContent: 'space-around'}}>
                 <RatingStars rating={Number(dashboardDetails?.averageRating)} />

@@ -87,7 +87,7 @@ export const RenderFeedbackNote: FC<RenderFeedbackNoteTypes> = ({
         borderColor: '#CBD2D9',
         borderRadius: 10,
         color: colors.blackColor,
-        paddingHorizontal: 5,
+        paddingHorizontal: 10,
       }}
       multiline
       maxLength={200}
@@ -173,7 +173,8 @@ const AddNewObservation: FC<AddNewObservationScreenProps> = ({
       navigation.navigate('ObservationReportsMainPage')
     }
 
-  },[saveObservationResponse])
+  },[saveObservationResponse]);
+  
   useEffect(() => {
     if (selectedUserGroup?.value) {
       dispatch(

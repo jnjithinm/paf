@@ -14,6 +14,7 @@ import {useAppDispatch, useAppSelector} from '../../redux/store';
 import {
   EvidenceResponse,
   getObservationById,
+  resetSaveEvidenceCardResponse,
   resetSaveObservationResponse,
   saveEvidenceCardDetails,
   saveNewEvidenceCardList,
@@ -62,8 +63,10 @@ const ObservationReport: FC<ObservationReportScreenProps> = ({
   useFocusEffect(
     React.useCallback(() => {
       if (observationId) {
-        dispatch(saveEvidenceCardDetails(null))
-        dispatch(resetSaveObservationResponse())
+        console.log('sdfsf')
+        dispatch(saveEvidenceCardDetails(null));
+        dispatch(resetSaveEvidenceCardResponse());
+        dispatch(resetSaveObservationResponse());
         dispatch(getObservationById(observationId));
       }
     }, []),
@@ -71,10 +74,11 @@ const ObservationReport: FC<ObservationReportScreenProps> = ({
 
   useEffect(() => {
     if (saveObservationResponse) {
-      console.log("dsfsdfsdsdfsdfdfsddsdsfs",saveObservationResponse)
-     !observationById && navigation.navigate('ObservationReportsMainPage');
+      console.log("ssss",saveObservationResponse)
+      newObservation && navigation.navigate('ObservationReportsMainPage');
     }
   }, [saveObservationResponse]);
+  console.log('sssssssss',saveObservationResponse)
 
   const onPressCreateEvidenceCard = () => {
     navigation.navigate('CreateViewEvidenceCard');
@@ -133,6 +137,10 @@ const ObservationReport: FC<ObservationReportScreenProps> = ({
   const feedback: string =
     observationById?.feedbackDescription || newObservation?.feedbackNote || '';
 
+    const rating:number|undefined= observationId ? observationById?.observationAvgRatings: newEvidenceCardsList?.reduce((sum, item) => {
+      return sum + item.averageRating;
+    }, 0);
+
   return (
     <KeyboardAvoidingView
       style={{flex: 1}}
@@ -141,9 +149,9 @@ const ObservationReport: FC<ObservationReportScreenProps> = ({
         overridePaddingHorizontal
         overridePaddingVertical
         onPressBackArrow={() => {
-          observationId
-            ? navigation.navigate('ObservationReportsMainPage')
-            : navigation.navigate('AddNewObservation');
+          newObservation
+            ? navigation.navigate('AddNewObservation')
+            : navigation.navigate('ObservationReportsMainPage') ;
         }}
         style={{paddingHorizontal: 15, paddingVertical: 0}}
         icon="reports_icon"
@@ -169,7 +177,7 @@ const ObservationReport: FC<ObservationReportScreenProps> = ({
               </View>
               <View style={{flexDirection: 'row', alignItems: 'center'}}>
                 <RatingStars
-                  rating={Number(observationById?.observationAvgRatings)}
+                  rating={Number(rating)}
                 />
                 <View
                   style={{
@@ -212,7 +220,7 @@ const ObservationReport: FC<ObservationReportScreenProps> = ({
                 noteCount={item?.fileCount?.Document}
                 photoCount={item?.fileCount?.Image}
                 onPressEvidenceCard={() => {
-                  dispatch(saveEvidenceCardDetails(item))
+                  dispatch(saveEvidenceCardDetails(item));
                   navigation.navigate('CreateViewEvidenceCard');
                 }}
               />

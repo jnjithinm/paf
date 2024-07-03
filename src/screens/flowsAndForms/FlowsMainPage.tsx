@@ -124,7 +124,9 @@ const FlowsItem: React.FC<FlowsItemProps> = ({
 };
 
 const FlowsMainPage: FC<FlowsMainPageScreenProps> = ({navigation, route}) => {
-  const {allFlows,} = useAppSelector(state => state.flows);
+  const [search,setSearch]=useState<string>('');
+
+  const {allFlows} = useAppSelector(state => state.flows);
   const {userData, isAdmin} = useAppSelector(state => state.auth);
   const dispatch = useAppDispatch();
 
@@ -144,8 +146,28 @@ const FlowsMainPage: FC<FlowsMainPageScreenProps> = ({navigation, route}) => {
     );
   }, []);
 
+  useEffect(() => {
+    if (search.trim() !== '') {
+      const timer = setTimeout(() => {
+        dispatch(
+          getAllFlows([
+            userData.userName,
+            userData.id,
+            {
+              page: 0,
+              size: 15,
+              type: 'all',
+              search,
+            },
+          ]),
+        );
+      }, 500);
 
-  useEffect(()=>{},[])
+      return () => {
+        clearTimeout(timer);
+      };
+    }
+  }, [search, dispatch, userData.userName, userData.id]);
 
   const onPressDeleteFlow = (item: FlowItem) => {
     dispatch(
@@ -183,12 +205,8 @@ const FlowsMainPage: FC<FlowsMainPageScreenProps> = ({navigation, route}) => {
 
           <SearchWithFilter
             filterNotNeeded
-            onTextChange={function (text: string): void {
-              throw new Error('Function not implemented.');
-            }}
-            onProceed={function (filter: FilterObject): void {
-              throw new Error('Function not implemented.');
-            }}
+            onTextChange={(text)=>{setSearch(text)}}
+            onProceed={()=>{}}
           />
 
           {allFlows?.dataList?.map(item => (

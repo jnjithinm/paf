@@ -192,6 +192,14 @@ interface SaveObservationResponse {
 }
 type SaveObservationResponsePayload = SaveObservationResponse['payload'];
 
+
+interface DeleteAttachmentsRequest {
+  ids: number[];
+  loggedInUserName: string;
+}
+
+
+
 export const setObservationShowMessage = createAction<ErrorStatusObject | null>(
   'SET_OBSERVATION_SHOW_MESSAGE',
 );
@@ -218,6 +226,10 @@ export const resetSaveObservationResponse = createAction<void>(
 
 export const resetObservationById= createAction<void>(
   'RESET_OBSERVATION_BY_ID',
+);
+
+export const resetDeleteAttachmentResponse= createAction<void>(
+  'DELETE_ATTACHMENT_RESPONSE',
 );
 
 export const saveEvidenceCardDetails =
@@ -269,6 +281,23 @@ export const getEvidenceById = createAsyncThunk<
   try {
     dispatch(setLoading(true));
     const response = await api.get(endPoints.GET_EVIDENCE_BY_ID + id);
+    return response.data as GetObservationByIdResponse;
+  } catch (error: any) {
+    return rejectWithValue(error.response.data);
+  } finally {
+    dispatch(setLoading(false));
+  }
+});
+
+export const deleteAttachments = createAsyncThunk<
+  GetObservationByIdResponse,
+  DeleteAttachmentsRequest,
+  {rejectValue: ErrorResponse}
+>('observation/getEvidenceById', async (payload, {dispatch, rejectWithValue}) => {
+  try {
+    dispatch(setLoading(true));
+    const response = await api.delete(endPoints.DELETE_ATTACHMENTS,{data:payload});
+    console.log('response ssss',response);
     return response.data as GetObservationByIdResponse;
   } catch (error: any) {
     return rejectWithValue(error.response.data);
@@ -427,6 +456,7 @@ interface InitialState {
   newEvidenceCardsList: EvidenceResponse[] | null;
   evidenceCardDetails: EvidenceResponse | null;
   observationId: number | null;
+  deleteAttachmentResponse: GetObservationByIdResponse | null;
   saveObservationResponse: SaveObservationResponsePayload | null;
   observationShowMessage: ErrorStatusObject | null;
   errorMessage: string;
@@ -442,6 +472,7 @@ const initialState: InitialState = {
   newEvidenceCardsList: null,
   evidenceCardDetails: null,
   observationId: null,
+  deleteAttachmentResponse:null,
   saveObservationResponse: null,
   observationShowMessage: null,
   errorMessage: '',
@@ -474,13 +505,16 @@ const observationSlice = createSlice({
         state.saveEvidenceCardResponse = null;
       })
       .addCase(resetSaveObservationResponse, (state, action) => {
+        console.log("savvv")
         state.saveObservationResponse = null;
       })
       .addCase(resetObservationById, (state, action) => {
         state.observationById = null;
         state.observationId=null;
       })
-      
+      .addCase(resetDeleteAttachmentResponse, (state, action) => {
+        state.deleteAttachmentResponse = null;
+      })
       .addCase(getDashboardDetailsAndObservationList.pending, state => {
         // state.isLoading = true;
       })

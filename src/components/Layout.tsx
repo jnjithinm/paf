@@ -87,12 +87,14 @@ const Layout: FC<LayoutPropsTypes> = ({
   };
   const [keyboardOffset, setKeyboardOffset] = useState(0);
   const [isScrolled, setIsScrolled] = useState<boolean>(false);
+  const [isKeyboardVisible, setIsKeyboardVisible] = useState<boolean>(false); 
 
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(
       Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow',
       event => {
         setKeyboardOffset(event.endCoordinates.height);
+        setIsKeyboardVisible(true);
       },
     );
 
@@ -100,6 +102,7 @@ const Layout: FC<LayoutPropsTypes> = ({
       Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide',
       () => {
         setKeyboardOffset(0);
+        setIsKeyboardVisible(false);
       },
     );
 
@@ -174,7 +177,7 @@ const Layout: FC<LayoutPropsTypes> = ({
         </ScrollView>
         {isLoading && <Loading />}
       </KeyboardAvoidingView>
-      {focusedStack && <BottomTab focusedStack={focusedStack} />}
+      {!isKeyboardVisible && focusedStack && <BottomTab focusedStack={focusedStack} />}
     </>
   );
 };

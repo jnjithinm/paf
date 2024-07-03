@@ -5,16 +5,16 @@ import {
 } from '@react-navigation/stack';
 
 import FlowsMainPage from '../screens/flowsAndForms/FlowsMainPage';
-import {FlowDetailItem, FlowItem} from '../redux/features/flowsSlice';
+import { FlowDetailItem, FlowItem } from '../redux/features/flowsSlice';
 import EvaluationForm from '../screens/flowsAndForms/EvaluationForm';
 import FormListAndResponses from '../screens/flowsAndForms/FormListAndResponses';
 import FormResponses from '../screens/flowsAndForms/FormResponses';
 
 export type FlowsAndFormsStackParamList = {
   FlowsMainPage: undefined;
-  FormListAndResponses: {flowItem: FlowItem};
-  FormResponses: {flowDetailItem: FlowDetailItem};
-  EvaluationForm: {flowDetailItem: FlowDetailItem; flowItem: FlowItem};
+  FormListAndResponses: { flowItem: FlowItem };
+  FormResponses: { flowDetailItem: FlowDetailItem };
+  EvaluationForm: { flowDetailItem: FlowDetailItem; flowItem: FlowItem };
 };
 
 const FlowsAndFormsStackTab =
@@ -40,7 +40,7 @@ const FlowsAndFormsStack = () => {
   };
   return (
     <FlowsAndFormsStackTab.Navigator
-      screenOptions={({route}) => ({
+      screenOptions={({ route }) => ({
         headerShown: false,
         keyboardHidesTabBar: true,
       })}>

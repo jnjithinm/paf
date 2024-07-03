@@ -24,11 +24,9 @@ const RatingInput: FC<RatingInputTypes> = ({
   style,
   labelStyle
 }) => {
-  const [selectedRating, setSelectedRating] = useState(rating);
 
   const handleStarPress = (index: number) => {
     const newRating = index + 1;
-    setSelectedRating(newRating);
     onChangeRating(newRating);
   };
 

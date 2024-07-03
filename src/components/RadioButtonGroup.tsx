@@ -89,7 +89,7 @@ const RadioButtonGroup: FC<RadioButtonGroupPropsTypes> = ({
               <View
                 style={[
                   styles.RadioButton,
-                  isSelected(item) ? { borderColor: colors.secondaryColor } : null,
+                  isSelected(item) ? {     borderColor:'#EA7804' } : null,
                 ]}
               >
                 {isSelected(item) && <View style={styles.RadioButtonSelected} />}
@@ -120,7 +120,7 @@ const styles = StyleSheet.create({
   RadioButton: {
     width: normaliseDesigns(12),
     height: normaliseDesigns(12),
-    borderRadius: 12,
+    borderRadius: 15,
     borderWidth: 0.8,
     alignItems: 'center',
     justifyContent: 'center',
@@ -128,9 +128,10 @@ const styles = StyleSheet.create({
     borderColor: '#ABB4BD',
   },
   RadioButtonSelected: {
-    width: normaliseDesigns(11),
-    height: normaliseDesigns(11),
-    borderRadius: 8,
-    backgroundColor: colors.secondaryColor,
+    width: normaliseDesigns(7),
+    height: normaliseDesigns(7),
+    borderRadius: 15,
+    backgroundColor: '#EA7804',
+
   },
 });
