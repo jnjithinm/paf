@@ -100,6 +100,7 @@ const ObservationReportsMainPage: FC<ObservationReportsMainPageScreenProps> = ({
   route,
 }) => {
   const [selectedFilter, setSelectedFilter] = useState<FilterType>('All');
+  const [search,setSearch]=useState<string>('');
 
   const dispatch = useAppDispatch();
   const {allObservations} = useAppSelector(state => state.observation);
@@ -117,12 +118,6 @@ const ObservationReportsMainPage: FC<ObservationReportsMainPageScreenProps> = ({
           userData.id,
           {
             filterType: selectedFilter,
-            // userId: undefined,
-            // userGroupId:undefined,
-            // ratings:filter?.rating,
-            // dateType: filter?.dateFilterOption,
-            // startDate: filter?.date?.startDate,
-            // endDate: filter?.date?.endDate,
             paginationRequest: {
               page: 0,
               size: 15,
@@ -165,6 +160,37 @@ const ObservationReportsMainPage: FC<ObservationReportsMainPageScreenProps> = ({
   }
   }, [selectedFilter]);
 
+  // useEffect(() => {
+  //   if (search.trim() !== '') {
+  //     const timer = setTimeout(() => {
+  //       dispatch(
+  //         getAllObservations([
+  //           userData.id,
+  //           {
+  //             filterType: selectedFilter,
+  //             ratings: filter?.rating,
+  //             dateType: filter?.dateFilterOption,
+  //             startDate: filter?.date?.startDate,
+  //             endDate: filter?.date?.endDate,
+  //             paginationRequest: {
+  //               page: 0,
+  //               size: 15,
+  //               type: 'all',
+  //               search
+  //             },
+  //           },
+  //         ]),
+  //       );
+  //     }, 500);
+
+  //     return () => {
+  //       clearTimeout(timer);
+  //     };
+  //   }
+  // }, [search, dispatch, userData.userName, userData.id]);
+
+
+  console.log("sdfsdfaaaaaaaaa")
   return (
     <>
       <Layout
@@ -196,7 +222,6 @@ const ObservationReportsMainPage: FC<ObservationReportsMainPageScreenProps> = ({
         <SearchWithFilter
           onTextChange={() => {}}
           onProceed={filter => {
-            console.log("filter",filter)
             dispatch(
               getAllObservations([
                 userData.id,
@@ -210,6 +235,7 @@ const ObservationReportsMainPage: FC<ObservationReportsMainPageScreenProps> = ({
                     page: 0,
                     size: 15,
                     type: 'all',
+                    search
                   },
                 },
               ]),

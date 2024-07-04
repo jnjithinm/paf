@@ -117,7 +117,8 @@ const createZipFile = async (
       const fileName = result.name;
       let filePath;
       if (sourceUri.startsWith('http://') || sourceUri.startsWith('https://')) {
-        filePath = await downloadFile(sourceUri, fileName);
+        // filePath = await downloadFile(sourceUri, fileName);
+        break;
       } else {
         filePath = await copyLocalFile(sourceUri, fileName);
       }
@@ -213,11 +214,14 @@ const FileUpload: React.FC<FileUploadProps> = ({
   const handleRemoveItem = async (item: FileObject) => {
     const updatedFiles = files.filter(file => file.uri !== item.uri);
     try {
+      dispatch(setLoading(true));
       const zip = await createZipFile(updatedFiles);
       setZipFile(zip);
       setFiles(updatedFiles);
       onPressDelete(item)
+      dispatch(setLoading(false));
     } catch (err) {
+      dispatch(setLoading(false));
       console.log('err', err);
     }
   };

@@ -442,7 +442,7 @@ const Calendar: FC<CalendarPropsTypes> = ({onProceed, onClose, isVisible}) => {
 
             <Button
               text="Apply"
-              style={{marginTop: 20}}
+              style={{marginBottom: 20}}
               active={Boolean(
                 rating !== 0 ||
                   selectedFilterByDate !== undefined ||
@@ -486,7 +486,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     alignSelf: 'flex-end',
-    marginTop: normaliseDesigns(150),
+    marginTop: normaliseDesigns(135),
     height: '100%',
   },
   CalendarContent: {

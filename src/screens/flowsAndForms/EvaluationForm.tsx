@@ -572,6 +572,7 @@ const QuestionTypeSelector: FC<QuestionTypeSelectorTypes> = ({
           questionId={questionId}
           questionOptionId={questionOptionId}
           answers={answers}
+          key={questionId}
         />
       );
     case 2:
@@ -583,6 +584,7 @@ const QuestionTypeSelector: FC<QuestionTypeSelectorTypes> = ({
           questionId={questionId}
           questionOptionId={questionOptionId}
           answers={answers}
+          key={questionId}
         />
       );
     case 3:
@@ -594,6 +596,7 @@ const QuestionTypeSelector: FC<QuestionTypeSelectorTypes> = ({
           questionId={questionId}
           questionOptionId={questionOptionId}
           answers={answers}
+          key={questionId}
         />
       );
     case 4:
@@ -605,6 +608,7 @@ const QuestionTypeSelector: FC<QuestionTypeSelectorTypes> = ({
           questionOptionId={questionOptionId}
           answers={answers}
           indicators={indicators}
+          key={questionId}
         />
       );
 
@@ -616,6 +620,7 @@ const QuestionTypeSelector: FC<QuestionTypeSelectorTypes> = ({
           questionId={questionId}
           questionOptionId={questionOptionId}
           answers={answers}
+          key={questionId}
         />
       );
     case 6:
@@ -626,6 +631,7 @@ const QuestionTypeSelector: FC<QuestionTypeSelectorTypes> = ({
           questionId={questionId}
           questionOptionId={questionOptionId}
           answers={answers}
+          key={questionId}
         />
       );
     case 7:
@@ -636,6 +642,7 @@ const QuestionTypeSelector: FC<QuestionTypeSelectorTypes> = ({
           questionId={questionId}
           questionOptionId={questionOptionId}
           answers={answers}
+          key={questionId}
         />
       );
     default:

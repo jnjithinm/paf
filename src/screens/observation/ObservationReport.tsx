@@ -231,7 +231,7 @@ const ObservationReport: FC<ObservationReportScreenProps> = ({
           )}
         </View>
       </Layout>
-      {newObservation ? (
+      {newObservation || observationById?.observationStatus==='Pending' ? (
         <View>
           <FloatingButton
             icon="edit_icon"

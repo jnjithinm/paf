@@ -469,7 +469,6 @@ const CreateViewEvidenceCard: FC<CreateViewEvidenceCardScreenProps> = ({
                     evidenceCardDetails?.attachmentResponse?.find(
                       ele => ele.fileUrl === item.uri,
                     )?.attachmentId;
-                    console.log('isss',idToDelete)
                   if (idToDelete) {
                     setDeleteAttachmentIds(prev => [...prev, idToDelete]);
                   }

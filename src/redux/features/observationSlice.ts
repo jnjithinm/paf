@@ -13,7 +13,7 @@ import {ErrorResponse, setLoading} from './authSlice';
 import {DateFilterOption} from '../../components/Calendar';
 import RNFetchBlob from 'rn-fetch-blob';
 import {getToken} from '../../utils/functions/localStorageOperations';
-import { logRequest } from '../../utils/functions/logs';
+import {filterPayload, logRequest} from '../../utils/functions/apiUtils';
 
 interface Observation {
   userAssessed: string;
@@ -192,13 +192,10 @@ interface SaveObservationResponse {
 }
 type SaveObservationResponsePayload = SaveObservationResponse['payload'];
 
-
 interface DeleteAttachmentsRequest {
   ids: number[];
   loggedInUserName: string;
 }
-
-
 
 export const setObservationShowMessage = createAction<ErrorStatusObject | null>(
   'SET_OBSERVATION_SHOW_MESSAGE',
@@ -224,18 +221,17 @@ export const resetSaveObservationResponse = createAction<void>(
   'RESET_SAVE_OBSERVATION_RESPONSE',
 );
 
-export const resetObservationById= createAction<void>(
+export const resetObservationById = createAction<void>(
   'RESET_OBSERVATION_BY_ID',
 );
 
-export const resetDeleteAttachmentResponse= createAction<void>(
+export const resetDeleteAttachmentResponse = createAction<void>(
   'DELETE_ATTACHMENT_RESPONSE',
 );
 
-export const saveEvidenceCardDetails =
-  createAction<EvidenceResponse | null>(
-    'SAVE_EVIDENCE_CARD_DETAILS',
-  );
+export const saveEvidenceCardDetails = createAction<EvidenceResponse | null>(
+  'SAVE_EVIDENCE_CARD_DETAILS',
+);
 
 export const getDashboardDetailsAndObservationList = createAsyncThunk<
   GetDashboardDetailsAndObservationListResponse,
@@ -293,18 +289,23 @@ export const deleteAttachments = createAsyncThunk<
   GetObservationByIdResponse,
   DeleteAttachmentsRequest,
   {rejectValue: ErrorResponse}
->('observation/getEvidenceById', async (payload, {dispatch, rejectWithValue}) => {
-  try {
-    dispatch(setLoading(true));
-    const response = await api.delete(endPoints.DELETE_ATTACHMENTS,{data:payload});
-    console.log('response ssss',response);
-    return response.data as GetObservationByIdResponse;
-  } catch (error: any) {
-    return rejectWithValue(error.response.data);
-  } finally {
-    dispatch(setLoading(false));
-  }
-});
+>(
+  'observation/getEvidenceById',
+  async (payload, {dispatch, rejectWithValue}) => {
+    try {
+      dispatch(setLoading(true));
+      const response = await api.delete(endPoints.DELETE_ATTACHMENTS, {
+        data: payload,
+      });
+      console.log('response ssss', response);
+      return response.data as GetObservationByIdResponse;
+    } catch (error: any) {
+      return rejectWithValue(error.response.data);
+    } finally {
+      dispatch(setLoading(false));
+    }
+  },
+);
 
 export const getAllObservations = createAsyncThunk<
   GetAllObservationsResponse,
@@ -315,27 +316,7 @@ export const getAllObservations = createAsyncThunk<
   async ([id, payload], {dispatch, rejectWithValue}) => {
     try {
       dispatch(setLoading(true));
-      const filteredPayload: Partial<ObservationRequest> = {};
-
-      if (payload.userId !== undefined) {
-        filteredPayload.userId = payload.userId;
-      }
-      if (payload.userGroupId !== undefined) {
-        filteredPayload.userGroupId = payload.userGroupId;
-      }
-      if (payload.ratings !== 0 && payload.ratings !== undefined) {
-        filteredPayload.ratings = payload.ratings;
-      }
-      if (payload.dateType !== undefined) {
-        filteredPayload.dateType = payload.dateType;
-      }
-      if (payload.startDate !== undefined) {
-        filteredPayload.startDate = payload.startDate;
-      }
-      if (payload.endDate !== undefined) {
-        filteredPayload.endDate = payload.endDate;
-      }
-
+      const filteredPayload = filterPayload(payload);
       const response = await api.post(endPoints.DASHBOARD_FILTER + id, {
         ...filteredPayload,
         paginationRequest: payload.paginationRequest,
@@ -391,7 +372,7 @@ export const saveEvidenceCard = createAsyncThunk<
           },
           formData,
         );
-        logRequest('PUT',requestUrl,JSON.stringify(formData))
+        logRequest('PUT', requestUrl, JSON.stringify(formData));
       } else {
         response = await RNFetchBlob.fetch(
           'POST',
@@ -402,11 +383,10 @@ export const saveEvidenceCard = createAsyncThunk<
           },
           formData,
         );
-        logRequest('POST',url,JSON.stringify(formData))
+        logRequest('POST', url, JSON.stringify(formData));
       }
 
       parsedResponse = JSON.parse(response.data);
-      console.log('res', parsedResponse);
 
       return parsedResponse as SaveEvidenceCardResponse;
     } catch (error: any) {
@@ -433,7 +413,6 @@ export const saveObservation = createAsyncThunk<
           endPoints.UPDATE_OBSERVATION + observationId,
           payload,
         );
-
       } else {
         response = await api.post(endPoints.SAVE_OBSERVATION, payload);
       }
@@ -472,7 +451,7 @@ const initialState: InitialState = {
   newEvidenceCardsList: null,
   evidenceCardDetails: null,
   observationId: null,
-  deleteAttachmentResponse:null,
+  deleteAttachmentResponse: null,
   saveObservationResponse: null,
   observationShowMessage: null,
   errorMessage: '',
@@ -505,12 +484,12 @@ const observationSlice = createSlice({
         state.saveEvidenceCardResponse = null;
       })
       .addCase(resetSaveObservationResponse, (state, action) => {
-        console.log("savvv")
+        console.log('savvv');
         state.saveObservationResponse = null;
       })
       .addCase(resetObservationById, (state, action) => {
         state.observationById = null;
-        state.observationId=null;
+        state.observationId = null;
       })
       .addCase(resetDeleteAttachmentResponse, (state, action) => {
         state.deleteAttachmentResponse = null;
@@ -601,7 +580,7 @@ const observationSlice = createSlice({
         state.saveObservationResponse = null;
       })
       .addCase(saveObservation.fulfilled, (state, action) => {
-        console.log('dsfsdf',action.payload.payload)
+        console.log('dsfsdf', action.payload.payload);
         state.saveObservationResponse = action.payload.payload;
         state.observationShowMessage = {
           status: 'Success',

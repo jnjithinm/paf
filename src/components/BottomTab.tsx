@@ -6,6 +6,7 @@ import {normaliseDesigns} from '../utils/helpers/responsiveHelpers';
 import colors from '../config/colors';
 import {useAppSelector} from '../redux/store';
 import {ScreenNames, navigate} from '../utils/helpers/navigationHelpers';
+import Text from './Text';
 
 interface StackItem {
   stack: ScreenNames|undefined;
@@ -133,12 +134,15 @@ const BottomTab: FC<BottomTabTypes> = ({focusedStack}) => {
               }}
             key={index}
             disabled={focused || item.disabled}>
+              <View style={{alignItems:'center'}}>
             <Icon
               name={focused ? item.focusedIcon:item.icon  }
               strokeWidth={2}
               width={size}
               height={size}
             />
+           {item.disabled && <Text size='verysmall2' style={{top:3}} color='dangerColor'>Coming soon</Text>}
+            </View>
           </TouchableOpacity>
         );
       })}

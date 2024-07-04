@@ -108,3 +108,4 @@ const RatingInput: FC<RatingInputTypes> = ({
 };
 
 export default RatingInput;
+
