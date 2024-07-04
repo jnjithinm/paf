@@ -138,18 +138,19 @@ useEffect(()=>{
 type IndividualMainPageRenderalTypes = {
   onPress: (item: IndividualResponse) => void;
   individualResponse: IndividualResponse[];
-  flowDetailItem:FlowDetailItem
+  flowDetailItem:FlowDetailItem;
+  totalQuestion:number;
 };
 
 //IndividualMainScreen Renderals
 export const IndividualMainPageRenderal: FC<
   IndividualMainPageRenderalTypes
-> = ({onPress, individualResponse,flowDetailItem}) => (
+> = ({onPress, individualResponse,flowDetailItem,totalQuestion}) => (
   <View>
     {individualResponse.map(item => (
       <AdminIndividualTile
         rating={item.questionAvgRating}
-        creationDate={'10/06/2024'}
+        creationDate={moment(item.responses[0].responseDate).format('DD/MM/YYYY')}
         onPress={() => {
           onPress(item);
           // navigation.navigate('AdminFormList');
@@ -159,7 +160,7 @@ export const IndividualMainPageRenderal: FC<
         key={item.userId}
         name={item.name}
         image={''}
-        questionsAnswered={'10/10'}
+        questionsAnswered={`${item.responses.length}/${totalQuestion}`}
         onPressDelete={() => {}}
       />
     ))}
@@ -170,7 +171,7 @@ type RenderQuestionAndAnswerTypes = {
   index: number;
   question: string;
   answer: string;
-  rating: string;
+  rating: number;
 };
 
 const RenderQuestionAndAnswer: FC<RenderQuestionAndAnswerTypes> = ({
@@ -212,7 +213,7 @@ const RenderQuestionAndAnswer: FC<RenderQuestionAndAnswerTypes> = ({
         style={{color: '#4E565F', right: 2.5}}
         size="small3"
         fontVariant="bold">
-        {rating}
+        {rating?.toFixed(1)}
       </Text>
       <Icon name="rating_star_display" width={15} height={15} />
     </View>
@@ -221,12 +222,13 @@ const RenderQuestionAndAnswer: FC<RenderQuestionAndAnswerTypes> = ({
 
 type IndividualDescriptionRenderalTypes = {
   individualResponse: IndividualResponse|null;
+  totalQuestion:number
 };
 
 //IndividualDescription Renderal
 export const IndividualDescriptionRenderal: FC<
   IndividualDescriptionRenderalTypes
-> = ({individualResponse}) => (
+> = ({individualResponse,totalQuestion}) => (
   <View>
     <View
       style={{
@@ -242,12 +244,14 @@ export const IndividualDescriptionRenderal: FC<
       }}>
       <View style={{justifyContent: 'space-between'}}>
         <Text fontVariant="bold">{individualResponse?.name}</Text>
+
         <RatingInput
-          rating={3.4}
+          rating={individualResponse?.questionAvgRating || 0}
           label={''}
           size={15}
           onChangeRating={() => {}}
         />
+        
         <View
           style={{
             backgroundColor: '#FEF8EC',
@@ -257,7 +261,7 @@ export const IndividualDescriptionRenderal: FC<
             justifyContent: 'center',
             flexDirection: 'row',
           }}>
-          <Text fontVariant="bold">10/10 </Text>
+          <Text fontVariant="bold">{individualResponse?.responses?.length}/{totalQuestion} </Text>
           <Text size="small3" style={{marginLeft: 5, color: '#1F2933'}}>
             Questions answered
           </Text>
@@ -274,7 +278,7 @@ export const IndividualDescriptionRenderal: FC<
         index={item.questionId}
         question={item.questionText}
         answer={item.responseValues}
-        rating={'3.5'}
+        rating={item.avgRating}
       />
     ))}
   </View>

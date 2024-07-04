@@ -758,7 +758,7 @@ const EvaluationForm: FC<EvaluationFormScreenProps> = ({navigation, route}) => {
 
   useEffect(() => {
     validateSubmission();
-  }, [answers]);
+  }, [answers,previewForm]);
 
   console.log("answers====",answers)
   // Validate submission logic
@@ -771,7 +771,6 @@ const EvaluationForm: FC<EvaluationFormScreenProps> = ({navigation, route}) => {
           if (!answers.some(ans => ans.questionId === question.questionId)) {
             canProceed = false;
           }
-
           if (question.questionOptionId === 4) {
             const requiredIndicatorsFilled = question.indicators.every(
               indicator => {
