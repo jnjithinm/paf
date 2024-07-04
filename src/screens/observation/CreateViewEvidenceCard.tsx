@@ -478,7 +478,7 @@ const CreateViewEvidenceCard: FC<CreateViewEvidenceCardScreenProps> = ({
                 setIsChanged(true);
               }}
               onPressFile={file => {
-                file?.uri?.includes('mp3')
+                file?.uri?.includes('mp3') || file?.uri?.includes('m4a')
                   ? (setSelectedMusicFile(file),
                     setIsVisibleMusicPlayerModal(true))
                   : navigation.navigate('PlayFile', {file});

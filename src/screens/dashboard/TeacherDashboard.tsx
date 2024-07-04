@@ -15,12 +15,13 @@ import colors from '../../config/colors';
 import {normaliseDesigns} from '../../utils/helpers/responsiveHelpers';
 import DrawerContent from '../../components/DrawerContent';
 import {useAppDispatch, useAppSelector} from '../../redux/store';
-import {getDashboardDetailsAndObservationList} from '../../redux/features/observationSlice';
+import {ObservationStatus, getDashboardDetailsAndObservationList} from '../../redux/features/observationSlice';
 import {navigate} from '../../utils/helpers/navigationHelpers';
 import {FilterObject} from '../../components/Calendar';
 import SearchWithFilter from '../../components/SearchWithFilter';
 import {MainStackParamList} from '../../navigation/MainStack';
 import FastImage from 'react-native-fast-image';
+import { RenderCompleteStatus } from '../observation/ObservationReportsMainPage';
 
 type TeacherDashboardNavigationProp = StackNavigationProp<
   MainStackParamList,
@@ -101,6 +102,7 @@ type ObservationTileTypes = {
   userAssisted: string;
   image: string | null | undefined;
   onPress?: () => void;
+  status:ObservationStatus|undefined;
   reportedBy: string;
   style?: ViewStyle;
   disabled?:boolean
@@ -111,6 +113,7 @@ export const ObservationsTile: FC<ObservationTileTypes> = ({
   userAssisted,
   image,
   onPress,
+  status,
   reportedBy,
   style,
   disabled
@@ -174,12 +177,13 @@ export const ObservationsTile: FC<ObservationTileTypes> = ({
           </View>
         </View>
       </View>
-      <View style={{flex: 4}}>
+      <View style={{flex: 3}}>
         <Text size="verysmall3" opacity="0.50">
           Reported By
         </Text>
         <Text size="small3"> {reportedBy}</Text>
       </View>
+      <RenderCompleteStatus status={status} style={{alignSelf:'flex-start',margin:7}}/>
     </TouchableOpacity>
   );
 };
@@ -587,6 +591,7 @@ const TeacherDashboard: FC<TeacherDashboardScreenProps> = ({
                 userAssisted={item.userAssessed}
                 image={item.userImage}
                 reportedBy={item.reportedBy}
+                status='Completed'
                 disabled
               />
             ))}

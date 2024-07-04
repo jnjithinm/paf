@@ -17,6 +17,7 @@ import {ObservationsTile} from '../dashboard/TeacherDashboard';
 import {useAppDispatch, useAppSelector} from '../../redux/store';
 import {
   FilterType,
+  ObservationStatus,
   getAllObservations,
   resetObservationById,
   resetSaveEvidenceCardResponse,
@@ -94,6 +95,41 @@ export const FloatingButton: FC<FloatingButtonTypes> = ({
     </TouchableOpacity>
   );
 };
+
+
+type RenderCompleteStatusTypes = {
+  status: ObservationStatus | undefined;
+  style?: ViewStyle;
+};
+export const RenderCompleteStatus: FC<RenderCompleteStatusTypes> = ({status, style}) => (
+  <View
+    style={{
+      ...style,
+      flexDirection: 'row',
+      backgroundColor: status==='Completed' ? '#EBF9D9' : '#FFEDED',
+      alignItems: 'center',
+      padding: 5,
+      borderRadius: 8,
+      justifyContent: 'space-between',
+    }}>
+    <View
+      style={{
+        aspectRatio: 1,
+        height: 7,
+        backgroundColor: status==='Completed' ? '#749E35' : '#D62828',
+        borderRadius: 10,
+      }}
+    />
+    <Text
+      style={{color: status==='Completed' ? '#749E35' : '#D62828', marginLeft: 5,letterSpacing:0.62}}
+      size="verysmall3"
+
+      fontVariant="bold">
+      {status==='Completed' ? 'Completed' : 'Pending'}
+    </Text>
+  </View>
+);
+
 
 const ObservationReportsMainPage: FC<ObservationReportsMainPageScreenProps> = ({
   navigation,
@@ -254,6 +290,7 @@ const ObservationReportsMainPage: FC<ObservationReportsMainPageScreenProps> = ({
                 dispatch(saveObservationId(item.observationId));
                 navigation.navigate('ObservationReport');
               }}
+              status={'Completed'}
             />
           ))}
         </View>

@@ -29,6 +29,7 @@ interface LayoutPropsTypes extends ViewStyle {
   avoidBackButton?: boolean;
   isLoading?: boolean[];
   hideHeader?: boolean;
+  onKeyboardShow?:((keyboardShown:boolean)=>void)
   onPressMenuIcon?: () => void;
   onPressBellIcon?: () => void;
   onPressProfileIcon?: () => void;
@@ -59,6 +60,7 @@ const Layout: FC<LayoutPropsTypes> = ({
   //   navigateBack,
   onPressBackArrow,
   onPressLogoutButton,
+  onKeyboardShow,
   showsVerticalScrollIndicator,
   dashboard,
   title,
@@ -95,6 +97,9 @@ const Layout: FC<LayoutPropsTypes> = ({
       event => {
         setKeyboardOffset(event.endCoordinates.height);
         setIsKeyboardVisible(true);
+       if(onKeyboardShow){
+        onKeyboardShow(true);
+       }
       },
     );
 
@@ -103,6 +108,9 @@ const Layout: FC<LayoutPropsTypes> = ({
       () => {
         setKeyboardOffset(0);
         setIsKeyboardVisible(false);
+        if(onKeyboardShow){
+          onKeyboardShow(false);
+         }
       },
     );
 

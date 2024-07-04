@@ -86,14 +86,14 @@ type RenderTaskItemTypes = {
   index: number;
   question: string;
   renderSelection: JSX.Element;
-  isRequired:boolean
+  isRequired: boolean;
 };
 
 const RenderTaskItem: FC<RenderTaskItemTypes> = ({
   index,
   question,
   renderSelection,
-  isRequired
+  isRequired,
 }) => (
   <View
     style={{
@@ -120,9 +120,9 @@ const RenderTaskItem: FC<RenderTaskItemTypes> = ({
       </View>
     </View>
     <View style={{flex: 7}}>
-      <View style={{flexDirection:'row'}}>
-      <Text size="small3">{question}</Text>
-      {isRequired && <Text style={{color:'red',left:4}}>*</Text>}
+      <View style={{flexDirection: 'row'}}>
+        <Text size="small3">{question}</Text>
+        {isRequired && <Text style={{color: 'red', left: 4}}>*</Text>}
       </View>
       <View style={{marginVertical: 5}}>{renderSelection}</View>
     </View>
@@ -727,7 +727,7 @@ const EvaluationForm: FC<EvaluationFormScreenProps> = ({navigation, route}) => {
 
   const [answers, setAnswers] = useState<AnswerObject[]>([]);
   const [canSubmit, setCanSubmit] = useState(false);
-
+  const [isShownKeyboard, setIsShownKeyboard] = useState<boolean>(false);
   const {userData} = useAppSelector(state => state.auth);
   const {previewForm, submitPreviewFormResponse} = useAppSelector(
     state => state.forms,
@@ -755,7 +755,7 @@ const EvaluationForm: FC<EvaluationFormScreenProps> = ({navigation, route}) => {
       navigation.navigate('FormListAndResponses', {flowItem});
     }
   }, [submitPreviewFormResponse]);
-  
+
   useEffect(() => {
     validateSubmission();
   }, [answers]);
@@ -766,31 +766,29 @@ const EvaluationForm: FC<EvaluationFormScreenProps> = ({navigation, route}) => {
 
     previewForm?.dataList?.sections?.forEach(section => {
       section?.questions?.forEach(question => {
-        if(question.isRequired){
-        if (
-          !answers.some(ans => ans.questionId === question.questionId)
-        ) {
-          canProceed = false;
-        }
-
-        if (question.questionOptionId === 4) {
-          const requiredIndicatorsFilled = question.indicators.every(
-            indicator => {
-              return answers.some(
-                ans =>
-                  ans.questionId === question.questionId &&
-                  (ans.answer as ShortAnswer).rating?.find(
-                    ind => ind.indicatorId === indicator.indicatorId,
-                  ),
-              );
-            },
-          );
-
-          if (!requiredIndicatorsFilled) {
+        if (question.isRequired) {
+          if (!answers.some(ans => ans.questionId === question.questionId)) {
             canProceed = false;
           }
+
+          if (question.questionOptionId === 4) {
+            const requiredIndicatorsFilled = question.indicators.every(
+              indicator => {
+                return answers.some(
+                  ans =>
+                    ans.questionId === question.questionId &&
+                    (ans.answer as ShortAnswer).rating?.find(
+                      ind => ind.indicatorId === indicator.indicatorId,
+                    ),
+                );
+              },
+            );
+
+            if (!requiredIndicatorsFilled) {
+              canProceed = false;
+            }
+          }
         }
-      }
       });
     });
 
@@ -802,6 +800,9 @@ const EvaluationForm: FC<EvaluationFormScreenProps> = ({navigation, route}) => {
       <Layout
         overridePaddingHorizontal
         overridePaddingVertical
+        onKeyboardShow={keyboardShown => {
+          setIsShownKeyboard(keyboardShown);
+        }}
         style={{paddingHorizontal: 15, paddingVertical: 15}}
         title={flowDetailItem.formName}>
         {previewForm?.dataList?.sections?.map((item, index) => (
@@ -835,16 +836,18 @@ const EvaluationForm: FC<EvaluationFormScreenProps> = ({navigation, route}) => {
           </View>
         ))}
       </Layout>
-      <FooterWithButtons
-        isActiveProceedButton={canSubmit}
-        onPressProceedButton={onPressSubmit}
-        onPressCancelButton={() => {
-          setAnswers([]);
-        }}
-        proceedButtonText={'Submit'}
-        isActiveCancelButton={answers.length!==0}
-        cancelButtonText={'Clear Form'}
-      />
+      {!isShownKeyboard && (
+        <FooterWithButtons
+          isActiveProceedButton={canSubmit}
+          onPressProceedButton={onPressSubmit}
+          onPressCancelButton={() => {
+            setAnswers([]);
+          }}
+          proceedButtonText={'Submit'}
+          isActiveCancelButton={answers.length !== 0}
+          cancelButtonText={'Clear Form'}
+        />
+      )}
     </>
   );
 };

@@ -21,7 +21,7 @@ import {
   saveObservation,
 } from '../../redux/features/observationSlice';
 import {RatingStars, RenderProfileIcon} from '../dashboard/TeacherDashboard';
-import {FloatingButton} from './ObservationReportsMainPage';
+import {FloatingButton, RenderCompleteStatus} from './ObservationReportsMainPage';
 import FooterWithButtons from '../../components/FooterWithButtons';
 import {
   RenderFeedbackNote,
@@ -78,14 +78,35 @@ const ObservationReport: FC<ObservationReportScreenProps> = ({
       newObservation && navigation.navigate('ObservationReportsMainPage');
     }
   }, [saveObservationResponse]);
-  console.log('sssssssss',saveObservationResponse)
+
 
   const onPressCreateEvidenceCard = () => {
     navigation.navigate('CreateViewEvidenceCard');
   };
 
   const onPressSubmit = () => {
+
     if (newEvidenceCardsList) {
+      if(isPendingAndEvidenceCardCreated){
+        dispatch(
+          saveObservation([
+            {
+              observationDate:observationById?.observationDate ||'',
+              userGroupId: Number(observationById?.userGroupId),
+              userId: Number(observationById?.userId),
+              observationStatus: 'Completed',
+              feedbackDescription:observationById?.feedbackDescription || '',
+              loggedInUserName: userData.userName,
+              evidenceRequestList: convertEvidenceCardListToRequest(
+                newEvidenceCardsList,
+                userData.userName,
+              ),
+            },
+            observationById?.observationId
+          ]),
+        );
+  
+      }else{
       dispatch(
         saveObservation([
           {
@@ -105,10 +126,31 @@ const ObservationReport: FC<ObservationReportScreenProps> = ({
         ]),
       );
     }
+  }
   };
 
   const onPressSaveAsDraft = () => {
-    if (newEvidenceCardsList) {
+    if(newEvidenceCardsList){
+    if(isPendingAndEvidenceCardCreated){
+      dispatch(
+        saveObservation([
+          {
+            observationDate:observationById?.observationDate||'',
+            userGroupId: Number(observationById?.userGroupId),
+            userId: Number(observationById?.userId),
+            observationStatus: 'Pending',
+            feedbackDescription:observationById?.feedbackDescription || '',
+            loggedInUserName: userData.userName,
+            evidenceRequestList: convertEvidenceCardListToRequest(
+              newEvidenceCardsList,
+              userData.userName,
+            ),
+          },
+          observationById?.observationId
+        ]),
+      );
+
+    }else {
       dispatch(
         saveObservation([
           {
@@ -128,6 +170,7 @@ const ObservationReport: FC<ObservationReportScreenProps> = ({
         ]),
       );
     }
+  }
   };
 
   const showResponse: EvidenceResponse[] = observationById
@@ -141,6 +184,7 @@ const ObservationReport: FC<ObservationReportScreenProps> = ({
       return sum + item.averageRating;
     }, 0);
 
+    let isPendingAndEvidenceCardCreated:boolean=Boolean(observationById?.observationStatus==='Pending' && newEvidenceCardsList)
   return (
     <KeyboardAvoidingView
       style={{flex: 1}}
@@ -168,12 +212,13 @@ const ObservationReport: FC<ObservationReportScreenProps> = ({
               size={50}
             />
             <View style={{flex: 1, justifyContent: 'center', marginLeft: 10}}>
-              <View>
+              <View style={{flexDirection:'row',alignItems:'center'}}>
                 <Text fontVariant="bold" size="body2">
                   {observationById
-                    ? `${observationById?.userName} (${observationById?.userGroup})`
-                    : `${newObservation?.selectedUser.label} (${newObservation?.selectedUserGroup.label})`}
+                    ? `${observationById?.userName || ''} (${observationById?.userGroup || ''})`
+                    : `${newObservation?.selectedUser?.label || ''} (${newObservation?.selectedUserGroup.label || ''})`}
                 </Text>
+                    <RenderCompleteStatus style={{left:5}} status={observationById?.observationStatus}/>
               </View>
               <View style={{flexDirection: 'row', alignItems: 'center'}}>
                 <RatingStars
@@ -188,7 +233,7 @@ const ObservationReport: FC<ObservationReportScreenProps> = ({
                   }}
                 />
                 <Text style={{color: '#4E565F'}} size="small3">
-                  {observationById?.observationAvgRatings}/5
+                  {observationById?.observationAvgRatings || ''}/5
                 </Text>
               </View>
             </View>
@@ -205,8 +250,8 @@ const ObservationReport: FC<ObservationReportScreenProps> = ({
               }}>
               Evidence cards{' '}
               {observationById
-                ? `(${observationById?.evidenceResponseList?.length})`
-                : `(${newEvidenceCardsList?.length})`}
+                ? `(${observationById?.evidenceResponseList?.length || ''})`
+                : `(${newEvidenceCardsList?.length || ''})`}
             </Text>
           </View>
           <View style={{marginVertical: 15}}>
@@ -231,7 +276,7 @@ const ObservationReport: FC<ObservationReportScreenProps> = ({
           )}
         </View>
       </Layout>
-      {newObservation || observationById?.observationStatus==='Pending' ? (
+      {newObservation || isPendingAndEvidenceCardCreated ? (
         <View>
           <FloatingButton
             icon="edit_icon"
