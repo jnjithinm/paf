@@ -760,6 +760,7 @@ const EvaluationForm: FC<EvaluationFormScreenProps> = ({navigation, route}) => {
     validateSubmission();
   }, [answers,previewForm]);
 
+  console.log("answers====",answers)
   // Validate submission logic
   const validateSubmission = () => {
     let canProceed = true;
@@ -773,8 +774,10 @@ const EvaluationForm: FC<EvaluationFormScreenProps> = ({navigation, route}) => {
           if (question.questionOptionId === 4) {
             const requiredIndicatorsFilled = question.indicators.every(
               indicator => {
+            
                 return answers.some(
                   ans =>
+      
                     ans.questionId === question.questionId &&
                     (ans.answer as ShortAnswer).rating?.find(
                       ind => ind.indicatorId === indicator.indicatorId,
