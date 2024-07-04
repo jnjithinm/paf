@@ -117,7 +117,7 @@ type RenderActiveStatusTypes = {
   isActive: boolean;
   style?: ViewStyle;
 };
-const RenderActiveStatus: FC<RenderActiveStatusTypes> = ({isActive, style}) => (
+export const RenderActiveStatus: FC<RenderActiveStatusTypes> = ({isActive, style}) => (
   <View
     style={{
       ...style,

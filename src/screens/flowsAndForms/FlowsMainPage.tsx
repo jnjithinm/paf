@@ -7,10 +7,7 @@ import moment from 'moment';
 import Layout from '../../components/Layout';
 import Tab from '../../components/Tab';
 import {useAppDispatch, useAppSelector} from '../../redux/store';
-import {RubricItem, deleteRubric} from '../../redux/features/rubricSlice';
-
 import {normaliseFont} from '../../utils/helpers/responsiveHelpers';
-import colors from '../../config/colors';
 import Icon from '../../components/Icon';
 import Text from '../../components/Text';
 import {
@@ -24,6 +21,7 @@ import {styles} from '../../components/RubricListModal';
 import {FlowsAndFormsStackParamList} from '../../navigation/FlowsAndFormsStack';
 import SearchWithFilter from '../../components/SearchWithFilter';
 import {FilterObject} from '../../components/Calendar';
+import {RenderEmptyPlaceholder} from '../observation/ObservationReportsMainPage';
 
 type FlowsMainPageNavigationProp = StackNavigationProp<
   FlowsAndFormsStackParamList,
@@ -124,7 +122,7 @@ const FlowsItem: React.FC<FlowsItemProps> = ({
 };
 
 const FlowsMainPage: FC<FlowsMainPageScreenProps> = ({navigation, route}) => {
-  const [search,setSearch]=useState<string>('');
+  const [search, setSearch] = useState<string>('');
 
   const {allFlows} = useAppSelector(state => state.flows);
   const {userData, isAdmin} = useAppSelector(state => state.auth);
@@ -146,29 +144,6 @@ const FlowsMainPage: FC<FlowsMainPageScreenProps> = ({navigation, route}) => {
     );
   }, []);
 
-  useEffect(() => {
-    if (search.trim() !== '') {
-      const timer = setTimeout(() => {
-        dispatch(
-          getAllFlows([
-            userData.userName,
-            userData.id,
-            {
-              page: 0,
-              size: 15,
-              type: 'all',
-              search,
-            },
-          ]),
-        );
-      }, 500);
-
-      return () => {
-        clearTimeout(timer);
-      };
-    }
-  }, [search, dispatch, userData.userName, userData.id]);
-
   const onPressDeleteFlow = (item: FlowItem) => {
     dispatch(
       deleteFlow({
@@ -179,6 +154,7 @@ const FlowsMainPage: FC<FlowsMainPageScreenProps> = ({navigation, route}) => {
     );
   };
 
+  console.log('search', search);
   return (
     <>
       <Layout
@@ -205,27 +181,39 @@ const FlowsMainPage: FC<FlowsMainPageScreenProps> = ({navigation, route}) => {
 
           <SearchWithFilter
             filterNotNeeded
-            onTextChange={(text)=>{setSearch(text)}}
-            onProceed={()=>{}}
+            onTextChange={text => {
+              setSearch(text);
+            }}
+            onProceed={() => {}}
           />
 
-          {allFlows?.dataList?.map(item => (
-            <FlowsItem
-              active={item.status}
-              createdBy={item.createdBy}
-              createdDate={moment(item.createdDate).format('DD/MM/YYYY')}
-              title={item.flowName}
-              userCount={item.responses}
-              onDelete={() => {
-                onPressDeleteFlow(item);
-              }}
-              key={item.flowId}
-              onPress={() => {
-                navigation.navigate('FormListAndResponses', {flowItem: item});
-              }}
-              isAdmin={isAdmin}
-            />
-          ))}
+          {allFlows?.dataList && allFlows?.dataList?.length > 0 ? (
+            allFlows?.dataList
+              ?.filter(item =>
+                item.flowName
+                  ?.toLocaleLowerCase()
+                  ?.includes(search?.toLocaleLowerCase()),
+              )
+              ?.map((item, index) => (
+                <FlowsItem
+                  active={item.status}
+                  createdBy={item.createdBy}
+                  createdDate={moment(item.createdDate).format('DD/MM/YYYY')}
+                  title={item.flowName}
+                  userCount={item.responses}
+                  onDelete={() => {
+                    onPressDeleteFlow(item);
+                  }}
+                  key={item.flowId}
+                  onPress={() => {
+                    navigation.navigate('FormList', {flowItem: item});
+                  }}
+                  isAdmin={isAdmin}
+                />
+              ))
+          ) : (
+            <RenderEmptyPlaceholder />
+          )}
         </View>
       </Layout>
     </>

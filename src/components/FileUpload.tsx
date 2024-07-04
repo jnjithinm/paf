@@ -86,23 +86,32 @@ const zipFiles = async (filePaths: string | string[], targetPath: string) => {
 
 const downloadFile = async (sourceUri: string, fileName: string) => {
   const destPath = `${RNFS.DocumentDirectoryPath}/${fileName}`;
-  const res = await RNFetchBlob.config({
-    path: destPath,
-  }).fetch('GET', sourceUri);
-
-  if (res.respInfo.status === 200) {
-    return destPath;
-  } else {
-    throw new Error(`Failed to download file: ${sourceUri}`);
+  console.log(`Downloading file from ${sourceUri} to ${destPath}`);
+  try {
+    const res = await RNFetchBlob.config({ path: destPath }).fetch('GET', sourceUri);
+    if (res.respInfo.status === 200) {
+      console.log("Download successful:", destPath);
+      return destPath;
+    } else {
+      throw new Error(`Failed to download file: ${sourceUri} - Status: ${res.respInfo.status}`);
+    }
+  } catch (error) {
+    console.error(`Error downloading file: ${error}`);
+    throw error;
   }
 };
 
 const copyLocalFile = async (sourceUri: string, fileName: string) => {
   const destPath = `${RNFS.DocumentDirectoryPath}/${fileName}`;
-  await RNFS.copyFile(sourceUri, destPath);
-  return destPath;
+  console.log(`Copying local file from ${sourceUri} to ${destPath}`);
+  try {
+    await RNFS.copyFile(sourceUri, destPath);
+    return destPath;
+  } catch (error) {
+    console.error(`Error copying local file: ${error}`);
+    throw error;
+  }
 };
-
 const createZipFile = async (
   files: FileObject[],
 ): Promise<FileObject | undefined> => {
@@ -117,14 +126,10 @@ const createZipFile = async (
       const fileName = result.name;
       let filePath;
       if (sourceUri.startsWith('http://') || sourceUri.startsWith('https://')) {
-        // filePath = await downloadFile(sourceUri, fileName);
-        break;
+        filePath = await downloadFile(sourceUri, fileName);
       } else {
         filePath = await copyLocalFile(sourceUri, fileName);
       }
-
-      // const destPath = `${RNFS.DocumentDirectoryPath}/${fileName}`;
-      // await RNFS.copyFile(sourceUri, destPath);
       filePaths.push(filePath);
     }
 
@@ -183,7 +188,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
         if (result.size && result.size > 20 * 1024 * 1024) {
           dispatch(
             setObservationShowMessage({
-              status: 'Error',
+              status: 'Warning',
               message: `File ${result.name} is larger than 20 MB`,
             }),
           );
@@ -197,13 +202,9 @@ const FileUpload: React.FC<FileUploadProps> = ({
           });
         }
       }
-      const zipFile = await createZipFile([...newFiles, ...files]);
-      if (zipFile) {
         if(onSelectFile){
         onSelectFile();
         }
-        setZipFile(zipFile);
-      }
       setFiles(prevFiles => [...prevFiles, ...newFiles]);
       dispatch(setLoading(false));
     } catch (err) {
@@ -211,12 +212,20 @@ const FileUpload: React.FC<FileUploadProps> = ({
       console.error('Error picking files:', err);
     }
   };
+
+  useEffect(()=>{
+    const performZipFileCreation=async()=>{
+      const zip = await createZipFile(files);
+      setZipFile(zip);
+    }
+   performZipFileCreation();
+  },[files]);
+
   const handleRemoveItem = async (item: FileObject) => {
     const updatedFiles = files.filter(file => file.uri !== item.uri);
     try {
       dispatch(setLoading(true));
-      const zip = await createZipFile(updatedFiles);
-      setZipFile(zip);
+
       setFiles(updatedFiles);
       onPressDelete(item)
       dispatch(setLoading(false));

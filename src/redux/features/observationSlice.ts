@@ -177,6 +177,9 @@ interface DeleteAttachmentsRequest {
   loggedInUserName: string;
 }
 
+
+
+
 export const setObservationShowMessage = createAction<ErrorStatusObject | null>(
   'SET_OBSERVATION_SHOW_MESSAGE',
 );

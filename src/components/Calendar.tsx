@@ -15,6 +15,7 @@ import {Dropdown} from 'react-native-element-dropdown';
 import {normaliseDesigns} from '../utils/helpers/responsiveHelpers';
 import Button from './Button';
 import RatingInput from './RatingInput';
+import { ItemType } from '../config/types';
 
 const generateCalendar = (
   month: number | undefined,
@@ -143,14 +144,15 @@ const dateFilterOptions = [
 export type DateFilterOption = (typeof dateFilterOptions)[number];
 
 export type FilterObject = {
-  rating: number | undefined;
-  dateFilterOption: DateFilterOption | undefined;
-  date:
-    | {
+  rating?: number ;
+  dateFilterOption?: DateFilterOption;
+  date?:
+    {
         startDate: string;
         endDate: string;
       }
-    | undefined;
+    ;
+  selectedItem?:ItemType
 };
 
 interface CalendarPropsTypes {

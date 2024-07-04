@@ -13,6 +13,7 @@ import RubricIndicatorList from '../../components/RubricIndicatorList';
 import SearchWithFilter from '../../components/SearchWithFilter';
 import { FilterObject } from '../../components/Calendar';
 import { RubricStackParamList } from '../../navigation/RubricStack';
+import { RenderEmptyPlaceholder } from '../observation/ObservationReportsMainPage';
 
 type RubricEvaluationIndicatorListNavigationProp = StackNavigationProp<
   RubricStackParamList,
@@ -69,7 +70,7 @@ const RubricEvaluationIndicatorList: FC<
             throw new Error('Function not implemented.');
           } }        />
         <View style={{marginVertical: 10}}>
-          {rubricData?.dataList.indicators?.map(item => (
+          {rubricData?.dataList?.indicators && rubricData?.dataList?.indicators?.length>0 ?rubricData?.dataList?.indicators?.map(item => (
             <RubricIndicatorList
               active={item.status}
               createdBy={item.createdBy}
@@ -86,7 +87,7 @@ const RubricEvaluationIndicatorList: FC<
                 });
               }}
             />
-          ))}
+          )):<RenderEmptyPlaceholder/>}
         </View>
       </View>
     </Layout>

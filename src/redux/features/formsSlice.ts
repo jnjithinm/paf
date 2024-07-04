@@ -20,6 +20,13 @@ export interface IndicatorIndividualResponse {
   avgRating: number;
 }
 
+export interface RubricWiseResponse {
+  indicatorId: number;
+  indicatorName: string;
+  responseDate:string;
+  avgRating: number;
+}
+
 export interface Question {
   questionId: number;
   questionText: string;
@@ -31,6 +38,7 @@ export interface QuestionWiseResponse {
   userName: string;
   responseValues: string;
   responseDate: string;
+  avgRating?:number
 }
 
 interface QuestionWiseResponses {
@@ -90,6 +98,7 @@ interface FormDetails {
   questionWiseResponses: QuestionWiseResponses;
   questionList: Question[];
   individualResponses: IndividualResponse[];
+  rubricWiseResponse:RubricWiseResponse[];
 }
 
 interface GetFormByIdResponse {
@@ -232,6 +241,41 @@ interface DeleteFormResponse{
   status: number;
 }
 
+interface UserWiseResponse {
+  userId: number;
+  name: string;
+  userName: string;
+  responseValues: string;
+  userRating: number;
+  questionId: number;
+  responseDate: string;
+}
+
+export interface QuestionRatingQuestionWiseResponse {
+  questionId: number;
+  questionText: string;
+  questionAvgRating: number;
+  userWiseResponses: UserWiseResponse[];
+}
+
+
+
+interface GetQuestionRatingByIndicatorIdResponse {
+  payload: {
+    message: string;
+    dataList: {
+      indicatorId: number;
+      indicatorName: string;
+      indicatorAvgRating: number;
+      responseDate: string;
+      questionWiseResponses: QuestionRatingQuestionWiseResponse[];
+    };
+  }
+  status: number;
+}
+
+type GetQuestionRatingByIndicatorIdResponsePayload = GetQuestionRatingByIndicatorIdResponse['payload'];
+
 export const setFormsShowMessage = createAction<ErrorStatusObject | null>(
   'SET_FORMS_SHOW_MESSAGE',
 );
@@ -242,6 +286,10 @@ export const resetAssignFormResponse = createAction<void>(
 
 export const resetDeleteFormResponse = createAction<void>(
   'RESET_DELETE_FORM_RESPONSE',
+);
+
+export const resetPreviewFormResponse = createAction<void>(
+  'RESET_PREVIEW_FORM_RESPONSE',
 );
 
 export const getFormById = createAsyncThunk<
@@ -265,6 +313,28 @@ export const getFormById = createAsyncThunk<
   },
 );
 
+export const getQuestionRatingByIndicatorId = createAsyncThunk<
+GetQuestionRatingByIndicatorIdResponse,
+  [number, number,number],
+  {rejectValue: ErrorResponse}
+>(
+  'forms/getQuestionRatingByIndicatorId',
+  async ([indicatorId, formId, flowId], {rejectWithValue, dispatch}) => {
+    try {
+      dispatch(setLoading(true));
+      const response = await api.get(
+        endPoints.GET_QUESTION_RATING_BY_INDICATOR_ID+indicatorId + `?formId=${formId}&flowId=${flowId}`,
+      );
+      return response.data as GetQuestionRatingByIndicatorIdResponse;
+    } catch (error: any) {
+      return rejectWithValue(error.response.data);
+    } finally {
+      dispatch(setLoading(false));
+    }
+  },
+);
+
+
 export const getPreviewForm = createAsyncThunk<
   GetPreviewFormResponse,
   number,
@@ -273,6 +343,7 @@ export const getPreviewForm = createAsyncThunk<
   try {
     dispatch(setLoading(true));
     const response = await api.get(endPoints.GET_PREVIEW_FORM + formId);
+
     return response.data as GetPreviewFormResponse;
   } catch (error: any) {
     return rejectWithValue(error.response.data);
@@ -369,6 +440,7 @@ interface InitialState {
   submitPreviewFormResponse: SubmitPreviewFormResponsePayload | null;
   acceptingFormResponses: AcceptingFormResponsesResponsePayload | null;
   assignFormResponse: AssignFormResponsePayload | null;
+  questionRatingByIndicatorId:GetQuestionRatingByIndicatorIdResponsePayload|null;
   deleteFormResponse:DeleteFormResponse|null;
   formsShowMessage: ErrorStatusObject | null;
   errorMessage: string;
@@ -382,6 +454,7 @@ const initialState: InitialState = {
   deleteFormResponse:null,
   formsShowMessage: null,
   assignFormResponse: null,
+  questionRatingByIndicatorId:null,
   errorMessage: '',
 };
 
@@ -427,7 +500,7 @@ const formsSlice = createSlice({
         };
       })
       .addCase(submitPreviewForm.pending, state => {
-        // state.isLoading = true;
+        state.submitPreviewFormResponse=null;
       })
       .addCase(submitPreviewForm.fulfilled, (state, action) => {
         state.formsShowMessage = {
@@ -437,18 +510,37 @@ const formsSlice = createSlice({
         state.submitPreviewFormResponse = action.payload.payload;
       })
       .addCase(submitPreviewForm.rejected, (state, action) => {
+        state.submitPreviewFormResponse=null;
         state.formsShowMessage = {
           status: 'Error',
           message: action?.payload?.error?.errorMessage?.toString(),
         };
       })
       .addCase(acceptingFormResponses.pending, state => {
-        // state.isLoading = true;
+        state.acceptingFormResponses=null;
       })
       .addCase(acceptingFormResponses.fulfilled, (state, action) => {
+        state.formsShowMessage = {
+          status: 'Success',
+          message: action?.payload?.payload.message?.toString(),
+        };
         state.acceptingFormResponses = action.payload.payload;
       })
       .addCase(acceptingFormResponses.rejected, (state, action) => {
+        state.acceptingFormResponses=null;
+        state.formsShowMessage = {
+          status: 'Error',
+          message: action?.payload?.error?.errorMessage?.toString(),
+        };
+      })
+      .addCase(getQuestionRatingByIndicatorId.pending, state => {
+        state.questionRatingByIndicatorId = null;
+      })
+      .addCase(getQuestionRatingByIndicatorId.fulfilled, (state, action) => {
+        state.questionRatingByIndicatorId = action.payload.payload;
+      })
+      .addCase(getQuestionRatingByIndicatorId.rejected, (state, action) => {
+        state.questionRatingByIndicatorId =null;
         state.formsShowMessage = {
           status: 'Error',
           message: action?.payload?.error?.errorMessage?.toString(),

@@ -7,6 +7,7 @@ import {
   QuestionWiseResponse,
 } from '../../../redux/features/formsSlice';
 import moment from 'moment';
+import {RenderEmptyPlaceholder} from '../../observation/ObservationReportsMainPage';
 
 type RenderQuestionsTypes = {
   index: number;
@@ -29,7 +30,7 @@ const RenderQuestions: FC<RenderQuestionsTypes> = ({
       borderColor: '#F4C24A',
       flexDirection: 'row',
       borderRadius: 10,
-      marginVertical:5
+      marginVertical: 5,
     }}
     disabled={hideBorder}
     onPress={() => {
@@ -45,7 +46,7 @@ const RenderQuestions: FC<RenderQuestionsTypes> = ({
         // height: '50%',
         alignItems: 'center',
       }}>
-      <Text style={{flex: 1}}>{index}.</Text>
+      <Text style={{flex: 1}}>{index + 1}.</Text>
       <View style={{flex: 0.75}}>
         <Icon name="arrow_narrow_right" />
       </View>
@@ -66,15 +67,19 @@ export const QuestionWiseMainPageRenderal: FC<
   QuestionWiseMainPageRenderalTypes
 > = ({onPressItem, questionList}) => (
   <View>
-    {questionList.map(item => (
-      <RenderQuestions
-        index={item.questionId}
-        question={item.questionText}
-        onPressItem={() => {
-          onPressItem(item);
-        }}
-      />
-    ))}
+    {questionList.length > 0 ? (
+      questionList.map((item, index) => (
+        <RenderQuestions
+          index={index}
+          question={item.questionText}
+          onPressItem={() => {
+            onPressItem(item);
+          }}
+        />
+      ))
+    ) : (
+      <RenderEmptyPlaceholder />
+    )}
   </View>
 );
 
@@ -82,7 +87,7 @@ type QuestionResponseTileTypes = {
   response: string;
   submittedBy: string;
   submittedOn: string;
-  ratings: string;
+  ratings?: number;
 };
 
 const QuestionResponseTile: FC<QuestionResponseTileTypes> = ({
@@ -106,7 +111,6 @@ const QuestionResponseTile: FC<QuestionResponseTileTypes> = ({
     <View
       style={{
         flexDirection: 'row',
-        justifyContent: 'space-between',
         alignItems: 'center',
         marginTop: 10,
         width: '80%',
@@ -127,55 +131,72 @@ const QuestionResponseTile: FC<QuestionResponseTileTypes> = ({
           {submittedOn}
         </Text>
       </View>
-      <View>
-        <Text size="small1" style={{color: '#4E565F'}}>
-          Ratings
-        </Text>
-        <View
-          style={{flexDirection: 'row', alignItems: 'center', marginTop: 2}}>
-          <Text size="small3" style={{color: '#1F2933'}}>
-            {ratings}
+      {ratings && (
+        <View>
+          <Text size="small1" style={{color: '#4E565F'}}>
+            Ratings
           </Text>
-          <Icon name="rating_star_display" />
+          <View
+            style={{flexDirection: 'row', alignItems: 'center', marginTop: 2}}>
+            <Text size="small3" style={{color: '#1F2933'}}>
+              {ratings}
+            </Text>
+            <Icon name="rating_star_display" />
+          </View>
         </View>
-      </View>
+      )}
     </View>
   </View>
 );
 
 type QuestionWiseDescriptionRenderalTypes = {
   question: Question | null;
-  questionResponses: QuestionWiseResponse[] | undefined;
+  questionResponses: QuestionWiseResponse[];
 };
 
 //IndividualMainScreenRenderals
 export const QuestionWiseDescriptionRenderal: FC<
   QuestionWiseDescriptionRenderalTypes
-> = ({question, questionResponses}) => (
-  <View>
-    <RenderQuestions
-      index={question?.questionId || 0}
-      question={question?.questionText || ''}
-      hideBorder
-    />
-    <View style={{flexDirection: 'row', alignItems: 'center'}}>
-      <Text>Responses</Text>
-      <Text style={{color: '#4E565F', marginLeft: 5, marginRight: 3}}>
-        (4.5
-      </Text>
-      <Icon name="rating_star_display" />
-      <Text style={{color: '#4E565F'}}>)</Text>
+> = ({question, questionResponses}) => {
+  const totalAvgRating = questionResponses?.reduce(
+    (sum, item) => sum + (item?.avgRating || 0),
+    0,
+  );
+
+  const averageRating = questionResponses?.length
+    ? totalAvgRating / questionResponses.length
+    : 0;
+
+  return (
+    <View>
+      <RenderQuestions
+        index={question?.questionId || 0}
+        question={question?.questionText || ''}
+        hideBorder
+      />
+      {questionResponses[0]?.avgRating && (
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          <Text>Responses</Text>
+          <Text style={{color: '#4E565F', marginLeft: 5, marginRight: 3}}>
+            ({averageRating}
+          </Text>
+          <Icon name="rating_star_display" />
+          <Text style={{color: '#4E565F'}}>)</Text>
+        </View>
+      )}
+      <View style={{marginTop: 20}}>
+        {questionResponses?.map((item, index) => (
+          <QuestionResponseTile
+            key={item.name}
+            response={item.responseValues}
+            submittedBy={item.name}
+            submittedOn={moment(new Date(item.responseDate)).format(
+              'DD/MM/YYYY',
+            )}
+            ratings={item.avgRating}
+          />
+        ))}
+      </View>
     </View>
-    <View style={{marginTop: 20}}>
-      {questionResponses?.map(item => (
-        <QuestionResponseTile
-          key={item.name}
-          response={item.responseValues}
-          submittedBy={item.name}
-          submittedOn={moment(new Date(item.responseDate)).format('DD/MM/YYYY')}
-          ratings={'4.5'}
-        />
-      ))}
-    </View>
-  </View>
-);
+  );
+};

@@ -7,12 +7,12 @@ import {
 import FlowsMainPage from '../screens/flowsAndForms/FlowsMainPage';
 import { FlowDetailItem, FlowItem } from '../redux/features/flowsSlice';
 import EvaluationForm from '../screens/flowsAndForms/EvaluationForm';
-import FormListAndResponses from '../screens/flowsAndForms/FormListAndResponses';
 import FormResponses from '../screens/flowsAndForms/FormResponses';
+import FormList from '../screens/flowsAndForms/FormList';
 
 export type FlowsAndFormsStackParamList = {
   FlowsMainPage: undefined;
-  FormListAndResponses: { flowItem: FlowItem };
+  FormList: { flowItem: FlowItem };
   FormResponses: { flowDetailItem: FlowDetailItem };
   EvaluationForm: { flowDetailItem: FlowDetailItem; flowItem: FlowItem };
 };
@@ -49,8 +49,8 @@ const FlowsAndFormsStack = () => {
         component={FlowsMainPage}
       />
       <FlowsAndFormsStackTab.Screen
-        name="FormListAndResponses"
-        component={FormListAndResponses}
+        name="FormList"
+        component={FormList}
       />
       <FlowsAndFormsStackTab.Screen
         name="FormResponses"

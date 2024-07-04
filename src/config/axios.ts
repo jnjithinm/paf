@@ -1,12 +1,12 @@
 import axios, {AxiosInstance, AxiosError} from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import endPoints from './endPoints';
 import { getToken } from '../utils/functions/localStorageOperations';
 
 
 const api: AxiosInstance = axios.create({
   baseURL: 'http://65.1.32.205:8080',
-  timeout: 5000,
+  timeout: 100,
 });
 
 api.interceptors.request.use(

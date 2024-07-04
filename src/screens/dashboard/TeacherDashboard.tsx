@@ -544,6 +544,7 @@ const TeacherDashboard: FC<TeacherDashboardScreenProps> = ({
           onProceed={filter => {
             setFilter(filter);
           }}
+        filterNotNeeded
         />
         <View style={{marginTop: 10}}>
           <RenderTitleWithLink
@@ -597,7 +598,6 @@ const TeacherDashboard: FC<TeacherDashboardScreenProps> = ({
                 reportedBy={item.reportedBy}
                 creationDate=''
                 creationTime=''
-                
                 status='Completed'
                 disabled
               />

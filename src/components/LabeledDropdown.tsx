@@ -21,6 +21,9 @@ interface DropdownProps {
   halfSize?: boolean;
   oneThird?: boolean;
   placeHolder?: string;
+  placeHolderStyle?:TextStyle;
+  dropdownStyle?:ViewStyle;
+  disableSelection?:boolean
   zIndex?: number;
   dropDownDirection?: 'auto' | 'top' | 'bottom';
   searchable?: boolean;
@@ -42,10 +45,13 @@ const LabelDropdown: FC<DropdownProps> = ({
   mandatory,
   zIndex,
   dropDownDirection,
+  dropdownStyle,
+  disableSelection,
   searchable,
   placeHolder,
   style,
-  textStyle
+  textStyle,
+  placeHolderStyle
 }) => {
   function isDropdownItem(item: any): item is ItemType {
     return typeof item === 'object' && item !== null;
@@ -83,7 +89,7 @@ const LabelDropdown: FC<DropdownProps> = ({
             {
               backgroundColor: disabled ? '#FDF0E3' : colors.backgroundColor,
               borderColor: disabled ? '#CBD2D9' : '#CBD2D9',
-
+              ...dropdownStyle
             },
           ]}
           selectedTextStyle={[styles.selectedTextStyle,{...textStyle}]}
@@ -92,18 +98,21 @@ const LabelDropdown: FC<DropdownProps> = ({
           data={options}
           disable={disabled}
           search={searchable}
+
           maxHeight={300}
           labelField="label"
           valueField="value"
           placeholder={placeHolder}
-          placeholderStyle={{color:'#ABB4BD'}}
+          placeholderStyle={{color:'#ABB4BD',...placeHolderStyle}}
           searchPlaceholder="Search..."
           value={defaultValue}
           onChange={item => {
+            if(!disableSelection){
             onChangeItem && onChangeItem(item);
             setIsChanged && setIsChanged(true);
             setSelectedItem && setSelectedItem(item);
             setSelectedValue && setSelectedValue(item.value);
+            }
           }}
           containerStyle={[
             {

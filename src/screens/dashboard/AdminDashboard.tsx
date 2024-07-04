@@ -1,12 +1,9 @@
-import React, {FC, useEffect, useState} from 'react';
+import React, {FC, useState} from 'react';
 import {
-  Image,
-  TextInput,
   TouchableOpacity,
   View,
-  ViewStyle,
 } from 'react-native';
-import {RouteProp, useFocusEffect} from '@react-navigation/native';
+import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {Drawer} from 'react-native-drawer-layout';
 
@@ -15,7 +12,6 @@ import Icon, {IconTypes} from '../../components/Icon';
 import Text from '../../components/Text';
 import DrawerContent from '../../components/DrawerContent';
 import {useAppDispatch, useAppSelector} from '../../redux/store';
-import {getDashboardDetailsAndObservationList} from '../../redux/features/observationSlice';
 import {navigate} from '../../utils/helpers/navigationHelpers';
 import {MainStackParamList} from '../../navigation/MainStack';
 

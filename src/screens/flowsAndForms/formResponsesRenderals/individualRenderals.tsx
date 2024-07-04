@@ -16,8 +16,9 @@ import RatingInput from '../../../components/RatingInput';
 import {useAppDispatch, useAppSelector} from '../../../redux/store';
 import {deleteForm} from '../../../redux/features/formsSlice';
 import {FlowDetailItem} from '../../../redux/features/flowsSlice';
+import {RenderEmptyPlaceholder} from '../../observation/ObservationReportsMainPage';
 
-type AdminIndividualTileTypes = {
+type IndividualTileTypes = {
   flowDetailItem: FlowDetailItem;
   id: number;
   rating: number;
@@ -30,7 +31,7 @@ type AdminIndividualTileTypes = {
   style?: ViewStyle;
 };
 
-const AdminIndividualTile: FC<AdminIndividualTileTypes> = ({
+const IndividualTile: FC<IndividualTileTypes> = ({
   flowDetailItem,
   id,
   rating,
@@ -131,11 +132,11 @@ const AdminIndividualTile: FC<AdminIndividualTileTypes> = ({
             </Text>
             <Text size="small3"> {questionsAnswered}</Text>
           </View>
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={{alignSelf: 'flex-end'}}
             onPress={onPressDelete}>
             <Icon name="trash_icon" />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
       </View>
     </TouchableOpacity>
@@ -154,25 +155,29 @@ export const IndividualMainPageRenderal: FC<
   IndividualMainPageRenderalTypes
 > = ({onPress, individualResponse, flowDetailItem, totalQuestion}) => (
   <View>
-    {individualResponse.map(item => (
-      <AdminIndividualTile
-        rating={item.questionAvgRating}
-        creationDate={moment(item.responses[0].responseDate).format(
-          'DD/MM/YYYY',
-        )}
-        onPress={() => {
-          onPress(item);
-          // navigation.navigate('AdminFormList');
-        }}
-        flowDetailItem={flowDetailItem}
-        id={item.userId}
-        key={item.userId}
-        name={item.name}
-        image={''}
-        questionsAnswered={`${item.responses.length}/${totalQuestion}`}
-        onPressDelete={() => {}}
-      />
-    ))}
+    {individualResponse.length > 0 ? (
+      individualResponse.map(item => (
+        <IndividualTile
+          rating={item.questionAvgRating}
+          creationDate={moment(item.responses[0].responseDate).format(
+            'DD/MM/YYYY',
+          )}
+          onPress={() => {
+            onPress(item);
+            // navigation.navigate('AdminFormList');
+          }}
+          flowDetailItem={flowDetailItem}
+          id={item.userId}
+          key={item.userId}
+          name={item.name}
+          image={''}
+          questionsAnswered={`${item.responses.length}/${totalQuestion}`}
+          onPressDelete={() => {}}
+        />
+      ))
+    ) : (
+      <RenderEmptyPlaceholder />
+    )}
   </View>
 );
 
@@ -235,17 +240,16 @@ const RenderQuestionAndAnswer: FC<RenderQuestionAndAnswerTypes> = ({
     {indicators &&
       indicators.map((item, index) => (
         <View>
-          <Text size='small2'>{item.domainName}</Text>
-        <RatingInput
-          disabled
-          rating={item.avgRating || 0}
-          label={''}
-          size={15}
-          style={{marginTop:4}}
-          
-          key={index}
-          onChangeRating={()=>{}}
-        />
+          <Text size="small2">{item.domainName}</Text>
+          <RatingInput
+            disabled
+            rating={item.avgRating || 0}
+            label={''}
+            size={15}
+            style={{marginTop: 4}}
+            key={index}
+            onChangeRating={() => {}}
+          />
         </View>
       ))}
   </View>
@@ -261,60 +265,66 @@ export const IndividualDescriptionRenderal: FC<
   IndividualDescriptionRenderalTypes
 > = ({individualResponse, totalQuestion}) => (
   <View>
-    <View
-      style={{
-        backgroundColor: '#FCEBC5',
-        padding: 15,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        borderRadius: 10,
-        width: '100%',
-        height: normaliseDesigns(105),
-        marginTop: 5,
-        marginBottom: 10,
-      }}>
-      <View style={{justifyContent: 'space-between'}}>
-        <Text fontVariant="bold">{individualResponse?.name}</Text>
-
-        <RatingInput
-          rating={individualResponse?.questionAvgRating || 0}
-          label={''}
-          size={15}
-          onChangeRating={() => {}}
-        />
-
+    {individualResponse ? (
+      <>
         <View
           style={{
-            backgroundColor: '#FEF8EC',
-            padding: 10,
-            borderRadius: 10,
-            alignItems: 'center',
-            justifyContent: 'center',
+            backgroundColor: '#FCEBC5',
+            padding: 15,
             flexDirection: 'row',
+            justifyContent: 'space-between',
+            borderRadius: 10,
+            width: '100%',
+            height: normaliseDesigns(105),
+            marginTop: 5,
+            marginBottom: 10,
           }}>
-          <Text fontVariant="bold">
-            {individualResponse?.responses?.length}/{totalQuestion}{' '}
-          </Text>
-          <Text size="small3" style={{marginLeft: 5, color: '#1F2933'}}>
-            Questions answered
-          </Text>
+          <View style={{justifyContent: 'space-between'}}>
+            <Text fontVariant="bold">{individualResponse?.name}</Text>
+
+            <RatingInput
+              rating={individualResponse?.questionAvgRating || 0}
+              label={''}
+              size={15}
+              onChangeRating={() => {}}
+            />
+
+            <View
+              style={{
+                backgroundColor: '#FEF8EC',
+                padding: 10,
+                borderRadius: 10,
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexDirection: 'row',
+              }}>
+              <Text fontVariant="bold">
+                {individualResponse?.responses?.length}/{totalQuestion}{' '}
+              </Text>
+              <Text size="small3" style={{marginLeft: 5, color: '#1F2933'}}>
+                Questions answered
+              </Text>
+            </View>
+          </View>
+          <Image
+            name="response_card_icon"
+            size={0.9}
+            style={{alignSelf: 'flex-end'}}
+          />
         </View>
-      </View>
-      <Image
-        name="response_card_icon"
-        size={0.9}
-        style={{alignSelf: 'flex-end'}}
-      />
-    </View>
-    {individualResponse?.responses.map((item, index) => (
-      <RenderQuestionAndAnswer
-        index={item.questionId}
-        question={item.questionText}
-        answer={item.responseValues}
-        rating={item.avgRating}
-        indicators={item.indicators}
-        key={index}
-      />
-    ))}
+        {individualResponse?.responses.map((item, index) => (
+          <RenderQuestionAndAnswer
+            index={item.questionId}
+            question={item.questionText}
+            answer={item.responseValues}
+            rating={item.avgRating}
+            indicators={item.indicators}
+            key={index}
+          />
+        ))}
+      </>
+    ) : (
+      <RenderEmptyPlaceholder />
+    )}
   </View>
 );

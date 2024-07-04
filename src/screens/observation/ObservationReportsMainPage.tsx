@@ -1,10 +1,5 @@
 import React, {FC, useEffect, useState} from 'react';
-import {
-  Platform,
-  TouchableOpacity,
-  View,
-  ViewStyle,
-} from 'react-native';
+import {Platform, TouchableOpacity, View, ViewStyle} from 'react-native';
 import {RouteProp, useFocusEffect} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 
@@ -28,18 +23,19 @@ import {
   saveObservationId,
 } from '../../redux/features/observationSlice';
 import SearchWithFilter from '../../components/SearchWithFilter';
-import { ItemType } from '../../config/types';
-import { normaliseDesigns } from '../../utils/helpers/responsiveHelpers';
-import { ObservationStackParamList } from '../../navigation/ObservationStack';
+import {ItemType} from '../../config/types';
+import {normaliseDesigns} from '../../utils/helpers/responsiveHelpers';
+import {ObservationStackParamList} from '../../navigation/ObservationStack';
 import moment from 'moment';
-
+import {getAllUsers} from '../../redux/features/usersSlice';
+import Image from '../../components/Image';
 
 type ObservationReportsMainPageNavigationProp = StackNavigationProp<
-ObservationStackParamList,
+  ObservationStackParamList,
   'ObservationReportsMainPage'
 >;
 type ObservationReportsMainPageRouteProp = RouteProp<
-ObservationStackParamList,
+  ObservationStackParamList,
   'ObservationReportsMainPage'
 >;
 
@@ -71,7 +67,7 @@ export const FloatingButton: FC<FloatingButtonTypes> = ({
         position: 'absolute',
         alignItems: 'center',
         justifyContent: 'space-between',
-        bottom:normaliseDesigns(75),
+        bottom: normaliseDesigns(75),
         right: normaliseDesigns(20),
         flexDirection: 'row',
         backgroundColor: '#EA7804',
@@ -97,20 +93,22 @@ export const FloatingButton: FC<FloatingButtonTypes> = ({
   );
 };
 
-
 type RenderCompleteStatusTypes = {
   status: ObservationStatus | undefined;
   style?: ViewStyle;
 };
-export const RenderCompleteStatus: FC<RenderCompleteStatusTypes> = ({status, style}) => (
+export const RenderCompleteStatus: FC<RenderCompleteStatusTypes> = ({
+  status,
+  style,
+}) => (
   <View
     style={{
       ...style,
       flexDirection: 'row',
-      backgroundColor: status==='Completed' ? '#EBF9D9' : '#FFEDED',
+      backgroundColor: status === 'Completed' ? '#EBF9D9' : '#FFEDED',
       alignItems: 'center',
       paddingHorizontal: 5,
-      paddingVertical:2,
+      paddingVertical: 2,
       borderRadius: 8,
       justifyContent: 'space-evenly',
     }}>
@@ -118,39 +116,50 @@ export const RenderCompleteStatus: FC<RenderCompleteStatusTypes> = ({status, sty
       style={{
         aspectRatio: 1,
         height: 7,
-        backgroundColor: status==='Completed' ? '#749E35' : '#D62828',
+        backgroundColor: status === 'Completed' ? '#749E35' : '#D62828',
         borderRadius: 10,
       }}
     />
     <Text
-      style={{color: status==='Completed' ? '#749E35' : '#D62828', marginLeft: 5,letterSpacing:0.32}}
+      style={{
+        color: status === 'Completed' ? '#749E35' : '#D62828',
+        marginLeft: 5,
+        letterSpacing: 0.32,
+      }}
       size="verysmall3"
-
       fontVariant="bold">
-      {status==='Completed' ? 'Completed' : 'Pending'}
+      {status === 'Completed' ? 'Completed' : 'Pending'}
     </Text>
   </View>
 );
 
+export const RenderEmptyPlaceholder: FC = () => (
+  <View
+    style={{marginTop: '40%', alignItems: 'center', justifyContent: 'center'}}>
+    <Image name="empty_cart_icon" size={3.5} />
+    <Text color="blackColor" size="body3" fontVariant="bold">
+      No results found.!
+    </Text>
+  </View>
+);
 
 const ObservationReportsMainPage: FC<ObservationReportsMainPageScreenProps> = ({
   navigation,
   route,
 }) => {
   const [selectedFilter, setSelectedFilter] = useState<FilterType>('All');
-  const [search,setSearch]=useState<string>('');
+  // const [filter,setSearch]=useState<string>('');
 
   const dispatch = useAppDispatch();
   const {allObservations} = useAppSelector(state => state.observation);
   const {userData} = useAppSelector(state => state.auth);
-
+  const {allUsers} = useAppSelector(state => state.users);
   const handleTabClick = (title: ItemType) => {
     setSelectedFilter(title?.value as FilterType);
   };
 
   useFocusEffect(
     React.useCallback(() => {
-
       dispatch(
         getAllObservations([
           userData.id,
@@ -170,32 +179,36 @@ const ObservationReportsMainPage: FC<ObservationReportsMainPageScreenProps> = ({
       dispatch(saveObservationId(null));
       dispatch(saveEvidenceCardDetails(null));
       dispatch(saveNewEvidenceCardList(null));
-      dispatch(resetObservationById())
+      dispatch(resetObservationById());
     }, []),
   );
-  
+
   useEffect(() => {
-    if(selectedFilter){
     dispatch(
-      getAllObservations([
-        userData.id,
-        {
-          filterType: selectedFilter,
-          // userId: undefined,
-          // userGroupId:undefined,
-          // ratings:filter?.rating,
-          // dateType: filter?.dateFilterOption,
-          // startDate: filter?.date?.startDate,
-          // endDate: filter?.date?.endDate,
-          paginationRequest: {
-            page: 0,
-            size: 15,
-            type: 'all',
-          },
-        },
-      ]),
+      getAllUsers({
+        page: 0,
+        size: 15,
+        type: 'all',
+      }),
     );
-  }
+  }, []);
+
+  useEffect(() => {
+    if (selectedFilter) {
+      dispatch(
+        getAllObservations([
+          userData.id,
+          {
+            filterType: selectedFilter,
+            paginationRequest: {
+              page: 0,
+              size: 15,
+              type: 'all',
+            },
+          },
+        ]),
+      );
+    }
   }, [selectedFilter]);
 
   // useEffect(() => {
@@ -227,15 +240,14 @@ const ObservationReportsMainPage: FC<ObservationReportsMainPageScreenProps> = ({
   //   }
   // }, [search, dispatch, userData.userName, userData.id]);
 
-
-  console.log("sdfsdfaaaaaaaaa")
+  console.log('sdfsdfaaaaaaaaa');
   return (
     <>
       <Layout
         overridePaddingVertical
         icon={'search_reports_icon'}
         title={'Observation Reports'}
-        focusedStack='ObservationStack'
+        focusedStack="ObservationStack"
         titleTransition>
         <Text size="body3" fontVariant="bold" style={{marginVertical: 10}}>
           Observation Reports
@@ -259,12 +271,18 @@ const ObservationReportsMainPage: FC<ObservationReportsMainPageScreenProps> = ({
         />
         <SearchWithFilter
           onTextChange={() => {}}
+          options={allUsers?.dataList.map(item => ({
+            value: item.userId?.toString(),
+            label: item.name,
+          }))}
           onProceed={filter => {
             dispatch(
               getAllObservations([
                 userData.id,
                 {
                   filterType: selectedFilter,
+                  userId: filter?.selectedItem?.value,
+                  userGroupId: undefined,
                   ratings: filter?.rating,
                   dateType: filter?.dateFilterOption,
                   startDate: filter?.date?.startDate,
@@ -273,30 +291,34 @@ const ObservationReportsMainPage: FC<ObservationReportsMainPageScreenProps> = ({
                     page: 0,
                     size: 15,
                     type: 'all',
-                    search
                   },
                 },
               ]),
             );
           }}
         />
-        <View style={{marginVertical: 10}}>
-          {allObservations?.dataList?.observations?.map((item, index) => (
-            <ObservationsTile
-              key={index}
-              rating={item.ratings?.toString()}
-              userAssisted={item.userAssessed}
-              image={item.userImage}
-              reportedBy={item.reportedBy}
-              onPress={() => {
-                dispatch(saveObservationId(item.observationId));
-                navigation.navigate('ObservationReport');
-              }}
-              creationDate={moment(item.createdDate).format('DD/MM/YYYY')}
-              creationTime={ moment(item.createdDate).format('h:mmA')}
-              status={item.observationStatus}
-            />
-          ))}
+        <View style={{marginBottom: 20}}>
+          {allObservations?.dataList?.observations &&
+          allObservations?.dataList?.observations?.length > 0 ? (
+            allObservations?.dataList?.observations?.map((item, index) => (
+              <ObservationsTile
+                key={index}
+                rating={item.ratings?.toString()}
+                userAssisted={item.userAssessed}
+                image={item.userImage}
+                reportedBy={item.reportedBy}
+                onPress={() => {
+                  dispatch(saveObservationId(item.observationId));
+                  navigation.navigate('ObservationReport');
+                }}
+                creationDate={moment(item.createdDate).format('DD/MM/YYYY')}
+                creationTime={moment(item.createdDate).format('h:mmA')}
+                status={item.observationStatus}
+              />
+            ))
+          ) : (
+            <RenderEmptyPlaceholder />
+          )}
         </View>
       </Layout>
 

@@ -8,16 +8,16 @@ import UsersMainPage from '../screens/userManagement/UsersMainPage';
 import UserGroups from '../screens/userManagement/UserGroups';
 import RolesAndAppAccess from '../screens/userManagement/RolesAndAppAccess';
 
-export type UserManagementStackParamList = {
+export type LocationManagementStackParamList = {
   UsersMainPage: undefined;
   UserGroups: undefined;
   RolesAndAppAccess:undefined;
 };
 
-const UserManagementStack =
-  createStackNavigator<UserManagementStackParamList>();
+const LocationManagementStack =
+  createStackNavigator<LocationManagementStackParamList>();
 
-const UserManagementStackNavigator = ({}) => {
+const LocationManagementStackNavigator = ({}) => {
   const customTransition = ({
     current,
     layouts,
@@ -36,19 +36,19 @@ const UserManagementStackNavigator = ({}) => {
     };
   };
   return (
-    <UserManagementStack.Navigator
+    <LocationManagementStack.Navigator
       screenOptions={({route}) => ({
         headerShown: false,
         keyboardHidesTabBar: true,
       })}>
-      {/* <UserManagementStack.Screen
+      <LocationManagementStack.Screen
         name="UsersMainPage"
         component={UsersMainPage}
-      /> */}
-      <UserManagementStack.Screen name="UserGroups" component={UserGroups} />
-      <UserManagementStack.Screen name='RolesAndAppAccess' component={RolesAndAppAccess} />
-    </UserManagementStack.Navigator>
+      />
+      <LocationManagementStack.Screen name="UserGroups" component={UserGroups} />
+      <LocationManagementStack.Screen name='RolesAndAppAccess' component={RolesAndAppAccess} />
+    </LocationManagementStack.Navigator>
   );
 };
 
-export default UserManagementStackNavigator;
+export default LocationManagementStackNavigator;

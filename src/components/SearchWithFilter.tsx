@@ -1,15 +1,34 @@
-import React, { useEffect, useState } from 'react';
-import { View, ViewStyle, TouchableOpacity, TextInput, StyleSheet } from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {
+  View,
+  ViewStyle,
+  TouchableOpacity,
+  TextInput,
+  StyleSheet,
+  FlatList,
+  ListRenderItemInfo,
+  Platform,
+  Dimensions,
+} from 'react-native';
 import Icon from './Icon';
 import colors from '../config/colors';
-import Calendar, { FilterObject } from './Calendar';
-import Dropdown from '../components/SearchableDropdown'; // Adjust the import path as per your project structure
+import Calendar, {FilterObject} from './Calendar';
+import {ItemType} from '../config/types';
+import Text from './Text';
+import {normaliseDesigns} from '../utils/helpers/responsiveHelpers';
+import {
+  AutocompleteDropdown,
+  TAutocompleteDropdownItem,
+} from 'react-native-autocomplete-dropdown';
+import { FONT_SIZES } from '../config/themes';
 
 type RenderSearchTypes = {
   placeHolder?: string;
-  onTextChange: (text: string) => void;
+  onTextChange?: (text: string) => void;
   onProceed: (filter: FilterObject) => void;
   filterNotNeeded?: boolean;
+  options?: ItemType[];
+  selectedItem?: ItemType;
   style?: ViewStyle;
 };
 
@@ -18,37 +37,30 @@ const SearchWithFilter: React.FC<RenderSearchTypes> = ({
   onTextChange,
   onProceed,
   filterNotNeeded,
+  selectedItem,
+  options,
   style,
 }) => {
   const [isOpenCalendar, setIsOpenCalendar] = useState<boolean>(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
-  const [selectedItem, setSelectedItem] = useState<string>('');
-  const [searchText, setSearchText] = useState<string>(''); // State to hold search text
-  const itemValues = ["Option 1", "Option 2", "Option 3", "Option 4", "Option 5"];
+  const [searchText, setSearchText] = useState<string>('');
 
   const openDropdown = () => {
     setIsDropdownOpen(true);
   };
 
-  const closeDropdown = () => {
+  const onSearch = (text: string) => {
+    if (onTextChange) {
+      onTextChange(text);
+    }
+  };
+
+  useEffect(() => {}, [searchText]);
+
+  const onOptionPress = (option: TAutocompleteDropdownItem) => {
     setIsDropdownOpen(false);
+    onProceed({selectedItem: {value: option?.id, label: option?.title || ''}});
   };
-
-  const toggleDropdown = () => {
-    setIsDropdownOpen(!isDropdownOpen);
-  };
-
-  const filterOptions = (text: string) => {
-    setSearchText(text);
-  };
-
-  useEffect(()=>{
-
-  },[searchText])
-
-  const filteredOptions = itemValues.filter(option =>
-    option.toLowerCase().includes(searchText.toLowerCase())
-  );
 
   return (
     <>
@@ -62,40 +74,43 @@ const SearchWithFilter: React.FC<RenderSearchTypes> = ({
         isVisible={isOpenCalendar}
       />
       <View style={[styles.container, style]}>
-        <View style={styles.inputContainer}>
-          <TouchableOpacity
-            style={[
-              styles.textInput,
-              { width: filterNotNeeded ? '100%' : '85%' },
-              isDropdownOpen && styles.activeDropdown,
-            ]}
-            onPress={toggleDropdown}
-          >
+        {/* {filterNotNeeded ? (
+          <View style={[styles.textInput, {width: '100%'}]}>
             <TextInput
               style={styles.input}
               placeholder={placeHolder}
               placeholderTextColor={colors.darkGrey}
-              value={selectedItem} // Display selected item in TextInput
-              onChangeText={filterOptions} // Update search text state
+              value={searchText}
+              onChangeText={filterOptions}
               onFocus={openDropdown}
-              // onBlur={closeDropdown}
-              editable={!isDropdownOpen} // Disable editing while dropdown is open
+              editable={options && !isDropdownOpen}
             />
-            <Icon name="search_icon" style={styles.icon} />
-          </TouchableOpacity>
-          {isDropdownOpen && (
-            <View style={styles.dropdown}>
-              <Dropdown
-                options={filteredOptions} // Pass filtered options to Dropdown
-                onOptionSelected={(option: string) => {
-                  onTextChange(option); // Call the onTextChange handler when an option is selected
-                  setSelectedItem(option); // Set selected item in TextInput
-                  closeDropdown(); // Close the dropdown after selection (optional)
-                }}
-              />
-            </View>
-          )}
-        </View>
+           <Icon name="search_icon" style={styles.icon} />
+          </View>
+        ) : ( */}
+          <AutocompleteDropdown
+            inputContainerStyle={[
+              styles.dropdownTextInputStyle,
+              {width:filterNotNeeded ?normaliseDesigns(295):  normaliseDesigns(235)},
+            ]}
+            clearOnFocus={false}
+            closeOnBlur={true}
+            closeOnSubmit={false}
+            onChangeText={onSearch}
+            textInputProps={{style:{color:colors.blackColor}}}
+            suggestionsListTextStyle={{color:colors.blackColor,fontSize:FONT_SIZES.body1}}
+            suggestionsListContainerStyle={{borderRadius:10}}
+            // containerStyle={{color}}
+            RightIconComponent={<Icon name="search_icon" style={styles.icon} />}
+            showChevron={false}
+            showClear={false}
+            onSelectItem={onOptionPress}
+            dataSet={options?.map(item => ({
+              id: item.value,
+              title: item.label,
+            }))}
+          />
+        {/* )} */}
         {!filterNotNeeded && (
           <TouchableOpacity
             style={styles.filterButton}
@@ -129,9 +144,16 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5F7FA',
     borderRadius: 10,
     paddingHorizontal: 10,
-    borderWidth: 1,
-    borderColor: colors.primaryColor,
     height: 40,
+    color:colors.blackColor,
+    fontSize:FONT_SIZES.body1
+  },
+  dropdownTextInputStyle:{
+    height: 40,
+    color:colors.blackColor,
+    fontSize:FONT_SIZES.body1,
+    backgroundColor: '#F5F7FA',
+    borderRadius: 10,
   },
   input: {
     flex: 1,
@@ -142,7 +164,7 @@ const styles = StyleSheet.create({
     marginLeft: 'auto',
   },
   activeDropdown: {
-    borderBottomLeftRadius: 0,
+    borderRadius: 0,
     borderBottomRightRadius: 0,
   },
   dropdown: {
@@ -152,17 +174,30 @@ const styles = StyleSheet.create({
     right: 0,
     backgroundColor: '#FFFFFF',
     borderRadius: 10,
-    borderColor: colors.primaryColor,
-    borderWidth: 1,
     marginTop: 5,
-    maxHeight: 200,
+    maxHeight: normaliseDesigns(250),
     zIndex: 10,
+    ...Platform.select({
+      ios: {
+        shadowColor: colors.blackColor,
+        shadowOffset: {width: 0, height: 2},
+        shadowOpacity: 0.3,
+        shadowRadius: 4,
+      },
+      android: {
+        elevation: 10,
+      },
+    }),
   },
   filterButton: {
-    borderWidth: 1,
-    borderColor: colors.primaryColor,
     padding: 8,
     borderRadius: 10,
+    borderColor: '#EA7804',
+    borderWidth: 1,
+  },
+  itemStyle: {
+    paddingVertical: 7,
+    paddingHorizontal: 10,
   },
 });
 

@@ -45,6 +45,7 @@ import Image, {ImageIconNames} from '../../components/Image';
 import {
   IndividualResponse,
   Question,
+  RubricWiseResponse,
   acceptingFormResponses,
   assignFormToUsersAndGroups,
   getFormById,
@@ -180,6 +181,7 @@ export const RenderAssignFormModalContent: FC<
     );
     onPressAssign(selectedUsersNumbers, selectedUserGroupsNumbers);
   };
+  
   return (
     <View style={{paddingHorizontal: 10}}>
       <MultiSelectDropdown
@@ -582,6 +584,7 @@ const FormResponses: FC<FormResponsesScreenProps> = ({navigation, route}) => {
   const [selectedQuestion, setSelectedQuestion] = useState<Question | null>(
     null,
   );
+  const [selectedRubricWise,setSelectedRubricWise]=useState<RubricWiseResponse | null>(null)
 
   const [isAcceptingResponses, setIsAcceptingResponses] =
     useState<boolean>(true);
@@ -606,12 +609,13 @@ const FormResponses: FC<FormResponsesScreenProps> = ({navigation, route}) => {
 
   const dispatch = useAppDispatch();
 
-  const onPressItem = (item: IndividualResponse | Question) => {
+  const onPressItem = (item: IndividualResponse | Question | RubricWiseResponse) => {
     if (selectedTab === 'Individual') {
       setSelectedIndividual(item as IndividualResponse);
     } else if (selectedTab === 'Question Wise') {
       setSelectedQuestion(item as Question);
     } else {
+      setSelectedRubricWise(item as RubricWiseResponse);
     }
     setScreen('detailed');
   };
@@ -678,7 +682,7 @@ const FormResponses: FC<FormResponsesScreenProps> = ({navigation, route}) => {
         onPress={onPressItem}
         individualResponse={formById?.dataList?.individualResponses || []}
         flowDetailItem={flowDetailItem}
-        totalQuestion={formById?.dataList?.totalQuestions ||0}
+        totalQuestion={formById?.dataList?.totalQuestions || 0}
       />
     );
     let setScreen: Dispatch<SetStateAction<ScreenSelectiontypes>> =
@@ -693,14 +697,14 @@ const FormResponses: FC<FormResponsesScreenProps> = ({navigation, route}) => {
               onPress={onPressItem}
               individualResponse={formById?.dataList?.individualResponses || []}
               flowDetailItem={flowDetailItem}
-              totalQuestion={formById?.dataList?.totalQuestions|| 0}
+              totalQuestion={formById?.dataList?.totalQuestions || 0}
             />
           );
         } else {
           renderal = (
             <IndividualDescriptionRenderal
               individualResponse={selectedIndividual}
-              totalQuestion={formById?.dataList?.totalQuestions|| 0}
+              totalQuestion={formById?.dataList?.totalQuestions || 0}
             />
           );
         }
@@ -722,8 +726,9 @@ const FormResponses: FC<FormResponsesScreenProps> = ({navigation, route}) => {
               key={2}
               question={selectedQuestion}
               questionResponses={
-                selectedQuestion?.questionId
-                  ? formById?.dataList.questionWiseResponses[
+                selectedQuestion?.questionId &&
+                formById?.dataList?.questionWiseResponses
+                  ? formById?.dataList?.questionWiseResponses[
                       selectedQuestion?.questionId
                     ]
                   : []
@@ -736,9 +741,14 @@ const FormResponses: FC<FormResponsesScreenProps> = ({navigation, route}) => {
         screen = rubricWiseScreen;
         setScreen = setRubricWiseScreen;
         if (rubricWiseScreen === 'main') {
-          renderal = <RubricWiseMainPageRenderal onPressItem={onPressItem} />;
+          renderal = (
+            <RubricWiseMainPageRenderal
+              indicatorsList={formById?.dataList?.rubricWiseResponse || []}
+              onPressItem={onPressItem}
+            />
+          );
         } else {
-          renderal = <RubricWiseDescriptionRenderal />;
+          renderal = <RubricWiseDescriptionRenderal flowId={flowDetailItem.flowId} formId={flowDetailItem.formId} selectedRubricWise={selectedRubricWise} />;
         }
         return {screen, setScreen, renderal};
       default:

@@ -7,9 +7,17 @@ import {FC, useEffect, useState} from 'react';
 import {normaliseDesigns} from '../../../utils/helpers/responsiveHelpers';
 import colors from '../../../config/colors';
 import LabelDropdown from '../../../components/LabeledDropdown';
+import {
+  IndicatorIndividualResponse,
+  QuestionRatingQuestionWiseResponse,
+  RubricWiseResponse,
+  getQuestionRatingByIndicatorId,
+} from '../../../redux/features/formsSlice';
+import {useAppDispatch, useAppSelector} from '../../../redux/store';
+import {RenderEmptyPlaceholder} from '../../observation/ObservationReportsMainPage';
 
 type RubricWiseResponseTileTypes = {
-  rating: string;
+  rating: number;
   title: string;
   image: string;
   creationDate: string;
@@ -73,12 +81,12 @@ const RubricWiseResponseTile: FC<RubricWiseResponseTileTypes> = ({
             </Text>
             <Text size="small3">{creationDate}</Text>
           </View>
-          <View>
+          {/* <View>
             <Text size="verysmall3" opacity="0.50">
               Questions Answered
             </Text>
             <Text size="small3"> {questionsAnswered}</Text>
-          </View>
+          </View> */}
           <View>
             <Text size="verysmall3" opacity="0.50">
               Ratings
@@ -91,7 +99,7 @@ const RubricWiseResponseTile: FC<RubricWiseResponseTileTypes> = ({
                 justifyContent: 'center',
               }}>
               <Text size="small1" fontVariant="bold">
-                {rating}
+                {rating?.toFixed(1)}
               </Text>
               <Icon
                 style={{marginLeft: 5}}
@@ -100,11 +108,11 @@ const RubricWiseResponseTile: FC<RubricWiseResponseTileTypes> = ({
               />
             </View>
           </View>
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={{alignSelf: 'flex-end'}}
             onPress={onPressDelete}>
             <Icon name="trash_icon" />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
       </View>
     </TouchableOpacity>
@@ -112,81 +120,112 @@ const RubricWiseResponseTile: FC<RubricWiseResponseTileTypes> = ({
 };
 
 type RubricWiseMainPageRenderalTypes = {
-  onPressItem: () => void;
+  onPressItem: (item: RubricWiseResponse) => void;
+  indicatorsList?: RubricWiseResponse[];
 };
 
 //IndividualMainScreenRenderals
 export const RubricWiseMainPageRenderal: FC<
   RubricWiseMainPageRenderalTypes
-> = ({onPressItem}) => (
+> = ({indicatorsList = [], onPressItem}) => (
   <View>
-    <RubricWiseResponseTile
-      rating={'4.2'}
-      creationDate={moment(new Date('12-04-2024')).format('DD/MM/YYYY')}
-      onPress={() => {
-        onPressItem();
-        // navigation.navigate('AdminFormList');
-      }}
-      title={'Ability to manage classroom discipline'}
-      image={''}
-      questionsAnswered={'10/10'}
-      onPressDelete={() => {}}
-    />
-  </View>
-);
-
-type RubricWiseDescriptionTileTypes = {
-  question: string;
-  answerOptions: string[];
-};
-
-const RubricWiseDescriptionTile: FC<RubricWiseDescriptionTileTypes> = ({question}) => (
-  <View key={question}>
-    <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-      <Text>Decision making evalutation</Text>
-      <View
-        style={{
-          flexDirection: 'row',
-          borderRadius: 10,
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}>
-        <Text size="body1" fontVariant="bold">
-          4.5
-        </Text>
-        <Icon
-          style={{marginLeft: 5}}
-          name="rating_star_display"
-          width={15}
-          height={15}
+    {indicatorsList?.length > 0 ? (
+      indicatorsList?.map((item, index) => (
+        <RubricWiseResponseTile
+          rating={item.avgRating}
+          creationDate={moment(new Date(item.responseDate)).format(
+            'DD/MM/YYYY',
+          )}
+          onPress={() => {
+            onPressItem(item);
+            // navigation.navigate('AdminFormList');
+          }}
+          title={item.indicatorName}
+          image={''}
+          questionsAnswered={'10/10'}
+          onPressDelete={() => {}}
         />
-      </View>
-    </View>
-    <LabelDropdown
-      options={[
-        {
-          value:
-            'Utilizing a digital or physical planner to keep track of deadlines and events.',
-          label:
-            'Utilizing a digital or physical planner to keep track of deadlines and events.',
-        },
-      ]}
-      placeHolder={'How do you establish a positive classroom environment?'}
-      style={{borderColor: '#F4C24A'}}
-      defaultValue={''}
-    />
+      ))
+    ) : (
+      <RenderEmptyPlaceholder />
+    )}
   </View>
 );
 
 type RubricWiseDescriptionRenderalTypes = {
-
+  selectedRubricWise: RubricWiseResponse | null;
+  formId: number;
+  flowId: number;
 };
 
 //IndividualMainScreenRenderals
 export const RubricWiseDescriptionRenderal: FC<
   RubricWiseDescriptionRenderalTypes
-> = ({}) => (
-  <View>
-    <RubricWiseDescriptionTile question={''} answerOptions={[]} />
-  </View>
-);
+> = ({selectedRubricWise, flowId, formId}) => {
+  const dispatch = useAppDispatch();
+
+  const {questionRatingByIndicatorId} = useAppSelector(state => state.forms);
+
+  useEffect(() => {
+    if (selectedRubricWise) {
+      dispatch(
+        getQuestionRatingByIndicatorId([
+          selectedRubricWise?.indicatorId,
+          formId,
+          flowId,
+        ]),
+      );
+    }
+  }, [selectedRubricWise?.indicatorId]);
+
+  return (
+    <View key={selectedRubricWise?.indicatorId}>
+      <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+        <Text size="body1" fontVariant="bold">
+          {selectedRubricWise?.indicatorName}
+        </Text>
+        <View
+          style={{
+            flexDirection: 'row',
+            borderRadius: 10,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
+          <Text size="body1" fontVariant="bold">
+            ( {selectedRubricWise?.avgRating?.toFixed(1)}
+          </Text>
+          <Icon
+            style={{marginLeft: 5}}
+            name="rating_star_display"
+            width={15}
+            height={15}
+          />
+          <Text size="body1" fontVariant="bold">
+            )
+          </Text>
+        </View>
+      </View>
+      {questionRatingByIndicatorId?.dataList?.questionWiseResponses?.map(
+        (item, index) => (
+          <LabelDropdown
+            options={
+              item?.userWiseResponses?.map((ele, index) => ({
+                value: index?.toString(),
+                label: ele.responseValues || ele.userRating?.toString(),
+              })) || []
+            }
+            disableSelection
+            key={item.questionId}
+            placeHolderStyle={{color: colors.blackColor}}
+            placeHolder={item.questionText}
+            dropdownStyle={{
+              borderColor: '#F4C24A',
+              minHeight: normaliseDesigns(40),
+            }}
+            defaultValue={''}
+          />
+        ),
+      )}
+    </View>
+  );
+};

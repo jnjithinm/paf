@@ -16,13 +16,14 @@ import {
 } from '../../redux/features/rubricSlice';
 import Text from '../../components/Text';
 import {ItemType} from '../../config/types';
+import {RenderEmptyPlaceholder} from '../observation/ObservationReportsMainPage';
 
 type RubricMainPageNavigationProp = StackNavigationProp<
-RubricStackParamList,
+  RubricStackParamList,
   'RubricMainPage'
 >;
 type RubricMainPageRouteProp = RouteProp<
-RubricStackParamList,
+  RubricStackParamList,
   'RubricMainPage'
 >;
 
@@ -111,24 +112,28 @@ const RubricMainPage: FC<RubricMainPageScreenProps> = ({navigation, route}) => {
       <View style={{marginVertical: 10}}>
         <Tab tabs={tabs} onClick={title => handleTabClick(title)} />
 
-        {rubricListData.map(item => (
-          <RubricListModal
-            active={item.status}
-            createdBy={item.createdBy}
-            createdDate={moment(item.createdDate).format('DD/MM/YYYY')}
-            title={item.rubricName}
-            userCount={item.groupUsers}
-            onDelete={() => {
-              onPressDeleteRubric(item);
-            }}
-            key={item.rubricId}
-            onPress={() => {
-              navigation.navigate('RubricEvaluationIndicatorList', {
-                rubric: item,
-              });
-            }}
-          />
-        ))}
+        {rubricListData.length > 0 ? (
+          rubricListData.map(item => (
+            <RubricListModal
+              active={item.status}
+              createdBy={item.createdBy}
+              createdDate={moment(item.createdDate).format('DD/MM/YYYY')}
+              title={item.rubricName}
+              userCount={item.groupUsers}
+              onDelete={() => {
+                onPressDeleteRubric(item);
+              }}
+              key={item.rubricId}
+              onPress={() => {
+                navigation.navigate('RubricEvaluationIndicatorList', {
+                  rubric: item,
+                });
+              }}
+            />
+          ))
+        ) : (
+          <RenderEmptyPlaceholder />
+        )}
       </View>
     </Layout>
   );

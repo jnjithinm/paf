@@ -27,6 +27,7 @@ const endPoints = {
   GET_FORM_BY_ID: `PAF/forms/`,
   DELETE_FLOWS:`PAF/flows`,
   DELETE_FORMS:`PAF/forms?`,
+  GET_QUESTION_RATING_BY_INDICATOR_ID:`PAF/forms/getQuestionRatingByIndicatorId/`,
   GET_PREVIEW_FORM: `PAF/forms/previewForm/`,
   DASHBOARD_FILTER: `PAF/teachers/observation/dashBoardFilter/`,
   SUBMIT_FORM_RESPONSE:`PAF/forms/submitFormResponse`,
