@@ -1,5 +1,5 @@
-import {FC, useState} from 'react';
-import {TextStyle, TouchableOpacity, View, ViewStyle} from 'react-native';
+import { FC } from 'react';
+import { TextStyle, TouchableOpacity, View, ViewStyle, GestureResponderEvent } from 'react-native';
 import Text from './Text';
 import Icon from './Icon';
 
@@ -10,32 +10,37 @@ type RatingInputTypes = {
   size?: number;
   disabled?: boolean;
   showRating?: boolean;
-  style?:ViewStyle
-  labelStyle?:TextStyle
+  style?: ViewStyle;
+  labelStyle?: TextStyle;
 };
 
 const RatingInput: FC<RatingInputTypes> = ({
   label,
   rating,
   onChangeRating,
-  size = 20,
+  size = 22,
   disabled,
   showRating = true,
   style,
-  labelStyle
+  labelStyle,
 }) => {
-
-  const handleStarPress = (index: number) => {
-    const newRating = index + 1;
+  const handleStarPress = (index: number, event: GestureResponderEvent) => {
+    const { locationX } = event.nativeEvent;
+    const starWidth = size;
+    const isHalfStar = locationX < starWidth / 2;
+    const newRating = isHalfStar ? index + 0.5 : index + 1;
     onChangeRating(newRating);
   };
 
   const filledStars = Math.floor(rating);
   const hasHalfStar = rating - filledStars >= 0.5;
+
+  console.log("rating==",rating)
+
   return (
-    <View style={{...style}}>
+    <View style={{ ...style }}>
       {label && (
-        <Text fontVariant="bold" size="body1" style={{...labelStyle}}>
+        <Text fontVariant="bold" size="body1" style={{ ...labelStyle }}>
           {label}
         </Text>
       )}
@@ -47,16 +52,16 @@ const RatingInput: FC<RatingInputTypes> = ({
           justifyContent: 'space-between',
           alignItems: 'center',
         }}>
-        {Array.from({length: 5}, (_, index) => {
+        {Array.from({ length: 5 }, (_, index) => {
           if (index < filledStars) {
             return (
               <TouchableOpacity
                 key={index}
-                onPress={() => handleStarPress(index)}
+                onPress={(event) => handleStarPress(index, event)}
                 disabled={disabled}>
                 <Icon
                   key={index}
-                  name={rating ? 'star_icon' : 'rating_deselected_icon'}
+                  name='star_icon'
                   width={size}
                   height={size}
                 />
@@ -66,13 +71,11 @@ const RatingInput: FC<RatingInputTypes> = ({
             return (
               <TouchableOpacity
                 key={index}
-                onPress={() => handleStarPress(index)}
+                onPress={(event) => handleStarPress(index, event)}
                 disabled={disabled}>
                 <Icon
                   key={index}
-                  name={
-                    rating ? 'star_half_filled_icon' : 'rating_deselected_icon'
-                  }
+                  name='star_half_filled_icon'
                   width={size}
                   height={size}
                 />
@@ -82,13 +85,11 @@ const RatingInput: FC<RatingInputTypes> = ({
             return (
               <TouchableOpacity
                 key={index}
-                onPress={() => handleStarPress(index)}
+                onPress={(event) => handleStarPress(index, event)}
                 disabled={disabled}>
                 <Icon
                   key={index}
-                  name={
-                    rating ? 'star_unfilled_icon' : 'rating_deselected_icon'
-                  }
+                  name='star_unfilled_icon'
                   width={size}
                   height={size}
                 />
@@ -98,8 +99,8 @@ const RatingInput: FC<RatingInputTypes> = ({
         })}
         {showRating && (
           <>
-            <View style={{height: 15, width: 1, backgroundColor: '#E4E7EB'}} />
-            <Text style={{left: 5}}>( {rating} ) </Text>
+            <View style={{ height: 15, width: 1, backgroundColor: '#E4E7EB' }} />
+            <Text style={{ left: 5 }}>( {rating} ) </Text>
           </>
         )}
       </View>
@@ -108,4 +109,3 @@ const RatingInput: FC<RatingInputTypes> = ({
 };
 
 export default RatingInput;
-
