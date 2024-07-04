@@ -31,6 +31,7 @@ import SearchWithFilter from '../../components/SearchWithFilter';
 import { ItemType } from '../../config/types';
 import { normaliseDesigns } from '../../utils/helpers/responsiveHelpers';
 import { ObservationStackParamList } from '../../navigation/ObservationStack';
+import moment from 'moment';
 
 
 type ObservationReportsMainPageNavigationProp = StackNavigationProp<
@@ -108,9 +109,10 @@ export const RenderCompleteStatus: FC<RenderCompleteStatusTypes> = ({status, sty
       flexDirection: 'row',
       backgroundColor: status==='Completed' ? '#EBF9D9' : '#FFEDED',
       alignItems: 'center',
-      padding: 5,
+      paddingHorizontal: 5,
+      paddingVertical:2,
       borderRadius: 8,
-      justifyContent: 'space-between',
+      justifyContent: 'space-evenly',
     }}>
     <View
       style={{
@@ -121,7 +123,7 @@ export const RenderCompleteStatus: FC<RenderCompleteStatusTypes> = ({status, sty
       }}
     />
     <Text
-      style={{color: status==='Completed' ? '#749E35' : '#D62828', marginLeft: 5,letterSpacing:0.62}}
+      style={{color: status==='Completed' ? '#749E35' : '#D62828', marginLeft: 5,letterSpacing:0.32}}
       size="verysmall3"
 
       fontVariant="bold">
@@ -290,7 +292,9 @@ const ObservationReportsMainPage: FC<ObservationReportsMainPageScreenProps> = ({
                 dispatch(saveObservationId(item.observationId));
                 navigation.navigate('ObservationReport');
               }}
-              status={'Completed'}
+              creationDate={moment(item.createdDate).format('DD/MM/YYYY')}
+              creationTime={ moment(item.createdDate).format('h:mmA')}
+              status={item.observationStatus}
             />
           ))}
         </View>

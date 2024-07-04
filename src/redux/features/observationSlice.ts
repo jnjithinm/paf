@@ -21,6 +21,9 @@ interface Observation {
   reportedBy: string;
   reportedByImage: string | null;
   ratings: number;
+  observationId: number;
+  createdDate:string;
+  observationStatus:ObservationStatus
 }
 
 interface ObservationsResponse {
@@ -96,29 +99,6 @@ type GetObservationByIdResponse = {
 };
 type GetObservationByIdResponsePayload = GetObservationByIdResponse['payload'];
 
-export type ObservationData = {
-  audioCount: number;
-  createdDate: string;
-  documentCount: number;
-  imageCount: number;
-  observationId: number;
-  observationStatus: 'Completed' | 'Pending' | 'In Progress' | 'Cancelled';
-  ratings: number;
-  reportedBy: string;
-  reportedByImage: string;
-  userAssessed: string;
-  userImage: string;
-  videoCount: number;
-};
-
-interface ObservationFilter {
-  userAssessed: string;
-  userImage: string | null;
-  reportedBy: string;
-  reportedByImage: string | null;
-  ratings: number;
-  observationId: number;
-}
 
 type GetAllObservationsResponse = {
   payload: {
@@ -127,7 +107,7 @@ type GetAllObservationsResponse = {
       averageRating: number | null;
       byMe: number;
       forMe: number;
-      observations: ObservationFilter[];
+      observations: Observation[];
       pointStatus: any | null;
       progressPoint: any | null;
       schoolName: string | null;

@@ -103,6 +103,8 @@ type ObservationTileTypes = {
   image: string | null | undefined;
   onPress?: () => void;
   status:ObservationStatus|undefined;
+  creationDate:string;
+  creationTime:string;
   reportedBy: string;
   style?: ViewStyle;
   disabled?:boolean
@@ -114,6 +116,8 @@ export const ObservationsTile: FC<ObservationTileTypes> = ({
   image,
   onPress,
   status,
+  creationDate,
+  creationTime,
   reportedBy,
   style,
   disabled
@@ -591,6 +595,9 @@ const TeacherDashboard: FC<TeacherDashboardScreenProps> = ({
                 userAssisted={item.userAssessed}
                 image={item.userImage}
                 reportedBy={item.reportedBy}
+                creationDate=''
+                creationTime=''
+                
                 status='Completed'
                 disabled
               />
