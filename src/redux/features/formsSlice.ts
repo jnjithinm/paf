@@ -47,6 +47,7 @@ export interface IndividualResponse {
     questionText: string;
     responseValues: string;
     responseDate: string;
+    avgRating:number;
     indicators: IndicatorIndividualResponse[];
   }[];
 }

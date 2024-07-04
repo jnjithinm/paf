@@ -678,6 +678,7 @@ const FormResponses: FC<FormResponsesScreenProps> = ({navigation, route}) => {
         onPress={onPressItem}
         individualResponse={formById?.dataList?.individualResponses || []}
         flowDetailItem={flowDetailItem}
+        totalQuestion={formById?.dataList?.totalQuestions ||0}
       />
     );
     let setScreen: Dispatch<SetStateAction<ScreenSelectiontypes>> =
@@ -692,12 +693,14 @@ const FormResponses: FC<FormResponsesScreenProps> = ({navigation, route}) => {
               onPress={onPressItem}
               individualResponse={formById?.dataList?.individualResponses || []}
               flowDetailItem={flowDetailItem}
+              totalQuestion={formById?.dataList?.totalQuestions|| 0}
             />
           );
         } else {
           renderal = (
             <IndividualDescriptionRenderal
               individualResponse={selectedIndividual}
+              totalQuestion={formById?.dataList?.totalQuestions|| 0}
             />
           );
         }
