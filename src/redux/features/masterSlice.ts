@@ -1,9 +1,10 @@
-import {createAction, createAsyncThunk, createSlice} from '@reduxjs/toolkit';
+import { createAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 import api from '../../config/axios';
 import endPoints from '../../config/endPoints';
-import {setLoading} from './authSlice';
+import { setLoading } from './authSlice';
 import { ErrorStatusObject } from '../../config/types';
+import { PaginationRequest } from './usersSlice';
 interface Domain {
   domainId: number;
   domainName: string;
@@ -36,6 +37,136 @@ interface GetIndicatorsResponse {
 
 type GetIndicatorsResponsePayload = GetIndicatorsResponse['payload'];
 
+export interface Role {
+  roleId: number;
+  roleName: string;
+  roleLevel: string;
+  parentRole: string;
+  createdBy: string;
+  createdDt: string;
+  users: number;
+  status: boolean;
+}
+
+
+interface GetRolesResponse {
+  payload: {
+    message: string;
+    dataList: Role[];
+    totalCount: number;
+  };
+  status: number;
+}
+type GetRolesResponsePayload = GetRolesResponse['payload'];
+
+export interface State {
+  stateId: number;
+  stateName: string;
+  stateCode: string;
+  countryId: number;
+  status: boolean;
+}
+
+
+interface GetStatesResponse {
+  payload: {
+    message: string;
+    dataList: State[];
+    totalCount: number;
+  };
+  status: number;
+}
+
+type GetStatesResponsePayload = GetStatesResponse['payload'];
+
+export interface District {
+  stateId: number;
+  stateCode: string;
+  stateName: string;
+  districtId: number;
+  districtCode: string;
+  districtName: string;
+  status: boolean;
+  users: number;
+  areas: number;
+  schools: number;
+  createdBy: string;
+  creationDate: string;
+}
+
+interface GetDistrictResponse {
+  payload:  {
+    message: string;
+    dataList: District[];
+    totalCount: number;
+  }
+  ;
+  status: number;
+}
+
+type GetDistrictResponsePayload = GetDistrictResponse['payload'];
+
+
+
+export interface Area {
+  pinId: number;
+  area: string;
+  pinCode: string;
+  districtId: number;
+  districtCode: string;
+  districtName: string;
+  stateId: number;
+  stateCode: string;
+  stateName: string;
+  status: boolean;
+  schools: number;
+  users: number;
+  createdBy: string;
+  creationDate: string;
+}
+interface GetAreaResponse {
+  payload: {
+      message: string;
+      dataList: Area[];
+      totalCount: number;
+  };
+  status: number;
+}
+
+type GetAreaResponsePayload = GetAreaResponse['payload'];
+
+export interface SchoolType {
+  schoolId: number;
+  schoolName: string;
+  pinId: number;
+  area: string;
+  pinCode: string;
+  districtId: number;
+  districtCode: string;
+  districtName: string;
+  stateId: number;
+  stateCode: string;
+  stateName: string;
+  status: boolean;
+  users: number;
+  classrooms: number;
+  createdBy: string;
+  creationDate: string;
+}
+
+
+interface GetSchoolResponse {
+  payload:  {
+    message: string;
+    dataList: SchoolType[];
+    totalCount: number;
+  };
+  status: number;
+}
+
+type GetSchoolResponsePayload = GetSchoolResponse['payload'];
+
+
 export const setMasterShowMessage = createAction<ErrorStatusObject | null>(
   'SET_MASTER_SHOW_MESSAGE',
 );
@@ -43,7 +174,7 @@ export const setMasterShowMessage = createAction<ErrorStatusObject | null>(
 
 export const getAllDomains = createAsyncThunk<GetDomainsResponse, void>(
   'master/getAllDomains',
-  async (_, {dispatch, rejectWithValue}) => {
+  async (_, { dispatch, rejectWithValue }) => {
     try {
       dispatch(setLoading(true));
       const response = await api.get(endPoints.GET_ALL_DOMAINS);
@@ -61,7 +192,7 @@ export const getIndicatorsByDomainId = createAsyncThunk<
   number
 >(
   'master/getIndicatorsByDomainId',
-  async (userId, {dispatch, rejectWithValue}) => {
+  async (userId, { dispatch, rejectWithValue }) => {
     try {
       dispatch(setLoading(true));
       const response = await api.get(
@@ -76,9 +207,115 @@ export const getIndicatorsByDomainId = createAsyncThunk<
   },
 );
 
+export const getRoles = createAsyncThunk<
+  GetRolesResponse,
+  PaginationRequest
+>(
+  'master/getRoles',
+  async (payload, { dispatch, rejectWithValue }) => {
+    try {
+      dispatch(setLoading(true));
+      const response = await api.post(
+        endPoints.GET_ROLES,payload
+      );
+      return response.data as GetRolesResponse;
+    } catch (error: any) {
+      return rejectWithValue(error.response.data);
+    } finally {
+      dispatch(setLoading(false));
+    }
+  },
+);
+
+export const getStates = createAsyncThunk<
+  GetStatesResponse,
+  PaginationRequest
+>(
+  'master/getStates',
+  async (payload, { dispatch, rejectWithValue }) => {
+    try {
+      dispatch(setLoading(true));
+      const response = await api.post(
+        endPoints.GET_STATES,payload
+      );
+      return response.data as GetStatesResponse;
+    } catch (error: any) {
+      return rejectWithValue(error.response.data);
+    } finally {
+      dispatch(setLoading(false));
+    }
+  },
+);
+
+export const getDistricts = createAsyncThunk<
+  GetDistrictResponse,
+  PaginationRequest
+>(
+  'master/getDistricts',
+  async (payload, { dispatch, rejectWithValue }) => {
+    try {
+      dispatch(setLoading(true));
+      const response = await api.post(
+        endPoints.GET_DISTRICTS,payload
+      );
+      return response.data as GetDistrictResponse;
+    } catch (error: any) {
+      return rejectWithValue(error.response.data);
+    } finally {
+      dispatch(setLoading(false));
+    }
+  },
+);
+
+export const getAreas = createAsyncThunk<
+GetAreaResponse,
+  PaginationRequest
+>(
+  'master/getAreas',
+  async (payload, { dispatch, rejectWithValue }) => {
+    try {
+      dispatch(setLoading(true));
+      const response = await api.post(
+        endPoints.GET_AREAS,payload
+      );
+      return response.data as GetAreaResponse;
+    } catch (error: any) {
+      return rejectWithValue(error.response.data);
+    } finally {
+      dispatch(setLoading(false));
+    }
+  },
+);
+
+export const getSchools = createAsyncThunk<
+GetSchoolResponse,
+  PaginationRequest
+>(
+  'master/getSchools',
+  async (payload, { dispatch, rejectWithValue }) => {
+    try {
+      dispatch(setLoading(true));
+      const response = await api.post(
+        endPoints.GET_SCHOOLS,payload
+      );
+      return response.data as GetSchoolResponse;
+    } catch (error: any) {
+      return rejectWithValue(error.response.data);
+    } finally {
+      dispatch(setLoading(false));
+    }
+  },
+);
+
+
 interface InitialState {
   allDomains: GetDomainsResponse | null;
   indicatorsByDomain: GetIndicatorsResponsePayload | null;
+  roles: GetRolesResponsePayload | null;
+  states:GetStatesResponsePayload | null;
+  districts:GetDistrictResponsePayload|null;
+  areas:GetAreaResponsePayload|null;
+  schools:GetSchoolResponsePayload|null;
   masterShowMessage: ErrorStatusObject | null;
   errorMessage: string;
 }
@@ -86,19 +323,24 @@ interface InitialState {
 const initialState: InitialState = {
   allDomains: null,
   indicatorsByDomain: null,
+  roles: null,
+  states:null,
+  districts:null,
+  areas:null,
+  schools:null,
   masterShowMessage: null,
-  errorMessage:''
+  errorMessage: ''
 };
 
 const masterSlice = createSlice({
-  name: 'users',
+  name: 'master',
   initialState,
   reducers: {},
   extraReducers: builder => {
     builder
-    .addCase(setMasterShowMessage, (state, action) => {
-      state.masterShowMessage = action.payload;
-    })
+      .addCase(setMasterShowMessage, (state, action) => {
+        state.masterShowMessage = action.payload;
+      })
       .addCase(getAllDomains.pending, state => {
         // state.isLoading = true;
       })
@@ -109,6 +351,51 @@ const masterSlice = createSlice({
           ...action.payload,
         };
       })
+      .addCase(getRoles.rejected, (state, action) => {
+        state.roles = null;
+      })
+      .addCase(getRoles.pending, state => {
+        state.roles = null;
+      })
+      .addCase(getRoles.fulfilled, (state, action) => {
+        state.roles = action.payload.payload;
+      })
+      .addCase(getStates.rejected, (state, action) => {
+        state.states = null;
+      })
+      .addCase(getStates.pending, state => {
+        state.states = null;
+      })
+      .addCase(getStates.fulfilled, (state, action) => {
+        state.states = action.payload.payload;
+      })
+      .addCase(getDistricts.rejected, (state, action) => {
+        state.districts = null;
+      })
+      .addCase(getDistricts.pending, state => {
+        state.districts = null;
+      })
+      .addCase(getDistricts.fulfilled, (state, action) => {
+        state.districts = action.payload.payload;
+      })
+      .addCase(getAreas.rejected, (state, action) => {
+        state.areas = null;
+      })
+      .addCase(getAreas.pending, state => {
+        state.areas = null;
+      })
+      .addCase(getAreas.fulfilled, (state, action) => {
+        state.areas = action.payload.payload;
+      })
+      .addCase(getSchools.rejected, (state, action) => {
+        state.schools = null;
+      })
+      .addCase(getSchools.pending, state => {
+        state.schools = null;
+      })
+      .addCase(getSchools.fulfilled, (state, action) => {
+        state.schools = action.payload.payload;
+      })
       .addCase(getAllDomains.rejected, (state, action) => {
         // state.isLoading = false;
       })
@@ -117,10 +404,8 @@ const masterSlice = createSlice({
       })
       .addCase(getIndicatorsByDomainId.fulfilled, (state, action) => {
         // state.isLoading = false;
-        state.indicatorsByDomain = {
-          ...state.indicatorsByDomain,
-          ...action.payload.payload,
-        };
+        state.indicatorsByDomain =action.payload.payload;
+        
       })
       .addCase(getIndicatorsByDomainId.rejected, (state, action) => {
         // state.isLoading = false;

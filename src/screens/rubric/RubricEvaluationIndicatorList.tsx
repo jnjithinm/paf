@@ -1,4 +1,4 @@
-import React, {FC, useEffect} from 'react';
+import React, {FC, useEffect, useState} from 'react';
 import {View} from 'react-native';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
@@ -8,19 +8,23 @@ import Layout from '../../components/Layout';
 import Image from '../../components/Image';
 import Text from '../../components/Text';
 import {useAppDispatch, useAppSelector} from '../../redux/store';
-import {getRubric} from '../../redux/features/rubricSlice';
+import {
+  RubricIndicatorItem,
+  getRubric,
+  updateRubric,
+} from '../../redux/features/rubricSlice';
 import RubricIndicatorList from '../../components/RubricIndicatorList';
 import SearchWithFilter from '../../components/SearchWithFilter';
-import { FilterObject } from '../../components/Calendar';
-import { RubricStackParamList } from '../../navigation/RubricStack';
-import { RenderEmptyPlaceholder } from '../observation/ObservationReportsMainPage';
+import {FilterObject} from '../../components/Calendar';
+import {RubricStackParamList} from '../../navigation/RubricStack';
+import {RenderEmptyPlaceholder} from '../observation/ObservationReportsMainPage';
 
 type RubricEvaluationIndicatorListNavigationProp = StackNavigationProp<
   RubricStackParamList,
   'RubricEvaluationIndicatorList'
 >;
 type RubricEvaluationIndicatorListRouteProp = RouteProp<
-RubricStackParamList,
+  RubricStackParamList,
   'RubricEvaluationIndicatorList'
 >;
 
@@ -31,28 +35,53 @@ interface RubricEvaluationIndicatorListScreenProps {
 const RubricEvaluationIndicatorList: FC<
   RubricEvaluationIndicatorListScreenProps
 > = ({navigation, route}) => {
-  const {rubric} = route.params;
-
-  const {rubricData} = useAppSelector(state => state.rubric);
+  const {rubricItem} = route.params;
+  const [search, setSearch] = useState<string>('');
+  const {rubric,updateRubricResponse} = useAppSelector(state => state.rubric);
+  const {userData} = useAppSelector(state => state.auth);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(getRubric(rubric.rubricId));
-  }, []);
+    dispatch(getRubric(rubricItem.rubricId));
+  }, [updateRubricResponse]);
 
-  const onPressDeleteIndicator = () => {
-
-
+  const onPressDeleteIndicator = (RubricIndicatorItem: RubricIndicatorItem) => {
+    dispatch(
+      updateRubric([rubricItem.rubricId,{
+        rubricName: rubricItem.rubricName,
+        indicatorRequestList:
+          rubric?.dataList?.indicators
+            ?.filter(
+              indicator =>
+                indicator.indicatorId !== RubricIndicatorItem.indicatorId,
+            )
+            .map(item => ({
+              indicatorName: item.indicatorName,
+              indicatorDescription: item.indicatorDescription,
+              indicatorId: item.indicatorId,
+              domainId: item.domainId,
+              loggedInUserName: userData.userName,
+              tagIds: item.tags.map(ele => ele.tagId),
+            })) || [],
+        loggedInUserName: userData.userName,
+      }]),
+    );
   };
+
+  const filteredIndicatorList = rubric?.dataList?.indicators?.filter(item =>
+    item?.domainName
+      ?.toLocaleLowerCase()
+      ?.includes(search?.toLocaleLowerCase()),
+  );
 
   return (
     <Layout
       overridePaddingHorizontal
       overridePaddingVertical
       style={{paddingHorizontal: 15}}
-      title={rubric.rubricName}
+      title={rubricItem.rubricName}
       icon="evaluation_icon"
-      focusedStack='RubricStack'>
+      focusedStack="RubricStack">
       <View style={{marginVertical: 10}}>
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
           <Image name={'list_icon'} />
@@ -60,34 +89,44 @@ const RubricEvaluationIndicatorList: FC<
             Indicator list
           </Text>
           <Text style={{marginLeft: 3}} size="verysmall3">
-            (Last update: 23/01/2024 by Admin)
+            (Last update:{' '}
+            {moment(rubric?.dataList?.createdDate).format('DD/MM/YYYY')} by
+            {rubric?.dataList?.createdBy})
           </Text>
         </View>
         <SearchWithFilter
-          placeHolder="Search domain" onTextChange={function (text: string): void {
-            throw new Error('Function not implemented.');
-          } } onProceed={function (filter: FilterObject): void {
-            throw new Error('Function not implemented.');
-          } }        />
-        <View style={{marginVertical: 10}}>
-          {rubricData?.dataList?.indicators && rubricData?.dataList?.indicators?.length>0 ?rubricData?.dataList?.indicators?.map(item => (
-            <RubricIndicatorList
-              active={item.status}
-              createdBy={item.createdBy}
-              createdDate={moment(item.createdDate).format('DD/MM/YYYY')}
-              title={item.indicatorName}
-              onDelete={() => {
-                onPressDeleteIndicator();
-              }}
-              key={item.indicatorId}
-              onPress={() => {
-                navigation.navigate('RubricIndicatorDescription', {
-                  indicator: item,
-                  title: rubric.rubricName,
-                });
-              }}
-            />
-          )):<RenderEmptyPlaceholder/>}
+          placeHolder="Search domain"
+          onTextChange={(text) => {setSearch(text)}}
+          onProceed={() => {}}
+          filterNotNeeded
+        />
+        <View style={{marginBottom: 15}}>
+          {filteredIndicatorList ? (
+            filteredIndicatorList?.length > 0 ? (
+              filteredIndicatorList?.map(item => (
+                <RubricIndicatorList
+                  active={item.status}
+                  createdBy={item.createdBy}
+                  createdDate={moment(item.createdDate).format('DD/MM/YYYY')}
+                  title={item.indicatorName}
+                  onDelete={() => {
+                    onPressDeleteIndicator(item);
+                  }}
+                  key={item.indicatorId}
+                  onPress={() => {
+                    navigation.navigate('RubricIndicatorDescription', {
+                      indicator: item,
+                      title: rubricItem.rubricName,
+                    });
+                  }}
+                />
+              ))
+            ) : (
+              <RenderEmptyPlaceholder />
+            )
+          ) : (
+            <></>
+          )}
         </View>
       </View>
     </Layout>

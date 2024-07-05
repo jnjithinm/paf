@@ -2,6 +2,7 @@ import React from 'react';
 import {View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
 import {FONT_SIZES, FONT_VARIANT} from '../config/themes';
 import Icon from './Icon';
+import { RenderActiveStatus } from '../screens/userManagement/UsersMainPage';
 
 interface RubricListModalProps {
   title: string;
@@ -30,36 +31,7 @@ const RubricListModal: React.FC<RubricListModalProps> = ({
             {title}
           </Text>
         </View>
-        <View
-          style={{
-            width: '32%',
-            justifyContent: 'center',
-            alignItems: 'flex-end',
-          }}>
-          <View
-            style={{
-              backgroundColor: active ? '#EBF9D9' : '#FFEDED',
-              borderRadius: 15,
-              width: '90%',
-            }}>
-            <Text
-              style={{
-                padding: 2,
-                borderRadius: 5,
-                paddingHorizontal: 15,
-                fontSize: FONT_SIZES.small3,
-                color: active ? '#749E35' : '#D62828',
-              }}>
-              <View
-                style={[
-                  styles.dot,
-                  {backgroundColor: active ? '#749E35' : '#D62828'},
-                ]}
-              />
-              {active ? ' Active' : ' Inactive'}
-            </Text>
-          </View>
-        </View>
+      <RenderActiveStatus isActive={active}/>
       </View>
       <View style={styles.detailsContainer}>
         <View style={{flexDirection: 'row', width: '80%'}}>
@@ -90,9 +62,9 @@ export const styles = StyleSheet.create({
   container: {
     borderWidth: 1,
     borderColor: '#F4C24A',
-    borderRadius: 5,
+    borderRadius: 10,
     padding: 10,
-    marginBottom: 10,
+    marginVertical:5,
   },
   titleContainer: {
     flexDirection: 'row',
@@ -119,7 +91,6 @@ export const styles = StyleSheet.create({
   },
   detailsContainer: {
     flexDirection: 'row',
-    marginBottom: 10,
     width: '100%',
   },
   detailsInnerContainer: {

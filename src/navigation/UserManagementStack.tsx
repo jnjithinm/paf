@@ -14,10 +14,10 @@ export type UserManagementStackParamList = {
   RolesAndAppAccess:undefined;
 };
 
-const UserManagementStack =
+const UserManagementStackTab =
   createStackNavigator<UserManagementStackParamList>();
 
-const UserManagementStackNavigator = ({}) => {
+const UserManagementStack = ({}) => {
   const customTransition = ({
     current,
     layouts,
@@ -36,19 +36,19 @@ const UserManagementStackNavigator = ({}) => {
     };
   };
   return (
-    <UserManagementStack.Navigator
+    <UserManagementStackTab.Navigator
       screenOptions={({route}) => ({
         headerShown: false,
         keyboardHidesTabBar: true,
       })}>
-      {/* <UserManagementStack.Screen
+      <UserManagementStackTab.Screen
         name="UsersMainPage"
         component={UsersMainPage}
-      /> */}
-      <UserManagementStack.Screen name="UserGroups" component={UserGroups} />
-      <UserManagementStack.Screen name='RolesAndAppAccess' component={RolesAndAppAccess} />
-    </UserManagementStack.Navigator>
+      />
+      <UserManagementStackTab.Screen name="UserGroups" component={UserGroups} />
+      <UserManagementStackTab.Screen name='RolesAndAppAccess' component={RolesAndAppAccess} />
+    </UserManagementStackTab.Navigator>
   );
 };
 
-export default UserManagementStackNavigator;
+export default UserManagementStack;

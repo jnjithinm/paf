@@ -4,20 +4,22 @@ import {
   createStackNavigator,
 } from '@react-navigation/stack';
 
-import UsersMainPage from '../screens/userManagement/UsersMainPage';
-import UserGroups from '../screens/userManagement/UserGroups';
-import RolesAndAppAccess from '../screens/userManagement/RolesAndAppAccess';
+import States from '../screens/locationManagement/States';
+import Districts from '../screens/locationManagement/Districts';
+import Areas from '../screens/locationManagement/Areas';
+import School from '../screens/locationManagement/Schools';
 
 export type LocationManagementStackParamList = {
-  UsersMainPage: undefined;
-  UserGroups: undefined;
-  RolesAndAppAccess:undefined;
+  States: undefined;
+  Districts: undefined;
+  Areas: undefined;
+  Schools: undefined;
 };
 
-const LocationManagementStack =
+const LocationManagementTab =
   createStackNavigator<LocationManagementStackParamList>();
 
-const LocationManagementStackNavigator = ({}) => {
+const LocationManagementStack = ({}) => {
   const customTransition = ({
     current,
     layouts,
@@ -36,19 +38,17 @@ const LocationManagementStackNavigator = ({}) => {
     };
   };
   return (
-    <LocationManagementStack.Navigator
+    <LocationManagementTab.Navigator
       screenOptions={({route}) => ({
         headerShown: false,
         keyboardHidesTabBar: true,
       })}>
-      <LocationManagementStack.Screen
-        name="UsersMainPage"
-        component={UsersMainPage}
-      />
-      <LocationManagementStack.Screen name="UserGroups" component={UserGroups} />
-      <LocationManagementStack.Screen name='RolesAndAppAccess' component={RolesAndAppAccess} />
-    </LocationManagementStack.Navigator>
+      <LocationManagementTab.Screen name="States" component={States} />
+      <LocationManagementTab.Screen name="Districts" component={Districts} />
+      <LocationManagementTab.Screen name="Areas" component={Areas} />
+      <LocationManagementTab.Screen name="Schools" component={School} />
+    </LocationManagementTab.Navigator>
   );
 };
 
-export default LocationManagementStackNavigator;
+export default LocationManagementStack;

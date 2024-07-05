@@ -153,9 +153,11 @@ type IndividualMainPageRenderalTypes = {
 //IndividualMainScreen Renderals
 export const IndividualMainPageRenderal: FC<
   IndividualMainPageRenderalTypes
-> = ({onPress, individualResponse, flowDetailItem, totalQuestion}) => (
+> = ({onPress, individualResponse, flowDetailItem, totalQuestion}) =>{
+
+  return (
   <View>
-    {individualResponse.length > 0 ? (
+    {individualResponse ? individualResponse.length > 0 ? (
       individualResponse.map(item => (
         <IndividualTile
           rating={item.questionAvgRating}
@@ -177,9 +179,9 @@ export const IndividualMainPageRenderal: FC<
       ))
     ) : (
       <RenderEmptyPlaceholder />
-    )}
+    ):<></>}
   </View>
-);
+)};
 
 type RenderQuestionAndAnswerTypes = {
   index: number;

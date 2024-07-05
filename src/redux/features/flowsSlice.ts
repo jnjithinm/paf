@@ -1,10 +1,10 @@
-import { createAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import {createAction, createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 
 import api from '../../config/axios';
 import endPoints from '../../config/endPoints';
-import { PaginationRequest } from './usersSlice';
-import { ErrorResponse, setLoading } from './authSlice';
-import { ErrorStatusObject } from '../../config/types';
+import {PaginationRequest} from './usersSlice';
+import {ErrorResponse, setLoading} from './authSlice';
+import {ErrorStatusObject} from '../../config/types';
 
 export interface FlowItem {
   flowId: number;
@@ -110,10 +110,10 @@ export const resetAssignFlowResponse = createAction<void>(
 export const getAllFlows = createAsyncThunk<
   GetAllFlowsResponse,
   [string, number, PaginationRequest],
-  { rejectValue: ErrorResponse }
+  {rejectValue: ErrorResponse}
 >(
   'flows/getAllFlows',
-  async ([loggedInUserName, userId, payload], { dispatch, rejectWithValue }) => {
+  async ([loggedInUserName, userId, payload], {dispatch, rejectWithValue}) => {
     try {
       dispatch(setLoading(true));
       const response = await api.post(
@@ -132,10 +132,10 @@ export const getAllFlows = createAsyncThunk<
 export const getFlowById = createAsyncThunk<
   GetFlowByIdResponse,
   [number, number, PaginationRequest],
-  { rejectValue: ErrorResponse }
+  {rejectValue: ErrorResponse}
 >(
   'flows/getFlowById',
-  async ([flowId, userId, payload], { dispatch, rejectWithValue }) => {
+  async ([flowId, userId, payload], {dispatch, rejectWithValue}) => {
     try {
       dispatch(setLoading(true));
       const response = await api.post(
@@ -158,13 +158,20 @@ export const getFlowById = createAsyncThunk<
 
 export const sendReminderForm = createAsyncThunk<
   sendReminderForm,
-  [SendReminderMethods, number, string, string[]?, string?],
-  { rejectValue: ErrorResponse }
+  [SendReminderMethods, number, number, string, string[]?, string?],
+  {rejectValue: ErrorResponse}
 >(
   'forms/sendReminderForm',
   async (
-    [sendReminderMethod, formId, loggedInUserName, userGroupIds, selectedDate],
-    { dispatch, rejectWithValue },
+    [
+      sendReminderMethod,
+      formId,
+      flowId,
+      loggedInUserName,
+      userGroupIds,
+      selectedDate,
+    ],
+    {dispatch, rejectWithValue},
   ) => {
     try {
       dispatch(setLoading(true));
@@ -173,19 +180,19 @@ export const sendReminderForm = createAsyncThunk<
       if (sendReminderMethod === 'To All Pending Users') {
         response = await api.get(
           endPoints.SEND_REMINDER_TO_ALL_PENDING_USERS +
-          formId +
-          `?loggedInUserName=${loggedInUserName}`,
+            formId +
+            `?flowId=${flowId}&loggedInUserName=${loggedInUserName}`,
         );
       } else if (sendReminderMethod === 'By Date') {
         response = await api.put(
           endPoints.SCHEDULE_REMINDER_DATE +
-          `formId=${formId}&scheduleDate=${selectedDate}&loggedInUserName=${loggedInUserName}`,
+            `formId=${formId}&scheduleDate=${selectedDate}&loggedInUserName=${loggedInUserName}`,
         );
       } else {
         response = await api.get(
           endPoints.SEND_REMINDER_TO_USER_GROUPS +
-          formId +
-          `?userGroupIds=${userGroupIdsParam}&loggedInUserName=${loggedInUserName}`,
+            formId +
+            `?flowId=${flowId}&userGroupIds=${userGroupIdsParam}&loggedInUserName=${loggedInUserName}`,
         );
       }
       return response.data as sendReminderForm;
@@ -200,10 +207,10 @@ export const sendReminderForm = createAsyncThunk<
 export const assignFlowToUsersAndGroups = createAsyncThunk<
   AssignFlowResponse,
   AssignFlowRequest,
-  { rejectValue: ErrorResponse }
+  {rejectValue: ErrorResponse}
 >(
   'forms/assignFlowToUsersAndGroups',
-  async (payload, { dispatch, rejectWithValue }) => {
+  async (payload, {dispatch, rejectWithValue}) => {
     try {
       dispatch(setLoading(true));
       const response = await api.put(
@@ -223,11 +230,11 @@ export const assignFlowToUsersAndGroups = createAsyncThunk<
 export const deleteFlow = createAsyncThunk<
   DeleteFlowResponse,
   DeleteFlowRequest,
-  { rejectValue: ErrorResponse }
->('flows/deleteFlow', async (payload, { dispatch, rejectWithValue }) => {
+  {rejectValue: ErrorResponse}
+>('flows/deleteFlow', async (payload, {dispatch, rejectWithValue}) => {
   try {
     dispatch(setLoading(true));
-    const response = await api.delete(endPoints.DELETE_FLOWS, { data: payload });
+    const response = await api.delete(endPoints.DELETE_FLOWS, {data: payload});
 
     return response.data as DeleteFlowResponse;
   } catch (error: any) {
@@ -278,8 +285,7 @@ const flowsSlice = createSlice({
       })
       .addCase(getAllFlows.fulfilled, (state, action) => {
         // state.isLoading = false;
-        state.allFlows =
-          action.payload.payload;
+        state.allFlows = action.payload.payload;
       })
       .addCase(getAllFlows.rejected, (state, action) => {
         // state.isLoading = false;
@@ -290,7 +296,6 @@ const flowsSlice = createSlice({
       .addCase(getFlowById.fulfilled, (state, action) => {
         // state.isLoading = false;
         state.flowById = action.payload.payload;
-
       })
       .addCase(getFlowById.rejected, (state, action) => {
         // state.isLoading = false;

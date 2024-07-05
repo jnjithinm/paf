@@ -3,18 +3,13 @@ import {
   View,
   ViewStyle,
   TouchableOpacity,
-  TextInput,
   StyleSheet,
-  FlatList,
-  ListRenderItemInfo,
   Platform,
-  Dimensions,
 } from 'react-native';
 import Icon from './Icon';
 import colors from '../config/colors';
 import Calendar, {FilterObject} from './Calendar';
 import {ItemType} from '../config/types';
-import Text from './Text';
 import {normaliseDesigns} from '../utils/helpers/responsiveHelpers';
 import {
   AutocompleteDropdown,
@@ -42,12 +37,6 @@ const SearchWithFilter: React.FC<RenderSearchTypes> = ({
   style,
 }) => {
   const [isOpenCalendar, setIsOpenCalendar] = useState<boolean>(false);
-  const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
-  const [searchText, setSearchText] = useState<string>('');
-
-  const openDropdown = () => {
-    setIsDropdownOpen(true);
-  };
 
   const onSearch = (text: string) => {
     if (onTextChange) {
@@ -55,10 +44,8 @@ const SearchWithFilter: React.FC<RenderSearchTypes> = ({
     }
   };
 
-  useEffect(() => {}, [searchText]);
 
   const onOptionPress = (option: TAutocompleteDropdownItem) => {
-    setIsDropdownOpen(false);
     onProceed({selectedItem: {value: option?.id, label: option?.title || ''}});
   };
 
@@ -74,20 +61,6 @@ const SearchWithFilter: React.FC<RenderSearchTypes> = ({
         isVisible={isOpenCalendar}
       />
       <View style={[styles.container, style]}>
-        {/* {filterNotNeeded ? (
-          <View style={[styles.textInput, {width: '100%'}]}>
-            <TextInput
-              style={styles.input}
-              placeholder={placeHolder}
-              placeholderTextColor={colors.darkGrey}
-              value={searchText}
-              onChangeText={filterOptions}
-              onFocus={openDropdown}
-              editable={options && !isDropdownOpen}
-            />
-           <Icon name="search_icon" style={styles.icon} />
-          </View>
-        ) : ( */}
           <AutocompleteDropdown
             inputContainerStyle={[
               styles.dropdownTextInputStyle,
@@ -99,8 +72,7 @@ const SearchWithFilter: React.FC<RenderSearchTypes> = ({
             onChangeText={onSearch}
             textInputProps={{style:{color:colors.blackColor}}}
             suggestionsListTextStyle={{color:colors.blackColor,fontSize:FONT_SIZES.body1}}
-            suggestionsListContainerStyle={{borderRadius:10}}
-            // containerStyle={{color}}
+            suggestionsListContainerStyle={{borderRadius:10}}            
             RightIconComponent={<Icon name="search_icon" style={styles.icon} />}
             showChevron={false}
             showClear={false}
@@ -110,7 +82,6 @@ const SearchWithFilter: React.FC<RenderSearchTypes> = ({
               title: item.label,
             }))}
           />
-        {/* )} */}
         {!filterNotNeeded && (
           <TouchableOpacity
             style={styles.filterButton}

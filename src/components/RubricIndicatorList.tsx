@@ -55,11 +55,10 @@ const styles = StyleSheet.create({
   container: {
     borderWidth: 1,
     borderColor: '#F4C24A',
-    borderRadius: 5,
+    borderRadius: 10,
     paddingHorizontal: 10,
-    // paddingVertical:8,
+    paddingVertical:8,
     marginVertical: 5,
-    height: normaliseDesigns(65),
     justifyContent:'space-evenly'
   },
   titleContainer: {
@@ -97,9 +96,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     // marginBottom: 10,
     width: '100%',
+    marginTop:10
   },
   detailsInnerContainer: {
-    width: '30%',
+    width: '50%',
     // borderRightColor: 'red',
     // borderRightWidth:1,
     justifyContent: 'center',

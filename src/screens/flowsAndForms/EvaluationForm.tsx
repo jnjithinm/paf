@@ -26,6 +26,7 @@ import {
   IndicatorPreviewForm,
   QuestionOption,
   getPreviewForm,
+  resetPreviewFormResponse,
   submitPreviewForm,
 } from '../../redux/features/formsSlice';
 import FooterWithButtons from '../../components/FooterWithButtons';
@@ -377,14 +378,16 @@ const RenderDateSelector: FC<RenderDateSelectorTypes> = ({
 }) => {
   const [isPickeOpen, setIsPickerOpen] = useState<boolean>(false);
 
+  //
+  
   const handleDateSelection = (date: string) => {
     setIsPickerOpen(false);
-
+    const formattedDateTime = moment(date).format('YYYY-MM-DD HH:mm:ss');
     if (itemAnswer) {
       setAnswers(
         answers.map(item =>
           item === itemAnswer
-            ? {...item, answer: moment(date).format('DD-MM-YYYY')}
+            ? {...item, answer: formattedDateTime}
             : item,
         ),
       );
@@ -394,7 +397,7 @@ const RenderDateSelector: FC<RenderDateSelectorTypes> = ({
         {
           questionId,
           questionOptionId,
-          answer: moment(date).format('DD-MM-YYYY'),
+          answer: moment(date).format('DD/MM/YYYY'),
         },
       ]);
     }
@@ -431,8 +434,7 @@ const RenderDateSelector: FC<RenderDateSelectorTypes> = ({
               }}
               size="small2">
               {itemAnswer?.answer
-                ? moment(itemAnswer?.answer as string)
-                    ?.format('MM/DD/YYYY')
+                ? moment(itemAnswer.answer as string).format('MM/DD/YYYY')
                     ?.toString()
                 : 'Month/Day/Year'}
             </Text>
@@ -752,7 +754,9 @@ const EvaluationForm: FC<EvaluationFormScreenProps> = ({navigation, route}) => {
 
   useEffect(() => {
     if (submitPreviewFormResponse) {
+  
       navigation.navigate('FormList', {flowItem});
+      dispatch(resetPreviewFormResponse());
     }
   }, [submitPreviewFormResponse]);
 

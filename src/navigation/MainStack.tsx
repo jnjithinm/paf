@@ -21,6 +21,9 @@ import UserManagementStack, {
   UserManagementStackParamList,
 } from './UserManagementStack';
 import FlowsAndFormsStack from './FlowsAndFormsStack';
+import  LocationManagementStack, {
+  LocationManagementStackParamList,
+} from './LocationManagementStack';
 
 export type MainStackParamList = {
   Splash: undefined;
@@ -35,6 +38,7 @@ export type MainStackParamList = {
   RubricStack: NavigatorScreenParams<RubricStackParamList>;
   FlowsAndFormsStack: NavigatorScreenParams<FlowsAndFormsStackParamList>;
   UserManagementStack: NavigatorScreenParams<UserManagementStackParamList>;
+  LocationManagementStack: NavigatorScreenParams<LocationManagementStackParamList>;
 };
 
 const MainStack = createStackNavigator<MainStackParamList>();
@@ -63,7 +67,7 @@ const MainStackNavigator = () => {
             keyboardHidesTabBar: true,
           };
         }}>
-        {/* {isAdmin ? (
+        {isAdmin ? (
           <MainStack.Screen name="AdminDashboard" component={AdminDashboard} />
         ) : (
           <MainStack.Screen
@@ -73,10 +77,14 @@ const MainStackNavigator = () => {
         )}
         <MainStack.Screen name="ObservationStack" component={ObservationStack} />
         <MainStack.Screen name="RubricStack" component={RubricStack} />
-        <MainStack.Screen name="FlowsAndFormsStack" component={FlowsAndFormsStack} /> */}
+        <MainStack.Screen name="FlowsAndFormsStack" component={FlowsAndFormsStack} />
         <MainStack.Screen
           name="UserManagementStack"
           component={UserManagementStack}
+        />
+        <MainStack.Screen
+          name="LocationManagementStack"
+          component={LocationManagementStack}
         />
         <MainStack.Screen name="Notifications" component={Notifications} />
       </MainStack.Navigator>

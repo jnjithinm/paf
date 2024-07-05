@@ -12,6 +12,10 @@ import {useAppDispatch, useAppSelector} from '../../redux/store';
 import {User, getAllUsers} from '../../redux/features/usersSlice';
 import {normaliseDesigns} from '../../utils/helpers/responsiveHelpers';
 import colors from '../../config/colors';
+import {RenderEmptyPlaceholder} from '../observation/ObservationReportsMainPage';
+import SearchWithFilter from '../../components/SearchWithFilter';
+import Tab from '../../components/Tab';
+import {ItemType} from '../../config/types';
 
 type UsersMainPageNavigationProp = StackNavigationProp<
   UserManagementStackParamList,
@@ -117,7 +121,10 @@ type RenderActiveStatusTypes = {
   isActive: boolean;
   style?: ViewStyle;
 };
-export const RenderActiveStatus: FC<RenderActiveStatusTypes> = ({isActive, style}) => (
+export const RenderActiveStatus: FC<RenderActiveStatusTypes> = ({
+  isActive,
+  style,
+}) => (
   <View
     style={{
       ...style,
@@ -146,22 +153,22 @@ export const RenderActiveStatus: FC<RenderActiveStatusTypes> = ({isActive, style
 );
 
 type RenderLabelAndValueTypes = {
-    label: string;
-    value: string;
-    style?: ViewStyle;
-  };
-  const RenderLabelAndValue: FC<RenderLabelAndValueTypes> = ({
-    label,
-    value,
-    style,
-  }) =>  (
-    <View style={{ marginVertical: 3, flexShrink: 1, flexGrow: 0, ...style }}>
-      <Text style={{ color: '#4E565F' }} size="small1">
-        {label}
-      </Text>
-      <Text size="small2">{value}</Text>
-    </View>
-  );
+  label: string;
+  value: string | number;
+  style?: ViewStyle;
+};
+export const RenderLabelAndValue: FC<RenderLabelAndValueTypes> = ({
+  label,
+  value,
+  style,
+}) => (
+  <View style={{marginVertical: 3,  ...style}}>
+    <Text style={{color: '#4E565F'}} size="small1">
+      {label}
+    </Text>
+    <Text size="small1">{value}</Text>
+  </View>
+);
 type UserTileTypes = {
   user: User;
   onPressItem: (item: User) => void;
@@ -180,7 +187,8 @@ const UserTile: FC<UserTileTypes> = ({user, selectedItem, onPressItem}) => (
     }}
     onPress={() => {
       onPressItem(user);
-    }}>
+    }}
+    disabled={selectedItem === user}>
     <View
       style={{
         flexDirection: 'row',
@@ -213,7 +221,7 @@ const UserTile: FC<UserTileTypes> = ({user, selectedItem, onPressItem}) => (
         />
       </View>
     </View>
-    {user.userId === selectedItem?.userId && (
+    {user?.userId === selectedItem?.userId && (
       <View
         style={{
           flexDirection: 'row',
@@ -223,48 +231,33 @@ const UserTile: FC<UserTileTypes> = ({user, selectedItem, onPressItem}) => (
           paddingVertical: 10,
           borderBottomRightRadius: 10,
           borderBottomLeftRadius: 10,
-          flexWrap: 'wrap',
+          // flexWrap: 'wrap',
           justifyContent: 'space-between',
         }}>
-        <RenderLabelAndValue
-          label={'Email'}
-          value={user.email}
-          
-        />
-        <RenderLabelAndValue
-          label={'Phone'}
-          value={user.contactNumber}
-          
-        />
-        <RenderLabelAndValue
-          label={'Role'}
-          value={user.role}
-          
-        />
-        <RenderLabelAndValue
-          label={'State'}
-          value={user.state}
-          
-        />
-        <RenderLabelAndValue
-          label={'District'}
-          value={user.district}
-          
-        />
-        <RenderLabelAndValue
-          label={'Area'}
-          value={user.area}
-          
-        />
-        <RenderLabelAndValue
-          label={'School'}
-          value={user.school}
-          
-        />
+        <View>
+          <RenderLabelAndValue label={'Email'} value={user.email} />
+          <RenderLabelAndValue label={'State'} value={user.state} />
+          <RenderLabelAndValue label={'School'} value={user.school} />
+        </View>
+        <View>
+          <RenderLabelAndValue label={'Phone'} value={user.contactNumber} />
+          <RenderLabelAndValue label={'District'} value={user.district} />
+        </View>
+
+        <View>
+          <RenderLabelAndValue label={'Role'} value={user.role} />
+          <RenderLabelAndValue label={'Area'} value={user.area} />
+        </View>
       </View>
     )}
   </TouchableOpacity>
 );
+
+export const tabs: ItemType[] = [
+  {label: 'All', value: 'All'},
+  {label: 'Active', value: 'Active'},
+  {label: 'Inactive', value: 'Inactive'},
+];
 
 interface UsersMainPageScreenProps {
   navigation: UsersMainPageNavigationProp;
@@ -273,8 +266,11 @@ interface UsersMainPageScreenProps {
 
 const UsersMainPage: FC<UsersMainPageScreenProps> = ({navigation, route}) => {
   const [selectedItem, setSelectedItem] = useState<User>();
+  const [search, setSearch] = useState<string>('');
+  const [usersList, setUsersList] = useState<User[]>();
+
   const dispatch = useAppDispatch();
-  const {allUsers}=useAppSelector(state=>state.users);
+  const {allUsers} = useAppSelector(state => state.users);
 
   useEffect(() => {
     dispatch(
@@ -285,7 +281,29 @@ const UsersMainPage: FC<UsersMainPageScreenProps> = ({navigation, route}) => {
       }),
     );
   }, []);
-  
+
+  useEffect(() => {
+    if (allUsers) {
+      setUsersList(allUsers.dataList);
+    }
+  }, [allUsers]);
+
+  const handleTabClick = (title: ItemType) => {
+    if (allUsers?.dataList) {
+      title.value == 'Active'
+        ? setUsersList(allUsers?.dataList?.filter(item => item.status === true))
+        : title.value == 'Inactive'
+        ? setUsersList(
+            allUsers?.dataList?.filter(item => item.status === false),
+          )
+        : setUsersList(allUsers?.dataList);
+    }
+  };
+
+  const filteredUsers = usersList?.filter(item =>
+    item?.name?.toLocaleLowerCase()?.includes(search?.toLocaleLowerCase()),
+  );
+
   return (
     <Layout
       overridePaddingHorizontal
@@ -298,16 +316,33 @@ const UsersMainPage: FC<UsersMainPageScreenProps> = ({navigation, route}) => {
       <Text size="body3" fontVariant="bold" style={{marginVertical: 10}}>
         Users
       </Text>
-      <View style={{marginVertical:10}}>
-        {allUsers?.dataList.map(item => (
-          <UserTile
-            user={item}
-            onPressItem={user => {
-              setSelectedItem(user);
-            }}
-            selectedItem={selectedItem}
-          />
-        ))}
+      <Tab tabs={tabs} onClick={title => handleTabClick(title)} />
+      <SearchWithFilter
+        onTextChange={text => {
+          setSearch(text);
+        }}
+        onProceed={filter => {}}
+        style={{marginVertical: 10}}
+        filterNotNeeded
+      />
+      <View style={{marginVertical: 10}}>
+        {filteredUsers ? (
+          filteredUsers?.length > 0 ? (
+            filteredUsers.map(item => (
+              <UserTile
+                user={item}
+                onPressItem={user => {
+                  setSelectedItem(user);
+                }}
+                selectedItem={selectedItem}
+              />
+            ))
+          ) : (
+            <RenderEmptyPlaceholder />
+          )
+        ) : (
+          <></>
+        )}
       </View>
     </Layout>
   );

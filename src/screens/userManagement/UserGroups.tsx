@@ -16,7 +16,11 @@ import {
 } from '../../redux/features/usersSlice';
 import colors from '../../config/colors';
 import {styles} from '../../components/RubricListModal';
-import {RenderActiveStatus} from './UsersMainPage';
+import {RenderActiveStatus, tabs} from './UsersMainPage';
+import SearchWithFilter from '../../components/SearchWithFilter';
+import {ItemType} from '../../config/types';
+import Tab from '../../components/Tab';
+import {RenderEmptyPlaceholder} from '../observation/ObservationReportsMainPage';
 
 type UserGroupsNavigationProp = StackNavigationProp<
   UserManagementStackParamList,
@@ -27,40 +31,7 @@ type UserGroupsRouteProp = RouteProp<
   'UserGroups'
 >;
 
-const userGroups: UserGroup[] = [
-  {
-    userGroupId: 1,
-    groupName: 'Admin Group',
-    createdBy: 'Alice',
-    creationDate: '2023-01-15',
-    groupUsers: 10,
-    status: true,
-  },
-  {
-    userGroupId: 2,
-    groupName: 'Development Team',
-    createdBy: 'Bob',
-    creationDate: '2023-02-20',
-    groupUsers: 15,
-    status: true,
-  },
-  {
-    userGroupId: 3,
-    groupName: 'Marketing Team',
-    createdBy: 'Charlie',
-    creationDate: '2023-03-10',
-    groupUsers: 8,
-    status: false,
-  },
-  {
-    userGroupId: 4,
-    groupName: 'Sales Team',
-    createdBy: 'David',
-    creationDate: '2023-04-05',
-    groupUsers: 12,
-    status: true,
-  },
-];
+
 
 type RenderUserGroupDetailsTypes = {
   label: string;
@@ -90,15 +61,26 @@ const UserGroupTile: FC<UserGroupTileProps> = ({
 }) => {
   return (
     <TouchableOpacity
-      style={{borderWidth: 1, borderColor: '#F4C24A',marginVertical:5,padding:10,borderRadius:10}}
-      onPress={onPressItem}>
+      style={{
+        borderWidth: 1,
+        borderColor: '#F4C24A',
+        marginVertical: 5,
+        padding: 10,
+        borderRadius: 10,
+      }}
+      onPress={(userGroup)=>{}}>
       <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
         <Text size="body2" fontVariant="bold">
           {userGroup.groupName}
         </Text>
         <RenderActiveStatus isActive={userGroup.status || false} />
       </View>
-      <View style={{flexDirection: 'row',justifyContent:'space-between',marginTop:5}}>
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          marginTop: 5,
+        }}>
         <RenderUserGroupDetails label={'Group'} value={userGroup.userGroupId} />
         <RenderUserGroupDetails
           label={'Created By'}
@@ -123,9 +105,31 @@ interface UserGroupsScreenProps {
 
 const UserGroups: FC<UserGroupsScreenProps> = ({navigation, route}) => {
   const [selectedItem, setSelectedItem] = useState<UserGroup>();
+  const [search, setSearch] = useState<string>('');
+  const [userGroupList, setUserGroupList] = useState<UserGroup[]>();
 
   const {allUserGroups} = useAppSelector(state => state.users);
   const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    if (allUserGroups) {
+      setUserGroupList(allUserGroups.dataList);
+    }
+  }, [allUserGroups]);
+
+  const handleTabClick = (title: ItemType) => {
+    if (allUserGroups?.dataList) {
+      title.value == 'Active'
+        ? setUserGroupList(
+            allUserGroups?.dataList?.filter(item => item.status === true),
+          )
+        : title.value == 'Inactive'
+        ? setUserGroupList(
+            allUserGroups?.dataList?.filter(item => item.status === false),
+          )
+        : setUserGroupList(allUserGroups?.dataList);
+    }
+  };
 
   useEffect(() => {
     dispatch(
@@ -136,6 +140,10 @@ const UserGroups: FC<UserGroupsScreenProps> = ({navigation, route}) => {
       }),
     );
   }, []);
+
+  const filteredUsers = userGroupList?.filter(item =>
+    item?.groupName?.toLocaleLowerCase()?.includes(search?.toLocaleLowerCase()),
+  );
 
   return (
     <Layout
@@ -149,23 +157,33 @@ const UserGroups: FC<UserGroupsScreenProps> = ({navigation, route}) => {
       <Text size="body3" fontVariant="bold" style={{marginVertical: 10}}>
         User Groups
       </Text>
+      <Tab tabs={tabs} onClick={title => handleTabClick(title)} />
+      <SearchWithFilter
+        onTextChange={text => {
+          setSearch(text);
+        }}
+        onProceed={filter => {}}
+        style={{marginVertical: 10}}
+        filterNotNeeded
+      />
       <View>
-        {allUserGroups?.dataList?.map(item => (
-          <UserGroupTile
-            userGroup={item}
-            onPressItem={user => {
-              // setSelectedItem(user);
-            }}
-            selectedItem={selectedItem}
-          />
-        ))}
-        {userGroups.map(item => (
-          <UserGroupTile
-            userGroup={item}
-            onPressItem={(userGroup)=>{setSelectedItem(userGroup)}}
-            selectedItem={selectedItem}
-          />
-        ))}
+        {filteredUsers ? (
+          filteredUsers.length > 0 ? (
+            filteredUsers?.map(item => (
+              <UserGroupTile
+                userGroup={item}
+                onPressItem={user => {
+                  // setSelectedItem(user);
+                }}
+                selectedItem={selectedItem}
+              />
+            ))
+          ) : (
+            <RenderEmptyPlaceholder />
+          )
+        ) : (
+          <></>
+        )}
       </View>
     </Layout>
   );

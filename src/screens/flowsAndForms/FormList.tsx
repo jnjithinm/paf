@@ -74,6 +74,7 @@ const FormList: FC<FormListScreenProps> = ({navigation, route}) => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
+    
     dispatch(
       getFlowById([
         flowItem.flowId,
@@ -109,6 +110,10 @@ const FormList: FC<FormListScreenProps> = ({navigation, route}) => {
     );
   };
 
+  const filteredFlows = flowById?.dataList?.filter(item =>
+    item?.flowName?.toLocaleLowerCase()?.includes(search?.toLocaleLowerCase()),
+  );
+
   return (
     <>
       <Layout
@@ -140,7 +145,7 @@ const FormList: FC<FormListScreenProps> = ({navigation, route}) => {
             <RenderSuccessModalContent
               icon="flow_icon"
               highlightText="Success!"
-              descriptionText="Form assigned to selected user and user groups."
+              descriptionText="Flow assigned to selected user and user groups."
             />
           }
           isVisible={isVisibleAssignFormSuccessModal}
@@ -153,14 +158,14 @@ const FormList: FC<FormListScreenProps> = ({navigation, route}) => {
             setSearch(text);
           }}
           onProceed={() => {}}
+          filterNotNeeded
         />
         <View>
-          {flowById?.dataList && flowById?.dataList?.length > 0 ? (
-            flowById?.dataList?.map((item, index) => (
+          {filteredFlows ?  filteredFlows.length > 0 ? (
+            filteredFlows?.map((item, index) => (
               <RenderFormItem
                 title={item.formName}
                 onPressItem={() => {
-                  console.log('dsffsds', isAdmin, flowItem, item);
                   isAdmin
                     ? navigation.navigate('FormResponses', {
                         flowDetailItem: item,
@@ -175,7 +180,7 @@ const FormList: FC<FormListScreenProps> = ({navigation, route}) => {
             ))
           ) : (
             <RenderEmptyPlaceholder />
-          )}
+          ):<></>}
         </View>
       </Layout>
       {isAdmin && (

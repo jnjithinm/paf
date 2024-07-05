@@ -38,7 +38,7 @@ const RenderItem: FC<RenderItemTypes> = ({
   };
   return (
     <>
-      <TouchableOpacity
+      <View
         style={{
           flexDirection: 'row',
           marginVertical:
@@ -46,8 +46,7 @@ const RenderItem: FC<RenderItemTypes> = ({
           alignItems: 'center',
           justifyContent: 'space-between',
           ...style,
-        }}
-        onPress={onPress}>
+        }}>
         {icon ? (
           subMenuLevel ? (
             <View
@@ -61,11 +60,13 @@ const RenderItem: FC<RenderItemTypes> = ({
                 width={subMenuLevel === 'one' ? 45 : 40}
                 height={subMenuLevel === 'one' ? 45 : 40}
               />
-              <Text
-                size={subMenuLevel === 'one' ? 'body1' : 'small3'}
-                style={{letterSpacing: -0.27}}>
-                {itemName}
-              </Text>
+              <TouchableOpacity onPress={onPress}>
+                <Text
+                  size={subMenuLevel === 'one' ? 'body1' : 'small3'}
+                  style={{letterSpacing: -0.27}}>
+                  {itemName}
+                </Text>
+              </TouchableOpacity>
             </View>
           ) : (
             <View style={{flexDirection: 'row', alignItems: 'center'}}>
@@ -80,15 +81,18 @@ const RenderItem: FC<RenderItemTypes> = ({
                 }}>
                 <Icon name={icon} />
               </View>
-              <Text fontVariant="bold" style={{marginLeft: 7}} size="body1">
-                {itemName}
-              </Text>
+              <TouchableOpacity onPress={onPress}>
+                <Text fontVariant="bold" style={{marginLeft: 7}} size="body1">
+                  {itemName}
+                </Text>
+              </TouchableOpacity>
             </View>
           )
         ) : (
           <></>
         )}
         {expandItem && (
+          <TouchableOpacity onPress={onPress}>
           <Icon
             name="chevron_up_black_icon"
             style={{
@@ -96,8 +100,9 @@ const RenderItem: FC<RenderItemTypes> = ({
               alignSelf: subMenuLevel ? 'flex-end' : undefined,
             }}
           />
+          </TouchableOpacity>
         )}
-      </TouchableOpacity>
+      </View>
       {isExpanded &&
         expandItem?.map((item, index) => (
           <RenderItem
@@ -228,7 +233,7 @@ const DrawerContent: FC<DrawerContentTypes> = ({closeDrawer}) => {
           itemName: 'Roles & App Access',
           onPressItem: () => {
             closeDrawer();
-            navigate('UserManagementStack', {screen: 'UserGroups'});
+            navigate('UserManagementStack', {screen: 'RolesAndAppAccess'});
           },
           icon: 'extend_item_level_1_icon',
           subMenuLevel: 'one',
@@ -242,25 +247,37 @@ const DrawerContent: FC<DrawerContentTypes> = ({closeDrawer}) => {
       expandItem: [
         {
           itemName: 'States',
-          onPressItem: () => {},
+          onPressItem: () => {
+            closeDrawer();
+            navigate('LocationManagementStack', {screen: 'States'});
+          },
           icon: 'extend_item_level_1_icon',
           subMenuLevel: 'one',
         },
         {
           itemName: 'Districts',
-          onPressItem: () => {},
+          onPressItem: () => {
+            closeDrawer();
+            navigate('LocationManagementStack', {screen: 'Districts'});
+          },
           icon: 'extend_item_level_1_icon',
           subMenuLevel: 'one',
         },
         {
           itemName: 'Areas',
-          onPressItem: () => {},
+          onPressItem: () => {
+            closeDrawer();
+            navigate('LocationManagementStack', {screen: 'Areas'});
+          },
           icon: 'extend_item_level_1_icon',
           subMenuLevel: 'one',
         },
         {
           itemName: 'Schools',
-          onPressItem: () => {},
+          onPressItem: () => {
+            closeDrawer();
+            navigate('LocationManagementStack', {screen: 'Schools'});
+          },
           icon: 'extend_item_level_1_icon',
           subMenuLevel: 'one',
         },

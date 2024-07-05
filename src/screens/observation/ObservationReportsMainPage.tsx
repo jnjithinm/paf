@@ -298,26 +298,29 @@ const ObservationReportsMainPage: FC<ObservationReportsMainPageScreenProps> = ({
           }}
         />
         <View style={{marginBottom: 20}}>
-          {allObservations?.dataList?.observations &&
-          allObservations?.dataList?.observations?.length > 0 ? (
-            allObservations?.dataList?.observations?.map((item, index) => (
-              <ObservationsTile
-                key={index}
-                rating={item.ratings?.toString()}
-                userAssisted={item.userAssessed}
-                image={item.userImage}
-                reportedBy={item.reportedBy}
-                onPress={() => {
-                  dispatch(saveObservationId(item.observationId));
-                  navigation.navigate('ObservationReport');
-                }}
-                creationDate={moment(item.createdDate).format('DD/MM/YYYY')}
-                creationTime={moment(item.createdDate).format('h:mmA')}
-                status={item.observationStatus}
-              />
-            ))
+          {allObservations ? (
+            allObservations?.dataList?.observations?.length > 0 ? (
+              allObservations?.dataList?.observations?.map((item, index) => (
+                <ObservationsTile
+                  key={index}
+                  rating={item.ratings?.toString()}
+                  userAssisted={item.userAssessed}
+                  image={item.userImage}
+                  reportedBy={item.reportedBy}
+                  onPress={() => {
+                    dispatch(saveObservationId(item.observationId));
+                    navigation.navigate('ObservationReport');
+                  }}
+                  creationDate={moment(item.createdDate).format('DD/MM/YYYY')}
+                  creationTime={moment(item.createdDate).format('h:mmA')}
+                  status={item.observationStatus}
+                />
+              ))
+            ) : (
+              <RenderEmptyPlaceholder />
+            )
           ) : (
-            <RenderEmptyPlaceholder />
+            <></>
           )}
         </View>
       </Layout>

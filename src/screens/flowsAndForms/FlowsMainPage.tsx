@@ -105,17 +105,17 @@ const FlowsItem: React.FC<FlowsItemProps> = ({
             <Text style={styles.subHeading}> {createdDate}</Text>
           </View>
           <View style={styles.detailsInnerContainer}>
-            <Text style={styles.heading}>Users</Text>
+            <Text style={styles.heading}>Responses</Text>
             <Text style={styles.subHeading}> {userCount}</Text>
           </View>
         </View>
-        {isAdmin && (
+        {/* {isAdmin && (
           <View style={styles.deleteButton}>
             <TouchableOpacity onPress={onDelete}>
               <Icon name="trash_icon" />
             </TouchableOpacity>
           </View>
-        )}
+        )} */}
       </View>
     </TouchableOpacity>
   );
@@ -154,7 +154,10 @@ const FlowsMainPage: FC<FlowsMainPageScreenProps> = ({navigation, route}) => {
     );
   };
 
-  console.log('search', search);
+  const filteredFlows = allFlows?.dataList?.filter(item =>
+    item?.flowName?.toLocaleLowerCase()?.includes(search?.toLocaleLowerCase()),
+  );
+
   return (
     <>
       <Layout
@@ -187,33 +190,33 @@ const FlowsMainPage: FC<FlowsMainPageScreenProps> = ({navigation, route}) => {
             onProceed={() => {}}
           />
 
-          {allFlows?.dataList && allFlows?.dataList?.length > 0 ? (
-            allFlows?.dataList
+          {filteredFlows ? filteredFlows.length > 0 ? (
+            filteredFlows
               ?.filter(item =>
                 item.flowName
                   ?.toLocaleLowerCase()
                   ?.includes(search?.toLocaleLowerCase()),
               )
-              ?.map((item, index) => (
+              ?.map((ele) => (
                 <FlowsItem
-                  active={item.status}
-                  createdBy={item.createdBy}
-                  createdDate={moment(item.createdDate).format('DD/MM/YYYY')}
-                  title={item.flowName}
-                  userCount={item.responses}
+                  active={ele.status}
+                  createdBy={ele.createdBy}
+                  createdDate={moment(ele.createdDate).format('DD/MM/YYYY')}
+                  title={ele.flowName}
+                  userCount={ele.responses}
                   onDelete={() => {
-                    onPressDeleteFlow(item);
+                    onPressDeleteFlow(ele);
                   }}
-                  key={item.flowId}
+                  key={ele.flowId}
                   onPress={() => {
-                    navigation.navigate('FormList', {flowItem: item});
+                    navigation.navigate('FormList', {flowItem: ele});
                   }}
                   isAdmin={isAdmin}
                 />
               ))
           ) : (
             <RenderEmptyPlaceholder />
-          )}
+          ):<></>}
         </View>
       </Layout>
     </>

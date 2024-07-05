@@ -181,7 +181,7 @@ export const RenderAssignFormModalContent: FC<
     );
     onPressAssign(selectedUsersNumbers, selectedUserGroupsNumbers);
   };
-  
+
   return (
     <View style={{paddingHorizontal: 10}}>
       <MultiSelectDropdown
@@ -359,6 +359,7 @@ const RenderSendReminderModal: FC<RenderSendReminderModalTypes> = ({
       sendReminderForm([
         selectedRemindMethod?.value as SendReminderMethods,
         flowDetailItem.formId,
+        flowDetailItem.flowId,
         userData.userName,
         selectedUserGroups,
         moment(selectedDate as string)
@@ -415,10 +416,10 @@ const RenderSendReminderModal: FC<RenderSendReminderModalTypes> = ({
                 style={{marginTop: 5, maxHeight: normaliseDesigns(75)}}
                 showsVerticalScrollIndicator>
                 {pendingUsersListForSendReminder?.dataList?.Users?.map(
-                  (item, index) => (
+                  (item) => (
                     <View
                       style={{flexDirection: 'row', marginVertical: 2}}
-                      key={index}>
+                      key={item.userId}>
                       <Text size="small2" fontVariant="semiBold">
                         {item.name}
                       </Text>
@@ -584,7 +585,8 @@ const FormResponses: FC<FormResponsesScreenProps> = ({navigation, route}) => {
   const [selectedQuestion, setSelectedQuestion] = useState<Question | null>(
     null,
   );
-  const [selectedRubricWise,setSelectedRubricWise]=useState<RubricWiseResponse | null>(null)
+  const [selectedRubricWise, setSelectedRubricWise] =
+    useState<RubricWiseResponse | null>(null);
 
   const [isAcceptingResponses, setIsAcceptingResponses] =
     useState<boolean>(true);
@@ -609,7 +611,9 @@ const FormResponses: FC<FormResponsesScreenProps> = ({navigation, route}) => {
 
   const dispatch = useAppDispatch();
 
-  const onPressItem = (item: IndividualResponse | Question | RubricWiseResponse) => {
+  const onPressItem = (
+    item: IndividualResponse | Question | RubricWiseResponse,
+  ) => {
     if (selectedTab === 'Individual') {
       setSelectedIndividual(item as IndividualResponse);
     } else if (selectedTab === 'Question Wise') {
@@ -748,7 +752,13 @@ const FormResponses: FC<FormResponsesScreenProps> = ({navigation, route}) => {
             />
           );
         } else {
-          renderal = <RubricWiseDescriptionRenderal flowId={flowDetailItem.flowId} formId={flowDetailItem.formId} selectedRubricWise={selectedRubricWise} />;
+          renderal = (
+            <RubricWiseDescriptionRenderal
+              flowId={flowDetailItem.flowId}
+              formId={flowDetailItem.formId}
+              selectedRubricWise={selectedRubricWise}
+            />
+          );
         }
         return {screen, setScreen, renderal};
       default:
@@ -868,6 +878,7 @@ const FormResponses: FC<FormResponsesScreenProps> = ({navigation, route}) => {
               placeHolder={'Search by user name'}
               onTextChange={() => {}}
               onProceed={() => {}}
+              filterNotNeeded
             />
           )}
         </View>

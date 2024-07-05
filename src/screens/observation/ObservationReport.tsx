@@ -199,7 +199,7 @@ const ObservationReport: FC<ObservationReportScreenProps> = ({
         }}
         style={{paddingHorizontal: 15, paddingVertical: 0}}
         icon="reports_icon"
-        title="Observation Report">
+        title="Report">
         <View style={{marginVertical: 20}}>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
             <RenderProfileIcon
@@ -222,7 +222,7 @@ const ObservationReport: FC<ObservationReportScreenProps> = ({
               </View>
               <View style={{flexDirection: 'row', alignItems: 'center'}}>
                 <RatingStars
-                  rating={Number(rating)}
+                  rating={Number(rating?.toFixed(1))}
                 />
                 <View
                   style={{

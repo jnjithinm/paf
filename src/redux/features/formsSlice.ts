@@ -473,6 +473,9 @@ const formsSlice = createSlice({
       .addCase(resetDeleteFormResponse, (state, action) => {
         state.deleteFormResponse = null;
       })
+      .addCase(resetPreviewFormResponse, (state, action) => {
+        state.submitPreviewFormResponse = null;
+      })
       .addCase(getFormById.pending, state => {
         // state.isLoading = true;
       })

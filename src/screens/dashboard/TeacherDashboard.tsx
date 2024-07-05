@@ -1,27 +1,28 @@
-import React, {FC, useEffect, useState} from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import {
   TouchableOpacity,
   View,
   ViewStyle,
 } from 'react-native';
-import {RouteProp, useFocusEffect} from '@react-navigation/native';
-import {StackNavigationProp} from '@react-navigation/stack';
-import {Drawer} from 'react-native-drawer-layout';
+import { RouteProp, useFocusEffect } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { Drawer } from 'react-native-drawer-layout';
 
 import Layout from '../../components/Layout';
-import Icon, {IconTypes} from '../../components/Icon';
+import Icon, { IconTypes } from '../../components/Icon';
 import Text from '../../components/Text';
 import colors from '../../config/colors';
-import {normaliseDesigns} from '../../utils/helpers/responsiveHelpers';
+import { normaliseDesigns } from '../../utils/helpers/responsiveHelpers';
 import DrawerContent from '../../components/DrawerContent';
-import {useAppDispatch, useAppSelector} from '../../redux/store';
-import {ObservationStatus, getDashboardDetailsAndObservationList} from '../../redux/features/observationSlice';
-import {navigate} from '../../utils/helpers/navigationHelpers';
-import {FilterObject} from '../../components/Calendar';
+import { useAppDispatch, useAppSelector } from '../../redux/store';
+import { ObservationStatus, getDashboardDetailsAndObservationList } from '../../redux/features/observationSlice';
+import { navigate } from '../../utils/helpers/navigationHelpers';
+import { FilterObject } from '../../components/Calendar';
 import SearchWithFilter from '../../components/SearchWithFilter';
-import {MainStackParamList} from '../../navigation/MainStack';
+import { MainStackParamList } from '../../navigation/MainStack';
 import FastImage from 'react-native-fast-image';
 import { RenderCompleteStatus } from '../observation/ObservationReportsMainPage';
+import { ItemType } from '../../config/types';
 
 type TeacherDashboardNavigationProp = StackNavigationProp<
   MainStackParamList,
@@ -60,7 +61,7 @@ const RenderTitleWithLink: FC<RenderTitleWithLinkTypes> = ({
       marginVertical: 5,
       ...style,
     }}>
-    <View style={{flexDirection: 'row', alignItems: 'center'}}>
+    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
       <View
         style={{
           height: normaliseDesigns(20),
@@ -72,7 +73,7 @@ const RenderTitleWithLink: FC<RenderTitleWithLinkTypes> = ({
         }}>
         <Icon name={icon} />
       </View>
-      <Text style={{marginLeft: 5}} fontVariant="bold" size="body2">
+      <Text style={{ marginLeft: 5 }} fontVariant="bold" size="body2">
         {titleText}
       </Text>
     </View>
@@ -102,12 +103,12 @@ type ObservationTileTypes = {
   userAssisted: string;
   image: string | null | undefined;
   onPress?: () => void;
-  status:ObservationStatus|undefined;
-  creationDate:string;
-  creationTime:string;
+  status: ObservationStatus | undefined;
+  creationDate: string;
+  creationTime: string;
   reportedBy: string;
   style?: ViewStyle;
-  disabled?:boolean
+  disabled?: boolean
 };
 
 export const ObservationsTile: FC<ObservationTileTypes> = ({
@@ -134,8 +135,8 @@ export const ObservationsTile: FC<ObservationTileTypes> = ({
     <TouchableOpacity
       onPress={() => {
         setIsPressed(true);
-        if(onPress){
-        onPress();
+        if (onPress) {
+          onPress();
         }
       }}
       disabled={disabled}
@@ -166,28 +167,28 @@ export const ObservationsTile: FC<ObservationTileTypes> = ({
         <Text size="small1" fontVariant="bold">
           {Number(rating).toFixed(1)}
         </Text>
-        <Icon style={{marginLeft: 5}} name="star_icon" width={10} />
+        <Icon style={{ marginLeft: 5 }} name="star_icon" width={10} />
       </View>
-      <View style={{flex: 4, marginLeft: 10}}>
+      <View style={{ flex: 4, marginLeft: 10 }}>
         <Text size="verysmall3" opacity="0.50">
           User Assessed
         </Text>
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <RenderProfileIcon image={image} name={userAssisted} />
-          <View style={{flex: 1}}>
-            <Text fontVariant="bold" size="small3" style={{marginLeft: 5}}>
+          <View style={{ flex: 1 }}>
+            <Text fontVariant="bold" size="small3" style={{ marginLeft: 5 }}>
               {userAssisted}
             </Text>
           </View>
         </View>
       </View>
-      <View style={{flex: 3}}>
+      <View style={{ flex: 3 }}>
         <Text size="verysmall3" opacity="0.50">
           Reported By
         </Text>
         <Text size="small3"> {reportedBy}</Text>
       </View>
-      <RenderCompleteStatus status={status} style={{alignSelf:'flex-start',margin:7}}/>
+      <RenderCompleteStatus status={status} style={{ alignSelf: 'flex-start', margin: 7 }} />
     </TouchableOpacity>
   );
 };
@@ -197,7 +198,7 @@ type ObservationFilterTileTypes = {
   color: 'green' | 'yellow' | 'orange';
   count: number;
   onPress: () => void;
-  disabled?:boolean;
+  disabled?: boolean;
 };
 
 export const ObservationFilterTile: FC<ObservationFilterTileTypes> = ({
@@ -213,16 +214,16 @@ export const ObservationFilterTile: FC<ObservationFilterTileTypes> = ({
         color === 'green'
           ? '#EBF9D9'
           : color === 'orange'
-          ? '#FDF0E3'
-          : '#FEF8EC',
+            ? '#FDF0E3'
+            : '#FEF8EC',
       alignItems: 'center',
       borderWidth: 1,
       borderColor:
         color === 'green'
           ? '#749E35'
           : color === 'orange'
-          ? '#D29804'
-          : '#EA7804',
+            ? '#D29804'
+            : '#EA7804',
       justifyContent: 'space-evenly',
       flexDirection: 'row',
       width: '30%',
@@ -231,15 +232,15 @@ export const ObservationFilterTile: FC<ObservationFilterTileTypes> = ({
       borderRadius: 10,
     }}
     disabled={disabled}
-    onPress={() => {}}>
+    onPress={() => { }}>
     <Text
       style={{
         color:
           color === 'green'
             ? '#749E35'
             : color === 'orange'
-            ? '#D29804'
-            : '#EA7804',
+              ? '#D29804'
+              : '#EA7804',
       }}
       fontVariant="bold"
       onPress={onPress}>
@@ -251,8 +252,8 @@ export const ObservationFilterTile: FC<ObservationFilterTileTypes> = ({
           color === 'green'
             ? '#749E35'
             : color === 'orange'
-            ? '#D29804'
-            : '#EA7804',
+              ? '#D29804'
+              : '#EA7804',
       }}
       fontVariant="semiBold">
       {text}
@@ -288,7 +289,7 @@ const CourseInProgresssTile: FC<CoursesInProgressTileTypes> = ({
     }}>
     <View>
       <Text fontVariant="bold">{courseDescription}</Text>
-      <View style={{flexDirection: 'row', alignItems: 'center'}}>
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <Text size="small1">Continue Learning</Text>
         <Icon name="right_icon" />
       </View>
@@ -305,7 +306,7 @@ const CourseInProgresssTile: FC<CoursesInProgressTileTypes> = ({
         borderRadius: 8,
       }}>
       <Icon name="clock_icon" />
-      <Text size="small2" style={{left: 4}}>
+      <Text size="small2" style={{ left: 4 }}>
         {minutesLeft} Mins Left
       </Text>
     </View>
@@ -336,7 +337,7 @@ const CourseTile: FC<CoursesTileTypes> = ({
     <Text
       fontVariant="bold"
       size="body1"
-      style={{marginVertical: 4, marginLeft: 4}}>
+      style={{ marginVertical: 4, marginLeft: 4 }}>
       {courseTitle}
     </Text>
     <View
@@ -347,11 +348,11 @@ const CourseTile: FC<CoursesTileTypes> = ({
         marginVertical: 6,
       }}>
       <Icon name="clock_icon" stroke={'#D29804'} />
-      <Text style={{color: '#D29804', marginLeft: 4}}>{courseDuration}</Text>
+      <Text style={{ color: '#D29804', marginLeft: 4 }}>{courseDuration}</Text>
     </View>
-    <View style={{flexDirection: 'row', alignItems: 'center', marginLeft: 8}}>
+    <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 8 }}>
       <Text size="small3">Enroll now</Text>
-      <Icon style={{marginLeft: 4}} name="right_icon" />
+      <Icon style={{ marginLeft: 4 }} name="right_icon" />
     </View>
   </View>
 );
@@ -360,7 +361,7 @@ type RatingProps = {
   rating: number;
 };
 
-export const RatingStars: FC<RatingProps> = ({rating}) => {
+export const RatingStars: FC<RatingProps> = ({ rating }) => {
   const renderStars = () => {
     const stars = [];
     const maxStars = 5;
@@ -379,7 +380,7 @@ export const RatingStars: FC<RatingProps> = ({rating}) => {
     return stars;
   };
 
-  return <View style={{flexDirection: 'row'}}>{renderStars()}</View>;
+  return <View style={{ flexDirection: 'row' }}>{renderStars()}</View>;
 };
 
 type RenderProfileIconTypes = {
@@ -434,23 +435,35 @@ export const RenderProfileIcon: FC<RenderProfileIconTypes> = ({
             borderRadius: size / 2,
           },
         ]}>
-        <Text style={{fontSize: size / 2}}>{initials}</Text>
+        <Text style={{ fontSize: size / 2 }}>{initials}</Text>
       </View>
     );
   }
 };
+
+const menuItems: ItemType[] = [
+  {
+    label: 'Observation',
+    value: 'Observation',
+  },
+  {
+    label: 'Evaluation Flows',
+    value: 'Evaluation Flows',
+  },
+]
+
 
 const TeacherDashboard: FC<TeacherDashboardScreenProps> = ({
   navigation,
   route,
 }) => {
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
-  const [filter, setFilter] = useState<FilterObject>();
+
 
   const dispatch = useAppDispatch();
 
-  const {userData} = useAppSelector(state => state.auth);
-  const {dashboardDetails} = useAppSelector(state => state.observation);
+  const { userData } = useAppSelector(state => state.auth);
+  const { dashboardDetails } = useAppSelector(state => state.observation);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -462,6 +475,20 @@ const TeacherDashboard: FC<TeacherDashboardScreenProps> = ({
     setIsDrawerOpen(false);
   };
 
+
+  const onSelectMenu = (label: string | undefined) => {
+    switch (label) {
+      case 'Observation':
+        navigation.navigate('ObservationStack', { screen: 'ObservationReportsMainPage' });
+        break;
+      case 'Evaluation Flows':
+        navigation.navigate('FlowsAndFormsStack', { screen: 'FlowsMainPage' });
+        break;
+      default:
+        break;
+    }
+  }
+
   return (
     <Drawer
       open={isDrawerOpen}
@@ -471,14 +498,14 @@ const TeacherDashboard: FC<TeacherDashboardScreenProps> = ({
       <Layout
         overridePaddingHorizontal
         overridePaddingVertical
-        style={{paddingHorizontal: 15}}
+        style={{ paddingHorizontal: 15 }}
         onPressMenuIcon={() => {
           setIsDrawerOpen(true);
         }}
         onPressBellIcon={() => {
           navigate('Notifications');
         }}
-        onPressProfileIcon={() => {}}
+        onPressProfileIcon={() => { }}
         focusedStack={isDrawerOpen ? undefined : 'TeacherDashboard'}
         dashboard
         avoidBackButton>
@@ -493,7 +520,7 @@ const TeacherDashboard: FC<TeacherDashboardScreenProps> = ({
             paddingTop: 10,
             flex: 1,
           }}>
-          <View style={{justifyContent: 'space-evenly', width: '55%'}}>
+          <View style={{ justifyContent: 'space-evenly', width: '55%' }}>
             <View
               style={{
                 flexDirection: 'row',
@@ -505,7 +532,7 @@ const TeacherDashboard: FC<TeacherDashboardScreenProps> = ({
                 name={userData?.name || ''}
                 size={45}
               />
-              <View style={{marginLeft: 10}}>
+              <View style={{ marginLeft: 10 }}>
                 <Text fontVariant="bold" size="body2">
                   Hi, {userData?.name}
                 </Text>
@@ -523,11 +550,11 @@ const TeacherDashboard: FC<TeacherDashboardScreenProps> = ({
                 justifyContent: 'space-between',
               }}>
               <Text size="body5" fontVariant="bold">
-              {dashboardDetails?.averageRating?.toFixed(1)}
+                {dashboardDetails?.averageRating?.toFixed(1)}
               </Text>
-              <View style={{justifyContent: 'space-around'}}>
+              <View style={{ justifyContent: 'space-around' }}>
                 <RatingStars rating={Number(dashboardDetails?.averageRating)} />
-                <Text size="verysmall3">from 1000 ratings</Text>
+                <Text size="verysmall3">from {dashboardDetails?.forMe} ratings</Text>
               </View>
             </View>
           </View>
@@ -536,22 +563,23 @@ const TeacherDashboard: FC<TeacherDashboardScreenProps> = ({
             name="rating_celebration_icon"
             width={130}
             height={130}
-            style={{alignSelf: 'flex-end'}}
+            style={{ alignSelf: 'flex-end' }}
           />
         </View>
         <SearchWithFilter
-          onTextChange={() => {}}
+          onTextChange={() => { }}
+          options={menuItems}
           onProceed={filter => {
-            setFilter(filter);
+            onSelectMenu(filter?.selectedItem?.label)
           }}
-        filterNotNeeded
+          filterNotNeeded
         />
-        <View style={{marginTop: 10}}>
+        <View style={{ marginTop: 10 }}>
           <RenderTitleWithLink
             icon="analytics_icon"
             titleText="Analytics"
             linkText="Learn More"
-            onPress={() => {}}
+            onPress={() => { }}
           />
         </View>
         <View>
@@ -565,30 +593,30 @@ const TeacherDashboard: FC<TeacherDashboardScreenProps> = ({
               });
             }}
           />
-          <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
             <ObservationFilterTile
               count={Number(dashboardDetails?.total) || 0}
               color="green"
               text="All"
-              onPress={() => {}}
+              onPress={() => { }}
               disabled
             />
             <ObservationFilterTile
               count={Number(dashboardDetails?.byMe) || 0}
               color="orange"
               text="By Me"
-              onPress={() => {}}
+              onPress={() => { }}
               disabled
             />
             <ObservationFilterTile
               count={Number(dashboardDetails?.forMe) || 0}
               color="yellow"
               text="For Me"
-              onPress={() => {}}
+              onPress={() => { }}
               disabled
             />
           </View>
-          <View style={{marginTop: 20}}>
+          <View style={{ marginTop: 20 }}>
             {dashboardDetails?.observations?.slice(0, 4)?.map((item, index) => (
               <ObservationsTile
                 key={index}
@@ -609,10 +637,10 @@ const TeacherDashboard: FC<TeacherDashboardScreenProps> = ({
             icon="monitor_courses_icon"
             titleText="Courses"
             linkText="View All"
-            style={{marginTop: 25}}
-            onPress={() => {}}
+            style={{ marginTop: 25 }}
+            onPress={() => { }}
           />
-          <Text size="small3" style={{marginVertical: 10}}>
+          <Text size="small3" style={{ marginVertical: 10 }}>
             5 in progress courses
           </Text>
           <CourseInProgresssTile
@@ -625,10 +653,10 @@ const TeacherDashboard: FC<TeacherDashboardScreenProps> = ({
             minutesLeft={10}
             courseDescription={'Preparing lesson plans'}
           />
-          <Text size="small3" style={{marginTop: 20, marginBottom: 10}}>
+          <Text size="small3" style={{ marginTop: 20, marginBottom: 10 }}>
             12 available courses
           </Text>
-          <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
             <CourseTile
               courseImage={''}
               courseTitle={'Creating safe spaces'}

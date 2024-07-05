@@ -272,7 +272,7 @@ const Calendar: FC<CalendarPropsTypes> = ({onProceed, onClose, isVisible}) => {
               </TouchableOpacity>
             </View>
             <RatingInput
-              label={'sort by filtering'}
+              label={'sort by rating'}
               style={{marginVertical: 5}}
               rating={rating || 0}
               onChangeRating={setRating}

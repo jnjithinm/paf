@@ -141,7 +141,7 @@ const BottomTab: FC<BottomTabTypes> = ({focusedStack}) => {
               width={size}
               height={size}
             />
-           {item.disabled && <Text size='verysmall2' style={{top:3}} color='dangerColor'>Coming soon</Text>}
+           {item.disabled && <Text size='verysmall1' style={{top:2}} color='dangerColor'>Coming soon</Text>}
             </View>
           </TouchableOpacity>
         );

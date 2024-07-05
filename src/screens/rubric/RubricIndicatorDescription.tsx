@@ -39,13 +39,14 @@ const RenderTags: FC<RenderTagsTypes> = ({tags}) => (
       borderWidth: 1,
       borderColor: '#EA7804',
       backgroundColor: '#FDF0E3',
-      padding: 7,
+      paddingHorizontal: 6,
+      paddingVertical:4,
       borderRadius: 7,
       flex: 0,
       margin: 3,
     }}>
     <Text size="small2">{tags}</Text>
-    <Icon style={{marginLeft: 3}} name="cross_icon" />
+    <Icon style={{marginLeft: 10}} name="cross_icon" />
   </View>
 );
 const RubricIndicatorDescription: FC<RubricIndicatorDescriptionScreenProps> = ({
@@ -74,11 +75,7 @@ const RubricIndicatorDescription: FC<RubricIndicatorDescriptionScreenProps> = ({
             by Admin)
           </Text>
         </View>
-        <SearchWithFilter placeHolder="Search domain" onTextChange={function (text: string): void {
-          throw new Error('Function not implemented.');
-        } } onProceed={function (filter: FilterObject): void {
-          throw new Error('Function not implemented.');
-        } } />
+        <SearchWithFilter placeHolder="Search domain" onTextChange={()=>{}} onProceed={()=>{}} filterNotNeeded />
 
         <View style={{marginVertical: 5}}>
           <Text fontVariant="bold">Domain</Text>
@@ -99,7 +96,7 @@ const RubricIndicatorDescription: FC<RubricIndicatorDescriptionScreenProps> = ({
         </View>
         <View style={{marginVertical: 5}}>
           <Text fontVariant="bold">Tags</Text>
-          <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
+          <View style={{flexDirection: 'row', flexWrap: 'wrap',marginTop:5}}>
             {indicator?.tags?.map(item => (
               <RenderTags tags={item.tagName} key={item.tagId}/>
             ))}

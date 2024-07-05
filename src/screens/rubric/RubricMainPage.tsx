@@ -35,37 +35,33 @@ interface RubricMainPageScreenProps {
 export const tabs: ItemType[] = [
   {value: 'All', label: 'All'},
   {value: 'Active', label: 'Active'},
-  {value: 'Non-Active', label: 'Non-Active'},
+  {value: 'Inactive', label: 'Inactive'},
 ];
 
 const RubricMainPage: FC<RubricMainPageScreenProps> = ({navigation, route}) => {
-  const [rubricListData, setRubricListData] = useState<RubricItem[]>([]);
+  const [rubricList, setRubricList] = useState<RubricItem[]>();
 
   const {allRubrics, deleteSuccess} = useAppSelector(state => state.rubric);
   const {userData} = useAppSelector(state => state.auth);
   const dispatch = useAppDispatch();
 
-  const deleteItem = () => {
-    console.log('delete press');
-  };
-
   const handleTabClick = (title: ItemType) => {
     if (allRubrics?.dataList) {
       title.value == 'Active'
-        ? setRubricListData(
+        ? setRubricList(
             allRubrics?.dataList?.filter(item => item.status === true),
           )
         : title.value == 'Non-Active'
-        ? setRubricListData(
+        ? setRubricList(
             allRubrics?.dataList.filter(item => item.status === false),
           )
-        : setRubricListData(allRubrics?.dataList);
+        : setRubricList(allRubrics?.dataList);
     }
   };
 
   useEffect(() => {
     if (allRubrics) {
-      setRubricListData(allRubrics.dataList);
+      setRubricList(allRubrics.dataList);
     }
   }, [allRubrics]);
 
@@ -97,6 +93,10 @@ const RubricMainPage: FC<RubricMainPageScreenProps> = ({navigation, route}) => {
     }
   }, [deleteSuccess]);
 
+
+
+
+
   return (
     <Layout
       overridePaddingHorizontal
@@ -111,29 +111,34 @@ const RubricMainPage: FC<RubricMainPageScreenProps> = ({navigation, route}) => {
       </Text>
       <View style={{marginVertical: 10}}>
         <Tab tabs={tabs} onClick={title => handleTabClick(title)} />
-
-        {rubricListData.length > 0 ? (
-          rubricListData.map(item => (
-            <RubricListModal
-              active={item.status}
-              createdBy={item.createdBy}
-              createdDate={moment(item.createdDate).format('DD/MM/YYYY')}
-              title={item.rubricName}
-              userCount={item.groupUsers}
-              onDelete={() => {
-                onPressDeleteRubric(item);
-              }}
-              key={item.rubricId}
-              onPress={() => {
-                navigation.navigate('RubricEvaluationIndicatorList', {
-                  rubric: item,
-                });
-              }}
-            />
-          ))
-        ) : (
-          <RenderEmptyPlaceholder />
-        )}
+        <View style={{marginVertical: 15}}>
+          {rubricList ? (
+            rubricList.length > 0 ? (
+              rubricList.map(item => (
+                <RubricListModal
+                  active={item.status}
+                  createdBy={item.createdBy}
+                  createdDate={moment(item.createdDate).format('DD/MM/YYYY')}
+                  title={item.rubricName}
+                  userCount={item.groupUsers}
+                  onDelete={() => {
+                    onPressDeleteRubric(item);
+                  }}
+                  key={item.rubricId}
+                  onPress={() => {
+                    navigation.navigate('RubricEvaluationIndicatorList', {
+                      rubricItem: item,
+                    });
+                  }}
+                />
+              ))
+            ) : (
+              <RenderEmptyPlaceholder />
+            )
+          ) : (
+            <></>
+          )}
+        </View>
       </View>
     </Layout>
   );

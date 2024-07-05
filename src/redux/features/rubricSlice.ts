@@ -72,6 +72,25 @@ type GetRubricResponse = {
 
 type GetRubricResponsePayload = GetRubricResponse['payload'];
 
+interface IndicatorRequest {
+  indicatorId?: number;
+  domainId: number;
+  tagIds: number[];
+  indicatorName: string;
+  indicatorDescription: string;
+  loggedInUserName: string;
+}
+
+interface UpdateRubricRequest {
+  rubricName: string;
+  indicatorRequestList: IndicatorRequest[];
+  loggedInUserName: string;
+}
+
+interface UpdateRubricResponse{
+
+}
+
 export const setRubricShowMessage = createAction<ErrorStatusObject | null>(
   'SET_RUBRIC_SHOW_MESSAGE',
 );
@@ -123,18 +142,36 @@ export const getRubric = createAsyncThunk<GetRubricResponse, number>(
   },
 );
 
+export const updateRubric = createAsyncThunk<
+UpdateRubricResponse,
+  [number,UpdateRubricRequest],
+  {rejectValue: ErrorResponse}
+>('rubric/updateRubric', async ([rubricId, payload], {dispatch, rejectWithValue}) => {
+  try {
+    dispatch(setLoading(true));
+    const response = await api.put(endPoints.UPDATE_RUBRIC + rubricId, payload);
+    return response.data as UpdateRubricResponse;
+  } catch (error: any) {
+    return rejectWithValue(error.response.data);
+  } finally {
+    dispatch(setLoading(false));
+  }
+});
+
 interface InitialState {
   allRubrics: GetAllRubricsResponsePayload | null;
-  rubricData: GetRubricResponsePayload | null;
+  rubric: GetRubricResponsePayload | null;
   deleteSuccess: boolean;
+  updateRubricResponse:boolean;
   rubricShowMessage: ErrorStatusObject | null;
   errorMessage: string;
 }
 
 const initialState: InitialState = {
   allRubrics: null,
-  rubricData: null,
+  rubric: null,
   deleteSuccess: false,
+  updateRubricResponse:false,
   rubricShowMessage: null,
   errorMessage: '',
 };
@@ -163,7 +200,7 @@ const rubricSlice = createSlice({
 
       })
       .addCase(getRubric.fulfilled, (state, action) => {
-        state.rubricData = action.payload.payload;
+        state.rubric = action.payload.payload;
       })
       .addCase(getRubric.rejected, (state, action) => {
       })
@@ -182,7 +219,25 @@ const rubricSlice = createSlice({
           status: 'Error',
           message: action?.payload?.error?.errorMessage,
         };
-      });
+      })
+      .addCase(updateRubric.pending, state => {
+        state.updateRubricResponse = false;
+      })
+      .addCase(updateRubric.fulfilled, (state, action) => {
+        state.updateRubricResponse = true;
+        state.rubricShowMessage = {
+          status: 'Success',
+          message: 'Indicator deleted',
+        };
+
+      })
+      .addCase(updateRubric.rejected, (state, action) => {
+        state.updateRubricResponse = false;
+        state.rubricShowMessage = {
+          status: 'Error',
+          message: action?.payload?.error?.errorMessage ,
+        };
+      })
   },
 });
 

@@ -13,7 +13,7 @@ import RubricMainPage from '../screens/rubric/RubricMainPage';
 export type RubricStackParamList = {
   RubricMainPage: undefined;
   AddNewObservation: undefined;
-  RubricEvaluationIndicatorList: {rubric: RubricItem};
+  RubricEvaluationIndicatorList: {rubricItem: RubricItem};
   RubricIndicatorDescription: {indicator: RubricIndicatorItem; title: string};
 };
 

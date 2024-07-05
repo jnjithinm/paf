@@ -88,7 +88,9 @@ const AdminDashboard: FC<AdminDashboardScreenProps> = ({navigation, route}) => {
     {
       icon: 'admin_dashboard_location_management_icon',
       label: 'Location Management',
-      onPress: () => {},
+      onPress: () => {
+        navigation.navigate('LocationManagementStack',{screen:'States'})
+      },
     },
     {
       icon: 'admin_dashboard_analytics_icon',

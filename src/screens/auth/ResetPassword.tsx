@@ -43,7 +43,7 @@ const RenderConfirmEmailModal: FC<RenderConfirmEmailModalTypes> = ({
     style={{justifyContent: 'center', alignItems: 'center', marginTop: -15}}>
     <Image name="email_icon" />
     <Text fontVariant="bold" style={{marginVertical: 10}}>
-      Check your username
+      Check your Email
     </Text>
     <Text style={{textAlign: 'center'}} size="small3">
       We have sent a password recover instructions to your username.
