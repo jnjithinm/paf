@@ -8,19 +8,15 @@ import Layout from '../../components/Layout';
 import Tab from '../../components/Tab';
 import {useAppDispatch, useAppSelector} from '../../redux/store';
 import {normaliseFont} from '../../utils/helpers/responsiveHelpers';
-import Icon from '../../components/Icon';
 import Text from '../../components/Text';
 import {
   FlowItem,
-  assignFlowToUsersAndGroups,
   deleteFlow,
   getAllFlows,
-  resetAssignFlowResponse,
 } from '../../redux/features/flowsSlice';
 import {styles} from '../../components/RubricListModal';
 import {FlowsAndFormsStackParamList} from '../../navigation/FlowsAndFormsStack';
 import SearchWithFilter from '../../components/SearchWithFilter';
-import {FilterObject} from '../../components/Calendar';
 import {RenderEmptyPlaceholder} from '../observation/ObservationReportsMainPage';
 
 type FlowsMainPageNavigationProp = StackNavigationProp<

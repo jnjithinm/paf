@@ -29,23 +29,6 @@ interface NotificationsScreenProps {
 
 
 const Notifications: FC<NotificationsScreenProps> = ({navigation, route}) => {
-  const [email, setEmail] = useState<string>('');
-  const [isShowModal, setIsShowModal] = useState<boolean>(false);
-
-  const {validateField} = useValidation();
-
-  const emailIdErrorMessage = validateField({
-    fieldName: 'Email ID',
-    value: email,
-  });
-
-  const onPressSendButton = () => {
-    setIsShowModal(true);
-  };
-
-  const onPressOpenEmail=()=>{
-    navigation.navigate('CreateNewPassword')
-  }
 
   return (
     <Layout

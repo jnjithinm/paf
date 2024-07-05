@@ -329,31 +329,25 @@ const DrawerContent: FC<DrawerContentTypes> = ({closeDrawer}) => {
           subMenuLevel: 'one',
           expandItem: [
             {
-              itemName: 'User Analytics',
+              itemName: 'User & Role Analytics',
               onPressItem: () => {},
               icon: 'extend_item_level_2_icon',
               subMenuLevel: 'two',
             },
             {
-              itemName: 'Classroom Resources',
+              itemName: 'Location Analytics',
               onPressItem: () => {},
               icon: 'extend_item_level_2_icon',
               subMenuLevel: 'two',
             },
             {
-              itemName: 'Learning Management System',
+              itemName: 'Teacher & Observation Analytics',
               onPressItem: () => {},
               icon: 'extend_item_level_2_icon',
               subMenuLevel: 'two',
             },
             {
-              itemName: 'Teacher Evalutaion',
-              onPressItem: () => {},
-              icon: 'extend_item_level_2_icon',
-              subMenuLevel: 'two',
-            },
-            {
-              itemName: 'Flows',
+              itemName: 'Flows & Forms Analytics',
               onPressItem: () => {},
               icon: 'extend_item_level_2_icon',
               subMenuLevel: 'two',
