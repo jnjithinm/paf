@@ -1,5 +1,5 @@
 import React, {FC, useEffect, useState} from 'react';
-import {TextInput, TouchableOpacity, View} from 'react-native';
+import {TouchableOpacity, View} from 'react-native';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 
@@ -74,7 +74,6 @@ const FormList: FC<FormListScreenProps> = ({navigation, route}) => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    
     dispatch(
       getFlowById([
         flowItem.flowId,
@@ -161,26 +160,30 @@ const FormList: FC<FormListScreenProps> = ({navigation, route}) => {
           filterNotNeeded
         />
         <View>
-          {filteredFlows ?  filteredFlows.length > 0 ? (
-            filteredFlows?.map((item, index) => (
-              <RenderFormItem
-                title={item.formName}
-                onPressItem={() => {
-                  isAdmin
-                    ? navigation.navigate('FormResponses', {
-                        flowDetailItem: item,
-                      })
-                    : navigation.navigate('EvaluationForm', {
-                        flowDetailItem: item,
-                        flowItem,
-                      });
-                }}
-                key={index}
-              />
-            ))
+          {filteredFlows ? (
+            filteredFlows.length > 0 ? (
+              filteredFlows?.map((item) => (
+                <RenderFormItem
+                  title={item.formName}
+                  onPressItem={() => {
+                    isAdmin
+                      ? navigation.navigate('FormResponses', {
+                          flowDetailItem: item,
+                        })
+                      : navigation.navigate('EvaluationForm', {
+                          flowDetailItem: item,
+                          flowItem,
+                        });
+                  }}
+                  key={item.formId}
+                />
+              ))
+            ) : (
+              <RenderEmptyPlaceholder />
+            )
           ) : (
-            <RenderEmptyPlaceholder />
-          ):<></>}
+            <></>
+          )}
         </View>
       </Layout>
       {isAdmin && (

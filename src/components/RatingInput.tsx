@@ -35,7 +35,6 @@ const RatingInput: FC<RatingInputTypes> = ({
   const filledStars = Math.floor(rating);
   const hasHalfStar = rating - filledStars >= 0.5;
 
-  console.log("rating==",rating)
 
   return (
     <View style={{ ...style }}>

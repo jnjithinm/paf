@@ -46,7 +46,7 @@ const RenderConfirmEmailModal: FC<RenderConfirmEmailModalTypes> = ({
       Check your Email
     </Text>
     <Text style={{textAlign: 'center'}} size="small3">
-      We have sent a password recover instructions to your username.
+      We have sent a password recover instructions to your email.
     </Text>
     <View
       style={{

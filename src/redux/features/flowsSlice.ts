@@ -145,10 +145,6 @@ export const getFlowById = createAsyncThunk<
 
       return response.data as GetFlowByIdResponse;
     } catch (error: any) {
-      console.log(
-        'error.response?.data?.message',
-        error.response?.data?.message,
-      );
       return rejectWithValue(error.response.data);
     } finally {
       dispatch(setLoading(false));
@@ -217,7 +213,6 @@ export const assignFlowToUsersAndGroups = createAsyncThunk<
         endPoints.ASSIGN_FLOW_TO_USERS_AND_USER_GROUPS,
         payload,
       );
-      console.log('re', response.data);
       return response.data as AssignFlowResponse;
     } catch (error: any) {
       return rejectWithValue(error.response.data);

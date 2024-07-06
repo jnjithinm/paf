@@ -7,6 +7,7 @@ import {
 import { RouteProp, useFocusEffect } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Drawer } from 'react-native-drawer-layout';
+import FastImage from 'react-native-fast-image';
 
 import Layout from '../../components/Layout';
 import Icon, { IconTypes } from '../../components/Icon';
@@ -17,10 +18,8 @@ import DrawerContent from '../../components/DrawerContent';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { ObservationStatus, getDashboardDetailsAndObservationList } from '../../redux/features/observationSlice';
 import { navigate } from '../../utils/helpers/navigationHelpers';
-import { FilterObject } from '../../components/Calendar';
 import SearchWithFilter from '../../components/SearchWithFilter';
 import { MainStackParamList } from '../../navigation/MainStack';
-import FastImage from 'react-native-fast-image';
 import { RenderCompleteStatus } from '../observation/ObservationReportsMainPage';
 import { ItemType } from '../../config/types';
 

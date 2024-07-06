@@ -102,7 +102,7 @@ const ShowToastMessage: FC<ShowMessageTypes> = ({style}) => {
         break;
       case 'Warning':
         textColor = '#EA7804';
-        backgroundColor = '#EA7804';
+        backgroundColor = '#FDF0E3';
         icon = 'toast_message_warning_icon';
         break;
       case 'Error':

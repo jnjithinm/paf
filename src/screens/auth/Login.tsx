@@ -16,7 +16,6 @@ import {
   authenticateUser,
   logoutAndclearToken,
   resetUsernamePasswordErrorMessages,
-
 } from '../../redux/features/authSlice';
 import Layout from '../../components/Layout';
 import {
@@ -38,10 +37,11 @@ const Login: FC<LoginScreenProps> = ({navigation, route}) => {
   const [password, setPassword] = useState<string>('');
   const [isChanged, setIsChanged] = useState<boolean>(false);
   const [isRememberMe, setIsRememberMe] = useState<boolean>(false);
-  const [isShowError,setIsShowError]=useState<boolean>(false);
 
   const dispatch = useAppDispatch();
-  const {usernameErrorMessage,passwordErrorMessage} = useAppSelector(state => state.auth);
+  const {usernameErrorMessage, passwordErrorMessage} = useAppSelector(
+    state => state.auth,
+  );
   const {validateField} = useValidation();
 
   const usernameValidationErrorMessage = validateField({
@@ -57,8 +57,6 @@ const Login: FC<LoginScreenProps> = ({navigation, route}) => {
   const onPressLogin = async () => {
     dispatch(resetUsernamePasswordErrorMessages());
     if (!usernameErrorMessage && !passwordErrorMessage) {
-
-      setIsShowError(true);
       if (isRememberMe && isChanged) {
         setIsChanged(false);
         await storeUserCredentials(username, password);
@@ -110,7 +108,6 @@ const Login: FC<LoginScreenProps> = ({navigation, route}) => {
         padding: 20,
       }}
       hideHeader>
-
       <StatusBar backgroundColor={colors.backgroundColor} />
       <Icon name="app_logo" width={65} height={65} style={{marginTop: '20%'}} />
       <Text size={'body6'} fontVariant="bold" style={{marginVertical: 10}}>
@@ -185,57 +182,23 @@ const Login: FC<LoginScreenProps> = ({navigation, route}) => {
         <Button
           style={{width: '100%'}}
           text="Log In"
-          active={Boolean(!usernameValidationErrorMessage && !passwordValidationErrorMessage)}
+          active={Boolean(
+            !usernameValidationErrorMessage && !passwordValidationErrorMessage,
+          )}
           onPress={onPressLogin}
         />
-        {/* <View style={{marginVertical: 10}}>
-          <Text style={{color: '#ABB4BD', marginVertical: 10}} size="body1">
-            Or sign in with social account
-          </Text>
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'space-around',
-              marginBottom: 10,
-            }}>
-            <TouchableOpacity
-              style={{
-                paddingHorizontal: 20,
-                paddingVertical: 5,
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderWidth: 1,
-                borderRadius: 8,
-                borderColor: '#E4E7EB',
-              }}>
-              <Icon name="google_icon" />
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={{
-                paddingHorizontal: 20,
-                paddingVertical: 5,
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderWidth: 1,
-                borderRadius: 8,
-                borderColor: '#E4E7EB',
-              }}>
-              <Icon name="facebook_icon" />
-            </TouchableOpacity>
-          </View>
-        </View> */}
+
         <View
           style={{
             flexDirection: 'row',
             alignItems: 'center',
-            marginTop:'15%'
+            marginTop: '15%',
           }}>
           <Text style={{color: '#ABB4BD'}} size="body1">
             Don't have an account ?
           </Text>
           <TouchableOpacity
-          disabled
+            disabled
             onPress={() => {
               navigation.navigate('SignUp');
             }}>

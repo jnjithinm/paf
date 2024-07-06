@@ -14,7 +14,6 @@ const persistConfig = {
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 const tokenMiddleware = (store: any) => (next: any) => (action: any) => {
-  // Handle network errors (no internet)
   if (action?.payload?.message === 'Network Error') {
     store.dispatch(
       setAuthShowMessage({

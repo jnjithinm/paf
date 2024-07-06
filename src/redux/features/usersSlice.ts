@@ -180,11 +180,9 @@ export const getPendingUsersListForSendReminder = createAsyncThunk<
       const response = await api.get(
         endPoints.GET_PENDING_USERS_LIST_FOR_SEND_REMINDER + formId+`?flowId=${flowId}`,
       );
-      console.log("re",response.data)
       return response.data as GetPendingUsersListForSendReminderResponse;
       
     } catch (error: any) {
-      console.log("error",error)
       return rejectWithValue(error.response.data);
     }
   },
@@ -292,7 +290,6 @@ const usersSlice = createSlice({
       )
       .addCase(getPendingUsersListForSendReminder.rejected, (state, action) => {
         state.pendingUsersListForSendReminder = null;
-        console.log('sd',action?.payload?.error?.errorMessage)
         state.usersShowMessage = {
           status: 'Error',
           message: action?.payload?.error?.errorMessage,

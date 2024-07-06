@@ -23,7 +23,7 @@ export interface IndicatorIndividualResponse {
 export interface RubricWiseResponse {
   indicatorId: number;
   indicatorName: string;
-  responseDate:string;
+  responseDate: string;
   avgRating: number;
 }
 
@@ -38,7 +38,7 @@ export interface QuestionWiseResponse {
   userName: string;
   responseValues: string;
   responseDate: string;
-  avgRating?:number
+  avgRating?: number;
 }
 
 interface QuestionWiseResponses {
@@ -49,13 +49,13 @@ export interface IndividualResponse {
   userId: number;
   userName: string;
   name: string;
-  questionAvgRating:number;
+  questionAvgRating: number;
   responses: {
     questionId: number;
     questionText: string;
     responseValues: string;
     responseDate: string;
-    avgRating:number;
+    avgRating: number;
     indicators: IndicatorIndividualResponse[];
   }[];
 }
@@ -98,7 +98,7 @@ interface FormDetails {
   questionWiseResponses: QuestionWiseResponses;
   questionList: Question[];
   individualResponses: IndividualResponse[];
-  rubricWiseResponse:RubricWiseResponse[];
+  rubricWiseResponse: RubricWiseResponse[];
 }
 
 interface GetFormByIdResponse {
@@ -228,13 +228,12 @@ interface AssignFormResponse {
 
 type AssignFormResponsePayload = AssignFormResponse['payload'];
 
-
-interface DeleteFormRequest{
+interface DeleteFormRequest {
   ids: number[];
   loggedInUserName: string;
 }
 
-interface DeleteFormResponse{
+interface DeleteFormResponse {
   payload: {
     message: string;
   };
@@ -258,8 +257,6 @@ export interface QuestionRatingQuestionWiseResponse {
   userWiseResponses: UserWiseResponse[];
 }
 
-
-
 interface GetQuestionRatingByIndicatorIdResponse {
   payload: {
     message: string;
@@ -270,11 +267,12 @@ interface GetQuestionRatingByIndicatorIdResponse {
       responseDate: string;
       questionWiseResponses: QuestionRatingQuestionWiseResponse[];
     };
-  }
+  };
   status: number;
 }
 
-type GetQuestionRatingByIndicatorIdResponsePayload = GetQuestionRatingByIndicatorIdResponse['payload'];
+type GetQuestionRatingByIndicatorIdResponsePayload =
+  GetQuestionRatingByIndicatorIdResponse['payload'];
 
 export const setFormsShowMessage = createAction<ErrorStatusObject | null>(
   'SET_FORMS_SHOW_MESSAGE',
@@ -314,8 +312,8 @@ export const getFormById = createAsyncThunk<
 );
 
 export const getQuestionRatingByIndicatorId = createAsyncThunk<
-GetQuestionRatingByIndicatorIdResponse,
-  [number, number,number],
+  GetQuestionRatingByIndicatorIdResponse,
+  [number, number, number],
   {rejectValue: ErrorResponse}
 >(
   'forms/getQuestionRatingByIndicatorId',
@@ -323,7 +321,9 @@ GetQuestionRatingByIndicatorIdResponse,
     try {
       dispatch(setLoading(true));
       const response = await api.get(
-        endPoints.GET_QUESTION_RATING_BY_INDICATOR_ID+indicatorId + `?formId=${formId}&flowId=${flowId}`,
+        endPoints.GET_QUESTION_RATING_BY_INDICATOR_ID +
+          indicatorId +
+          `?formId=${formId}&flowId=${flowId}`,
       );
       return response.data as GetQuestionRatingByIndicatorIdResponse;
     } catch (error: any) {
@@ -333,7 +333,6 @@ GetQuestionRatingByIndicatorIdResponse,
     }
   },
 );
-
 
 export const getPreviewForm = createAsyncThunk<
   GetPreviewFormResponse,
@@ -400,7 +399,6 @@ export const assignFormToUsersAndGroups = createAsyncThunk<
         endPoints.ASSIGN_FORM_TO_USERS_AND_GROUPS,
         payload,
       );
-      console.log('re', response.data);
       return response.data as AssignFormResponse;
     } catch (error: any) {
       return rejectWithValue(error.response.data);
@@ -412,18 +410,17 @@ export const assignFormToUsersAndGroups = createAsyncThunk<
 
 export const deleteForm = createAsyncThunk<
   DeleteFormResponse,
-  [number,number,DeleteFormRequest],
+  [number, number, DeleteFormRequest],
   {rejectValue: ErrorResponse}
 >(
   'forms/deleteForm',
-  async ([forceDelete,flowId,payload], {dispatch, rejectWithValue}) => {
+  async ([forceDelete, flowId, payload], {dispatch, rejectWithValue}) => {
     try {
       dispatch(setLoading(true));
       const response = await api.delete(
-        endPoints.DELETE_FORMS+`forceDelete=${forceDelete}&flowId=${flowId}`,{data:payload}
-        ,
+        endPoints.DELETE_FORMS + `forceDelete=${forceDelete}&flowId=${flowId}`,
+        {data: payload},
       );
-      console.log('re', response.data);
       return response.data as DeleteFormResponse;
     } catch (error: any) {
       return rejectWithValue(error.response.data);
@@ -433,15 +430,14 @@ export const deleteForm = createAsyncThunk<
   },
 );
 
-
 interface InitialState {
   formById: GetAllFlowsResponsePayload | null;
   previewForm: GetPreviewFormResponsePayload | null;
   submitPreviewFormResponse: SubmitPreviewFormResponsePayload | null;
   acceptingFormResponses: AcceptingFormResponsesResponsePayload | null;
   assignFormResponse: AssignFormResponsePayload | null;
-  questionRatingByIndicatorId:GetQuestionRatingByIndicatorIdResponsePayload|null;
-  deleteFormResponse:DeleteFormResponse|null;
+  questionRatingByIndicatorId: GetQuestionRatingByIndicatorIdResponsePayload | null;
+  deleteFormResponse: DeleteFormResponse | null;
   formsShowMessage: ErrorStatusObject | null;
   errorMessage: string;
 }
@@ -451,10 +447,10 @@ const initialState: InitialState = {
   previewForm: null,
   submitPreviewFormResponse: null,
   acceptingFormResponses: null,
-  deleteFormResponse:null,
+  deleteFormResponse: null,
   formsShowMessage: null,
   assignFormResponse: null,
-  questionRatingByIndicatorId:null,
+  questionRatingByIndicatorId: null,
   errorMessage: '',
 };
 
@@ -503,7 +499,7 @@ const formsSlice = createSlice({
         };
       })
       .addCase(submitPreviewForm.pending, state => {
-        state.submitPreviewFormResponse=null;
+        state.submitPreviewFormResponse = null;
       })
       .addCase(submitPreviewForm.fulfilled, (state, action) => {
         state.formsShowMessage = {
@@ -513,14 +509,14 @@ const formsSlice = createSlice({
         state.submitPreviewFormResponse = action.payload.payload;
       })
       .addCase(submitPreviewForm.rejected, (state, action) => {
-        state.submitPreviewFormResponse=null;
+        state.submitPreviewFormResponse = null;
         state.formsShowMessage = {
           status: 'Error',
           message: action?.payload?.error?.errorMessage?.toString(),
         };
       })
       .addCase(acceptingFormResponses.pending, state => {
-        state.acceptingFormResponses=null;
+        state.acceptingFormResponses = null;
       })
       .addCase(acceptingFormResponses.fulfilled, (state, action) => {
         state.formsShowMessage = {
@@ -530,7 +526,7 @@ const formsSlice = createSlice({
         state.acceptingFormResponses = action.payload.payload;
       })
       .addCase(acceptingFormResponses.rejected, (state, action) => {
-        state.acceptingFormResponses=null;
+        state.acceptingFormResponses = null;
         state.formsShowMessage = {
           status: 'Error',
           message: action?.payload?.error?.errorMessage?.toString(),
@@ -543,7 +539,7 @@ const formsSlice = createSlice({
         state.questionRatingByIndicatorId = action.payload.payload;
       })
       .addCase(getQuestionRatingByIndicatorId.rejected, (state, action) => {
-        state.questionRatingByIndicatorId =null;
+        state.questionRatingByIndicatorId = null;
         state.formsShowMessage = {
           status: 'Error',
           message: action?.payload?.error?.errorMessage?.toString(),
@@ -562,13 +558,13 @@ const formsSlice = createSlice({
         };
       })
       .addCase(deleteForm.pending, state => {
-        state.deleteFormResponse=null;
+        state.deleteFormResponse = null;
       })
       .addCase(deleteForm.fulfilled, (state, action) => {
         state.deleteFormResponse = action.payload;
         state.formsShowMessage = {
           status: 'Success',
-          message:  action.payload?.payload?.message
+          message: action.payload?.payload?.message,
         };
       })
       .addCase(deleteForm.rejected, (state, action) => {
@@ -576,7 +572,7 @@ const formsSlice = createSlice({
           status: 'Error',
           message: action?.payload?.error?.errorMessage?.toString(),
         };
-      })
+      });
   },
 });
 

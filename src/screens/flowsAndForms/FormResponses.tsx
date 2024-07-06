@@ -55,6 +55,7 @@ import SearchWithFilter from '../../components/SearchWithFilter';
 import {
   FlowDetailItem,
   SendReminderMethods,
+  resetSendReminderToAllPendingUsers,
   sendReminderForm,
 } from '../../redux/features/flowsSlice';
 import {ItemType} from '../../config/types';
@@ -80,6 +81,7 @@ type ResponseAccessToggleTypes = {
   label: 'Accepting Responses';
   isAcceptingResponses: boolean;
   setIsAcceptingResponses: Dispatch<SetStateAction<boolean>>;
+  flowDetailItem: FlowDetailItem;
   disabed?: boolean;
 };
 
@@ -87,46 +89,57 @@ const ResponseAccessToggle: FC<ResponseAccessToggleTypes> = ({
   label,
   isAcceptingResponses,
   setIsAcceptingResponses,
+  flowDetailItem,
   disabed = false,
-}) => (
-  <View
-    style={{
-      flexDirection: 'row',
-      alignItems: 'center',
-      alignSelf: 'flex-end',
-      marginTop: 7,
-    }}>
-    <Text style={{color: '#4E565F', right: 5}} size="small1">
-      {label}
-    </Text>
-    <TouchableOpacity
+}) => {
+  const dispatch = useAppDispatch();
+  const {userData} = useAppSelector(state => state.auth);
+  const onPressAcceptingResponses = () => {
+    dispatch(
+      acceptingFormResponses({
+        formId: flowDetailItem.formId,
+        isActive: !isAcceptingResponses,
+        loggedInUserName: userData.userName,
+      }),
+    );
+  };
+
+  return (
+    <View
       style={{
-        backgroundColor: isAcceptingResponses ? '#EA7804' : colors.darkGrey,
-        width: normaliseDesigns(32),
-        height: normaliseDesigns(16),
+        flexDirection: 'row',
         alignItems: 'center',
-        borderRadius: 35,
-        justifyContent: 'center',
-        paddingHorizontal: 3,
-      }}
-      onPress={() => {
-        if (disabed) {
-          return;
-        }
-        setIsAcceptingResponses(!isAcceptingResponses);
+        alignSelf: 'flex-end',
+        marginTop: 7,
       }}>
-      <View
+      <Text style={{color: '#4E565F', right: 5}} size="small1">
+        {label}
+      </Text>
+      <TouchableOpacity
         style={{
-          backgroundColor: colors.backgroundColor,
-          alignSelf: isAcceptingResponses ? 'flex-end' : 'flex-start',
-          width: normaliseDesigns(11),
-          height: normaliseDesigns(11),
-          borderRadius: 25,
+          backgroundColor: isAcceptingResponses ? '#EA7804' : colors.darkGrey,
+          width: normaliseDesigns(32),
+          height: normaliseDesigns(16),
+          alignItems: 'center',
+          borderRadius: 35,
+          justifyContent: 'center',
+          paddingHorizontal: 3,
         }}
-      />
-    </TouchableOpacity>
-  </View>
-);
+        disabled={disabed}
+        onPress={onPressAcceptingResponses}>
+        <View
+          style={{
+            backgroundColor: colors.backgroundColor,
+            alignSelf: isAcceptingResponses ? 'flex-end' : 'flex-start',
+            width: normaliseDesigns(11),
+            height: normaliseDesigns(11),
+            borderRadius: 25,
+          }}
+        />
+      </TouchableOpacity>
+    </View>
+  );
+};
 
 const tabs = ['Individual', 'Question Wise', 'Rubric Wise'] as const;
 
@@ -321,6 +334,7 @@ const RenderSendReminderModal: FC<RenderSendReminderModalTypes> = ({
   const {pendingUsersListForSendReminder} = useAppSelector(
     state => state.users,
   );
+
   const {userData} = useAppSelector(state => state.auth);
 
   useEffect(() => {
@@ -415,17 +429,15 @@ const RenderSendReminderModal: FC<RenderSendReminderModalTypes> = ({
               <ScrollView
                 style={{marginTop: 5, maxHeight: normaliseDesigns(75)}}
                 showsVerticalScrollIndicator>
-                {pendingUsersListForSendReminder?.dataList?.Users?.map(
-                  (item) => (
-                    <View
-                      style={{flexDirection: 'row', marginVertical: 2}}
-                      key={item.userId}>
-                      <Text size="small2" fontVariant="semiBold">
-                        {item.name}
-                      </Text>
-                    </View>
-                  ),
-                )}
+                {pendingUsersListForSendReminder?.dataList?.Users?.map(item => (
+                  <View
+                    style={{flexDirection: 'row', marginVertical: 2}}
+                    key={item.userId}>
+                    <Text size="small2" fontVariant="semiBold">
+                      {item.name}
+                    </Text>
+                  </View>
+                ))}
               </ScrollView>
             </View>
           )}
@@ -516,6 +528,7 @@ type ShowResponseCountAndActionsTypes = {
   responseCount: number;
   isAcceptingResponses: boolean;
   setIsAcceptingResponses: Dispatch<SetStateAction<boolean>>;
+  flowDetailItem:FlowDetailItem
 };
 
 const ShowResponseCountAndActions: FC<ShowResponseCountAndActionsTypes> = ({
@@ -524,6 +537,7 @@ const ShowResponseCountAndActions: FC<ShowResponseCountAndActionsTypes> = ({
   responseCount,
   isAcceptingResponses,
   setIsAcceptingResponses,
+  flowDetailItem
 }) => (
   <View style={{marginTop: 10}}>
     <View
@@ -566,6 +580,7 @@ const ShowResponseCountAndActions: FC<ShowResponseCountAndActionsTypes> = ({
       label={'Accepting Responses'}
       isAcceptingResponses={isAcceptingResponses}
       setIsAcceptingResponses={setIsAcceptingResponses}
+      flowDetailItem={flowDetailItem}
     />
   </View>
 );
@@ -634,21 +649,19 @@ const FormResponses: FC<FormResponsesScreenProps> = ({navigation, route}) => {
     }
   }, [sendReminderFormResponse]);
 
-  useEffect(() => {
-    dispatch(
-      acceptingFormResponses({
-        isActive: isAcceptingResponses,
-        formId: flowDetailItem.formId,
-        loggedInUserName: userData.userName,
-      }),
-    );
-  }, [isAcceptingResponses]);
 
   useEffect(() => {
     if (assignFormResponse) {
       setIsVisibleAssignFormSuccessModal(true);
     }
   }, [assignFormResponse]);
+
+
+  useEffect(()=>{
+    if(formById?.dataList){
+      setIsAcceptingResponses(formById?.dataList?.acceptingResponse)
+    }
+  },[formById?.dataList.acceptingResponse])
 
   const onPressSendReminder = (selectedRemindMethod: SendReminderMethods) => {
     setIsSendReminderModalVisible(false);
@@ -772,8 +785,6 @@ const FormResponses: FC<FormResponsesScreenProps> = ({navigation, route}) => {
 
   const Renderal: JSX.Element = renderal;
 
-  console.log('sdffdssaaaa', formById);
-
   return (
     <>
       <Layout
@@ -817,6 +828,7 @@ const FormResponses: FC<FormResponsesScreenProps> = ({navigation, route}) => {
           onProceed={() => {}}
           onClose={() => {
             setIsVisibleSendReminderSuccessModal(false);
+            dispatch(resetSendReminderToAllPendingUsers());
           }}
           closeButton
           content={
@@ -861,6 +873,7 @@ const FormResponses: FC<FormResponsesScreenProps> = ({navigation, route}) => {
             responseCount={formById?.dataList?.individualResponses?.length || 0}
             isAcceptingResponses={isAcceptingResponses}
             setIsAcceptingResponses={setIsAcceptingResponses}
+            flowDetailItem={flowDetailItem}
           />
         )}
         <View style={{marginBottom: 10}}>

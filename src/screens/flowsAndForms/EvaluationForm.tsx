@@ -764,8 +764,6 @@ const EvaluationForm: FC<EvaluationFormScreenProps> = ({navigation, route}) => {
     validateSubmission();
   }, [answers,previewForm]);
 
-  console.log("answers====",answers)
-  // Validate submission logic
   const validateSubmission = () => {
     let canProceed = true;
 

@@ -63,7 +63,6 @@ export const FloatingButton: FC<FloatingButtonTypes> = ({
     <TouchableOpacity
       style={{
         padding: 13,
-        // aspectRatio: 1,
         position: 'absolute',
         alignItems: 'center',
         justifyContent: 'space-between',
@@ -211,36 +210,6 @@ const ObservationReportsMainPage: FC<ObservationReportsMainPageScreenProps> = ({
     }
   }, [selectedFilter]);
 
-  // useEffect(() => {
-  //   if (search.trim() !== '') {
-  //     const timer = setTimeout(() => {
-  //       dispatch(
-  //         getAllObservations([
-  //           userData.id,
-  //           {
-  //             filterType: selectedFilter,
-  //             ratings: filter?.rating,
-  //             dateType: filter?.dateFilterOption,
-  //             startDate: filter?.date?.startDate,
-  //             endDate: filter?.date?.endDate,
-  //             paginationRequest: {
-  //               page: 0,
-  //               size: 15,
-  //               type: 'all',
-  //               search
-  //             },
-  //           },
-  //         ]),
-  //       );
-  //     }, 500);
-
-  //     return () => {
-  //       clearTimeout(timer);
-  //     };
-  //   }
-  // }, [search, dispatch, userData.userName, userData.id]);
-
-  console.log('sdfsdfaaaaaaaaa');
   return (
     <>
       <Layout

@@ -1,8 +1,7 @@
 import React, {FC, useEffect, useState} from 'react';
-import {TextInput, TouchableOpacity, View, ViewStyle} from 'react-native';
+import { TouchableOpacity, View, ViewStyle} from 'react-native';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
-import moment from 'moment';
 
 import Layout from '../../components/Layout';
 import {UserManagementStackParamList} from '../../navigation/UserManagementStack';
@@ -10,7 +9,6 @@ import Icon from '../../components/Icon';
 import Text from '../../components/Text';
 import {useAppDispatch, useAppSelector} from '../../redux/store';
 import {User, getAllUsers} from '../../redux/features/usersSlice';
-import {normaliseDesigns} from '../../utils/helpers/responsiveHelpers';
 import colors from '../../config/colors';
 import {RenderEmptyPlaceholder} from '../observation/ObservationReportsMainPage';
 import SearchWithFilter from '../../components/SearchWithFilter';
@@ -26,96 +24,6 @@ type UsersMainPageRouteProp = RouteProp<
   'UsersMainPage'
 >;
 
-const users: User[] = [
-  {
-    userId: 1,
-    userName: 'john.doe',
-    name: 'John Doe',
-    contactNumber: '123-456-7890',
-    email: 'john.doe@example.com',
-    dateOfBirth: '1990-01-15',
-    role: 'Teacher',
-    state: 'California',
-    district: 'Los Angeles',
-    area: 'Downtown',
-    school: 'ABC High School',
-    citizenship: 'US',
-    userType: 'Admin',
-    status: true,
-    roleId: 101,
-    stateId: 1,
-    districtId: 10,
-    areaId: 100,
-    schoolId: 1000,
-    createdDate: '2023-01-01',
-  },
-  {
-    userId: 2,
-    userName: 'jane.smith',
-    name: 'Jane Smith',
-    contactNumber: '987-654-3210',
-    email: 'jane.smith@example.com',
-    dateOfBirth: '1985-05-20',
-    role: 'Principal',
-    state: 'New York',
-    district: 'Manhattan',
-    area: 'Midtown',
-    school: 'XYZ Elementary School',
-    citizenship: 'US',
-    userType: 'Admin',
-    status: true,
-    roleId: 102,
-    stateId: 2,
-    districtId: 20,
-    areaId: 200,
-    schoolId: 2000,
-    createdDate: '2023-02-01',
-  },
-  {
-    userId: 3,
-    userName: 'alice.jones',
-    name: 'Alice Jones',
-    contactNumber: '555-123-4567',
-    email: 'alice.jones@example.com',
-    dateOfBirth: '1995-03-10',
-    role: 'Student',
-    state: 'Texas',
-    district: 'Houston',
-    area: 'Northside',
-    school: 'LMN Middle School',
-    citizenship: 'US',
-    userType: 'Non-Admin',
-    status: true,
-    roleId: 103,
-    stateId: 3,
-    districtId: 30,
-    areaId: 300,
-    schoolId: 3000,
-    createdDate: '2023-03-01',
-  },
-  {
-    userId: 4,
-    userName: 'bob.brown',
-    name: 'Bob Brown',
-    contactNumber: '444-987-6543',
-    email: 'bob.brown@example.com',
-    dateOfBirth: '1980-08-25',
-    role: 'Counselor',
-    state: 'Florida',
-    district: 'Miami',
-    area: 'South Beach',
-    school: 'OPQ High School',
-    citizenship: 'US',
-    userType: 'Non-Admin',
-    status: false,
-    roleId: 104,
-    stateId: 4,
-    districtId: 40,
-    areaId: 400,
-    schoolId: 4000,
-    createdDate: '2023-04-01',
-  },
-];
 
 type RenderActiveStatusTypes = {
   isActive: boolean;

@@ -41,7 +41,7 @@ export const tabs: ItemType[] = [
 const RubricMainPage: FC<RubricMainPageScreenProps> = ({navigation, route}) => {
   const [rubricList, setRubricList] = useState<RubricItem[]>();
 
-  const {allRubrics, deleteSuccess} = useAppSelector(state => state.rubric);
+  const {allRubrics, rubricDeleteSuccessResponse} = useAppSelector(state => state.rubric);
   const {userData} = useAppSelector(state => state.auth);
   const dispatch = useAppDispatch();
 
@@ -51,7 +51,7 @@ const RubricMainPage: FC<RubricMainPageScreenProps> = ({navigation, route}) => {
         ? setRubricList(
             allRubrics?.dataList?.filter(item => item.status === true),
           )
-        : title.value == 'Non-Active'
+        : title.value == 'Inactive'
         ? setRubricList(
             allRubrics?.dataList.filter(item => item.status === false),
           )
@@ -73,28 +73,13 @@ const RubricMainPage: FC<RubricMainPageScreenProps> = ({navigation, route}) => {
         type: 'all',
       }),
     );
-  }, []);
+  }, [rubricDeleteSuccessResponse]);
 
   const onPressDeleteRubric = async (item: RubricItem) => {
     await dispatch(
       deleteRubric({ids: [item.rubricId], loggedInUserName: userData.userName}),
     );
   };
-
-  useEffect(() => {
-    if (deleteSuccess) {
-      dispatch(
-        getAllRubrics({
-          page: 0,
-          size: 15,
-          type: 'all',
-        }),
-      );
-    }
-  }, [deleteSuccess]);
-
-
-
 
 
   return (

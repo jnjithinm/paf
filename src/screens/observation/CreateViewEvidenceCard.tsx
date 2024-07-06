@@ -256,7 +256,6 @@ const CreateViewEvidenceCard: FC<CreateViewEvidenceCardScreenProps> = ({
 
   useEffect(() => {
     if (saveObservationResponse) {
-      console.log('sdfsdfdfsdfsdfsdf,', saveObservationResponse);
       dispatch(resetSaveObservationResponse());
       dispatch(saveObservationId(saveObservationResponse.id));
       resetState();

@@ -6,7 +6,6 @@ import {
   ErrorStatusObject,
   FileObject,
   ItemType,
-  RequestType,
 } from '../../config/types';
 import {PaginationRequest} from './usersSlice';
 import {ErrorResponse, setLoading} from './authSlice';
@@ -280,7 +279,6 @@ export const deleteAttachments = createAsyncThunk<
       const response = await api.delete(endPoints.DELETE_ATTACHMENTS, {
         data: payload,
       });
-      console.log('response ssss', response);
       return response.data as GetObservationByIdResponse;
     } catch (error: any) {
       return rejectWithValue(error.response.data);
@@ -308,7 +306,6 @@ export const getAllObservations = createAsyncThunk<
       console.log('[API] Success:', JSON.stringify(response.data));
       return response.data as GetAllObservationsResponse;
     } catch (error: any) {
-      console.log('er', error);
       return rejectWithValue(error.response.data);
     } finally {
       dispatch(setLoading(false));
@@ -327,6 +324,7 @@ export const saveEvidenceCard = createAsyncThunk<
       const token = await getToken();
       dispatch(setLoading(true));
       const formData = [];
+
       formData.push({
         name: 'evidenceInfo',
         data: JSON.stringify(evidenceInfo),
@@ -373,7 +371,6 @@ export const saveEvidenceCard = createAsyncThunk<
 
       return parsedResponse as SaveEvidenceCardResponse;
     } catch (error: any) {
-      console.log('evidence card', error);
       return rejectWithValue(error.response.data);
     } finally {
       dispatch(setLoading(false));
@@ -399,7 +396,6 @@ export const saveObservation = createAsyncThunk<
       } else {
         response = await api.post(endPoints.SAVE_OBSERVATION, payload);
       }
-      console.log(':ressss', response.data);
       return response.data as SaveObservationResponse;
     } catch (error: any) {
       return rejectWithValue(error.response.data);
@@ -425,7 +421,6 @@ interface InitialState {
 }
 
 const initialState: InitialState = {
-  // isLoading: false,
   saveEvidenceCardResponse: null,
   dashboardDetails: null,
   observationById: null,
@@ -467,7 +462,6 @@ const observationSlice = createSlice({
         state.saveEvidenceCardResponse = null;
       })
       .addCase(resetSaveObservationResponse, (state, action) => {
-        console.log('savvv');
         state.saveObservationResponse = null;
       })
       .addCase(resetObservationById, (state, action) => {
@@ -563,7 +557,6 @@ const observationSlice = createSlice({
         state.saveObservationResponse = null;
       })
       .addCase(saveObservation.fulfilled, (state, action) => {
-        console.log('dsfsdf', action.payload.payload);
         state.saveObservationResponse = action.payload.payload;
         state.observationShowMessage = {
           status: 'Success',
@@ -571,7 +564,6 @@ const observationSlice = createSlice({
         };
       })
       .addCase(saveObservation.rejected, (state, action) => {
-        console.log('error', action.payload?.error);
         state.observationShowMessage = {
           status: 'Error',
           message: action?.payload?.error?.errorMessage,

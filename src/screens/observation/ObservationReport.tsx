@@ -2,7 +2,6 @@ import React, {FC, useEffect, useState} from 'react';
 import {KeyboardAvoidingView, Platform, View} from 'react-native';
 import {RouteProp, useFocusEffect} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
-import {TextInput as RNTextInput} from 'react-native';
 
 import {FONT_SIZES, FONT_VARIANT} from '../../config/themes';
 import Layout from '../../components/Layout';
@@ -17,7 +16,6 @@ import {
   resetSaveEvidenceCardResponse,
   resetSaveObservationResponse,
   saveEvidenceCardDetails,
-  saveNewEvidenceCardList,
   saveObservation,
 } from '../../redux/features/observationSlice';
 import {RatingStars, RenderProfileIcon} from '../dashboard/TeacherDashboard';
@@ -59,14 +57,13 @@ const ObservationReport: FC<ObservationReportScreenProps> = ({
     saveObservationResponse,
   } = useAppSelector(state => state.observation);
 
-  const {user} = useAppSelector(state => state.users);
+  useAppSelector(state => state.users);
 
   const {userData} = useAppSelector(state => state.auth);
 
   useFocusEffect(
     React.useCallback(() => {
-      if (observationId) {
-        console.log('sdfsf');
+      if (observationId) {  
         dispatch(saveEvidenceCardDetails(null));
         dispatch(resetSaveEvidenceCardResponse());
         dispatch(resetSaveObservationResponse());
@@ -77,7 +74,6 @@ const ObservationReport: FC<ObservationReportScreenProps> = ({
 
   useEffect(() => {
     if (saveObservationResponse) {
-      console.log('ssss', saveObservationResponse);
       newObservation && navigation.navigate('ObservationReportsMainPage');
     }
   }, [saveObservationResponse]);
@@ -174,7 +170,7 @@ const ObservationReport: FC<ObservationReportScreenProps> = ({
     }
   };
 
-  const showResponse: EvidenceResponse[] = observationById
+  const evidenceCardList: EvidenceResponse[] = observationById
     ? observationById?.evidenceResponseList
     : newEvidenceCardsList || [];
 
@@ -244,7 +240,7 @@ const ObservationReport: FC<ObservationReportScreenProps> = ({
                   }}
                 />
                 <Text style={{color: '#4E565F'}} size="small3">
-                  {observationById?.observationAvgRatings || ''}/5
+                  {observationById?.observationAvgRatings?.toFixed(1) || ''}/5
                 </Text>
               </View>
             </View>
@@ -266,7 +262,7 @@ const ObservationReport: FC<ObservationReportScreenProps> = ({
             </Text>
           </View>
           <View style={{marginVertical: 15}}>
-            {showResponse?.map((item, index) => (
+            {evidenceCardList?.map((item, index) => (
               <EvidenceCard
                 key={index}
                 title={`Evidence Card ${index + 1}`}

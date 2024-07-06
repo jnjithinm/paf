@@ -75,7 +75,6 @@ const AdminDashboard: FC<AdminDashboardScreenProps> = ({navigation, route}) => {
     setIsDrawerOpen(false);
   };
 
-  console.log('is', isLoading);
 
   const menuItemArray: AdminDashboardMenuItemTypes[] = [
     {

@@ -39,6 +39,8 @@ type RubricsDeleteResponse = {
   status: number;
 };
 
+type DeleteSuccessResponsePayload = RubricsDeleteResponse['payload'];
+
 export type RubricIndicatorItem = {
   domainId: number;
   domainName: string;
@@ -118,7 +120,6 @@ export const deleteRubric = createAsyncThunk<
   try {
     dispatch(setLoading(true));
     const response = await api.delete(endPoints.DELETE_RUBRIC, {data: payload});
-    console.log('re', response.data);
     return response.data as RubricsDeleteResponse;
   } catch (error: any) {
     return rejectWithValue(error.response.data);
@@ -161,7 +162,7 @@ UpdateRubricResponse,
 interface InitialState {
   allRubrics: GetAllRubricsResponsePayload | null;
   rubric: GetRubricResponsePayload | null;
-  deleteSuccess: boolean;
+  rubricDeleteSuccessResponse: DeleteSuccessResponsePayload|null;
   updateRubricResponse:boolean;
   rubricShowMessage: ErrorStatusObject | null;
   errorMessage: string;
@@ -170,7 +171,7 @@ interface InitialState {
 const initialState: InitialState = {
   allRubrics: null,
   rubric: null,
-  deleteSuccess: false,
+  rubricDeleteSuccessResponse: null,
   updateRubricResponse:false,
   rubricShowMessage: null,
   errorMessage: '',
@@ -205,14 +206,14 @@ const rubricSlice = createSlice({
       .addCase(getRubric.rejected, (state, action) => {
       })
       .addCase(deleteRubric.pending, (state, action) => {
-        state.deleteSuccess = false;
+        state.rubricDeleteSuccessResponse = null;
       })
       .addCase(deleteRubric.fulfilled, (state, action) => {
         state.rubricShowMessage = {
           status: 'Success',
           message: action.payload.payload.message?.toString(),
         };
-        state.deleteSuccess = true;
+        state.rubricDeleteSuccessResponse = action.payload.payload;
       })
       .addCase(deleteRubric.rejected, (state, action) => {
         state.rubricShowMessage = {

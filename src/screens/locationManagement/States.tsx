@@ -1,5 +1,5 @@
 import React, {FC, useEffect, useState} from 'react';
-import {TouchableOpacity, View, ViewStyle} from 'react-native';
+import { View} from 'react-native';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 
@@ -10,9 +10,6 @@ import {LocationManagementStackParamList} from '../../navigation/LocationManagem
 import {State, getStates} from '../../redux/features/masterSlice';
 import {RenderEmptyPlaceholder} from '../observation/ObservationReportsMainPage';
 import SearchWithFilter from '../../components/SearchWithFilter';
-import Tab from '../../components/Tab';
-import { tabs } from '../userManagement/UsersMainPage';
-import { ItemType } from '../../config/types';
 
 type StatesNavigationProp = StackNavigationProp<
   LocationManagementStackParamList,

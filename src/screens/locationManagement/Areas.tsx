@@ -1,16 +1,13 @@
 import React, {FC, useEffect, useState} from 'react';
-import {TextInput, TouchableOpacity, View, ViewStyle} from 'react-native';
+import { TouchableOpacity, View, ViewStyle} from 'react-native';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import moment from 'moment';
 
 import Layout from '../../components/Layout';
-import {UserManagementStackParamList} from '../../navigation/UserManagementStack';
 import Icon from '../../components/Icon';
 import Text from '../../components/Text';
 import {useAppDispatch, useAppSelector} from '../../redux/store';
-import {User, getAllUsers} from '../../redux/features/usersSlice';
-import {normaliseDesigns} from '../../utils/helpers/responsiveHelpers';
 import colors from '../../config/colors';
 import {LocationManagementStackParamList} from '../../navigation/LocationManagementStack';
 import {Area, getAreas} from '../../redux/features/masterSlice';

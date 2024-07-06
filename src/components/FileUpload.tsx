@@ -93,7 +93,8 @@ const downloadFile = async (sourceUri: string, fileName: string) => {
       console.log("Download successful:", destPath);
       return destPath;
     } else {
-      throw new Error(`Failed to download file: ${sourceUri} - Status: ${res.respInfo.status}`);
+
+      console.log(`Failed to download file: ${sourceUri} - Status: ${res.respInfo.status}`);
     }
   } catch (error) {
     console.error(`Error downloading file: ${error}`);
@@ -117,11 +118,9 @@ const createZipFile = async (
 ): Promise<FileObject | undefined> => {
   const filePaths = [];
 
-  console.log('sssss sdf coming');
   try {
 
     for (const result of files) {
-      console.log('sss coming');
       const sourceUri = result.uri;
       const fileName = result.name;
       let filePath;
