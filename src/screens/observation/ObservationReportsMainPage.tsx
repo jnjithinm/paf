@@ -147,12 +147,12 @@ const ObservationReportsMainPage: FC<ObservationReportsMainPageScreenProps> = ({
   route,
 }) => {
   const [selectedFilter, setSelectedFilter] = useState<FilterType>('All');
-  // const [filter,setSearch]=useState<string>('');
 
   const dispatch = useAppDispatch();
   const {allObservations} = useAppSelector(state => state.observation);
   const {userData} = useAppSelector(state => state.auth);
   const {allUsers} = useAppSelector(state => state.users);
+
   const handleTabClick = (title: ItemType) => {
     setSelectedFilter(title?.value as FilterType);
   };
@@ -240,7 +240,7 @@ const ObservationReportsMainPage: FC<ObservationReportsMainPageScreenProps> = ({
         />
         <SearchWithFilter
           onTextChange={() => {}}
-          options={allUsers?.dataList.map(item => ({
+          options={allUsers?.dataList?.map(item => ({
             value: item.userId?.toString(),
             label: item.name,
           }))}

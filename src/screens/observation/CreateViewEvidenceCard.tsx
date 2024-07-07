@@ -2,18 +2,18 @@ import React, {FC, useEffect, useRef, useState} from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
-  StyleSheet,
   TouchableOpacity,
   View,
 } from 'react-native';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
+import Sound from 'react-native-sound';
 
 import {FONT_SIZES, FONT_VARIANT} from '../../config/themes';
 import Layout from '../../components/Layout';
 import Text from '../../components/Text';
 import Image from '../../components/Image';
-import FileUpload, {FileItem} from '../../components/FileUpload';
+import FileUpload from '../../components/FileUpload';
 import FooterWithButtons from '../../components/FooterWithButtons';
 import {useAppDispatch, useAppSelector} from '../../redux/store';
 import {
@@ -23,10 +23,8 @@ import {
 import LabeledDropdown from '../../components/LabeledDropdown';
 import {
   deleteAttachments,
-  resetSaveEvidenceCardResponse,
   resetSaveObservationResponse,
   saveEvidenceCard,
-  saveNewEvidenceCardList,
   saveObservation,
   saveObservationId,
 } from '../../redux/features/observationSlice';
@@ -34,14 +32,9 @@ import {FileObject, ItemType} from '../../config/types';
 import RatingInput from '../../components/RatingInput';
 import {ObservationStackParamList} from '../../navigation/ObservationStack';
 import Modal from '../../components/Modal';
-import Sound from 'react-native-sound';
-import Button from '../../components/Button';
 import Icon from '../../components/Icon';
 import Slider from '../../components/Slider';
-import {setLoading} from '../../redux/features/authSlice';
-import moment from 'moment';
 import {convertEvidenceCardListToRequest} from './AddNewObservation';
-import colors from '../../config/colors';
 
 type CreateViewEvidenceCardNavigationProp = StackNavigationProp<
   ObservationStackParamList,
@@ -302,19 +295,6 @@ const CreateViewEvidenceCard: FC<CreateViewEvidenceCardScreenProps> = ({
     }
   };
 
-  // useEffect(() => {
-  //   if (evidenceCardDetails) {
-  //     setSelectedDomain({
-  //       value: evidenceCardDetails.domainId?.toString(),
-  //       label: evidenceCardDetails.domainName,
-  //     });
-  //     setSelectedIndicator({
-  //       value: evidenceCardDetails.indicatorId?.toString(),
-  //       label: evidenceCardDetails.indicatorName,
-  //     });
-  //     setRating(evidenceCardDetails.averageRating);
-  //   }
-  // }, [evidenceCardDetails]);
 
   useEffect(() => {
     if (saveEvidenceCardResponse) {

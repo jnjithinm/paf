@@ -38,6 +38,7 @@ const Loading: React.FC<LoadingPropsTypes> = ({
   );
 };
 export default Loading;
+
 const styles = StyleSheet.create({
   loadingContainer: {
     position: 'absolute',

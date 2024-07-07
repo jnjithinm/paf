@@ -9,7 +9,9 @@ import React, {
 import {TextInput, TouchableOpacity, View} from 'react-native';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
+import {Dropdown} from 'react-native-element-dropdown';
 
+import moment from 'moment';
 import Layout from '../../components/Layout';
 import {useAppDispatch, useAppSelector} from '../../redux/store';
 import colors from '../../config/colors';
@@ -30,10 +32,8 @@ import {
   submitPreviewForm,
 } from '../../redux/features/formsSlice';
 import FooterWithButtons from '../../components/FooterWithButtons';
-import {Dropdown} from 'react-native-element-dropdown';
 import {FONT_SIZES, FONT_VARIANT} from '../../config/themes';
 import DateTimePickerComponent from '../../components/DateTimePickerComponent';
-import moment from 'moment';
 import RatingInput from '../../components/RatingInput';
 import {FlowsAndFormsStackParamList} from '../../navigation/FlowsAndFormsStack';
 

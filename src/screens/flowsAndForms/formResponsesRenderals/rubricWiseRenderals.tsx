@@ -8,8 +8,6 @@ import {normaliseDesigns} from '../../../utils/helpers/responsiveHelpers';
 import colors from '../../../config/colors';
 import LabelDropdown from '../../../components/LabeledDropdown';
 import {
-  IndicatorIndividualResponse,
-  QuestionRatingQuestionWiseResponse,
   RubricWiseResponse,
   getQuestionRatingByIndicatorId,
 } from '../../../redux/features/formsSlice';

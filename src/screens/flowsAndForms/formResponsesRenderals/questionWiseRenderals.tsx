@@ -1,4 +1,5 @@
 import {TouchableOpacity, View} from 'react-native';
+
 import Text from '../../../components/Text';
 import Icon from '../../../components/Icon';
 import {FC} from 'react';

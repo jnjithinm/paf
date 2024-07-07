@@ -11,7 +11,7 @@ import RolesAndAppAccess from '../screens/userManagement/RolesAndAppAccess';
 export type UserManagementStackParamList = {
   UsersMainPage: undefined;
   UserGroups: undefined;
-  RolesAndAppAccess:undefined;
+  RolesAndAppAccess: undefined;
 };
 
 const UserManagementStackTab =
@@ -46,7 +46,10 @@ const UserManagementStack = ({}) => {
         component={UsersMainPage}
       />
       <UserManagementStackTab.Screen name="UserGroups" component={UserGroups} />
-      <UserManagementStackTab.Screen name='RolesAndAppAccess' component={RolesAndAppAccess} />
+      <UserManagementStackTab.Screen
+        name="RolesAndAppAccess"
+        component={RolesAndAppAccess}
+      />
     </UserManagementStackTab.Navigator>
   );
 };

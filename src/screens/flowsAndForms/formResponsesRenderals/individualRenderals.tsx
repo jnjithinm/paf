@@ -153,35 +153,39 @@ type IndividualMainPageRenderalTypes = {
 //IndividualMainScreen Renderals
 export const IndividualMainPageRenderal: FC<
   IndividualMainPageRenderalTypes
-> = ({onPress, individualResponse, flowDetailItem, totalQuestion}) =>{
-
+> = ({onPress, individualResponse, flowDetailItem, totalQuestion}) => {
   return (
-  <View>
-    {individualResponse ? individualResponse.length > 0 ? (
-      individualResponse.map(item => (
-        <IndividualTile
-          rating={item.questionAvgRating}
-          creationDate={moment(item.responses[0].responseDate).format(
-            'DD/MM/YYYY',
-          )}
-          onPress={() => {
-            onPress(item);
-            // navigation.navigate('AdminFormList');
-          }}
-          flowDetailItem={flowDetailItem}
-          id={item.userId}
-          key={item.userId}
-          name={item.name}
-          image={''}
-          questionsAnswered={`${item.responses.length}/${totalQuestion}`}
-          onPressDelete={() => {}}
-        />
-      ))
-    ) : (
-      <RenderEmptyPlaceholder />
-    ):<></>}
-  </View>
-)};
+    <View>
+      {individualResponse ? (
+        individualResponse.length > 0 ? (
+          individualResponse.map(item => (
+            <IndividualTile
+              rating={item.questionAvgRating}
+              creationDate={moment(item.responses[0].responseDate).format(
+                'DD/MM/YYYY',
+              )}
+              onPress={() => {
+                onPress(item);
+                // navigation.navigate('AdminFormList');
+              }}
+              flowDetailItem={flowDetailItem}
+              id={item.userId}
+              key={item.userId}
+              name={item.name}
+              image={''}
+              questionsAnswered={`${item.responses.length}/${totalQuestion}`}
+              onPressDelete={() => {}}
+            />
+          ))
+        ) : (
+          <RenderEmptyPlaceholder />
+        )
+      ) : (
+        <></>
+      )}
+    </View>
+  );
+};
 
 type RenderQuestionAndAnswerTypes = {
   index: number;

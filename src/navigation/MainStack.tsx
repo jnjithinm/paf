@@ -3,25 +3,25 @@ import {
   StackCardInterpolationProps,
   createStackNavigator,
 } from '@react-navigation/stack';
+import {NavigatorScreenParams} from '@react-navigation/native';
+
 import Splash from '../screens/auth/Splash';
 import Login from '../screens/auth/Login';
-
 import {useAppSelector} from '../redux/store';
-import {NavigatorScreenParams} from '@react-navigation/native';
 import ResetPassword from '../screens/auth/ResetPassword';
 import CreateNewPassword from '../screens/auth/CreateNewPassword';
 import SignUp from '../screens/auth/SignUp';
 import Notifications from '../screens/dashboard/Notifications';
 import ObservationStack, {ObservationStackParamList} from './ObservationStack';
 import RubricStack, {RubricStackParamList} from './RubricStack';
-import AdminTabStack, {FlowsAndFormsStackParamList} from './FlowsAndFormsStack';
+import {FlowsAndFormsStackParamList} from './FlowsAndFormsStack';
 import TeacherDashboard from '../screens/dashboard/TeacherDashboard';
 import AdminDashboard from '../screens/dashboard/AdminDashboard';
 import UserManagementStack, {
   UserManagementStackParamList,
 } from './UserManagementStack';
 import FlowsAndFormsStack from './FlowsAndFormsStack';
-import  LocationManagementStack, {
+import LocationManagementStack, {
   LocationManagementStackParamList,
 } from './LocationManagementStack';
 
@@ -75,9 +75,15 @@ const MainStackNavigator = () => {
             component={TeacherDashboard}
           />
         )}
-        <MainStack.Screen name="ObservationStack" component={ObservationStack} />
+        <MainStack.Screen
+          name="ObservationStack"
+          component={ObservationStack}
+        />
         <MainStack.Screen name="RubricStack" component={RubricStack} />
-        <MainStack.Screen name="FlowsAndFormsStack" component={FlowsAndFormsStack} />
+        <MainStack.Screen
+          name="FlowsAndFormsStack"
+          component={FlowsAndFormsStack}
+        />
         <MainStack.Screen
           name="UserManagementStack"
           component={UserManagementStack}

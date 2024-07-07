@@ -1,10 +1,9 @@
 import React, {FC, Dispatch, SetStateAction} from 'react';
 import {View, Text, StyleSheet, ViewStyle, TextStyle} from 'react-native';
+import {Dropdown} from 'react-native-element-dropdown';
 
 import colors from '../config/colors';
 import {FONT_VARIANT, FONT_SIZES} from '../config/themes';
-
-import {Dropdown} from 'react-native-element-dropdown';
 import {normaliseFont} from '../utils/helpers/responsiveHelpers';
 import {ItemType} from '../config/types';
 

@@ -8,11 +8,6 @@ import {MainStackParamList} from '../../navigation/MainStack';
 import TextInput from '../../components/TextInput';
 import useValidation from '../../utils/hooks/useValidation';
 import Button from '../../components/Button';
-import Modal from '../../components/Modal';
-import {View} from 'react-native';
-import Image from '../../components/Image';
-import colors from '../../config/colors';
-import {normaliseDesigns} from '../../utils/helpers/responsiveHelpers';
 
 type CreateNewPasswordNavigationProp = StackNavigationProp<
   MainStackParamList,

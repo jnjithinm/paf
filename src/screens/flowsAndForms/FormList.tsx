@@ -1,6 +1,6 @@
-import React, {FC, useEffect, useState} from 'react';
+import React, {FC, useCallback, useEffect, useState} from 'react';
 import {TouchableOpacity, View} from 'react-native';
-import {RouteProp} from '@react-navigation/native';
+import {RouteProp, useFocusEffect} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 
 import Layout from '../../components/Layout';
@@ -23,6 +23,7 @@ import {
   RenderEmptyPlaceholder,
 } from '../observation/ObservationReportsMainPage';
 import SearchWithFilter from '../../components/SearchWithFilter';
+import { resetAssignFormResponse } from '../../redux/features/formsSlice';
 
 type FormListNavigationProp = StackNavigationProp<
   FlowsAndFormsStackParamList,
@@ -73,19 +74,23 @@ const FormList: FC<FormListScreenProps> = ({navigation, route}) => {
   const {userData, isAdmin} = useAppSelector(state => state.auth);
   const dispatch = useAppDispatch();
 
-  useEffect(() => {
-    dispatch(
-      getFlowById([
-        flowItem.flowId,
-        userData.id,
-        {
-          page: 0,
-          size: 15,
-          type: 'all',
-        },
-      ]),
-    );
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      dispatch(
+        getFlowById([
+          flowItem.flowId,
+          userData.id,
+          {
+            page: 0,
+            size: 15,
+            type: 'all',
+          },
+        ]),
+      );
+      dispatch(resetAssignFormResponse())
+    },[]))
+
+
 
   useEffect(() => {
     if (assignFlowResponse) {

@@ -1,5 +1,5 @@
 import React, {FC} from 'react';
-import {TextInput, StyleSheet, View} from 'react-native';
+import {TextInput, View} from 'react-native';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import moment from 'moment';
@@ -11,7 +11,6 @@ import {RubricStackParamList} from '../../navigation/RubricStack';
 import colors from '../../config/colors';
 import Icon from '../../components/Icon';
 import SearchWithFilter from '../../components/SearchWithFilter';
-import { FilterObject } from '../../components/Calendar';
 
 type RubricIndicatorDescriptionNavigationProp = StackNavigationProp<
 RubricStackParamList,

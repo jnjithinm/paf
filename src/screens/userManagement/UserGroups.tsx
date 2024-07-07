@@ -1,5 +1,5 @@
 import React, {FC, useEffect, useState} from 'react';
-import {TouchableOpacity, View, ViewStyle} from 'react-native';
+import {TouchableOpacity, View} from 'react-native';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import moment from 'moment';

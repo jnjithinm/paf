@@ -3,11 +3,11 @@ import {View, Dimensions, ScrollView} from 'react-native';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import FastImage from 'react-native-fast-image';
+import Pdf from 'react-native-pdf';
 
 import Layout from '../../components/Layout';
 import {ObservationStackParamList} from '../../navigation/ObservationStack';
-import VideoPlayer from '../../components/VideoPlayer';
-import Pdf from 'react-native-pdf';
+import VideoPlayer from '../../components/VideoPlayer'
 import Text from '../../components/Text';
 
 type PlayFileNavigationProp = StackNavigationProp<

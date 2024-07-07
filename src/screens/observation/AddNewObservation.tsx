@@ -25,7 +25,6 @@ import {ItemType} from '../../config/types';
 import {
   EvidenceRequest,
   EvidenceResponse,
-  resetSaveEvidenceCardResponse,
   resetSaveObservationResponse,
   saveNewObservation,
   saveObservation,
@@ -312,8 +311,6 @@ const AddNewObservation: FC<AddNewObservationScreenProps> = ({
                   alignItems: 'center',
                   height: normaliseDesigns(40),
                 }}
-                // editable={false}
-                // placeholder="Select date"
               >
                 <Text
                   style={{color: selectedDate ? colors.blackColor : '#ABB4BD'}}

@@ -1,4 +1,5 @@
 import React, {FC, useEffect, useState} from 'react';
+import {View} from 'react-native';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 
@@ -9,7 +10,6 @@ import TextInput from '../../components/TextInput';
 import useValidation from '../../utils/hooks/useValidation';
 import Button from '../../components/Button';
 import Modal from '../../components/Modal';
-import {View} from 'react-native';
 import Image from '../../components/Image';
 import colors from '../../config/colors';
 import {normaliseDesigns} from '../../utils/helpers/responsiveHelpers';

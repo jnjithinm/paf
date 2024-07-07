@@ -1,4 +1,5 @@
 import {TextStyle, ViewStyle} from 'react-native';
+
 import colors from './colors';
 import {normaliseDesigns, normaliseFont} from '../utils/helpers/responsiveHelpers';
 

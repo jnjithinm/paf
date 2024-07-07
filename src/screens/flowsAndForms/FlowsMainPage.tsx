@@ -186,33 +186,37 @@ const FlowsMainPage: FC<FlowsMainPageScreenProps> = ({navigation, route}) => {
             onProceed={() => {}}
           />
 
-          {filteredFlows ? filteredFlows.length > 0 ? (
-            filteredFlows
-              ?.filter(item =>
-                item.flowName
-                  ?.toLocaleLowerCase()
-                  ?.includes(search?.toLocaleLowerCase()),
-              )
-              ?.map((ele) => (
-                <FlowsItem
-                  active={ele.status}
-                  createdBy={ele.createdBy}
-                  createdDate={moment(ele.createdDate).format('DD/MM/YYYY')}
-                  title={ele.flowName}
-                  userCount={ele.responses}
-                  onDelete={() => {
-                    onPressDeleteFlow(ele);
-                  }}
-                  key={ele.flowId}
-                  onPress={() => {
-                    navigation.navigate('FormList', {flowItem: ele});
-                  }}
-                  isAdmin={isAdmin}
-                />
-              ))
+          {filteredFlows ? (
+            filteredFlows.length > 0 ? (
+              filteredFlows
+                ?.filter(item =>
+                  item.flowName
+                    ?.toLocaleLowerCase()
+                    ?.includes(search?.toLocaleLowerCase()),
+                )
+                ?.map(ele => (
+                  <FlowsItem
+                    active={ele.status}
+                    createdBy={ele.createdBy}
+                    createdDate={moment(ele.createdDate).format('DD/MM/YYYY')}
+                    title={ele.flowName}
+                    userCount={ele.responses}
+                    onDelete={() => {
+                      onPressDeleteFlow(ele);
+                    }}
+                    key={ele.flowId}
+                    onPress={() => {
+                      navigation.navigate('FormList', {flowItem: ele});
+                    }}
+                    isAdmin={isAdmin}
+                  />
+                ))
+            ) : (
+              <RenderEmptyPlaceholder />
+            )
           ) : (
-            <RenderEmptyPlaceholder />
-          ):<></>}
+            <></>
+          )}
         </View>
       </Layout>
     </>

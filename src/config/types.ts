@@ -1,4 +1,5 @@
 import {ViewComponent} from 'react-native';
+
 import colors from './colors';
 import {FONT_SIZES, FONT_STYLES, FONT_VARIANT, OPACITY} from './themes';
 

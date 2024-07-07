@@ -108,8 +108,6 @@ const styles = StyleSheet.create({
     marginLeft: 3,
     fontSize: FONT_SIZES.small3,
     color: colors.blackColor,
-
-    // fontSize: 12, // Assuming 'small3' is equivalent to fontSize 12
   },
   separator: {
     height: 10,

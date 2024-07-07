@@ -5,10 +5,6 @@ import {
 } from '@react-navigation/stack';
 
 import AddNewObservation from '../screens/observation/AddNewObservation';
-import {
-  EvidenceResponse,
-  ObservationStatus,
-} from '../redux/features/observationSlice';
 import {FileObject} from '../config/types';
 import PlayFile from '../screens/observation/PlayFile';
 import ObservationReportsMainPage from '../screens/observation/ObservationReportsMainPage';
