@@ -14,7 +14,7 @@ import FooterWithButtons from '../../components/FooterWithButtons';
 import {useAppDispatch, useAppSelector} from '../../redux/store';
 import Icon from '../../components/Icon';
 import {getUser} from '../../redux/features/usersSlice';
-import {updateUserDetails} from '../../redux/features/authSlice';
+import {resetUpdateUserResponse, updateUserDetails} from '../../redux/features/authSlice';
 
 type MyAccountNavigationProp = StackNavigationProp<
   MainStackParamList,
@@ -28,20 +28,20 @@ interface MyAccountScreenProps {
 }
 
 const MyAccount: FC<MyAccountScreenProps> = ({navigation, route}) => {
+  const [isChanged, setIsChanged] = useState<boolean>(false);
   const [name, setName] = useState<string>('');
   const [phoneNum, setPhoneNum] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [district, setDistrict] = useState<string>('');
   const [area, setArea] = useState<string>('');
-  const [modules, setModules] = useState<string>('');
 
-  const {userData, isAdmin} = useAppSelector(state => state.auth);
+  const {userData, isAdmin,updateUserResponse} = useAppSelector(state => state.auth);
   const {user} = useAppSelector(state => state.users);
   const {validateField} = useValidation();
 
   const dispatch = useAppDispatch();
 
-  const userNameErrorMessage = validateField({
+  const nameErrorMessage = validateField({
     fieldName: 'Name',
     value: name,
   });
@@ -89,9 +89,19 @@ const MyAccount: FC<MyAccountScreenProps> = ({navigation, route}) => {
     // dispatch()
   };
 
+  useEffect(()=>{
+    if(updateUserResponse){
+      dispatch(resetUpdateUserResponse());
+      isAdmin
+            ? navigation.navigate('AdminDashboard')
+            : navigation.navigate('TeacherDashboard');
+    }
+
+  },[updateUserResponse])
+
   const onPressSave = () => {
     dispatch(
-      updateUserDetails({
+      updateUserDetails([userData.id,{
         userType: user?.userType || '',
         email,
         contactNumber: phoneNum,
@@ -101,16 +111,18 @@ const MyAccount: FC<MyAccountScreenProps> = ({navigation, route}) => {
         stateId: user?.stateId || 0,
         area: user?.areaId || 0,
         dateOfBirth: user?.dateOfBirth || '',
-        name: user?.name || '',
+        name,
         citizenship: user?.citizenship || '',
         grade: user?.school || '',
         isAdmin,
         roleId: user?.roleId || 0,
         moduleId: user?.stateId || 0,
         loggedInUserName: userData.userName,
-      }),
+      }]),
     );
   };
+
+  console.log("is,i",isChanged,nameErrorMessage,emailErrorMessage,districtErrorMessage,)
 
   return (
     <>
@@ -174,9 +186,12 @@ const MyAccount: FC<MyAccountScreenProps> = ({navigation, route}) => {
           label="Name"
           value={name}
           setValue={setName}
-          errorMessage={userNameErrorMessage}
+          errorMessage={nameErrorMessage}
           placeholder="Enter Name"
           style={{marginVertical: 2}}
+          onChange={() => {
+            setIsChanged(true);
+          }}
           autoCapitalize="words"
           mandatory
         />
@@ -187,7 +202,11 @@ const MyAccount: FC<MyAccountScreenProps> = ({navigation, route}) => {
           errorMessage={phoneNumberErrorMessage}
           placeholder="Enter Phone No."
           keyboardType="number-pad"
+          maxLength={10}
           style={{marginVertical: 2}}
+          onChange={() => {
+            setIsChanged(true);
+          }}
           mandatory
         />
         <TextInput
@@ -199,6 +218,9 @@ const MyAccount: FC<MyAccountScreenProps> = ({navigation, route}) => {
           autoCapitalize="none"
           keyboardType="email-address"
           style={{marginVertical: 2}}
+          onChange={() => {
+            setIsChanged(true);
+          }}
           mandatory
         />
         <TextInput
@@ -208,6 +230,9 @@ const MyAccount: FC<MyAccountScreenProps> = ({navigation, route}) => {
           errorMessage={districtErrorMessage}
           placeholder="Enter District"
           style={{marginVertical: 2}}
+          onChange={() => {
+            setIsChanged(true);
+          }}
           autoCapitalize="words"
           mandatory
         />
@@ -218,6 +243,9 @@ const MyAccount: FC<MyAccountScreenProps> = ({navigation, route}) => {
           setValue={setArea}
           placeholder="Enter Area"
           style={{marginVertical: 2}}
+          onChange={() => {
+            setIsChanged(true);
+          }}
           autoCapitalize="words"
         />
         <View
@@ -237,7 +265,7 @@ const MyAccount: FC<MyAccountScreenProps> = ({navigation, route}) => {
         />
         <TextInput
           label="Modules"
-          value={modules}
+          value={userData.module?.moduleName || ''}
           placeholder="Enter Modules"
           autoCapitalize="none"
           editable={false}
@@ -284,12 +312,20 @@ const MyAccount: FC<MyAccountScreenProps> = ({navigation, route}) => {
           placeholder="Enter User Type"
           autoCapitalize="none"
           editable={false}
+          style={{marginBottom: 20}}
         />
       </Layout>
 
       <FooterWithButtons
         proceedButtonText={'Save'}
-        isActiveProceedButton
+        isActiveProceedButton={Boolean(
+          isChanged &&
+            !nameErrorMessage &&
+            !emailErrorMessage &&
+            !phoneNumberErrorMessage &&
+            !districtErrorMessage &&
+            !areaErrorMessage,
+        )}
         cancelButtonText={'Cancel'}
         style={{elevation: 10}}
         onPressProceedButton={onPressSave}

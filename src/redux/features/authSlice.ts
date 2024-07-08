@@ -52,8 +52,10 @@ interface LoginResponse {
     userImageUrl: string;
     status: boolean;
     pageData: {
-      'Observation Reports': [];
-      Courses: [];
+      'Classroom Observations': [];
+      'Teaching Aids': PageItem[];
+      'Session Schedules': [];
+      'Give Feedback': [];
     };
   };
 }
@@ -129,6 +131,10 @@ export const resetPasswordResponse = createAction<void>(
   'RESET_PASSWORD_RESPONSE',
 );
 
+export const resetUpdateUserResponse = createAction<void>(
+  'RESET_UPDATE_USER_RESPONSE',
+);
+
 export const authenticateUser = createAsyncThunk<
   AuthenticateResponse,
   AuthenticateRequest,
@@ -188,12 +194,12 @@ export const forgotPassword = createAsyncThunk<
 
 export const updateUserDetails = createAsyncThunk<
   UpdateUserDetailsResponse,
-  UpdateUserDetailsRequest,
+  [number,UpdateUserDetailsRequest],
   {rejectValue: ErrorResponse}
->('auth/updateUserDetails', async (payload, {dispatch, rejectWithValue}) => {
+>('auth/updateUserDetails', async ([userId,payload], {dispatch, rejectWithValue}) => {
   try {
     dispatch(setLoading(true));
-    const response = await api.put(endPoints.UPDATE_USER, payload);
+    const response = await api.put(endPoints.UPDATE_USER+userId, payload);
     return response.data as UpdateUserDetailsResponse;
   } catch (error: any) {
     return rejectWithValue(error.response.data);
@@ -257,6 +263,7 @@ interface initialState {
     isAdmin: boolean;
     userImage: string;
     userImageUrl: string;
+    module: Module | null;
   };
   isAdmin: boolean;
   updateUserResponse: UpdateUserDetailsResponsePayload | null;
@@ -279,6 +286,7 @@ const initialState: initialState = {
     isAdmin: false,
     userImage: '',
     userImageUrl: '',
+    module: null,
   },
   isAdmin: false,
   updateUserResponse: null,
@@ -308,7 +316,10 @@ const authSlice = createSlice({
       .addCase(resetPasswordResponse, state => {
         state.forgotPasswordResponse = null;
       })
-
+      .addCase(resetUpdateUserResponse, state => {
+        state.updateUserResponse = null;
+      })
+      
       .addCase(setAuthShowMessage, (state, action) => {
         state.authShowMessage = action.payload;
       })
@@ -338,9 +349,19 @@ const authSlice = createSlice({
       })
       .addCase(updateUserDetails.fulfilled, (state, action) => {
         state.updateUserResponse = action.payload.payload;
+        state.authShowMessage = {
+          status: 'Success',
+          message: action?.payload?.payload?.message?.toString(),
+        };
+
       })
       .addCase(updateUserDetails.rejected, (state, action) => {
         state.updateUserResponse = null;
+          state.authShowMessage = {
+          status: 'Error',
+          message: action?.payload?.error?.errorMessage?.toString(),
+        };
+
       })
       .addCase(loginUser.pending, state => {
         state.isLoading = true;
@@ -351,7 +372,10 @@ const authSlice = createSlice({
       .addCase(loginUser.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isLoggedIn = true;
-        state.userData = action.payload.payload;
+        state.userData = {
+          ...action.payload.payload,
+          module: action.payload.payload.pageData['Teaching Aids'][0].module,
+        };
         state.isAdmin = Boolean(
           getRoleLevel(action.payload.payload.roleType) === UserTypes.PAF_USER,
         );

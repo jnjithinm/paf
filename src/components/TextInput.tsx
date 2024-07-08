@@ -171,7 +171,7 @@ const TextInput: FC<TextInputPropsTypes> = ({
         <RNTextInput
           style={{
             color: colors.blackColor,
-            opacity: rest.editable !== false ? undefined : 0.3,
+            // opacity: rest.editable !== false ? undefined : 0.3,
             fontFamily: FONT_VARIANT.regular,
             fontSize: FONT_SIZES.small3,
             width: passwordVisibility ? '80%' : '100%',

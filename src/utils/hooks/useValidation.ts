@@ -21,8 +21,7 @@ const useValidation = () => {
       case 'Email ID':
         if (value === '') {
           errorMessage = `${fieldName} is required`;
-        }
-        else if (!emailRegex.test(value)) {
+        } else if (!emailRegex.test(value)) {
           if (!value?.includes('@')) {
             errorMessage = `Email ID should contain the @ symbol`;
           } else if (value?.startsWith('@')) {
@@ -47,28 +46,26 @@ const useValidation = () => {
         }
         break;
 
-        case 'Name':
-          if (value === '') {
-            errorMessage = `${fieldName} is required`;
-          } else if (value.length < 8) {
-            errorMessage = `${fieldName} should be atleast 8 characters`;
-          }
-          break;
+      case 'Name':
+        if (value === '') {
+          errorMessage = `${fieldName} is required`;
+        } else if (value.length < 3) {
+          errorMessage = `${fieldName} should be atleast 8 characters`;
+        }
+        break;
 
-    
-            case 'District':
-              if (value === '') {
-                errorMessage = `${fieldName} is required`;
-              }
-              break;
-            case 'Area':
-              if (value === '') {
-                errorMessage = `${fieldName} is required`;
-              }
-              break;
-          
+      case 'District':
+        if (value === '') {
+          errorMessage = `${fieldName} is required`;
+        }
+        break;
+      case 'Area':
+        // if (value === '') {
+        //   errorMessage = `${fieldName} is required`;
+        // } 
+        break;
 
-          case 'Mobile Number':
+      case 'Mobile Number':
       case 'Phone Number':
         if (value === '') {
           errorMessage = `${fieldName} is required`;
