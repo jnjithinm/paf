@@ -7,7 +7,7 @@ import Layout from '../../components/Layout';
 import Text from '../../components/Text';
 import {useAppDispatch, useAppSelector} from '../../redux/store';
 import {LocationManagementStackParamList} from '../../navigation/LocationManagementStack';
-import {RenderActiveStatus, tabs} from '../userManagement/UsersMainPage';
+import {RenderActiveStatus} from '../userManagement/UsersMainPage';
 import {District, getDistricts} from '../../redux/features/masterSlice';
 import {RenderEmptyPlaceholder} from '../observation/ObservationReportsMainPage';
 import SearchWithFilter from '../../components/SearchWithFilter';
@@ -96,6 +96,7 @@ const Districts: FC<UserGroupsScreenProps> = ({navigation, route}) => {
   const {districts} = useAppSelector(state => state.master);
   const dispatch = useAppDispatch();
 
+  
   useEffect(() => {
     dispatch(
       getDistricts({

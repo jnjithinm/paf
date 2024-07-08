@@ -120,25 +120,24 @@ const FlowsItem: React.FC<FlowsItemProps> = ({
 const FlowsMainPage: FC<FlowsMainPageScreenProps> = ({navigation, route}) => {
   const [search, setSearch] = useState<string>('');
 
-  const [flowsList,setFlowsList]=useState<FlowItem[]>();
+  const [flowsList, setFlowsList] = useState<FlowItem[]>();
 
-  const {allFlows,ownedByMeFlows, notOwnedByMeFlows } = useAppSelector(
+  const {allFlows, ownedByMeFlows, notOwnedByMeFlows} = useAppSelector(
     state => state.flows,
   );
   const {userData, isAdmin} = useAppSelector(state => state.auth);
   const dispatch = useAppDispatch();
 
-  useEffect(()=>{
+  useEffect(() => {
     setFlowsList(allFlows?.dataList);
-
-  },[allFlows])
+  }, [allFlows]);
 
   const handleTabClick = (title: string) => {
     if (title === 'All') {
       setFlowsList(allFlows?.dataList);
-    }else if(title==='Owned By me'){
+    } else if (title === 'Owned by me') {
       setFlowsList(ownedByMeFlows?.dataList);
-    }else{
+    } else {
       setFlowsList(notOwnedByMeFlows?.dataList);
     }
   };
@@ -189,7 +188,7 @@ const FlowsMainPage: FC<FlowsMainPageScreenProps> = ({navigation, route}) => {
     );
   };
 
-  const filteredFlows = allFlows?.dataList?.filter(item =>
+  const filteredFlows = flowsList?.filter(item =>
     item?.flowName?.toLocaleLowerCase()?.includes(search?.toLocaleLowerCase()),
   );
 
@@ -209,14 +208,14 @@ const FlowsMainPage: FC<FlowsMainPageScreenProps> = ({navigation, route}) => {
         <View style={{marginVertical: 10}}>
           <Tab
             tabs={[
-              {value: 'All', label: 'All'},
+              {value: `All`, label: `All (${allFlows?.totalCount})`},
               {
-                value: `Owned by me(${ownedByMeFlows?.totalCount})`,
-                label: `Owned by me(${ownedByMeFlows?.totalCount})`,
+                value: `Owned by me`,
+                label: `Owned by me (${ownedByMeFlows?.totalCount})`,
               },
               {
-                value: `Not owned by me(${notOwnedByMeFlows?.totalCount})`,
-                label: `Not owned by me(${notOwnedByMeFlows?.totalCount})`,
+                value: `Not owned by me`,
+                label: `Not owned by me (${notOwnedByMeFlows?.totalCount})`,
               },
             ]}
             textStyle={{fontSize: normaliseFont(12)}}

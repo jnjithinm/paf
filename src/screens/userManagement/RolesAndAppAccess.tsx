@@ -9,13 +9,14 @@ import Icon from '../../components/Icon';
 import Text from '../../components/Text';
 import {useAppDispatch, useAppSelector} from '../../redux/store';
 import colors from '../../config/colors';
-import {RenderActiveStatus, RenderLabelAndValue, tabs} from './UsersMainPage';
+import {RenderActiveStatus, RenderLabelAndValue} from './UsersMainPage';
 import {Role, getRoles} from '../../redux/features/masterSlice';
 import {ItemType} from '../../config/types';
 import SearchWithFilter from '../../components/SearchWithFilter';
 import {RenderEmptyPlaceholder} from '../observation/ObservationReportsMainPage';
 import moment from 'moment';
 import Tab from '../../components/Tab';
+import PaginationBar from '../../components/PaginationBar';
 
 type RolesAndAppAccessNavigationProp = StackNavigationProp<
   UserManagementStackParamList,
@@ -116,23 +117,50 @@ const RolesAndAppAccessTile: FC<RolesAndAppAccessTileTypes> = ({
   </TouchableOpacity>
 );
 
+type RolesList = {
+  roleList: Role[] | undefined;
+  count: number | undefined;
+  selectedTab: 'all' | boolean;
+};
+
 const RolesAndAppAccess: FC<RolesAndAppAccessScreenProps> = ({
   navigation,
   route,
 }) => {
   const [selectedItem, setSelectedItem] = useState<Role>();
   const [search, setSearch] = useState<string>('');
-  const [rolesList, setRolesList] = useState<Role[]>();
+  const [rolesList, setRolesList] = useState<RolesList>();
 
   const dispatch = useAppDispatch();
-  const {roles} = useAppSelector(state => state.master);
+  const {allRoles, activeRoles, inactiveRoles} = useAppSelector(
+    state => state.master,
+  );
+
+  const tabs: ItemType[] = [
+    {label: `All (${allRoles?.totalCount})`, value: 'All'},
+    {label: `Active (${activeRoles?.totalCount})`, value: 'Active'},
+    {label: `Inactive (${inactiveRoles?.totalCount})`, value: 'Inactive'},
+  ];
+
   const handleTabClick = (title: ItemType) => {
-    if (roles?.dataList) {
-      title.value == 'Active'
-        ? setRolesList(roles?.dataList?.filter(item => item.status === true))
-        : title.value == 'Inactive'
-        ? setRolesList(roles?.dataList?.filter(item => item.status === false))
-        : setRolesList(roles?.dataList);
+    if (title.value == 'all') {
+      setRolesList({
+        roleList: allRoles?.dataList,
+        count: allRoles?.totalCount,
+        selectedTab: 'all',
+      });
+    } else if (title.value == 'active') {
+      setRolesList({
+        roleList: activeRoles?.dataList,
+        count: activeRoles?.totalCount,
+        selectedTab: true,
+      });
+    } else {
+      setRolesList({
+        roleList: inactiveRoles?.dataList,
+        count: inactiveRoles?.totalCount,
+        selectedTab: false,
+      });
     }
   };
 
@@ -144,14 +172,33 @@ const RolesAndAppAccess: FC<RolesAndAppAccessScreenProps> = ({
         type: 'all',
       }),
     );
+    dispatch(
+      getRoles({
+        page: 0,
+        size: 15,
+        type: true,
+      }),
+    );
+    dispatch(
+      getRoles({
+        page: 0,
+        size: 15,
+        type: false,
+      }),
+    );
   }, []);
 
   useEffect(() => {
-    if (roles) {
-      setRolesList(roles.dataList);
+    if (allRoles) {
+      setRolesList({
+        roleList: allRoles?.dataList,
+        count: allRoles?.totalCount,
+        selectedTab: 'all',
+      });
     }
-  }, [roles]);
-  const filteredRoles = rolesList?.filter(item =>
+  }, [allRoles]);
+
+  const filteredRoles = rolesList?.roleList?.filter(item =>
     item?.roleName?.toLocaleLowerCase()?.includes(search?.toLocaleLowerCase()),
   );
 
@@ -179,15 +226,29 @@ const RolesAndAppAccess: FC<RolesAndAppAccessScreenProps> = ({
       <View>
         {filteredRoles ? (
           filteredRoles.length > 0 ? (
-            filteredRoles?.map(item => (
-              <RolesAndAppAccessTile
-                role={item}
-                onPressItem={role => {
-                  setSelectedItem(role);
+            <View>
+              {filteredRoles?.map(item => (
+                <RolesAndAppAccessTile
+                  role={item}
+                  onPressItem={role => {
+                    setSelectedItem(role);
+                  }}
+                  selectedItem={selectedItem}
+                />
+              ))}
+              <PaginationBar
+                count={(rolesList?.count || 0) / 10}
+                onPressPageIndex={index => {
+                  dispatch(
+                    getRoles({
+                      page: index,
+                      size: 10,
+                      type: rolesList?.selectedTab || 'all',
+                    }),
+                  );
                 }}
-                selectedItem={selectedItem}
               />
-            ))
+            </View>
           ) : (
             <RenderEmptyPlaceholder />
           )

@@ -89,7 +89,8 @@ import toast_message_warning_icon from '../assets/svg/toast_message_warning_icon
 import drawer_icon_teacher_evaluation from '../assets/svg/drawer_icon_teacher_evaluation.svg'
 import arrow_right_pagination from '../assets/svg/arrow_right_pagination.svg'
 import arrow_left_icon from '../assets/svg/arrow_left_icon.svg'
-
+import trash_icon_red from '../assets/svg/trash_icon_red.svg'
+import edit_icon_red from '../assets/svg/edit_icon_red.svg'
 
 const Icons = {
   app_logo,
@@ -150,6 +151,8 @@ const Icons = {
   form_list,
   admin_response_clock,
   trash_icon,
+  edit_icon_red,
+  trash_icon_red,
   rating_card_icon,
   arrow_narrow_right,
   rating_star_display,

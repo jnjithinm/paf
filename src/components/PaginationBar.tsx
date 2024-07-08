@@ -14,14 +14,14 @@ const PaginationBar: FC<PaginationBarTypes> = ({
 }) => {
   const [selectedPageIndex, setSelectedPageIndex] = useState(1);
   const roundedCount = Math.ceil(count);
-  const isMorethanNinePages = roundedCount > 8;
-  const visiblePages = isMorethanNinePages ? 7 : roundedCount;
-  const remainingCount = roundedCount ? roundedCount - 8 : 0;
+  const isMorethanNinePages = roundedCount > 9;
 
   const onPressPaginationIndex = (index: number) => {
+    console.log("index",index)
     setSelectedPageIndex(index);
     onPressPageIndex(index - 1);
   };
+
 
   return (
     <View
@@ -29,7 +29,7 @@ const PaginationBar: FC<PaginationBarTypes> = ({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'flex-start',
-        marginBottom: 20,
+        marginVertical: 20,
       }}>
       {isMorethanNinePages && (
         <TouchableOpacity
@@ -60,32 +60,9 @@ const PaginationBar: FC<PaginationBarTypes> = ({
         style={{}}
         contentContainerStyle={styles.paginationContainer}
         horizontal>
-        {[...Array(visiblePages)].map((_, index) => {
-          const pageIndex = index + 2;
-          return (
-            <TouchableOpacity
-              key={pageIndex}
-              onPress={() => onPressPaginationIndex(pageIndex)}
-              style={[
-                styles.pageNumber,
-                pageIndex === selectedPageIndex && styles.selectedPageNumber,
-              ]}>
-              <Text
-                style={
-                  pageIndex === selectedPageIndex
-                    ? styles.selectedPageNumberText
-                    : styles.pageNumberText
-                }
-                size="small1">
-                {pageIndex}
-              </Text>
-            </TouchableOpacity>
-          );
-        })}
-
-        {isMorethanNinePages &&
-          [...Array(remainingCount - 1, 0)].map((_, index) => {
-            const pageIndex = index + 8;
+          {[...Array(roundedCount -2)].map((_, index) => {
+            const pageIndex = index + 2;
+            console.log("re",selectedPageIndex,pageIndex)
             return (
               <TouchableOpacity
                 key={pageIndex}
@@ -107,7 +84,6 @@ const PaginationBar: FC<PaginationBarTypes> = ({
             );
           })}
       </ScrollView>
-      {/* {isMorethanNinePages && <Text>...</Text>} */}
       <TouchableOpacity
         key={roundedCount}
         onPress={() => onPressPaginationIndex(roundedCount)}

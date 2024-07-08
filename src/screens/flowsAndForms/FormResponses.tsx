@@ -697,7 +697,7 @@ const FormResponses: FC<FormResponsesScreenProps> = ({navigation, route}) => {
     let renderal: JSX.Element = (
       <IndividualMainPageRenderal
         onPress={onPressItem}
-        individualResponse={formById?.dataList?.individualResponses || []}
+        individualResponse={formById?.dataList?.individualResponses}
         flowDetailItem={flowDetailItem}
         totalQuestion={formById?.dataList?.totalQuestions || 0}
       />
@@ -712,7 +712,7 @@ const FormResponses: FC<FormResponsesScreenProps> = ({navigation, route}) => {
           renderal = (
             <IndividualMainPageRenderal
               onPress={onPressItem}
-              individualResponse={formById?.dataList?.individualResponses || []}
+              individualResponse={formById?.dataList?.individualResponses}
               flowDetailItem={flowDetailItem}
               totalQuestion={formById?.dataList?.totalQuestions || 0}
             />
@@ -734,7 +734,7 @@ const FormResponses: FC<FormResponsesScreenProps> = ({navigation, route}) => {
             <QuestionWiseMainPageRenderal
               key={1}
               onPressItem={onPressItem}
-              questionList={formById?.dataList.questionList || []}
+              questionList={formById?.dataList.questionList }
             />
           );
         } else {

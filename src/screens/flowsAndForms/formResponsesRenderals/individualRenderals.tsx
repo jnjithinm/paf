@@ -145,7 +145,7 @@ const IndividualTile: FC<IndividualTileTypes> = ({
 
 type IndividualMainPageRenderalTypes = {
   onPress: (item: IndividualResponse) => void;
-  individualResponse: IndividualResponse[];
+  individualResponse: IndividualResponse[] | undefined;
   flowDetailItem: FlowDetailItem;
   totalQuestion: number;
 };
@@ -287,14 +287,18 @@ export const IndividualDescriptionRenderal: FC<
           }}>
           <View style={{justifyContent: 'space-between'}}>
             <Text fontVariant="bold">{individualResponse?.name}</Text>
-
-            <RatingInput
-              rating={individualResponse?.questionAvgRating || 0}
-              label={''}
-              size={15}
-              onChangeRating={() => {}}
-            />
-
+            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+              <RatingInput
+                rating={individualResponse?.questionAvgRating || 0}
+                label={''}
+                size={15}
+                onChangeRating={() => {}}
+                showRating={false}
+              />
+              <Text>
+                {`${individualResponse?.questionAvgRating?.toFixed(1)} / 5`}
+              </Text>
+            </View>
             <View
               style={{
                 backgroundColor: '#FEF8EC',

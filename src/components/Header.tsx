@@ -15,7 +15,7 @@ type HeaderPropsTypes = {
   dashboard?: boolean;
   onPressMenuIcon?: () => void;
   onPressBellIcon?: () => void;
-  onPressProfileIcon?: () => void;
+  // onPressProfileIcon?: () => void;
   onPressBackArrow?: () => void;
   onPressLogoutButton?: () => void;
   icon?: ImageIconNames;
@@ -29,7 +29,7 @@ const Header: FC<HeaderPropsTypes> = ({
   dashboard,
   onPressMenuIcon,
   onPressBellIcon,
-  onPressProfileIcon,
+  // onPressProfileIcon,
   onPressBackArrow,
   onPressLogoutButton,
   icon,
@@ -37,7 +37,9 @@ const Header: FC<HeaderPropsTypes> = ({
   isScrolled,
 }) => {
   const navigation = useNavigation();
-
+const onPressProfileIcon=()=>{
+  navigation.navigate('MyAccount' as never)
+}
   return (
     <View style={styles.headerContainer}>
       {dashboard && (

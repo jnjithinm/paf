@@ -8,15 +8,13 @@ import Layout from '../../components/Layout';
 import {UserManagementStackParamList} from '../../navigation/UserManagementStack';
 import Text from '../../components/Text';
 import {useAppDispatch, useAppSelector} from '../../redux/store';
-import {
-  UserGroup,
-  getAllUserGroups,
-} from '../../redux/features/usersSlice';
-import {RenderActiveStatus, tabs} from './UsersMainPage';
+import {UserGroup, getAllUserGroups} from '../../redux/features/usersSlice';
+import {RenderActiveStatus} from './UsersMainPage';
 import SearchWithFilter from '../../components/SearchWithFilter';
 import {ItemType} from '../../config/types';
 import Tab from '../../components/Tab';
 import {RenderEmptyPlaceholder} from '../observation/ObservationReportsMainPage';
+import PaginationBar from '../../components/PaginationBar';
 
 type UserGroupsNavigationProp = StackNavigationProp<
   UserManagementStackParamList,
@@ -26,8 +24,6 @@ type UserGroupsRouteProp = RouteProp<
   UserManagementStackParamList,
   'UserGroups'
 >;
-
-
 
 type RenderUserGroupDetailsTypes = {
   label: string;
@@ -64,7 +60,7 @@ const UserGroupTile: FC<UserGroupTileProps> = ({
         padding: 10,
         borderRadius: 10,
       }}
-      onPress={(userGroup)=>{}}>
+      onPress={userGroup => {}}>
       <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
         <Text size="body2" fontVariant="bold">
           {userGroup.groupName}
@@ -94,6 +90,12 @@ const UserGroupTile: FC<UserGroupTileProps> = ({
     </TouchableOpacity>
   );
 };
+
+type UserGroupsList = {
+  userGroupsList: UserGroup[] | undefined;
+  count: number | undefined;
+  selectedTab: 'all' | boolean;
+};
 interface UserGroupsScreenProps {
   navigation: UserGroupsNavigationProp;
   route: UserGroupsRouteProp;
@@ -102,28 +104,48 @@ interface UserGroupsScreenProps {
 const UserGroups: FC<UserGroupsScreenProps> = ({navigation, route}) => {
   const [selectedItem, setSelectedItem] = useState<UserGroup>();
   const [search, setSearch] = useState<string>('');
-  const [userGroupList, setUserGroupList] = useState<UserGroup[]>();
+  const [userGroupList, setUserGroupList] = useState<UserGroupsList>();
 
-  const {allUserGroups} = useAppSelector(state => state.users);
+  const {allUserGroups, activeUserGroups, inactiveUserGroups} = useAppSelector(
+    state => state.users,
+  );
   const dispatch = useAppDispatch();
+
+  const tabs: ItemType[] = [
+    {label: `All (${allUserGroups?.totalCount})`, value: 'All'},
+    {label: `Active (${activeUserGroups?.totalCount})`, value: 'Active'},
+    {label: `Inactive (${inactiveUserGroups?.totalCount})`, value: 'Inactive'},
+  ];
 
   useEffect(() => {
     if (allUserGroups) {
-      setUserGroupList(allUserGroups.dataList);
+      setUserGroupList({
+        userGroupsList: allUserGroups?.dataList,
+        count: allUserGroups.totalCount,
+        selectedTab: 'all',
+      });
     }
   }, [allUserGroups]);
 
   const handleTabClick = (title: ItemType) => {
-    if (allUserGroups?.dataList) {
-      title.value == 'Active'
-        ? setUserGroupList(
-            allUserGroups?.dataList?.filter(item => item.status === true),
-          )
-        : title.value == 'Inactive'
-        ? setUserGroupList(
-            allUserGroups?.dataList?.filter(item => item.status === false),
-          )
-        : setUserGroupList(allUserGroups?.dataList);
+    if (title.value == 'all') {
+      setUserGroupList({
+        userGroupsList: allUserGroups?.dataList,
+        count: allUserGroups?.totalCount,
+        selectedTab: 'all',
+      });
+    } else if (title.value == 'active') {
+      setUserGroupList({
+        userGroupsList: activeUserGroups?.dataList,
+        count: activeUserGroups?.totalCount,
+        selectedTab: true,
+      });
+    } else {
+      setUserGroupList({
+        userGroupsList: inactiveUserGroups?.dataList,
+        count: inactiveUserGroups?.totalCount,
+        selectedTab: false,
+      });
     }
   };
 
@@ -131,13 +153,27 @@ const UserGroups: FC<UserGroupsScreenProps> = ({navigation, route}) => {
     dispatch(
       getAllUserGroups({
         page: 0,
-        size: 15,
+        size: 10,
         type: 'all',
+      }),
+    );
+    dispatch(
+      getAllUserGroups({
+        page: 0,
+        size: 10,
+        type: true,
+      }),
+    );
+    dispatch(
+      getAllUserGroups({
+        page: 0,
+        size: 10,
+        type: false,
       }),
     );
   }, []);
 
-  const filteredUsers = userGroupList?.filter(item =>
+  const filteredUserGroups = userGroupList?.userGroupsList?.filter(item =>
     item?.groupName?.toLocaleLowerCase()?.includes(search?.toLocaleLowerCase()),
   );
 
@@ -163,17 +199,31 @@ const UserGroups: FC<UserGroupsScreenProps> = ({navigation, route}) => {
         filterNotNeeded
       />
       <View>
-        {filteredUsers ? (
-          filteredUsers.length > 0 ? (
-            filteredUsers?.map(item => (
-              <UserGroupTile
-                userGroup={item}
-                onPressItem={user => {
-                  // setSelectedItem(user);
+        {filteredUserGroups ? (
+          filteredUserGroups.length > 0 ? (
+            <View>
+              {filteredUserGroups?.map(item => (
+                <UserGroupTile
+                  userGroup={item}
+                  onPressItem={user => {
+                    // setSelectedItem(user);
+                  }}
+                  selectedItem={selectedItem}
+                />
+              ))}
+              <PaginationBar
+                count={(userGroupList?.count || 0) / 10}
+                onPressPageIndex={index => {
+                  dispatch(
+                    getAllUserGroups({
+                      page: index,
+                      size: 10,
+                      type: userGroupList?.selectedTab || 'all',
+                    }),
+                  );
                 }}
-                selectedItem={selectedItem}
               />
-            ))
+            </View>
           ) : (
             <RenderEmptyPlaceholder />
           )
