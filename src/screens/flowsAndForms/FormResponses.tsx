@@ -586,18 +586,10 @@ const ShowResponseCountAndActions: FC<ShowResponseCountAndActionsTypes> = ({
   </View>
 );
 
-const flowDetailItem = {
-  flowId: 1,
-  formId: 101,
-  flowName: 'Annual Teacher Evaluation',
-  formName: 'Teacher Feedback Form',
-  responses: 25,
-  createdDate: '2023-06-15T10:30:00Z',
-  responseDate: '2023-06-20T15:45:00Z',
-};
+
 
 const FormResponses: FC<FormResponsesScreenProps> = ({navigation, route}) => {
-  // const {flowDetailItem} = route.params;
+  const {flowDetailItem} = route.params;
   const [selectedTab, setSelectedTab] = useState<TabTypes>('Individual');
   const [individualScreen, setIndividualScreen] =
     useState<ScreenSelectiontypes>('main');

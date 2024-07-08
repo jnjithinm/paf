@@ -44,14 +44,14 @@ const FlowsAndFormsStack = () => {
         headerShown: false,
         keyboardHidesTabBar: true,
       })}>
-      {/* <FlowsAndFormsStackTab.Screen
+      <FlowsAndFormsStackTab.Screen
         name="FlowsMainPage"
         component={FlowsMainPage}
       />
       <FlowsAndFormsStackTab.Screen
         name="FormList"
         component={FormList}
-      /> */}
+      />
       <FlowsAndFormsStackTab.Screen
         name="FormResponses"
         component={FormResponses}
