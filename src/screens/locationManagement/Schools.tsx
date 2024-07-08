@@ -15,7 +15,7 @@ import {ItemType} from '../../config/types';
 import SearchWithFilter from '../../components/SearchWithFilter';
 import Tab from '../../components/Tab';
 import {RenderEmptyPlaceholder} from '../observation/ObservationReportsMainPage';
-import {tabs} from '../userManagement/UsersMainPage';
+import PaginationBar from '../../components/PaginationBar';
 
 type SchoolsNavigationProp = StackNavigationProp<
   LocationManagementStackParamList,
@@ -170,6 +170,11 @@ const SchoolTile: FC<SchoolTileTypes> = ({
   </TouchableOpacity>
 );
 
+type schoolList = {
+  schoolList : SchoolType[] | undefined;
+  count: number | undefined;
+  selectedTab: 'all' | boolean;
+};
 interface SchoolsScreenProps {
   navigation: SchoolsNavigationProp;
   route: SchoolsRouteProp;
@@ -177,40 +182,79 @@ interface SchoolsScreenProps {
 
 const School: FC<SchoolsScreenProps> = ({navigation, route}) => {
   const [selectedItem, setSelectedItem] = useState<SchoolType>();
-  const [schoolList, setSchoolList] = useState<SchoolType[]>();
+  const [schoolList, setSchoolList] = useState<schoolList>();
   const [search, setSearch] = useState<string>('');
 
   const dispatch = useAppDispatch();
-  const {schools} = useAppSelector(state => state.master);
+  const {allSchools,activeSchools,inactiveSchools} = useAppSelector(state => state.master);
+
+  const tabs: ItemType[] = [
+    {label: `All (${allSchools?.totalCount||''})`, value: 'all'},
+    {label: `Active (${activeSchools?.totalCount||''})`, value: 'active'},
+    {label: `Inactive (${inactiveSchools?.totalCount||''})`, value: 'inactive'},
+  ];
+
+  useEffect(() => {
+    if (allSchools) {
+      setSchoolList({
+        schoolList: allSchools?.dataList,
+        count: allSchools.totalCount,
+        selectedTab: 'all',
+      });
+    }
+  }, [allSchools]);
 
   useEffect(() => {
     dispatch(
       getSchools({
         page: 0,
-        size: 15,
+        size: 10,
         type: 'all',
+      }),
+    );
+    dispatch(
+      getSchools({
+        page: 0,
+        size: 10,
+        type: true,
+      }),
+    );
+    dispatch(
+      getSchools({
+        page: 0,
+        size: 10,
+        type: false,
       }),
     );
   }, []);
 
   const handleTabClick = (title: ItemType) => {
-    if (schools?.dataList) {
-      title.value == 'Active'
-        ? setSchoolList(schools?.dataList?.filter(item => item.status === true))
-        : title.value == 'Inactive'
-        ? setSchoolList(schools?.dataList.filter(item => item.status === false))
-        : setSchoolList(schools?.dataList);
+    if (title.value == 'all') {
+      setSchoolList({
+        schoolList: allSchools?.dataList,
+        count: allSchools?.totalCount,
+        selectedTab: 'all',
+      });
+    } else if (title.value == 'active') {
+      setSchoolList({
+        schoolList: activeSchools?.dataList,
+        count: activeSchools?.totalCount,
+        selectedTab: true,
+      });
+    } else {
+      setSchoolList({
+        schoolList: inactiveSchools?.dataList,
+        count: inactiveSchools?.totalCount,
+        selectedTab: false,
+      });
     }
   };
 
-  useEffect(() => {
-    if (schools) {
-      setSchoolList(schools?.dataList);
-    }
-  }, [schools]);
+  
 
-  const filteredSchool = schoolList?.filter(item =>
-    item?.stateName?.toLocaleLowerCase()?.includes(search?.toLocaleLowerCase()),
+
+  const filteredSchool = schoolList?.schoolList?.filter(item =>
+    item?.districtName?.toLocaleLowerCase()?.includes(search?.toLocaleLowerCase()),
   );
 
   return (
@@ -237,15 +281,29 @@ const School: FC<SchoolsScreenProps> = ({navigation, route}) => {
       <View style={{marginVertical: 10}}>
         {filteredSchool ? (
           filteredSchool.length > 0 ? (
-            filteredSchool?.map(item => (
+            <View>
+            {filteredSchool?.map(item => (
               <SchoolTile
                 school={item}
-                onPressItem={user => {
-                  setSelectedItem(user);
+                onPressItem={schoolList => {
+                  setSelectedItem(schoolList);
                 }}
                 selectedItem={selectedItem}
               />
-            ))
+            ))}
+            <PaginationBar
+                count={(schoolList?.count || 0) / 10}
+                onPressPageIndex={index => {
+                  dispatch(
+                    getSchools({
+                      page: index,
+                      size: 10,
+                      type: schoolList?.selectedTab || 'all',
+                    }),
+                  );
+                }}
+              />
+            </View>
           ) : (
             <RenderEmptyPlaceholder />
           )

@@ -17,7 +17,6 @@ const PaginationBar: FC<PaginationBarTypes> = ({
   const isMorethanNinePages = roundedCount > 9;
 
   const onPressPaginationIndex = (index: number) => {
-    console.log("index",index)
     setSelectedPageIndex(index);
     onPressPageIndex(index - 1);
   };

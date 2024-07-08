@@ -13,23 +13,24 @@ import {RenderEmptyPlaceholder} from '../observation/ObservationReportsMainPage'
 import SearchWithFilter from '../../components/SearchWithFilter';
 import Tab from '../../components/Tab';
 import {ItemType} from '../../config/types';
+import PaginationBar from '../../components/PaginationBar';
 
-type UserGroupsNavigationProp = StackNavigationProp<
+type DistrictsNavigationProp = StackNavigationProp<
   LocationManagementStackParamList,
   'Districts'
 >;
-type UserGroupsRouteProp = RouteProp<
+type DistrictsRouteProp = RouteProp<
   LocationManagementStackParamList,
   'Districts'
 >;
 
-type RenderUserGroupDetailsTypes = {
+type RenderDistrictsDetailsTypes = {
   label: string;
   value: string | number;
   style?: ViewStyle;
 };
 
-const RenderUserGroupDetails: FC<RenderUserGroupDetailsTypes> = ({
+const RenderDistrictsDetails: FC<RenderDistrictsDetailsTypes> = ({
   label,
   value,
   style,
@@ -76,75 +77,99 @@ const DistrictTile: FC<DistrictTileProps> = ({
           width: '70%',
           marginTop: 8,
         }}>
-        <RenderUserGroupDetails label={'State'} value={district.stateName} />
-        <RenderUserGroupDetails label={'Schools'} value={district.schools} />
-        <RenderUserGroupDetails label={'Users'} value={district.users} />
+        <RenderDistrictsDetails label={'State'} value={district.stateName} />
+        <RenderDistrictsDetails label={'Schools'} value={district.schools} />
+        <RenderDistrictsDetails label={'Users'} value={district.users} />
       </View>
     </TouchableOpacity>
   );
 };
-interface UserGroupsScreenProps {
-  navigation: UserGroupsNavigationProp;
-  route: UserGroupsRouteProp;
+type DistrictsList = {
+  districtsList: District[] | undefined;
+  count: number | undefined;
+  selectedTab: 'all' | boolean;
+};
+
+interface DistrictsScreenProps {
+  navigation: DistrictsNavigationProp;
+  route: DistrictsRouteProp;
 }
 
-const Districts: FC<UserGroupsScreenProps> = ({navigation, route}) => {
+const Districts: FC<DistrictsScreenProps> = ({navigation, route}) => {
   const [selectedItem, setSelectedItem] = useState<District>();
-  const [districtList, setDistrictList] = useState<District[]>();
+  const [districtList, setDistrictList] = useState<DistrictsList | undefined>();
   const [search, setSearch] = useState<string>('');
 
   const {allDistricts,activeDistricts,inactiveDistricts} = useAppSelector(state => state.master);
   const dispatch = useAppDispatch();
 
+  const tabs: ItemType[] = [
+    {label: `All (${allDistricts?.totalCount||''})`, value: 'all'},
+    {label: `Active (${activeDistricts?.totalCount||''})`, value: 'active'},
+    {label: `Inactive (${inactiveDistricts?.totalCount||''})`, value: 'inactive'},
+  ];
   
+  
+
+  useEffect(() => {
+    if (allDistricts) {
+      setDistrictList({
+        districtsList: allDistricts?.dataList,
+        count: allDistricts.totalCount,
+        selectedTab: 'all',
+      });
+    }
+  }, [allDistricts]);
+
+  const handleTabClick = (title: ItemType) => {
+    if (title.value == 'all') {
+      setDistrictList({
+        districtsList: allDistricts?.dataList,
+        count: allDistricts?.totalCount,
+        selectedTab: 'all',
+      });
+    } else if (title.value == 'active') {
+      setDistrictList({
+        districtsList: activeDistricts?.dataList,
+        count: activeDistricts?.totalCount,
+        selectedTab: true,
+      });
+    } else {
+      setDistrictList({
+        districtsList: inactiveDistricts?.dataList,
+        count: inactiveDistricts?.totalCount,
+        selectedTab: false,
+      });
+    }
+  };
+
   useEffect(() => {
     dispatch(
       getDistricts({
         page: 0,
-        size: 15,
+        size: 10,
         type: 'all',
       }),
     );
     dispatch(
       getDistricts({
         page: 0,
-        size: 15,
+        size: 10,
         type: true,
       }),
     );
     dispatch(
       getDistricts({
         page: 0,
-        size: 15,
+        size: 10,
         type: false,
       }),
     );
   }, []);
 
-  const handleTabClick = (title: ItemType) => {
-    if (districts?.dataList) {
-      title.value == 'Active'
-        ? setDistrictList(
-            districts?.dataList?.filter(item => item.status === true),
-          )
-        : title.value == 'Inactive'
-        ? setDistrictList(
-            districts?.dataList.filter(item => item.status === false),
-          )
-        : setDistrictList(districts?.dataList);
-    }
-  };
 
-  useEffect(() => {
-    if (districts) {
-      setDistrictList(districts.dataList);
-    }
-  }, [districts]);
-
-  const filteredDistricts = districtList?.filter(item =>
-    item?.districtName
-      ?.toLocaleLowerCase()
-      ?.includes(search?.toLocaleLowerCase()),
+  const filteredDistricts = districtList?.districtsList?.filter(item =>
+    item?.districtName?.toLocaleLowerCase()?.includes(search?.toLocaleLowerCase()),
   );
 
   return (
@@ -171,7 +196,8 @@ const Districts: FC<UserGroupsScreenProps> = ({navigation, route}) => {
       <View style={{marginBottom: 15}}>
         {filteredDistricts ? (
           filteredDistricts.length > 0 ? (
-            filteredDistricts.map(item => (
+            <View>
+            {filteredDistricts.map(item => (
               <DistrictTile
                 district={item}
                 onPressItem={district => {
@@ -179,7 +205,21 @@ const Districts: FC<UserGroupsScreenProps> = ({navigation, route}) => {
                 }}
                 selectedItem={selectedItem}
               />
-            ))
+            ))}
+            <PaginationBar
+                count={(districtList?.count || 0) / 10}
+                onPressPageIndex={index => {
+                  dispatch(
+                    getDistricts({
+                      page: index,
+                      size: 10,
+                      type: districtList?.selectedTab || 'all',
+                    }),
+                  );
+                }}
+              />
+            </View>
+          
           ) : (
             <RenderEmptyPlaceholder />
           )

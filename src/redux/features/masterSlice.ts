@@ -59,6 +59,7 @@ interface GetRolesResponse {
 }
 type GetRolesResponsePayload = GetRolesResponse['payload'];
 
+
 export interface State {
   stateId: number;
   stateName: string;
@@ -104,7 +105,7 @@ interface GetDistrictResponse {
   status: number;
 }
 
-type GetDistrictResponsePayload = GetDistrictResponse['payload'];
+type GetAllDistrictResponsePayload = GetDistrictResponse['payload'];
 
 
 
@@ -164,7 +165,7 @@ interface GetSchoolResponse {
   status: number;
 }
 
-type GetSchoolResponsePayload = GetSchoolResponse['payload'];
+type GetAllSchoolResponsePayload = GetSchoolResponse['payload'];
 
 
 export const setMasterShowMessage = createAction<ErrorStatusObject | null>(
@@ -315,11 +316,13 @@ interface InitialState {
   activeRoles: GetRolesResponsePayload | null;
   inactiveRoles: GetRolesResponsePayload | null;
   states:GetStatesResponsePayload | null;
-  allDistricts:GetDistrictResponsePayload|null;
-  activeDistricts:GetDistrictResponsePayload|null;
-  inactiveDistricts:GetDistrictResponsePayload|null;
+  allDistricts:GetAllDistrictResponsePayload|null;
+  activeDistricts:GetAllDistrictResponsePayload|null;
+  inactiveDistricts:GetAllDistrictResponsePayload|null;
   areas:GetAreaResponsePayload|null;
-  schools:GetSchoolResponsePayload|null;
+  allSchools:GetAllSchoolResponsePayload|null;
+  activeSchools:GetAllSchoolResponsePayload|null;
+  inactiveSchools:GetAllSchoolResponsePayload|null;
   masterShowMessage: ErrorStatusObject | null;
   errorMessage: string;
 }
@@ -335,7 +338,9 @@ const initialState: InitialState = {
   activeDistricts:null,
   inactiveDistricts:null,
   areas:null,
-  schools:null,
+  allSchools:null,
+  activeSchools:null,
+  inactiveSchools:null,
   masterShowMessage: null,
   errorMessage: ''
 };
@@ -385,9 +390,10 @@ const masterSlice = createSlice({
       })
       .addCase(getDistricts.rejected, (state, action) => {
         state.allDistricts = null;
+        state.activeDistricts=null;
+        state.inactiveDistricts=null;
       })
       .addCase(getDistricts.pending, state => {
-        state.allDistricts = null;
       })
       .addCase(getDistricts.fulfilled, (state, action) => {
         if (action.meta.arg.type === 'all') {
@@ -397,6 +403,7 @@ const masterSlice = createSlice({
         } else {
           state.inactiveDistricts = action.payload.payload;
         }
+       
       })
       .addCase(getAreas.rejected, (state, action) => {
         state.areas = null;
@@ -408,13 +415,21 @@ const masterSlice = createSlice({
         state.areas = action.payload.payload;
       })
       .addCase(getSchools.rejected, (state, action) => {
-        state.schools = null;
+        state.allSchools= null;
+        state.activeSchools=null;
+        state.inactiveSchools=null;
       })
       .addCase(getSchools.pending, state => {
-        state.schools = null;
+        state.activeRoles = null;
       })
       .addCase(getSchools.fulfilled, (state, action) => {
-        state.schools = action.payload.payload;
+        if (action.meta.arg.type === 'all') {
+          state.allSchools = action.payload.payload;
+        } else if (action.meta.arg.type === true) {
+          state.activeSchools = action.payload.payload;
+        } else {
+          state.inactiveSchools= action.payload.payload;
+        }
       })
       .addCase(getAllDomains.rejected, (state, action) => {
         // state.isLoading = false;
