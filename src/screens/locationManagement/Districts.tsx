@@ -100,16 +100,19 @@ const Districts: FC<DistrictsScreenProps> = ({navigation, route}) => {
   const [districtList, setDistrictList] = useState<DistrictsList | undefined>();
   const [search, setSearch] = useState<string>('');
 
-  const {allDistricts,activeDistricts,inactiveDistricts} = useAppSelector(state => state.master);
+  const {allDistricts, activeDistricts, inactiveDistricts} = useAppSelector(
+    state => state.master,
+  );
   const dispatch = useAppDispatch();
 
   const tabs: ItemType[] = [
-    {label: `All (${allDistricts?.totalCount||''})`, value: 'all'},
-    {label: `Active (${activeDistricts?.totalCount||''})`, value: 'active'},
-    {label: `Inactive (${inactiveDistricts?.totalCount||''})`, value: 'inactive'},
+    {label: `All (${allDistricts?.totalCount || ''})`, value: 'all'},
+    {label: `Active (${activeDistricts?.totalCount || ''})`, value: 'active'},
+    {
+      label: `Inactive (${inactiveDistricts?.totalCount || ''})`,
+      value: 'inactive',
+    },
   ];
-  
-  
 
   useEffect(() => {
     if (allDistricts) {
@@ -167,9 +170,10 @@ const Districts: FC<DistrictsScreenProps> = ({navigation, route}) => {
     );
   }, []);
 
-
   const filteredDistricts = districtList?.districtsList?.filter(item =>
-    item?.districtName?.toLocaleLowerCase()?.includes(search?.toLocaleLowerCase()),
+    item?.districtName
+      ?.toLocaleLowerCase()
+      ?.includes(search?.toLocaleLowerCase()),
   );
 
   return (
@@ -197,16 +201,16 @@ const Districts: FC<DistrictsScreenProps> = ({navigation, route}) => {
         {filteredDistricts ? (
           filteredDistricts.length > 0 ? (
             <View>
-            {filteredDistricts.map(item => (
-              <DistrictTile
-                district={item}
-                onPressItem={district => {
-                  setSelectedItem(district);
-                }}
-                selectedItem={selectedItem}
-              />
-            ))}
-            <PaginationBar
+              {filteredDistricts.map(item => (
+                <DistrictTile
+                  district={item}
+                  onPressItem={district => {
+                    setSelectedItem(district);
+                  }}
+                  selectedItem={selectedItem}
+                />
+              ))}
+              <PaginationBar
                 count={(districtList?.count || 0) / 10}
                 onPressPageIndex={index => {
                   dispatch(
@@ -219,7 +223,6 @@ const Districts: FC<DistrictsScreenProps> = ({navigation, route}) => {
                 }}
               />
             </View>
-          
           ) : (
             <RenderEmptyPlaceholder />
           )

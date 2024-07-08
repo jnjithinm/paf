@@ -1,5 +1,5 @@
 import React, {FC, useEffect, useState} from 'react';
-import { TouchableOpacity, View, ViewStyle} from 'react-native';
+import {TouchableOpacity, View, ViewStyle} from 'react-native';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import moment from 'moment';
@@ -137,23 +137,33 @@ const AreaTile: FC<AreaTileTypes> = ({area, selectedItem, onPressItem}) => (
           flexWrap: 'wrap',
           justifyContent: 'space-between',
         }}>
-          <View style={{flexDirection:'row',width:'100%',justifyContent:'space-between'}}>
+        <View
+          style={{
+            flexDirection: 'row',
+            width: '100%',
+            justifyContent: 'space-between',
+          }}>
           <RenderLabelAndValue label={'Pincode'} value={area.pinCode} />
-        <RenderLabelAndValue label={'District'} value={area.districtName} />
-        <RenderLabelAndValue label={'States'} value={area.stateName} />
-        <RenderLabelAndValue label={'School'} value={area.schools} />
-        <RenderLabelAndValue label={'Users'} value={area.users} />
-          </View>
-          <View style={{flexDirection:'row',width:'100%',justifyContent:'space-between'}}>
-        <RenderLabelAndValue label={'Created By'} value={area.createdBy} />
-        <RenderLabelAndValue
-          label={'Created On'}
-          value={moment(area.creationDate).format('DD/MM/YYY')}
-        />
-        <RenderLabelAndValue
-          label={'Time'}
-          value={moment(area.creationDate).format('hh:mm A')}
-        />
+          <RenderLabelAndValue label={'District'} value={area.districtName} />
+          <RenderLabelAndValue label={'States'} value={area.stateName} />
+          <RenderLabelAndValue label={'School'} value={area.schools} />
+          <RenderLabelAndValue label={'Users'} value={area.users} />
+        </View>
+        <View
+          style={{
+            flexDirection: 'row',
+            width: '100%',
+            justifyContent: 'space-between',
+          }}>
+          <RenderLabelAndValue label={'Created By'} value={area.createdBy} />
+          <RenderLabelAndValue
+            label={'Created On'}
+            value={moment(area.creationDate).format('DD/MM/YYY')}
+          />
+          <RenderLabelAndValue
+            label={'Time'}
+            value={moment(area.creationDate).format('hh:mm A')}
+          />
         </View>
       </View>
     )}
@@ -183,11 +193,11 @@ const Areas: FC<AreasScreenProps> = ({navigation, route}) => {
     );
   }, []);
 
-  useEffect(()=>{
-    if(areas){
-      setAreaList(areas.dataList)
+  useEffect(() => {
+    if (areas) {
+      setAreaList(areas.dataList);
     }
-  },[areas])
+  }, [areas]);
 
   const handleTabClick = (title: ItemType) => {
     if (areas?.dataList) {
@@ -208,8 +218,8 @@ const Areas: FC<AreasScreenProps> = ({navigation, route}) => {
       overridePaddingVertical
       style={{paddingHorizontal: 15}}
       title="Areas"
-      icon='areas_icon'
-      focusedStack='LocationManagementStack'
+      icon="areas_icon"
+      focusedStack="LocationManagementStack"
       titleTransition>
       <Text size="body3" fontVariant="bold" style={{marginVertical: 10}}>
         Areas

@@ -2,6 +2,7 @@ import React, {FC, useEffect, useState} from 'react';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {TouchableOpacity, View} from 'react-native';
+import DocumentPicker from 'react-native-document-picker';
 
 import Layout from '../../components/Layout';
 import Text from '../../components/Text';
@@ -19,7 +20,9 @@ import {
   forgotPassword,
   resetUpdateUserResponse,
   updateUserDetails,
+  updateUserPhoto,
 } from '../../redux/features/authSlice';
+import {FileObject} from '../../config/types';
 
 type MyAccountNavigationProp = StackNavigationProp<
   MainStackParamList,
@@ -31,6 +34,17 @@ interface MyAccountScreenProps {
   navigation: MyAccountNavigationProp;
   route: MyAccountRouteProp;
 }
+
+const selectImageFile = async (): Promise<FileObject> => {
+  const result = await DocumentPicker.pick({
+    type: [DocumentPicker.types.images],
+  });
+  return {
+    uri: result[0].uri,
+    name: result[0].name || 'image',
+    type: result[0].type || 'image/jpg',
+  };
+};
 
 const MyAccount: FC<MyAccountScreenProps> = ({navigation, route}) => {
   const [isChanged, setIsChanged] = useState<boolean>(false);
@@ -91,8 +105,9 @@ const MyAccount: FC<MyAccountScreenProps> = ({navigation, route}) => {
     dispatch(forgotPassword(userData.userName));
   };
 
-  const onPressEditPhoto = () => {
-    // dispatch()
+  const onPressEditPhoto = async () => {
+    const file = await selectImageFile();
+    dispatch(updateUserPhoto([file, userData.userName]));
   };
   const onPressDeletePhoto = () => {
     dispatch(deleteUserPhoto([userData.id, userData.userName]));

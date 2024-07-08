@@ -586,8 +586,6 @@ const ShowResponseCountAndActions: FC<ShowResponseCountAndActionsTypes> = ({
   </View>
 );
 
-
-
 const FormResponses: FC<FormResponsesScreenProps> = ({navigation, route}) => {
   const {flowDetailItem} = route.params;
   const [selectedTab, setSelectedTab] = useState<TabTypes>('Individual');

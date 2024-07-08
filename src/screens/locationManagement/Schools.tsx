@@ -250,8 +250,6 @@ const School: FC<SchoolsScreenProps> = ({navigation, route}) => {
     }
   };
 
-  
-
 
   const filteredSchool = schoolList?.schoolList?.filter(item =>
     item?.districtName?.toLocaleLowerCase()?.includes(search?.toLocaleLowerCase()),

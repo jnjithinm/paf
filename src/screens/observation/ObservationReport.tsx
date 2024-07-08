@@ -71,7 +71,6 @@ const ObservationReport: FC<ObservationReportScreenProps> = ({
         dispatch(resetSaveObservationResponse());
         dispatch(getObservationById(observationId));
       }
-      
     }, []),
   );
 
