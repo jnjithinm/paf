@@ -74,14 +74,15 @@ const SearchWithFilter: React.FC<RenderSearchTypes> = ({
           closeOnBlur={true}
           closeOnSubmit={false}
           onChangeText={onSearch}
-          textInputProps={{style: {color: colors.blackColor,}}}
+          textInputProps={{
+            style: {color: colors.blackColor, fontSize: FONT_SIZES.small2},
+            placeholder: placeHolder,
+            placeholderTextColor: '#4E565F',
+          }}
           suggestionsListTextStyle={{
             color: colors.blackColor,
             fontSize: FONT_SIZES.body1,
           }}
-          // placeholder={placeHolder}
-          emptyResultText={placeHolder}
-          EmptyResultComponent={<Text style={{color:colors.blackColor}}>{placeHolder}</Text>}
           suggestionsListContainerStyle={{borderRadius: 10}}
           RightIconComponent={<Icon name="search_icon" style={styles.icon} />}
           showChevron={false}

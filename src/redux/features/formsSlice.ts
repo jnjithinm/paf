@@ -271,8 +271,27 @@ interface GetQuestionRatingByIndicatorIdResponse {
   status: number;
 }
 
+
 type GetQuestionRatingByIndicatorIdResponsePayload =
   GetQuestionRatingByIndicatorIdResponse['payload'];
+
+
+  interface PrintFormResponsesRequest {
+    flowId: number;
+    formId: number;
+    ids: number[];
+  }
+
+  interface PrintFormResponseResponse{
+    payload:{
+      id:number;
+      message:string
+    },
+    status:number
+  }
+
+
+type PrintFormResponseResponsePayload = PrintFormResponseResponse['payload'];
 
 export const setFormsShowMessage = createAction<ErrorStatusObject | null>(
   'SET_FORMS_SHOW_MESSAGE',
@@ -430,6 +449,29 @@ export const deleteForm = createAsyncThunk<
   },
 );
 
+
+
+export const printFormResponses = createAsyncThunk<
+  PrintFormResponseResponse,
+  PrintFormResponsesRequest,
+  {rejectValue: ErrorResponse}
+>(
+  'forms/printFormResponse',
+  async (payload, {dispatch, rejectWithValue}) => {
+    try {
+      dispatch(setLoading(true));
+      const response = await api.post(
+        endPoints.PRINT_FORM_RESPONSES ,payload
+      );
+      return response.data as PrintFormResponseResponse;
+    } catch (error: any) {
+      return rejectWithValue(error.response.data);
+    } finally {
+      dispatch(setLoading(false));
+    }
+  },
+);
+
 interface InitialState {
   formById: GetAllFlowsResponsePayload | null;
   previewForm: GetPreviewFormResponsePayload | null;
@@ -438,6 +480,7 @@ interface InitialState {
   assignFormResponse: AssignFormResponsePayload | null;
   questionRatingByIndicatorId: GetQuestionRatingByIndicatorIdResponsePayload | null;
   deleteFormResponse: DeleteFormResponse | null;
+  printResponsesResponse:PrintFormResponseResponsePayload|null;
   formsShowMessage: ErrorStatusObject | null;
   errorMessage: string;
 }
@@ -448,9 +491,10 @@ const initialState: InitialState = {
   submitPreviewFormResponse: null,
   acceptingFormResponses: null,
   deleteFormResponse: null,
-  formsShowMessage: null,
   assignFormResponse: null,
   questionRatingByIndicatorId: null,
+  printResponsesResponse:null,
+  formsShowMessage: null,
   errorMessage: '',
 };
 
@@ -572,7 +616,22 @@ const formsSlice = createSlice({
           status: 'Error',
           message: action?.payload?.error?.errorMessage?.toString(),
         };
-      });
+      })
+      .addCase(printFormResponses.pending, state => {
+        state.deleteFormResponse = null;
+      })
+      .addCase(printFormResponses.fulfilled, (state, action) => {
+        state.formsShowMessage = {
+          status: 'Success',
+          message: action.payload?.payload?.message,
+        };
+      })
+      .addCase(printFormResponses.rejected, (state, action) => {
+        state.formsShowMessage = {
+          status: 'Error',
+          message: action?.payload?.error?.errorMessage?.toString(),
+        };
+      })
   },
 });
 

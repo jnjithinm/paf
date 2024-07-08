@@ -69,7 +69,7 @@ const MainStackNavigator = () => {
             keyboardHidesTabBar: true,
           };
         }}>
-        {isAdmin ? (
+        {/* {isAdmin ? (
           <MainStack.Screen name="AdminDashboard" component={AdminDashboard} />
         ) : (
           <MainStack.Screen
@@ -83,7 +83,7 @@ const MainStackNavigator = () => {
           name="ObservationStack"
           component={ObservationStack}
         />
-        <MainStack.Screen name="RubricStack" component={RubricStack} />
+        <MainStack.Screen name="RubricStack" component={RubricStack} /> */}
         <MainStack.Screen
           name="FlowsAndFormsStack"
           component={FlowsAndFormsStack}

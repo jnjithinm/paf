@@ -75,9 +75,9 @@ const Modal: FC<ModalPropsTypes> = ({
           <View style={styles.header}>
             <Text
               color="blackColor"
-              style={{justifyContent: 'flex-start'}}
+              // style={{justifyContent: 'flex-start'}}
               fontVariant='bold'
-              size="body1">
+              size="body2">
               {title}
             </Text>
 
@@ -85,11 +85,13 @@ const Modal: FC<ModalPropsTypes> = ({
               <TouchableOpacity
                 onPress={() => onClose()}
                 style={{
-                  justifyContent: 'flex-end',
-                  width: normaliseDesigns(20),
-                  height: normaliseDesigns(20),
+                  // justifyContent: 'flex-end',
+                  width: normaliseDesigns(25),
+                  height: normaliseDesigns(25),
+                  alignItems:'center',
+                  justifyContent:'center'
                 }}>
-                <Icon name="cross_icon_thin" width={10} height={10} />
+                <Icon name='cross_icon_thin' width={15} height={15} />
               </TouchableOpacity>
             )}
           </View>

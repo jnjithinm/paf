@@ -148,7 +148,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     marginTop: 2,
     height: 'auto',
-    paddingVertical: 7,
+    paddingVertical: 5,
     backgroundColor: 'transparent',
   },
 
@@ -158,7 +158,7 @@ const styles = StyleSheet.create({
     height: 'auto',
   },
   selectedTextStyle: {
-    fontSize: normaliseFont(15),
+    fontSize: normaliseFont(13),
     justifyContent: 'center',
     color: colors.blackColor,
     textTransform: 'capitalize',
@@ -166,9 +166,9 @@ const styles = StyleSheet.create({
 
   dropdownText: {
     // backgroundColor: 'red',
-    fontSize: normaliseFont(14),
+    fontSize: normaliseFont(12),
     color: colors.blackColor,
-    paddingVertical: 5,
+    paddingVertical: 2,
     paddingHorizontal: 5,
     fontFamily: FONT_VARIANT.regular,
     textTransform: 'capitalize',

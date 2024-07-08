@@ -292,17 +292,16 @@ const flowsSlice = createSlice({
         }
       })
       .addCase(getAllFlows.rejected, (state, action) => {
-        // state.isLoading = false;
+        state.allFlows=null;
       })
       .addCase(getFlowById.pending, state => {
-        // state.isLoading = true;
+
       })
       .addCase(getFlowById.fulfilled, (state, action) => {
-        // state.isLoading = false;
         state.flowById = action.payload.payload;
       })
       .addCase(getFlowById.rejected, (state, action) => {
-        // state.isLoading = false;
+        state.flowById= null;
       })
       .addCase(sendReminderForm.pending, state => {
         state.sendReminderFormResponse = null;

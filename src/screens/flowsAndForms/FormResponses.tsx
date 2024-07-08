@@ -62,6 +62,7 @@ import {
 import {ItemType} from '../../config/types';
 import DateTimePickerComponent from '../../components/DateTimePickerComponent';
 import {FlowsAndFormsStackParamList} from '../../navigation/FlowsAndFormsStack';
+import {RenderPrintResponsesModalContent} from './modalContentRenderals/printResponsesModalContent';
 
 type FormResponsesNavigationProp = StackNavigationProp<
   FlowsAndFormsStackParamList,
@@ -528,7 +529,7 @@ type ShowResponseCountAndActionsTypes = {
   responseCount: number;
   isAcceptingResponses: boolean;
   setIsAcceptingResponses: Dispatch<SetStateAction<boolean>>;
-  flowDetailItem:FlowDetailItem
+  flowDetailItem: FlowDetailItem;
 };
 
 const ShowResponseCountAndActions: FC<ShowResponseCountAndActionsTypes> = ({
@@ -537,7 +538,7 @@ const ShowResponseCountAndActions: FC<ShowResponseCountAndActionsTypes> = ({
   responseCount,
   isAcceptingResponses,
   setIsAcceptingResponses,
-  flowDetailItem
+  flowDetailItem,
 }) => (
   <View style={{marginTop: 10}}>
     <View
@@ -585,8 +586,18 @@ const ShowResponseCountAndActions: FC<ShowResponseCountAndActionsTypes> = ({
   </View>
 );
 
+const flowDetailItem = {
+  flowId: 1,
+  formId: 101,
+  flowName: 'Annual Teacher Evaluation',
+  formName: 'Teacher Feedback Form',
+  responses: 25,
+  createdDate: '2023-06-15T10:30:00Z',
+  responseDate: '2023-06-20T15:45:00Z',
+};
+
 const FormResponses: FC<FormResponsesScreenProps> = ({navigation, route}) => {
-  const {flowDetailItem} = route.params;
+  // const {flowDetailItem} = route.params;
   const [selectedTab, setSelectedTab] = useState<TabTypes>('Individual');
   const [individualScreen, setIndividualScreen] =
     useState<ScreenSelectiontypes>('main');
@@ -616,6 +627,9 @@ const FormResponses: FC<FormResponsesScreenProps> = ({navigation, route}) => {
     isVisibleSendReminderSuccessModal,
     setIsVisibleSendReminderSuccessModal,
   ] = useState<boolean>(false);
+  const [isVisiblePrintResponsesModal, setIsVisiblePrintResponsesModal] =
+    useState<boolean>(false);
+
   const [selectedRemindMethod, setSelectedRemindMethod] =
     useState<SendReminderMethods>();
 
@@ -649,19 +663,17 @@ const FormResponses: FC<FormResponsesScreenProps> = ({navigation, route}) => {
     }
   }, [sendReminderFormResponse]);
 
-
   useEffect(() => {
     if (assignFormResponse) {
       setIsVisibleAssignFormSuccessModal(true);
     }
   }, [assignFormResponse]);
 
-
-  useEffect(()=>{
-    if(formById?.dataList){
-      setIsAcceptingResponses(formById?.dataList?.acceptingResponse)
+  useEffect(() => {
+    if (formById?.dataList) {
+      setIsAcceptingResponses(formById?.dataList?.acceptingResponse);
     }
-  },[formById?.dataList.acceptingResponse])
+  }, [formById?.dataList.acceptingResponse]);
 
   const onPressSendReminder = (selectedRemindMethod: SendReminderMethods) => {
     setIsSendReminderModalVisible(false);
@@ -734,7 +746,7 @@ const FormResponses: FC<FormResponsesScreenProps> = ({navigation, route}) => {
             <QuestionWiseMainPageRenderal
               key={1}
               onPressItem={onPressItem}
-              questionList={formById?.dataList.questionList }
+              questionList={formById?.dataList?.questionList}
             />
           );
         } else {
@@ -824,6 +836,27 @@ const FormResponses: FC<FormResponsesScreenProps> = ({navigation, route}) => {
           containerStyle={{justifyContent: 'center'}}
           contentStyle={{width: '70%'}}
         />
+
+        <Modal
+          title="Print Responses"
+          onProceed={() => {}}
+          onClose={() => {
+            setIsVisiblePrintResponsesModal(false);
+          }}
+          closeButton
+          content={
+            <RenderPrintResponsesModalContent
+              flowDetailItem={flowDetailItem}
+              ids={
+                formById?.dataList.individualResponses.map(
+                  item => item.userId,
+                ) || []
+              }
+            />
+          }
+          isVisible={isVisiblePrintResponsesModal}
+          contentStyle={{width: '100%', justifyContent: 'center'}}
+        />
         <Modal
           onProceed={() => {}}
           onClose={() => {
@@ -869,7 +902,9 @@ const FormResponses: FC<FormResponsesScreenProps> = ({navigation, route}) => {
             onPressReminder={() => {
               setIsSendReminderModalVisible(true);
             }}
-            onPressPrint={() => {}}
+            onPressPrint={() => {
+              setIsVisiblePrintResponsesModal(true);
+            }}
             responseCount={formById?.dataList?.individualResponses?.length || 0}
             isAcceptingResponses={isAcceptingResponses}
             setIsAcceptingResponses={setIsAcceptingResponses}
