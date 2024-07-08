@@ -358,7 +358,7 @@ const authSlice = createSlice({
       .addCase(updateUserDetails.rejected, (state, action) => {
         state.updateUserResponse = null;
           state.authShowMessage = {
-          status: 'Error',
+          status: 'Informative',
           message: action?.payload?.error?.errorMessage?.toString(),
         };
 

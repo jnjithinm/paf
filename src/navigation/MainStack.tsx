@@ -35,7 +35,7 @@ export type MainStackParamList = {
   Notifications: undefined;
   TeacherDashboard: undefined;
   AdminDashboard: undefined;
-  MyAccount:undefined;
+  MyAccount: undefined;
   ObservationStack: NavigatorScreenParams<ObservationStackParamList>;
   RubricStack: NavigatorScreenParams<RubricStackParamList>;
   FlowsAndFormsStack: NavigatorScreenParams<FlowsAndFormsStackParamList>;
@@ -77,7 +77,8 @@ const MainStackNavigator = () => {
             component={TeacherDashboard}
           />
         )}
-   
+        <MainStack.Screen name="MyAccount" component={MyAccount} />
+        <MainStack.Screen name="Notifications" component={Notifications} />
         <MainStack.Screen
           name="ObservationStack"
           component={ObservationStack}
@@ -95,11 +96,7 @@ const MainStackNavigator = () => {
           name="LocationManagementStack"
           component={LocationManagementStack}
         />
-              <MainStack.Screen
-          name="MyAccount"
-          component={MyAccount}
-        />
-        <MainStack.Screen name="Notifications" component={Notifications} />
+
       </MainStack.Navigator>
     );
   } else {

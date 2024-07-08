@@ -21,6 +21,7 @@ const PaginationBar: FC<PaginationBarTypes> = ({
     onPressPageIndex(index - 1);
   };
 
+  console.log("sss",selectedPageIndex)
 
   return (
     <View
@@ -52,7 +53,7 @@ const PaginationBar: FC<PaginationBarTypes> = ({
               : styles.pageNumberText
           }
           size="small1">
-          {1}
+          1
         </Text>
       </TouchableOpacity>
       <ScrollView
@@ -61,7 +62,6 @@ const PaginationBar: FC<PaginationBarTypes> = ({
         horizontal>
           {[...Array(roundedCount -2)].map((_, index) => {
             const pageIndex = index + 2;
-            console.log("re",selectedPageIndex,pageIndex)
             return (
               <TouchableOpacity
                 key={pageIndex}

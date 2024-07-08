@@ -98,7 +98,7 @@ const ShowToastMessage: FC<ShowMessageTypes> = ({style}) => {
       case 'Informative':
         textColor = '#2F68C4';
         backgroundColor = '#EAF1FE';
-        icon = 'checkbox';
+        icon = 'informative_message_icon';
         break;
       case 'Warning':
         textColor = '#EA7804';
@@ -148,7 +148,7 @@ const ShowToastMessage: FC<ShowMessageTypes> = ({style}) => {
             justifyContent: 'center',
             borderRadius: 7,
           }}>
-          <Icon name={icon} stroke={'white'} width={10} height={10} />
+          <Icon name={icon} stroke={'white'} width={ 10} height={10} />
         </View>
         <Text
           style={{

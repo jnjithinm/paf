@@ -1,10 +1,10 @@
-import { createAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import {createAction, createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 
 import api from '../../config/axios';
 import endPoints from '../../config/endPoints';
-import { setLoading } from './authSlice';
-import { ErrorStatusObject } from '../../config/types';
-import { PaginationRequest } from './usersSlice';
+import {setLoading} from './authSlice';
+import {ErrorStatusObject} from '../../config/types';
+import {PaginationRequest} from './usersSlice';
 interface Domain {
   domainId: number;
   domainName: string;
@@ -48,7 +48,6 @@ export interface Role {
   status: boolean;
 }
 
-
 interface GetRolesResponse {
   payload: {
     message: string;
@@ -59,7 +58,6 @@ interface GetRolesResponse {
 }
 type GetRolesResponsePayload = GetRolesResponse['payload'];
 
-
 export interface State {
   stateId: number;
   stateName: string;
@@ -67,7 +65,6 @@ export interface State {
   countryId: number;
   status: boolean;
 }
-
 
 interface GetStatesResponse {
   payload: {
@@ -96,18 +93,15 @@ export interface District {
 }
 
 interface GetDistrictResponse {
-  payload:  {
+  payload: {
     message: string;
     dataList: District[];
     totalCount: number;
-  }
-  ;
+  };
   status: number;
 }
 
 type GetAllDistrictResponsePayload = GetDistrictResponse['payload'];
-
-
 
 export interface Area {
   pinId: number;
@@ -127,9 +121,9 @@ export interface Area {
 }
 interface GetAreaResponse {
   payload: {
-      message: string;
-      dataList: Area[];
-      totalCount: number;
+    message: string;
+    dataList: Area[];
+    totalCount: number;
   };
   status: number;
 }
@@ -155,9 +149,8 @@ export interface SchoolType {
   creationDate: string;
 }
 
-
 interface GetSchoolResponse {
-  payload:  {
+  payload: {
     message: string;
     dataList: SchoolType[];
     totalCount: number;
@@ -167,15 +160,13 @@ interface GetSchoolResponse {
 
 type GetAllSchoolResponsePayload = GetSchoolResponse['payload'];
 
-
 export const setMasterShowMessage = createAction<ErrorStatusObject | null>(
   'SET_MASTER_SHOW_MESSAGE',
 );
 
-
 export const getAllDomains = createAsyncThunk<GetDomainsResponse, void>(
   'master/getAllDomains',
-  async (_, { dispatch, rejectWithValue }) => {
+  async (_, {dispatch, rejectWithValue}) => {
     try {
       dispatch(setLoading(true));
       const response = await api.get(endPoints.GET_ALL_DOMAINS);
@@ -193,7 +184,7 @@ export const getIndicatorsByDomainId = createAsyncThunk<
   number
 >(
   'master/getIndicatorsByDomainId',
-  async (userId, { dispatch, rejectWithValue }) => {
+  async (userId, {dispatch, rejectWithValue}) => {
     try {
       dispatch(setLoading(true));
       const response = await api.get(
@@ -208,17 +199,12 @@ export const getIndicatorsByDomainId = createAsyncThunk<
   },
 );
 
-export const getRoles = createAsyncThunk<
-  GetRolesResponse,
-  PaginationRequest
->(
+export const getRoles = createAsyncThunk<GetRolesResponse, PaginationRequest>(
   'master/getRoles',
-  async (payload, { dispatch, rejectWithValue }) => {
+  async (payload, {dispatch, rejectWithValue}) => {
     try {
       dispatch(setLoading(true));
-      const response = await api.post(
-        endPoints.GET_ROLES,payload
-      );
+      const response = await api.post(endPoints.GET_ROLES, payload);
       return response.data as GetRolesResponse;
     } catch (error: any) {
       return rejectWithValue(error.response.data);
@@ -228,17 +214,12 @@ export const getRoles = createAsyncThunk<
   },
 );
 
-export const getStates = createAsyncThunk<
-  GetStatesResponse,
-  PaginationRequest
->(
+export const getStates = createAsyncThunk<GetStatesResponse, PaginationRequest>(
   'master/getStates',
-  async (payload, { dispatch, rejectWithValue }) => {
+  async (payload, {dispatch, rejectWithValue}) => {
     try {
       dispatch(setLoading(true));
-      const response = await api.post(
-        endPoints.GET_STATES,payload
-      );
+      const response = await api.post(endPoints.GET_STATES, payload);
       return response.data as GetStatesResponse;
     } catch (error: any) {
       return rejectWithValue(error.response.data);
@@ -251,34 +232,24 @@ export const getStates = createAsyncThunk<
 export const getDistricts = createAsyncThunk<
   GetDistrictResponse,
   PaginationRequest
->(
-  'master/getDistricts',
-  async (payload, { dispatch, rejectWithValue }) => {
-    try {
-      dispatch(setLoading(true));
-      const response = await api.post(
-        endPoints.GET_DISTRICTS,payload
-      );
-      return response.data as GetDistrictResponse;
-    } catch (error: any) {
-      return rejectWithValue(error.response.data);
-    } finally {
-      dispatch(setLoading(false));
-    }
-  },
-);
+>('master/getDistricts', async (payload, {dispatch, rejectWithValue}) => {
+  try {
+    dispatch(setLoading(true));
+    const response = await api.post(endPoints.GET_DISTRICTS, payload);
+    return response.data as GetDistrictResponse;
+  } catch (error: any) {
+    return rejectWithValue(error.response.data);
+  } finally {
+    dispatch(setLoading(false));
+  }
+});
 
-export const getAreas = createAsyncThunk<
-GetAreaResponse,
-  PaginationRequest
->(
+export const getAreas = createAsyncThunk<GetAreaResponse, PaginationRequest>(
   'master/getAreas',
-  async (payload, { dispatch, rejectWithValue }) => {
+  async (payload, {dispatch, rejectWithValue}) => {
     try {
       dispatch(setLoading(true));
-      const response = await api.post(
-        endPoints.GET_AREAS,payload
-      );
+      const response = await api.post(endPoints.GET_AREAS, payload);
       return response.data as GetAreaResponse;
     } catch (error: any) {
       return rejectWithValue(error.response.data);
@@ -289,25 +260,19 @@ GetAreaResponse,
 );
 
 export const getSchools = createAsyncThunk<
-GetSchoolResponse,
+  GetSchoolResponse,
   PaginationRequest
->(
-  'master/getSchools',
-  async (payload, { dispatch, rejectWithValue }) => {
-    try {
-      dispatch(setLoading(true));
-      const response = await api.post(
-        endPoints.GET_SCHOOLS,payload
-      );
-      return response.data as GetSchoolResponse;
-    } catch (error: any) {
-      return rejectWithValue(error.response.data);
-    } finally {
-      dispatch(setLoading(false));
-    }
-  },
-);
-
+>('master/getSchools', async (payload, {dispatch, rejectWithValue}) => {
+  try {
+    dispatch(setLoading(true));
+    const response = await api.post(endPoints.GET_SCHOOLS, payload);
+    return response.data as GetSchoolResponse;
+  } catch (error: any) {
+    return rejectWithValue(error.response.data);
+  } finally {
+    dispatch(setLoading(false));
+  }
+});
 
 interface InitialState {
   allDomains: GetDomainsResponse | null;
@@ -315,14 +280,14 @@ interface InitialState {
   allRoles: GetRolesResponsePayload | null;
   activeRoles: GetRolesResponsePayload | null;
   inactiveRoles: GetRolesResponsePayload | null;
-  states:GetStatesResponsePayload | null;
-  allDistricts:GetAllDistrictResponsePayload|null;
-  activeDistricts:GetAllDistrictResponsePayload|null;
-  inactiveDistricts:GetAllDistrictResponsePayload|null;
-  areas:GetAreaResponsePayload|null;
-  allSchools:GetAllSchoolResponsePayload|null;
-  activeSchools:GetAllSchoolResponsePayload|null;
-  inactiveSchools:GetAllSchoolResponsePayload|null;
+  states: GetStatesResponsePayload | null;
+  allDistricts: GetAllDistrictResponsePayload | null;
+  activeDistricts: GetAllDistrictResponsePayload | null;
+  inactiveDistricts: GetAllDistrictResponsePayload | null;
+  areas: GetAreaResponsePayload | null;
+  allSchools: GetAllSchoolResponsePayload | null;
+  activeSchools: GetAllSchoolResponsePayload | null;
+  inactiveSchools: GetAllSchoolResponsePayload | null;
   masterShowMessage: ErrorStatusObject | null;
   errorMessage: string;
 }
@@ -331,18 +296,18 @@ const initialState: InitialState = {
   allDomains: null,
   indicatorsByDomain: null,
   allRoles: null,
-  activeRoles:null,
-  inactiveRoles:null,
-  states:null,
-  allDistricts:null,
-  activeDistricts:null,
-  inactiveDistricts:null,
-  areas:null,
-  allSchools:null,
-  activeSchools:null,
-  inactiveSchools:null,
+  activeRoles: null,
+  inactiveRoles: null,
+  states: null,
+  allDistricts: null,
+  activeDistricts: null,
+  inactiveDistricts: null,
+  areas: null,
+  allSchools: null,
+  activeSchools: null,
+  inactiveSchools: null,
   masterShowMessage: null,
-  errorMessage: ''
+  errorMessage: '',
 };
 
 const masterSlice = createSlice({
@@ -390,11 +355,10 @@ const masterSlice = createSlice({
       })
       .addCase(getDistricts.rejected, (state, action) => {
         state.allDistricts = null;
-        state.activeDistricts=null;
-        state.inactiveDistricts=null;
+        state.activeDistricts = null;
+        state.inactiveDistricts = null;
       })
-      .addCase(getDistricts.pending, state => {
-      })
+      .addCase(getDistricts.pending, state => {})
       .addCase(getDistricts.fulfilled, (state, action) => {
         if (action.meta.arg.type === 'all') {
           state.allDistricts = action.payload.payload;
@@ -403,7 +367,6 @@ const masterSlice = createSlice({
         } else {
           state.inactiveDistricts = action.payload.payload;
         }
-       
       })
       .addCase(getAreas.rejected, (state, action) => {
         state.areas = null;
@@ -415,9 +378,9 @@ const masterSlice = createSlice({
         state.areas = action.payload.payload;
       })
       .addCase(getSchools.rejected, (state, action) => {
-        state.allSchools= null;
-        state.activeSchools=null;
-        state.inactiveSchools=null;
+        state.allSchools = null;
+        state.activeSchools = null;
+        state.inactiveSchools = null;
       })
       .addCase(getSchools.pending, state => {
         state.activeRoles = null;
@@ -428,7 +391,7 @@ const masterSlice = createSlice({
         } else if (action.meta.arg.type === true) {
           state.activeSchools = action.payload.payload;
         } else {
-          state.inactiveSchools= action.payload.payload;
+          state.inactiveSchools = action.payload.payload;
         }
       })
       .addCase(getAllDomains.rejected, (state, action) => {
@@ -439,8 +402,7 @@ const masterSlice = createSlice({
       })
       .addCase(getIndicatorsByDomainId.fulfilled, (state, action) => {
         // state.isLoading = false;
-        state.indicatorsByDomain =action.payload.payload;
-        
+        state.indicatorsByDomain = action.payload.payload;
       })
       .addCase(getIndicatorsByDomainId.rejected, (state, action) => {
         // state.isLoading = false;

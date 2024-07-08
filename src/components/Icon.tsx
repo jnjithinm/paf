@@ -91,6 +91,9 @@ import arrow_right_pagination from '../assets/svg/arrow_right_pagination.svg'
 import arrow_left_icon from '../assets/svg/arrow_left_icon.svg'
 import trash_icon_red from '../assets/svg/trash_icon_red.svg'
 import edit_icon_red from '../assets/svg/edit_icon_red.svg'
+import informative_message_icon from '../assets/svg/informative_message_icon.svg'
+
+
 
 const Icons = {
   app_logo,
@@ -100,7 +103,6 @@ const Icons = {
   back_button,
   tabbar_icon_home,
   tabbar_icon_graph,
-
   tabbar_icon_graph_focused,
   tabbar_icon_observation,
   tabbar_icon_rubric,
@@ -182,7 +184,8 @@ const Icons = {
   toast_message_warning_icon,
   drawer_icon_teacher_evaluation,
   arrow_right_pagination,
-  arrow_left_icon
+  arrow_left_icon,
+  informative_message_icon
   
 };
 

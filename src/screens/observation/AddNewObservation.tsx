@@ -19,7 +19,7 @@ import {normaliseDesigns} from '../../utils/helpers/responsiveHelpers';
 import DateTimePickerComponent from '../../components/DateTimePickerComponent';
 import Icon from '../../components/Icon';
 import {useAppDispatch, useAppSelector} from '../../redux/store';
-import {getAllUserGroups, getUserGroups} from '../../redux/features/usersSlice';
+import {getAllUserGroups, getUserGroup} from '../../redux/features/usersSlice';
 import LabeledDropdown from '../../components/LabeledDropdown';
 import {ItemType} from '../../config/types';
 import {
@@ -131,7 +131,7 @@ const AddNewObservation: FC<AddNewObservationScreenProps> = ({
 
   const {userData} = useAppSelector(state => state.auth);
 
-  const {allUserGroups, userGroups} = useAppSelector(state => state.users);
+  const {allUserGroups, userGroup} = useAppSelector(state => state.users);
 
   const {
     saveEvidenceCardResponse,
@@ -175,7 +175,7 @@ const AddNewObservation: FC<AddNewObservationScreenProps> = ({
   useEffect(() => {
     if (selectedUserGroup?.value) {
       dispatch(
-        getUserGroups([
+        getUserGroup([
           Number(selectedUserGroup?.value),
           {
             page: 0,
@@ -347,7 +347,7 @@ const AddNewObservation: FC<AddNewObservationScreenProps> = ({
             placeHolder="Select user"
             defaultValue={selectedUser?.value || ''}
             options={
-              userGroups?.dataList.map(item => ({
+              userGroup?.dataList.map(item => ({
                 value: item.userId?.toString(),
                 label: item.name,
               })) || []

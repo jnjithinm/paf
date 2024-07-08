@@ -14,7 +14,12 @@ import FooterWithButtons from '../../components/FooterWithButtons';
 import {useAppDispatch, useAppSelector} from '../../redux/store';
 import Icon from '../../components/Icon';
 import {getUser} from '../../redux/features/usersSlice';
-import {resetUpdateUserResponse, updateUserDetails} from '../../redux/features/authSlice';
+import {
+  deleteUserPhoto,
+  forgotPassword,
+  resetUpdateUserResponse,
+  updateUserDetails,
+} from '../../redux/features/authSlice';
 
 type MyAccountNavigationProp = StackNavigationProp<
   MainStackParamList,
@@ -35,7 +40,9 @@ const MyAccount: FC<MyAccountScreenProps> = ({navigation, route}) => {
   const [district, setDistrict] = useState<string>('');
   const [area, setArea] = useState<string>('');
 
-  const {userData, isAdmin,updateUserResponse} = useAppSelector(state => state.auth);
+  const {userData, isAdmin, updateUserResponse} = useAppSelector(
+    state => state.auth,
+  );
   const {user} = useAppSelector(state => state.users);
   const {validateField} = useValidation();
 
@@ -80,49 +87,59 @@ const MyAccount: FC<MyAccountScreenProps> = ({navigation, route}) => {
     }
   }, [user]);
 
-  const sendResetPasswordLink = () => {};
+  const sendResetPasswordLink = () => {
+    dispatch(forgotPassword(userData.userName));
+  };
 
   const onPressEditPhoto = () => {
     // dispatch()
   };
   const onPressDeletePhoto = () => {
-    // dispatch()
+    dispatch(deleteUserPhoto([userData.id, userData.userName]));
   };
 
-  useEffect(()=>{
-    if(updateUserResponse){
+  useEffect(() => {
+    if (updateUserResponse) {
       dispatch(resetUpdateUserResponse());
       isAdmin
-            ? navigation.navigate('AdminDashboard')
-            : navigation.navigate('TeacherDashboard');
+        ? navigation.navigate('AdminDashboard')
+        : navigation.navigate('TeacherDashboard');
     }
-
-  },[updateUserResponse])
+  }, [updateUserResponse]);
 
   const onPressSave = () => {
     dispatch(
-      updateUserDetails([userData.id,{
-        userType: user?.userType || '',
-        email,
-        contactNumber: phoneNum,
-        districtId: user?.districtId || 0,
-        schoolId: user?.schoolId || 0,
-        status: user?.status || false,
-        stateId: user?.stateId || 0,
-        area: user?.areaId || 0,
-        dateOfBirth: user?.dateOfBirth || '',
-        name,
-        citizenship: user?.citizenship || '',
-        grade: user?.school || '',
-        isAdmin,
-        roleId: user?.roleId || 0,
-        moduleId: user?.stateId || 0,
-        loggedInUserName: userData.userName,
-      }]),
+      updateUserDetails([
+        userData.id,
+        {
+          userType: user?.userType || '',
+          email,
+          contactNumber: phoneNum,
+          districtId: user?.districtId || 0,
+          schoolId: user?.schoolId || 0,
+          status: user?.status || false,
+          stateId: user?.stateId || 0,
+          area: user?.areaId || 0,
+          dateOfBirth: user?.dateOfBirth || '',
+          name,
+          citizenship: user?.citizenship || '',
+          grade: user?.school || '',
+          isAdmin,
+          roleId: user?.roleId || 0,
+          moduleId: user?.stateId || 0,
+          loggedInUserName: userData.userName,
+        },
+      ]),
     );
   };
 
-  console.log("is,i",isChanged,nameErrorMessage,emailErrorMessage,districtErrorMessage,)
+  console.log(
+    'is,i',
+    isChanged,
+    nameErrorMessage,
+    emailErrorMessage,
+    districtErrorMessage,
+  );
 
   return (
     <>

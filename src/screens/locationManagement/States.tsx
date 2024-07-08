@@ -1,14 +1,14 @@
-import React, {FC, useEffect, useState} from 'react';
-import { View} from 'react-native';
-import {RouteProp} from '@react-navigation/native';
-import {StackNavigationProp} from '@react-navigation/stack';
+import React, { FC, useEffect, useState } from 'react';
+import { View } from 'react-native';
+import { RouteProp } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 
 import Layout from '../../components/Layout';
 import Text from '../../components/Text';
-import {useAppDispatch, useAppSelector} from '../../redux/store';
-import {LocationManagementStackParamList} from '../../navigation/LocationManagementStack';
-import {State, getStates} from '../../redux/features/masterSlice';
-import {RenderEmptyPlaceholder} from '../observation/ObservationReportsMainPage';
+import { useAppDispatch, useAppSelector } from '../../redux/store';
+import { LocationManagementStackParamList } from '../../navigation/LocationManagementStack';
+import { State, getStates } from '../../redux/features/masterSlice';
+import { RenderEmptyPlaceholder } from '../observation/ObservationReportsMainPage';
 import SearchWithFilter from '../../components/SearchWithFilter';
 import PaginationBar from '../../components/PaginationBar';
 
@@ -26,7 +26,7 @@ interface StatesScreenProps {
 type StateTileTypes = {
   state: State;
 };
-const StateTile: FC<StateTileTypes> = ({state}) => (
+const StateTile: FC<StateTileTypes> = ({ state }) => (
   <View
     style={{
       borderWidth: 1,
@@ -37,22 +37,23 @@ const StateTile: FC<StateTileTypes> = ({state}) => (
       flexDirection: 'row',
       alignItems: 'center',
     }}>
-    <View style={{padding: 5, backgroundColor: '#FCEBC5', borderRadius: 5}}>
+    <View style={{ padding: 5, backgroundColor: '#FCEBC5', borderRadius: 5 }}>
       <Text size="small3" fontVariant="bold">
         {state.stateCode}
       </Text>
     </View>
-    <Text style={{marginLeft: 10}} fontVariant="bold">
+    <Text style={{ marginLeft: 10 }} fontVariant="bold">
       {state.stateName}
     </Text>
   </View>
 );
 
-const States: FC<StatesScreenProps> = ({navigation, route}) => {
+const States: FC<StatesScreenProps> = ({ navigation, route }) => {
   const [statesList, setStatesList] = useState<State[]>();
   const [search, setSearch] = useState<string>('');
 
-  const {states} = useAppSelector(state => state.master);
+  const { states } = useAppSelector(state => state.master);
+  
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -71,10 +72,7 @@ const States: FC<StatesScreenProps> = ({navigation, route}) => {
     );
   }, []);
 
-
-
-
-  const filteredStates = states?.dataList?.filter(item =>
+  const filteredStates = statesList?.filter(item =>
     item?.stateName?.toLocaleLowerCase()?.includes(search?.toLocaleLowerCase()),
   );
 
@@ -82,37 +80,37 @@ const States: FC<StatesScreenProps> = ({navigation, route}) => {
     <Layout
       overridePaddingHorizontal
       overridePaddingVertical
-      style={{paddingHorizontal: 15}}
+      style={{ paddingHorizontal: 15 }}
       title="States"
       icon="states_icon"
-      focusedStack='LocationManagementStack'
+      focusedStack="LocationManagementStack"
       titleTransition>
-      <Text size="body3" fontVariant="bold" style={{marginVertical: 10}}>
+      <Text size="body3" fontVariant="bold" style={{ marginVertical: 10 }}>
         States
       </Text>
       <SearchWithFilter
         onTextChange={text => {
           setSearch(text);
         }}
-        onProceed={filter => {}}
-        style={{marginVertical: 10}}
+        onProceed={filter => { }}
+        style={{ marginVertical: 10 }}
         filterNotNeeded
       />
-      <View style={{marginBottom:15}}>
+      <View style={{ marginBottom: 15 }}>
         {filteredStates ? (
           filteredStates.length > 0 ? (
             <View>
-            {filteredStates.map(item => (
-              <StateTile state={item} key={item.stateId} />
-            ))}
-                 <PaginationBar
-                count={(states?.totalCount || 0) / 10}
+              {filteredStates.map(item => (
+                <StateTile state={item} key={item.stateId} />
+              ))}
+              <PaginationBar
+                count={(states?.totalCount || 10) / 10}
                 onPressPageIndex={index => {
                   dispatch(
                     getStates({
                       page: index,
                       size: 10,
-                      type:  'all',
+                      type: 'all',
                     }),
                   );
                 }}

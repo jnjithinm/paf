@@ -69,7 +69,7 @@ const AdminDashboard: FC<AdminDashboardScreenProps> = ({navigation, route}) => {
 
   const dispatch = useAppDispatch();
 
-  const {userData, isLoading} = useAppSelector(state => state.auth);
+  const {userData} = useAppSelector(state => state.auth);
 
   const closeDrawer = () => {
     setIsDrawerOpen(false);
