@@ -87,6 +87,8 @@ import music_player_icon from '../assets/svg/music_player_icon.svg'
 import play_button_music_player_icon from '../assets/svg/play_button_music_player_icon.svg'
 import toast_message_warning_icon from '../assets/svg/toast_message_warning_icon.svg'
 import drawer_icon_teacher_evaluation from '../assets/svg/drawer_icon_teacher_evaluation.svg'
+import trash_red from '../assets/svg/trash-red.svg'
+import edit_red from '../assets/svg/edit-red.svg'
 
 const Icons = {
   app_logo,
@@ -147,6 +149,8 @@ const Icons = {
   form_list,
   admin_response_clock,
   trash_icon,
+  trash_red,
+  edit_red,
   rating_card_icon,
   arrow_narrow_right,
   rating_star_display,

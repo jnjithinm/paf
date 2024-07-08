@@ -47,6 +47,43 @@ const useValidation = () => {
         }
         break;
 
+        case 'Name':
+          if (value === '') {
+            errorMessage = `${fieldName} is required`;
+          } else if (value.length < 8) {
+            errorMessage = `${fieldName} should be atleast 8 characters`;
+          }
+          break;
+
+    
+            case 'District':
+              if (value === '') {
+                errorMessage = `${fieldName} is required`;
+              }
+              break;
+            case 'Area':
+              if (value === '') {
+                errorMessage = `${fieldName} is required`;
+              }
+              break;
+          
+
+          case 'Mobile Number':
+      case 'Phone Number':
+        if (value === '') {
+          errorMessage = `${fieldName} is required`;
+        } else if (!mobileNumberRegex.test(value)) {
+          if (!onlyDigits.test(value)) {
+            errorMessage = 'Only digit values are allowed for a Mobile Number.';
+          } else if (!/^[+][0-9]{1,}$/.test(value)) {
+            errorMessage = `A Mobile Number(+91) should starts with a digit between 6 and 9.`;
+          } else if (value.length !== 10) {
+            errorMessage = 'A Mobile Number(+91) should contain 10 digits.';
+          } else {
+            errorMessage = 'Invalid Mobile Number';
+          }
+        }
+        break;
       case 'Password':
       case 'Confirm Password':
         if (value === '') {

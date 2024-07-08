@@ -1,4 +1,4 @@
-import React, {Dispatch, FC, SetStateAction, useRef, useState} from 'react';
+import React, { Dispatch, FC, SetStateAction, useRef, useState } from 'react';
 import {
   Animated,
   Keyboard,
@@ -13,21 +13,21 @@ import {
 } from 'react-native';
 
 import colors from '../config/colors';
-import Icon, {IconTypes} from './Icon';
+import Icon, { IconTypes } from './Icon';
 import Text from './Text';
-import {FONT_SIZES, FONT_VARIANT} from '../config/themes';
-import {normaliseDesigns} from '../utils/helpers/responsiveHelpers';
+import { FONT_SIZES, FONT_VARIANT } from '../config/themes';
+import { normaliseDesigns } from '../utils/helpers/responsiveHelpers';
 
 type RenderWarningMessageTypes = {
   warningMessage: string;
   style?: ViewStyle;
 };
 
-export const RenderWaringMessage: FC<RenderWarningMessageTypes> = ({
+export const RenderWarningMessage: FC<RenderWarningMessageTypes> = ({
   warningMessage,
   style,
 }) => (
-  <View style={{flexDirection: 'row', width: '100%', marginTop: 3, ...style}}>
+  <View style={{ flexDirection: 'row', width: '100%', marginTop: 3, ...style }}>
     <View
       style={{
         height: normaliseDesigns(15),
@@ -36,12 +36,13 @@ export const RenderWaringMessage: FC<RenderWarningMessageTypes> = ({
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: colors.secondaryColor,
-      }}>
+      }}
+    >
       <Text color="backgroundColor" size="small1">
         !
       </Text>
     </View>
-    <Text style={{left: 2}} size="small1" color="primaryColor">
+    <Text style={{ left: 2 }} size="small1" color="primaryColor">
       {warningMessage}
     </Text>
   </View>
@@ -54,19 +55,15 @@ export interface TextInputPropsTypes extends TextInputProps {
   icon?: IconTypes;
   onChange?: (text: any) => void;
   passwordVisibility?: boolean;
-  // placeHolder?: string;
   mandatory?: boolean;
   avoidTransform?: boolean;
   style?: ViewStyle;
-  isShowErrorOnButtonPress?:boolean;
-  // textInputRef?: React.RefObject<CustomTextInputRef>;
-  // isShowError?: boolean;
+  isShowErrorOnButtonPress?: boolean;
   errorMessage?: string;
   warningMessage?: string;
   dismiss?: boolean;
   textInputStyle?: TextStyle;
   manualHeight?: boolean;
-  // editable?: boolean;
 }
 
 type RenderLabelTypes = {
@@ -78,20 +75,15 @@ const TextInput: FC<TextInputPropsTypes> = ({
   setValue,
   onChange,
   passwordVisibility,
-  // placeHolder,
   label,
   icon,
   mandatory,
   avoidTransform,
   style,
-  // editable,
-  // textInputRef,
-  // isShowError,
   errorMessage,
   warningMessage,
   dismiss,
   textInputStyle,
-
   manualHeight,
   ...rest
 }) => {
@@ -142,13 +134,14 @@ const TextInput: FC<TextInputPropsTypes> = ({
   };
 
   return (
-    <View style={{...style, minHeight: 65, width: '100%'}}>
+    <View style={{ ...style, minHeight: 65, width: '100%' }}>
       {label && (
-        <Text
-          style={{alignSelf: 'flex-start', marginBottom: 3, fontWeight: '700'}}
-          size='small3'>
-          {label}
-        </Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 3 }}>
+          <Text style={{ alignSelf: 'flex-start', fontWeight: '700' }} size="small3">
+            {label}
+          </Text>
+          {mandatory && <Text style={{ color:'red' }}>{'*'}</Text>}
+        </View>
       )}
       <View
         style={{
@@ -162,12 +155,12 @@ const TextInput: FC<TextInputPropsTypes> = ({
           ...textInputStyle,
           paddingHorizontal: icon ? 5 : 10,
           width: '100%',
-          // ...style,
-        }}>
+        }}
+      >
         {icon && (
           <Icon
             name={icon}
-            style={{marginHorizontal: 10}}
+            style={{ marginHorizontal: 10 }}
             stroke={colors.secondaryColor}
             strokeWidth={0.2}
             scale={0.3}
@@ -184,21 +177,22 @@ const TextInput: FC<TextInputPropsTypes> = ({
             ...textInputStyle,
           }}
           placeholderTextColor={'#ABB4BD'}
-          ref={ref => {
+          ref={(ref) => {
             inputRef.current = ref;
           }}
           onFocus={handleFocus}
           onBlur={handleBlur}
           onChangeText={handleOnTextChange}
           value={value}
-          onKeyPress={e => handleKeyPress(e)}
+          onKeyPress={(e) => handleKeyPress(e)}
           secureTextEntry={passwordVisibility && !isPasswordVisible}
           {...rest}
         />
         {passwordVisibility && (
           <TouchableOpacity
             onPress={() => setIsPasswordVisible(!isPasswordVisible)}
-            disabled={value.length === 0}>
+            disabled={value.length === 0}
+          >
             <Icon
               name={
                 isPasswordVisible
@@ -207,7 +201,7 @@ const TextInput: FC<TextInputPropsTypes> = ({
                   ? 'eye_off'
                   : 'eye_off_disabled'
               }
-              style={{alignSelf: 'flex-end', justifyContent: 'flex-end'}}
+              style={{ alignSelf: 'flex-end', justifyContent: 'flex-end' }}
               width={20}
               height={20}
             />
@@ -216,12 +210,13 @@ const TextInput: FC<TextInputPropsTypes> = ({
       </View>
 
       {warningMessage && (
-        <RenderWaringMessage warningMessage={warningMessage} />
+        <RenderWarningMessage warningMessage={warningMessage} />
       )}
       {errorMessage && isShowError && (
         <View
-          style={{flexDirection: 'row', alignItems: 'center', marginTop: 2}}>
-          <Icon name="warning_icon" style={{marginRight: 4}} />
+          style={{ flexDirection: 'row', alignItems: 'center', marginTop: 2 }}
+        >
+          <Icon name="warning_icon" style={{ marginRight: 4 }} />
           <Text size="verysmall3" color="dangerColor">
             {errorMessage}
           </Text>
