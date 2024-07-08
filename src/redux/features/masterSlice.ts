@@ -59,6 +59,7 @@ interface GetRolesResponse {
 }
 type GetRolesResponsePayload = GetRolesResponse['payload'];
 
+
 export interface State {
   stateId: number;
   stateName: string;
@@ -104,7 +105,7 @@ interface GetDistrictResponse {
   status: number;
 }
 
-type GetDistrictResponsePayload = GetDistrictResponse['payload'];
+type GetAllDistrictResponsePayload = GetDistrictResponse['payload'];
 
 
 
@@ -313,7 +314,9 @@ interface InitialState {
   indicatorsByDomain: GetIndicatorsResponsePayload | null;
   roles: GetRolesResponsePayload | null;
   states:GetStatesResponsePayload | null;
-  districts:GetDistrictResponsePayload|null;
+  allDistricts:GetAllDistrictResponsePayload|null;
+  activeDistricts:GetAllDistrictResponsePayload|null;
+  inActiveDistricts:GetAllDistrictResponsePayload|null;
   areas:GetAreaResponsePayload|null;
   schools:GetSchoolResponsePayload|null;
   masterShowMessage: ErrorStatusObject | null;
@@ -325,7 +328,9 @@ const initialState: InitialState = {
   indicatorsByDomain: null,
   roles: null,
   states:null,
-  districts:null,
+  allDistricts:null,
+  activeDistricts:null,
+  inActiveDistricts:null,
   areas:null,
   schools:null,
   masterShowMessage: null,
@@ -370,7 +375,9 @@ const masterSlice = createSlice({
         state.states = action.payload.payload;
       })
       .addCase(getDistricts.rejected, (state, action) => {
-        state.districts = null;
+        state.allDistricts = null;
+        state.activeDistricts=null;
+        state.inActiveDistricts=null;
       })
       .addCase(getDistricts.pending, state => {
         state.districts = null;
