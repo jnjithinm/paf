@@ -82,13 +82,13 @@ const styles = StyleSheet.create({
     marginVertical: 5,
     borderWidth: 1,
     borderColor: '#F4C24A',
-    padding: 5,
-    borderRadius: 6,
+    padding: 7,
+    borderRadius: 8,
   },
   titleText: {
     fontFamily: FONT_VARIANT.bold,
     color: colors.blackColor,
-    fontSize: FONT_SIZES.small3,
+    fontSize: FONT_SIZES.body1,
   },
   descriptionText: {
     fontFamily: FONT_VARIANT.regular,

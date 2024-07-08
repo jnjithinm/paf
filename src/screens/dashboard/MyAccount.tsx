@@ -72,17 +72,9 @@ const MyAccount: FC<MyAccountScreenProps> = ({navigation, route}) => {
     value: area,
   });
 
-  const onPressSendButton = () => {
-    setIsShowModal(true);
-  };
-
-  const onPressOpenEmail = () => {
-    navigation.navigate('CreateNewPassword');
-  };
 
   const sendResetPasswordLink = () => {
-    // Logic to send reset password link
-    console.log('Reset password link sent');
+
   };
 
   const handleEditPhoto = () => {};
@@ -92,12 +84,13 @@ const MyAccount: FC<MyAccountScreenProps> = ({navigation, route}) => {
     <KeyboardAvoidingView
       style={{flex: 1}}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-      <ScrollView contentContainerStyle={{flexGrow: 1}}>
         <Layout
           overridePaddingHorizontal
           overridePaddingVertical
           style={{paddingHorizontal: 15}}
           icon="profile_icon"
+          // transform={}
+          title='My Account'
           titleTransition>
           <Text
             size="body4"
@@ -105,11 +98,16 @@ const MyAccount: FC<MyAccountScreenProps> = ({navigation, route}) => {
             style={{marginBottom: 15, marginTop: 30}}>
             My Account
           </Text>
-          <View style={{flexDirection: 'row', alignItems: 'center',marginBottom:10}}>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              marginBottom: 10,
+            }}>
             <RenderProfileIcon
               size={50}
               image={userData.userImageUrl || userData.userImage}
-              name={''}
+              name={userData.name}
             />
             <View style={{alignItems: 'center', marginLeft: 10}}>
               <TouchableOpacity
@@ -119,28 +117,32 @@ const MyAccount: FC<MyAccountScreenProps> = ({navigation, route}) => {
                   alignItems: 'center',
                   marginRight: 20,
                 }}>
-                <Icon name="edit_red" />
-                <Text style={{marginLeft: 5,fontSize:13}}>Edit Photo</Text>
+                <Icon name="edit_icon_red" />
+                <Text style={{marginLeft: 5, }} size='small1'>Edit Photo</Text>
               </TouchableOpacity>
               <View
                 style={{
                   width: '100%',
-                  borderBottomWidth: 1,
-                  paddingVertical: 2,
-                  marginBottom:5
-                }}></View>
+                  marginBottom: 3,
+                  height:2,
+                  backgroundColor:colors.dangerColor
+                }}/>
               <TouchableOpacity
                 onPress={handleDeletPhoto}
                 style={{flexDirection: 'row', alignItems: 'center'}}>
-                <Icon name="trash_red" />
-                <Text style={{marginLeft: 5, color: 'red',fontSize:13}}>Delete Photo</Text>
+                <Icon name="trash_icon_red" />
+                <Text style={{marginLeft: 5,}} color='dangerColor' size='small1'>
+                  Delete Photo
+                </Text>
               </TouchableOpacity>
               <View
                 style={{
                   width: '100%',
-                  borderBottomWidth: 1,
-                  paddingVertical: 2,
-                }}></View>
+                  marginBottom: 3,
+                  height:2,
+                  backgroundColor:colors.dangerColor
+
+                }}/>
             </View>
           </View>
           <TextInput
@@ -193,7 +195,7 @@ const MyAccount: FC<MyAccountScreenProps> = ({navigation, route}) => {
               width: '100%',
               height: 1,
               marginVertical: 20,
-            }}></View>
+            }}/>
           <TextInput
             label="Role"
             value={userData.role}
@@ -249,19 +251,21 @@ const MyAccount: FC<MyAccountScreenProps> = ({navigation, route}) => {
           </View>
           <TextInput
             label="User Type"
-            value={userData.roleType}
+            value={userData.roleType || ''}
             setValue={setUserType}
             placeholder="Enter User Type"
             autoCapitalize="none"
             editable={false}
           />
         </Layout>
-      </ScrollView>
+
       <FooterWithButtons
         proceedButtonText={'Save'}
         isActiveProceedButton
         cancelButtonText={'Cancel'}
         style={{marginVertical: 10}}
+        onPressProceedButton={()=>{}}
+        onPressCancelButton={()=>{}}
       />
     </KeyboardAvoidingView>
   );

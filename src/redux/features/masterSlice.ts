@@ -312,7 +312,9 @@ GetSchoolResponse,
 interface InitialState {
   allDomains: GetDomainsResponse | null;
   indicatorsByDomain: GetIndicatorsResponsePayload | null;
-  roles: GetRolesResponsePayload | null;
+  allRoles: GetRolesResponsePayload | null;
+  activeRoles: GetRolesResponsePayload | null;
+  inactiveRoles: GetRolesResponsePayload | null;
   states:GetStatesResponsePayload | null;
   allDistricts:GetAllDistrictResponsePayload|null;
   activeDistricts:GetAllDistrictResponsePayload|null;
@@ -326,7 +328,9 @@ interface InitialState {
 const initialState: InitialState = {
   allDomains: null,
   indicatorsByDomain: null,
-  roles: null,
+  allRoles: null,
+  activeRoles:null,
+  inactiveRoles:null,
   states:null,
   allDistricts:null,
   activeDistricts:null,
@@ -357,13 +361,19 @@ const masterSlice = createSlice({
         };
       })
       .addCase(getRoles.rejected, (state, action) => {
-        state.roles = null;
+        state.allRoles = null;
       })
       .addCase(getRoles.pending, state => {
-        state.roles = null;
+        state.allRoles = null;
       })
       .addCase(getRoles.fulfilled, (state, action) => {
-        state.roles = action.payload.payload;
+        if (action.meta.arg.type === 'all') {
+          state.allRoles = action.payload.payload;
+        } else if (action.meta.arg.type === true) {
+          state.activeRoles = action.payload.payload;
+        } else {
+          state.inactiveRoles = action.payload.payload;
+        }
       })
       .addCase(getStates.rejected, (state, action) => {
         state.states = null;

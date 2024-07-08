@@ -120,11 +120,27 @@ const FlowsItem: React.FC<FlowsItemProps> = ({
 const FlowsMainPage: FC<FlowsMainPageScreenProps> = ({navigation, route}) => {
   const [search, setSearch] = useState<string>('');
 
-  const {allFlows} = useAppSelector(state => state.flows);
+  const [flowsList, setFlowsList] = useState<FlowItem[]>();
+
+  const {allFlows, ownedByMeFlows, notOwnedByMeFlows} = useAppSelector(
+    state => state.flows,
+  );
   const {userData, isAdmin} = useAppSelector(state => state.auth);
   const dispatch = useAppDispatch();
 
-  const handleTabClick = (title: string) => {};
+  useEffect(() => {
+    setFlowsList(allFlows?.dataList);
+  }, [allFlows]);
+
+  const handleTabClick = (title: string) => {
+    if (title === 'All') {
+      setFlowsList(allFlows?.dataList);
+    } else if (title === 'Owned by me') {
+      setFlowsList(ownedByMeFlows?.dataList);
+    } else {
+      setFlowsList(notOwnedByMeFlows?.dataList);
+    }
+  };
 
   useEffect(() => {
     dispatch(
@@ -135,6 +151,28 @@ const FlowsMainPage: FC<FlowsMainPageScreenProps> = ({navigation, route}) => {
           page: 0,
           size: 15,
           type: 'all',
+        },
+      ]),
+    );
+    dispatch(
+      getAllFlows([
+        userData.userName,
+        userData.id,
+        {
+          page: 0,
+          size: 15,
+          type: true,
+        },
+      ]),
+    );
+    dispatch(
+      getAllFlows([
+        userData.userName,
+        userData.id,
+        {
+          page: 0,
+          size: 15,
+          type: false,
         },
       ]),
     );
@@ -150,7 +188,7 @@ const FlowsMainPage: FC<FlowsMainPageScreenProps> = ({navigation, route}) => {
     );
   };
 
-  const filteredFlows = allFlows?.dataList?.filter(item =>
+  const filteredFlows = flowsList?.filter(item =>
     item?.flowName?.toLocaleLowerCase()?.includes(search?.toLocaleLowerCase()),
   );
 
@@ -170,9 +208,15 @@ const FlowsMainPage: FC<FlowsMainPageScreenProps> = ({navigation, route}) => {
         <View style={{marginVertical: 10}}>
           <Tab
             tabs={[
-              {value: 'All', label: 'All'},
-              {value: 'Owned by me(20)', label: 'Owned by me(20'},
-              {value: 'Not owned by me(20)', label: 'Not owned by me(20)'},
+              {value: `All`, label: `All (${allFlows?.totalCount})`},
+              {
+                value: `Owned by me`,
+                label: `Owned by me (${ownedByMeFlows?.totalCount})`,
+              },
+              {
+                value: `Not owned by me`,
+                label: `Not owned by me (${notOwnedByMeFlows?.totalCount})`,
+              },
             ]}
             textStyle={{fontSize: normaliseFont(12)}}
             onClick={title => handleTabClick(title?.value)}

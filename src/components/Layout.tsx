@@ -29,7 +29,7 @@ interface LayoutPropsTypes extends ViewStyle {
   avoidBackButton?: boolean;
   isLoading?: boolean[];
   hideHeader?: boolean;
-  onKeyboardShow?:((keyboardShown:boolean)=>void)
+  onKeyboardShow?: (keyboardShown: boolean) => void;
   onPressMenuIcon?: () => void;
   onPressBellIcon?: () => void;
   onPressProfileIcon?: () => void;
@@ -89,7 +89,7 @@ const Layout: FC<LayoutPropsTypes> = ({
   };
   const [keyboardOffset, setKeyboardOffset] = useState(0);
   const [isScrolled, setIsScrolled] = useState<boolean>(false);
-  const [isKeyboardVisible, setIsKeyboardVisible] = useState<boolean>(false); 
+  const [isKeyboardVisible, setIsKeyboardVisible] = useState<boolean>(false);
 
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(
@@ -97,9 +97,9 @@ const Layout: FC<LayoutPropsTypes> = ({
       event => {
         setKeyboardOffset(event.endCoordinates.height);
         setIsKeyboardVisible(true);
-       if(onKeyboardShow){
-        onKeyboardShow(true);
-       }
+        if (onKeyboardShow) {
+          onKeyboardShow(true);
+        }
       },
     );
 
@@ -108,9 +108,9 @@ const Layout: FC<LayoutPropsTypes> = ({
       () => {
         setKeyboardOffset(0);
         setIsKeyboardVisible(false);
-        if(onKeyboardShow){
+        if (onKeyboardShow) {
           onKeyboardShow(false);
-         }
+        }
       },
     );
 
@@ -120,9 +120,6 @@ const Layout: FC<LayoutPropsTypes> = ({
     };
   }, []);
 
-  // const { panResponder } = usePanResponder();
-
-  // const isLoadingFinal = Object.values(isLoading).some(value => value);
   const modifiedChildren = Children.map(children, child => {
     if (
       typeof child === 'undefined' ||
@@ -141,11 +138,6 @@ const Layout: FC<LayoutPropsTypes> = ({
     const {layoutMeasurement, contentOffset, contentSize} = event.nativeEvent;
     const endOffsetY = contentSize.height - layoutMeasurement.height;
 
-    // // Check if the user has scrolled to the end
-    // if (endOffsetY > 0 && contentOffset.y >= endOffsetY) {
-    //   setIsScrolled(true);
-    //   onScrollToEnd && onScrollToEnd();
-    // } else
     if (contentOffset.y === 0) {
       setIsScrolled(false);
     } else {
@@ -185,7 +177,9 @@ const Layout: FC<LayoutPropsTypes> = ({
         </ScrollView>
         {isLoading && <Loading />}
       </KeyboardAvoidingView>
-      {!isKeyboardVisible && focusedStack && <BottomTab focusedStack={focusedStack} />}
+      {!isKeyboardVisible && focusedStack && (
+        <BottomTab focusedStack={focusedStack} />
+      )}
     </>
   );
 };

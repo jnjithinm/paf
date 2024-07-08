@@ -77,10 +77,7 @@ const MainStackNavigator = () => {
             component={TeacherDashboard}
           />
         )}
-         <MainStack.Screen
-          name="MyAccount"
-          component={MyAccount}
-        />
+   
         <MainStack.Screen
           name="ObservationStack"
           component={ObservationStack}
@@ -97,6 +94,10 @@ const MainStackNavigator = () => {
         <MainStack.Screen
           name="LocationManagementStack"
           component={LocationManagementStack}
+        />
+              <MainStack.Screen
+          name="MyAccount"
+          component={MyAccount}
         />
         <MainStack.Screen name="Notifications" component={Notifications} />
       </MainStack.Navigator>

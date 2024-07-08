@@ -87,8 +87,10 @@ import music_player_icon from '../assets/svg/music_player_icon.svg'
 import play_button_music_player_icon from '../assets/svg/play_button_music_player_icon.svg'
 import toast_message_warning_icon from '../assets/svg/toast_message_warning_icon.svg'
 import drawer_icon_teacher_evaluation from '../assets/svg/drawer_icon_teacher_evaluation.svg'
-import trash_red from '../assets/svg/trash-red.svg'
-import edit_red from '../assets/svg/edit-red.svg'
+import arrow_right_pagination from '../assets/svg/arrow_right_pagination.svg'
+import arrow_left_icon from '../assets/svg/arrow_left_icon.svg'
+import trash_icon_red from '../assets/svg/trash_icon_red.svg'
+import edit_icon_red from '../assets/svg/edit_icon_red.svg'
 
 const Icons = {
   app_logo,
@@ -149,8 +151,8 @@ const Icons = {
   form_list,
   admin_response_clock,
   trash_icon,
-  trash_red,
-  edit_red,
+  edit_icon_red,
+  trash_icon_red,
   rating_card_icon,
   arrow_narrow_right,
   rating_star_display,
@@ -178,7 +180,9 @@ const Icons = {
   music_player_icon,
   play_button_music_player_icon,
   toast_message_warning_icon,
-  drawer_icon_teacher_evaluation
+  drawer_icon_teacher_evaluation,
+  arrow_right_pagination,
+  arrow_left_icon
   
 };
 

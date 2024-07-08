@@ -1,5 +1,5 @@
 import React, {FC, useEffect, useState} from 'react';
-import {TouchableOpacity, View, ViewStyle} from 'react-native';
+import {TouchableOpacity, View} from 'react-native';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 
@@ -9,13 +9,14 @@ import Icon from '../../components/Icon';
 import Text from '../../components/Text';
 import {useAppDispatch, useAppSelector} from '../../redux/store';
 import colors from '../../config/colors';
-import {RenderActiveStatus, RenderLabelAndValue, tabs} from './UsersMainPage';
+import {RenderActiveStatus, RenderLabelAndValue} from './UsersMainPage';
 import {Role, getRoles} from '../../redux/features/masterSlice';
 import {ItemType} from '../../config/types';
 import SearchWithFilter from '../../components/SearchWithFilter';
 import {RenderEmptyPlaceholder} from '../observation/ObservationReportsMainPage';
 import moment from 'moment';
 import Tab from '../../components/Tab';
+import PaginationBar from '../../components/PaginationBar';
 
 type RolesAndAppAccessNavigationProp = StackNavigationProp<
   UserManagementStackParamList,
@@ -30,7 +31,6 @@ interface RolesAndAppAccessScreenProps {
   navigation: RolesAndAppAccessNavigationProp;
   route: RolesAndAppAccessRouteProp;
 }
-
 
 type RolesAndAppAccessTileTypes = {
   role: Role;
@@ -49,7 +49,8 @@ const RolesAndAppAccessTile: FC<RolesAndAppAccessTileTypes> = ({
       borderColor: '#F4C24A',
       borderRadius: 10,
       marginVertical: 5,
-      backgroundColor: role.roleName === selectedItem?.roleName ? '#FCEBC5' : undefined,
+      backgroundColor:
+        role.roleName === selectedItem?.roleName ? '#FCEBC5' : undefined,
     }}
     onPress={() => {
       onPressItem(role);
@@ -79,7 +80,7 @@ const RolesAndAppAccessTile: FC<RolesAndAppAccessTileTypes> = ({
             transform: [
               {
                 rotate:
-                role.roleId === selectedItem?.roleId ? '0deg' : '180deg',
+                  role.roleId === selectedItem?.roleId ? '0deg' : '180deg',
               },
             ],
           }}
@@ -103,13 +104,24 @@ const RolesAndAppAccessTile: FC<RolesAndAppAccessTileTypes> = ({
         <RenderLabelAndValue label={'Parent Role'} value={role.parentRole} />
         <RenderLabelAndValue label={'Users'} value={role.users} />
         <RenderLabelAndValue label={'Created By'} value={role.createdBy} />
-        <RenderLabelAndValue label={'Created On'} value={moment( role.createdDt).format('DD/MM/YYY')} />
-        <RenderLabelAndValue label={'Time'} value={moment( role.createdDt).format('hh:mm A')} />
-
+        <RenderLabelAndValue
+          label={'Created On'}
+          value={moment(role.createdDt).format('DD/MM/YYY')}
+        />
+        <RenderLabelAndValue
+          label={'Time'}
+          value={moment(role.createdDt).format('hh:mm A')}
+        />
       </View>
     )}
   </TouchableOpacity>
 );
+
+type RolesList = {
+  roleList: Role[] | undefined;
+  count: number | undefined;
+  selectedTab: 'all' | boolean;
+};
 
 const RolesAndAppAccess: FC<RolesAndAppAccessScreenProps> = ({
   navigation,
@@ -117,17 +129,38 @@ const RolesAndAppAccess: FC<RolesAndAppAccessScreenProps> = ({
 }) => {
   const [selectedItem, setSelectedItem] = useState<Role>();
   const [search, setSearch] = useState<string>('');
-  const [rolesList, setRolesList] = useState<Role[]>();
+  const [rolesList, setRolesList] = useState<RolesList>();
 
   const dispatch = useAppDispatch();
-  const {roles} = useAppSelector(state => state.master);
+  const {allRoles, activeRoles, inactiveRoles} = useAppSelector(
+    state => state.master,
+  );
+
+  const tabs: ItemType[] = [
+    {label: `All (${allRoles?.totalCount})`, value: 'all'},
+    {label: `Active (${activeRoles?.totalCount})`, value: 'active'},
+    {label: `Inactive (${inactiveRoles?.totalCount})`, value: 'inactive'},
+  ];
+
   const handleTabClick = (title: ItemType) => {
-    if (roles?.dataList) {
-      title.value == 'Active'
-        ? setRolesList(roles?.dataList?.filter(item => item.status === true))
-        : title.value == 'Inactive'
-        ? setRolesList(roles?.dataList?.filter(item => item.status === false))
-        : setRolesList(roles?.dataList);
+    if (title.value == 'all') {
+      setRolesList({
+        roleList: allRoles?.dataList,
+        count: allRoles?.totalCount,
+        selectedTab: 'all',
+      });
+    } else if (title.value == 'active') {
+      setRolesList({
+        roleList: activeRoles?.dataList,
+        count: activeRoles?.totalCount,
+        selectedTab: true,
+      });
+    } else {
+      setRolesList({
+        roleList: inactiveRoles?.dataList,
+        count: inactiveRoles?.totalCount,
+        selectedTab: false,
+      });
     }
   };
 
@@ -139,14 +172,33 @@ const RolesAndAppAccess: FC<RolesAndAppAccessScreenProps> = ({
         type: 'all',
       }),
     );
+    dispatch(
+      getRoles({
+        page: 0,
+        size: 15,
+        type: true,
+      }),
+    );
+    dispatch(
+      getRoles({
+        page: 0,
+        size: 15,
+        type: false,
+      }),
+    );
   }, []);
 
   useEffect(() => {
-    if (roles) {
-      setRolesList(roles.dataList);
+    if (allRoles) {
+      setRolesList({
+        roleList: allRoles?.dataList,
+        count: allRoles?.totalCount,
+        selectedTab: 'all',
+      });
     }
-  }, [roles]);
-  const filteredRoles = rolesList?.filter(item =>
+  }, [allRoles]);
+
+  const filteredRoles = rolesList?.roleList?.filter(item =>
     item?.roleName?.toLocaleLowerCase()?.includes(search?.toLocaleLowerCase()),
   );
 
@@ -174,13 +226,29 @@ const RolesAndAppAccess: FC<RolesAndAppAccessScreenProps> = ({
       <View>
         {filteredRoles ? (
           filteredRoles.length > 0 ? (
-            filteredRoles?.map(item => (
-              <RolesAndAppAccessTile
-                role={item}
-                onPressItem={(role)=>{setSelectedItem(role)}}
-                selectedItem={selectedItem}
+            <View>
+              {filteredRoles?.map(item => (
+                <RolesAndAppAccessTile
+                  role={item}
+                  onPressItem={role => {
+                    setSelectedItem(role);
+                  }}
+                  selectedItem={selectedItem}
+                />
+              ))}
+              <PaginationBar
+                count={(rolesList?.count || 0) / 10}
+                onPressPageIndex={index => {
+                  dispatch(
+                    getRoles({
+                      page: index,
+                      size: 10,
+                      type: rolesList?.selectedTab || 'all',
+                    }),
+                  );
+                }}
               />
-            ))
+            </View>
           ) : (
             <RenderEmptyPlaceholder />
           )

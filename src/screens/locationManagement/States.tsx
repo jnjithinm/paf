@@ -10,6 +10,7 @@ import {LocationManagementStackParamList} from '../../navigation/LocationManagem
 import {State, getStates} from '../../redux/features/masterSlice';
 import {RenderEmptyPlaceholder} from '../observation/ObservationReportsMainPage';
 import SearchWithFilter from '../../components/SearchWithFilter';
+import PaginationBar from '../../components/PaginationBar';
 
 type StatesNavigationProp = StackNavigationProp<
   LocationManagementStackParamList,
@@ -48,7 +49,6 @@ const StateTile: FC<StateTileTypes> = ({state}) => (
 );
 
 const States: FC<StatesScreenProps> = ({navigation, route}) => {
-  const [selectedItem, setSelectedItem] = useState<State>();
   const [statesList, setStatesList] = useState<State[]>();
   const [search, setSearch] = useState<string>('');
 
@@ -65,7 +65,7 @@ const States: FC<StatesScreenProps> = ({navigation, route}) => {
     dispatch(
       getStates({
         page: 0,
-        size: 15,
+        size: 10,
         type: 'all',
       }),
     );
@@ -101,9 +101,23 @@ const States: FC<StatesScreenProps> = ({navigation, route}) => {
       <View style={{marginBottom:15}}>
         {filteredStates ? (
           filteredStates.length > 0 ? (
-            filteredStates.map(item => (
+            <View>
+            {filteredStates.map(item => (
               <StateTile state={item} key={item.stateId} />
-            ))
+            ))}
+                 <PaginationBar
+                count={(states?.totalCount || 0) / 10}
+                onPressPageIndex={index => {
+                  dispatch(
+                    getStates({
+                      page: index,
+                      size: 10,
+                      type:  'all',
+                    }),
+                  );
+                }}
+              />
+            </View>
           ) : (
             <RenderEmptyPlaceholder />
           )

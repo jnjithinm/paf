@@ -1,5 +1,5 @@
 import React, {FC, useEffect, useState} from 'react';
-import { TouchableOpacity, View, ViewStyle} from 'react-native';
+import {TouchableOpacity, View, ViewStyle} from 'react-native';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 
@@ -14,6 +14,7 @@ import {RenderEmptyPlaceholder} from '../observation/ObservationReportsMainPage'
 import SearchWithFilter from '../../components/SearchWithFilter';
 import Tab from '../../components/Tab';
 import {ItemType} from '../../config/types';
+import PaginationBar from '../../components/PaginationBar';
 
 type UsersMainPageNavigationProp = StackNavigationProp<
   UserManagementStackParamList,
@@ -23,7 +24,6 @@ type UsersMainPageRouteProp = RouteProp<
   UserManagementStackParamList,
   'UsersMainPage'
 >;
-
 
 type RenderActiveStatusTypes = {
   isActive: boolean;
@@ -70,7 +70,7 @@ export const RenderLabelAndValue: FC<RenderLabelAndValueTypes> = ({
   value,
   style,
 }) => (
-  <View style={{marginVertical: 3,  ...style}}>
+  <View style={{marginVertical: 3, ...style}}>
     <Text style={{color: '#4E565F'}} size="small1">
       {label}
     </Text>
@@ -161,54 +161,90 @@ const UserTile: FC<UserTileTypes> = ({user, selectedItem, onPressItem}) => (
   </TouchableOpacity>
 );
 
-export const tabs: ItemType[] = [
-  {label: 'All', value: 'All'},
-  {label: 'Active', value: 'Active'},
-  {label: 'Inactive', value: 'Inactive'},
-];
 
 interface UsersMainPageScreenProps {
   navigation: UsersMainPageNavigationProp;
   route: UsersMainPageRouteProp;
 }
 
+type UsersList = {
+  usersList: User[] | undefined;
+  count: number | undefined;
+  selectedTab: 'all' | boolean;
+};
 const UsersMainPage: FC<UsersMainPageScreenProps> = ({navigation, route}) => {
   const [selectedItem, setSelectedItem] = useState<User>();
   const [search, setSearch] = useState<string>('');
-  const [usersList, setUsersList] = useState<User[]>();
+  const [usersList, setUsersList] = useState<UsersList>();
 
   const dispatch = useAppDispatch();
-  const {allUsers} = useAppSelector(state => state.users);
+  const {allUsers, activeUsers, inactiveUsers} = useAppSelector(
+    state => state.users,
+  );
+
+  const tabs: ItemType[] = [
+    {label: `All (${allUsers?.totalCount})`, value: 'all'},
+    {label: `Active (${activeUsers?.totalCount})`, value: 'active'},
+    {label: `Inactive (${inactiveUsers?.totalCount})`, value: 'inactive'},
+  ];
 
   useEffect(() => {
     dispatch(
       getAllUsers({
         page: 0,
-        size: 15,
+        size: 10,
         type: 'all',
+      }),
+    );
+    dispatch(
+      getAllUsers({
+        page: 0,
+        size: 10,
+        type: true,
+      }),
+    );
+    dispatch(
+      getAllUsers({
+        page: 0,
+        size: 10,
+        type: false,
       }),
     );
   }, []);
 
   useEffect(() => {
     if (allUsers) {
-      setUsersList(allUsers.dataList);
+      setUsersList({
+        usersList: allUsers?.dataList,
+        count: allUsers?.totalCount,
+        selectedTab: 'all',
+      });
     }
   }, [allUsers]);
 
   const handleTabClick = (title: ItemType) => {
-    if (allUsers?.dataList) {
-      title.value == 'Active'
-        ? setUsersList(allUsers?.dataList?.filter(item => item.status === true))
-        : title.value == 'Inactive'
-        ? setUsersList(
-            allUsers?.dataList?.filter(item => item.status === false),
-          )
-        : setUsersList(allUsers?.dataList);
+    if (title.value == 'all') {
+      setUsersList({
+        usersList: allUsers?.dataList,
+        count: allUsers?.totalCount,
+        selectedTab: 'all',
+      });
+    } else if (title.value == 'active') {
+      setUsersList({
+        usersList: activeUsers?.dataList,
+        count: activeUsers?.totalCount,
+        selectedTab: true,
+      });
+    } else {
+      setUsersList({
+        usersList: inactiveUsers?.dataList,
+        count: inactiveUsers?.totalCount,
+        selectedTab: false,
+      });
     }
   };
 
-  const filteredUsers = usersList?.filter(item =>
+  const filteredUsers = usersList?.usersList?.filter(item =>
     item?.name?.toLocaleLowerCase()?.includes(search?.toLocaleLowerCase()),
   );
 
@@ -236,15 +272,29 @@ const UsersMainPage: FC<UsersMainPageScreenProps> = ({navigation, route}) => {
       <View style={{marginVertical: 10}}>
         {filteredUsers ? (
           filteredUsers?.length > 0 ? (
-            filteredUsers.map(item => (
-              <UserTile
-                user={item}
-                onPressItem={user => {
-                  setSelectedItem(user);
+            <View>
+              {filteredUsers.map(item => (
+                <UserTile
+                  user={item}
+                  onPressItem={user => {
+                    setSelectedItem(user);
+                  }}
+                  selectedItem={selectedItem}
+                />
+              ))}
+              <PaginationBar
+                count={(usersList?.count || 0) / 10}
+                onPressPageIndex={index => {
+                  dispatch(
+                    getAllUsers({
+                      page: index,
+                      size: 10,
+                      type: usersList?.selectedTab || 'all',
+                    }),
+                  );
                 }}
-                selectedItem={selectedItem}
               />
-            ))
+            </View>
           ) : (
             <RenderEmptyPlaceholder />
           )

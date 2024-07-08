@@ -10,8 +10,8 @@ import {TextInput, TouchableOpacity, View} from 'react-native';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {Dropdown} from 'react-native-element-dropdown';
-
 import moment from 'moment';
+
 import Layout from '../../components/Layout';
 import {useAppDispatch, useAppSelector} from '../../redux/store';
 import colors from '../../config/colors';
@@ -754,7 +754,6 @@ const EvaluationForm: FC<EvaluationFormScreenProps> = ({navigation, route}) => {
 
   useEffect(() => {
     if (submitPreviewFormResponse) {
-  
       navigation.navigate('FormList', {flowItem});
       dispatch(resetPreviewFormResponse());
     }
@@ -766,7 +765,6 @@ const EvaluationForm: FC<EvaluationFormScreenProps> = ({navigation, route}) => {
 
   const validateSubmission = () => {
     let canProceed = true;
-
     previewForm?.dataList?.sections?.forEach(section => {
       section?.questions?.forEach(question => {
         if (question.isRequired) {
@@ -776,10 +774,8 @@ const EvaluationForm: FC<EvaluationFormScreenProps> = ({navigation, route}) => {
           if (question.questionOptionId === 4) {
             const requiredIndicatorsFilled = question.indicators.every(
               indicator => {
-            
                 return answers.some(
                   ans =>
-      
                     ans.questionId === question.questionId &&
                     (ans.answer as ShortAnswer).rating?.find(
                       ind => ind.indicatorId === indicator.indicatorId,
