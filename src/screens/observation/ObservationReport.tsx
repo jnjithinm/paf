@@ -29,6 +29,7 @@ import {
   convertEvidenceCardListToRequest,
 } from './AddNewObservation';
 import moment from 'moment';
+import {getUser} from '../../redux/features/usersSlice';
 
 type ObservationReportNavigationProp = StackNavigationProp<
   ObservationStackParamList,
@@ -60,15 +61,17 @@ const ObservationReport: FC<ObservationReportScreenProps> = ({
   useAppSelector(state => state.users);
 
   const {userData} = useAppSelector(state => state.auth);
+  const {user} = useAppSelector(state => state.users);
 
   useFocusEffect(
     React.useCallback(() => {
-      if (observationId) {  
+      if (observationId) {
         dispatch(saveEvidenceCardDetails(null));
         dispatch(resetSaveEvidenceCardResponse());
         dispatch(resetSaveObservationResponse());
         dispatch(getObservationById(observationId));
       }
+      
     }, []),
   );
 
@@ -81,6 +84,10 @@ const ObservationReport: FC<ObservationReportScreenProps> = ({
   const onPressCreateEvidenceCard = () => {
     navigation.navigate('CreateViewEvidenceCard');
   };
+
+  useEffect(() => {
+    dispatch(getUser(userData.id));
+  }, []);
 
   const onPressSubmit = () => {
     if (newEvidenceCardsList) {
@@ -186,7 +193,7 @@ const ObservationReport: FC<ObservationReportScreenProps> = ({
   let isPendingAndEvidenceCardCreated: boolean = Boolean(
     observationById?.observationStatus === 'Pending' && newEvidenceCardsList,
   );
-  
+
   return (
     <KeyboardAvoidingView
       style={{flex: 1}}
@@ -205,10 +212,11 @@ const ObservationReport: FC<ObservationReportScreenProps> = ({
         <View style={{marginVertical: 20}}>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
             <RenderProfileIcon
-              image={observationById?.userImage}
+              image={observationById?.userImage || user?.userImageUrl}
               name={
                 observationById?.userName?.toString() ||
                 newObservation?.selectedUser?.label?.toString() ||
+                user?.name?.toString() ||
                 ''
               }
               size={50}

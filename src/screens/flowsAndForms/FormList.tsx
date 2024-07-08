@@ -124,7 +124,8 @@ const FormList: FC<FormListScreenProps> = ({navigation, route}) => {
         overridePaddingHorizontal
         overridePaddingVertical
         style={{paddingHorizontal: 15}}
-        title={flowItem.flowName}>
+        title={flowItem.flowName}
+        isActive={flowItem.status?'Active':'Inactive'}>
         <Modal
           onProceed={() => {}}
           onClose={() => {

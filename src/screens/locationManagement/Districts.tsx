@@ -93,7 +93,7 @@ const Districts: FC<UserGroupsScreenProps> = ({navigation, route}) => {
   const [districtList, setDistrictList] = useState<District[]>();
   const [search, setSearch] = useState<string>('');
 
-  const {districts} = useAppSelector(state => state.master);
+  const {allDistricts,activeDistricts,inactiveDistricts} = useAppSelector(state => state.master);
   const dispatch = useAppDispatch();
 
   
@@ -103,6 +103,20 @@ const Districts: FC<UserGroupsScreenProps> = ({navigation, route}) => {
         page: 0,
         size: 15,
         type: 'all',
+      }),
+    );
+    dispatch(
+      getDistricts({
+        page: 0,
+        size: 15,
+        type: true,
+      }),
+    );
+    dispatch(
+      getDistricts({
+        page: 0,
+        size: 15,
+        type: false,
       }),
     );
   }, []);

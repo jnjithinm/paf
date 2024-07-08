@@ -1,7 +1,10 @@
 const endPoints = {
   AUTHENTICATE_USER: `PAF/authenticate`,
   LOGIN_USER: `PAF/login`,
+  UPDATE_USER:`PAF/users/`,
   RESET_PASSWORD:`PAF/login/resetPassword/`,
+  DELETE_USER_PHOTO:`PAF/users/photo/`,
+  UPDATE_USER_PHOTO:`PAF/users/photo`,
   FORGOT_PASSWORD:`PAF/login/forgotPassword/`,
   GET_INDICATORS_BY_DOMAIN_ID: `PAF/rubrics/indicatorsByDomainId/`,
   GET_DASHBOARD_DETAILS_OBSERVATION: 'PAF/teachers/observation/dashBoard/',

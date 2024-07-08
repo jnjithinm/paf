@@ -80,6 +80,7 @@ const RubricEvaluationIndicatorList: FC<
       style={{paddingHorizontal: 15}}
       title={rubricItem.rubricName}
       icon="evaluation_icon"
+      isActive={rubricItem.status?'Active':'Inactive'}
       focusedStack="RubricStack">
       <View style={{marginVertical: 10}}>
         <View style={{flexDirection: 'row', alignItems: 'center'}}>

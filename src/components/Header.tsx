@@ -8,6 +8,7 @@ import {normaliseDesigns} from '../utils/helpers/responsiveHelpers';
 import {FONT_SIZES, FONT_VARIANT} from '../config/themes';
 import Images, {ImageIconNames} from '../components/Image';
 import Text from './Text';
+import { RenderActiveStatus } from '../screens/userManagement/UsersMainPage';
 
 type HeaderPropsTypes = {
   title?: string;
@@ -21,6 +22,7 @@ type HeaderPropsTypes = {
   icon?: ImageIconNames;
   scrollTransition?: boolean;
   isScrolled?: boolean;
+  isActive?:'Active'|'Inactive';
 };
 
 const Header: FC<HeaderPropsTypes> = ({
@@ -35,6 +37,7 @@ const Header: FC<HeaderPropsTypes> = ({
   icon,
   scrollTransition,
   isScrolled,
+  isActive
 }) => {
   const navigation = useNavigation();
 const onPressProfileIcon=()=>{
@@ -74,7 +77,10 @@ const onPressProfileIcon=()=>{
           )}
           {((title && !scrollTransition) ||
             (title && scrollTransition && isScrolled)) && (
+              <View style={{flexDirection:'row'}}>
             <Text style={styles.title}>{title}</Text>
+           {isActive && <RenderActiveStatus isActive={isActive=='Active'}/>}
+            </View>
           )}
         </View>
         {icon && (
@@ -135,7 +141,7 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZES.body3,
     fontFamily: FONT_VARIANT.bold,
     color: colors.blackColor,
-    paddingRight: 20,
+    paddingRight: 5,
   },
   iconScrolled: {
     top: 35,

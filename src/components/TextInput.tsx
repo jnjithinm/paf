@@ -152,6 +152,7 @@ const TextInput: FC<TextInputPropsTypes> = ({
           flexDirection: 'row',
           justifyContent: 'space-between',
           maxHeight: 40,
+          backgroundColor:rest.editable===false?'#FDF0E3':colors.backgroundColor,
           ...textInputStyle,
           paddingHorizontal: icon ? 5 : 10,
           width: '100%',

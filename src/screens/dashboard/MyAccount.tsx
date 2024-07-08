@@ -1,13 +1,7 @@
-import React, {FC, useState} from 'react';
+import React, {FC, useEffect, useState} from 'react';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
-import {
-  ScrollView,
-  TouchableOpacity,
-  View,
-  KeyboardAvoidingView,
-  Platform,
-} from 'react-native';
+import {TouchableOpacity, View} from 'react-native';
 
 import Layout from '../../components/Layout';
 import Text from '../../components/Text';
@@ -17,8 +11,10 @@ import useValidation from '../../utils/hooks/useValidation';
 import {RenderProfileIcon} from './TeacherDashboard';
 import colors from '../../config/colors';
 import FooterWithButtons from '../../components/FooterWithButtons';
-import {useAppSelector} from '../../redux/store';
+import {useAppDispatch, useAppSelector} from '../../redux/store';
 import Icon from '../../components/Icon';
+import {getUser} from '../../redux/features/usersSlice';
+import {updateUserDetails} from '../../redux/features/authSlice';
 
 type MyAccountNavigationProp = StackNavigationProp<
   MainStackParamList,
@@ -37,15 +33,13 @@ const MyAccount: FC<MyAccountScreenProps> = ({navigation, route}) => {
   const [email, setEmail] = useState<string>('');
   const [district, setDistrict] = useState<string>('');
   const [area, setArea] = useState<string>('');
-  const [role, setRole] = useState<string>('');
   const [modules, setModules] = useState<string>('');
-  const [userName, setUserName] = useState<string>('');
-  const [password, setPassword] = useState<string>('12345678');
-  const [userType, setUserType] = useState<string>('');
-  const [isShowModal, setIsShowModal] = useState<boolean>(false);
-  const {userData} = useAppSelector(state => state.auth);
 
+  const {userData, isAdmin} = useAppSelector(state => state.auth);
+  const {user} = useAppSelector(state => state.users);
   const {validateField} = useValidation();
+
+  const dispatch = useAppDispatch();
 
   const userNameErrorMessage = validateField({
     fieldName: 'Name',
@@ -72,202 +66,240 @@ const MyAccount: FC<MyAccountScreenProps> = ({navigation, route}) => {
     value: area,
   });
 
+  useEffect(() => {
+    dispatch(getUser(userData.id));
+  }, []);
 
-  const sendResetPasswordLink = () => {
+  useEffect(() => {
+    if (user) {
+      setName(user.name);
+      setPhoneNum(user.contactNumber);
+      setEmail(user.email);
+      setDistrict(user.district);
+      setArea(user.area);
+    }
+  }, [user]);
 
+  const sendResetPasswordLink = () => {};
+
+  const onPressEditPhoto = () => {
+    // dispatch()
+  };
+  const onPressDeletePhoto = () => {
+    // dispatch()
   };
 
-  const handleEditPhoto = () => {};
-  const handleDeletPhoto = () => {};
+  const onPressSave = () => {
+    dispatch(
+      updateUserDetails({
+        userType: user?.userType || '',
+        email,
+        contactNumber: phoneNum,
+        districtId: user?.districtId || 0,
+        schoolId: user?.schoolId || 0,
+        status: user?.status || false,
+        stateId: user?.stateId || 0,
+        area: user?.areaId || 0,
+        dateOfBirth: user?.dateOfBirth || '',
+        name: user?.name || '',
+        citizenship: user?.citizenship || '',
+        grade: user?.school || '',
+        isAdmin,
+        roleId: user?.roleId || 0,
+        moduleId: user?.stateId || 0,
+        loggedInUserName: userData.userName,
+      }),
+    );
+  };
 
   return (
-    <KeyboardAvoidingView
-      style={{flex: 1}}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-        <Layout
-          overridePaddingHorizontal
-          overridePaddingVertical
-          style={{paddingHorizontal: 15}}
-          icon="profile_icon"
-          // transform={}
-          title='My Account'
-          titleTransition>
-          <Text
-            size="body4"
-            fontVariant="bold"
-            style={{marginBottom: 15, marginTop: 30}}>
-            My Account
-          </Text>
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              marginBottom: 10,
-            }}>
-            <RenderProfileIcon
-              size={50}
-              image={userData.userImageUrl || userData.userImage}
-              name={userData.name}
-            />
-            <View style={{alignItems: 'center', marginLeft: 10}}>
-              <TouchableOpacity
-                onPress={handleEditPhoto}
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  marginRight: 20,
-                }}>
-                <Icon name="edit_icon_red" />
-                <Text style={{marginLeft: 5, }} size='small1'>Edit Photo</Text>
-              </TouchableOpacity>
-              <View
-                style={{
-                  width: '100%',
-                  marginBottom: 3,
-                  height:2,
-                  backgroundColor:colors.dangerColor
-                }}/>
-              <TouchableOpacity
-                onPress={handleDeletPhoto}
-                style={{flexDirection: 'row', alignItems: 'center'}}>
-                <Icon name="trash_icon_red" />
-                <Text style={{marginLeft: 5,}} color='dangerColor' size='small1'>
-                  Delete Photo
-                </Text>
-              </TouchableOpacity>
-              <View
-                style={{
-                  width: '100%',
-                  marginBottom: 3,
-                  height:2,
-                  backgroundColor:colors.dangerColor
-
-                }}/>
-            </View>
-          </View>
-          <TextInput
-            label="Name"
-            value={name}
-            setValue={setName}
-            errorMessage={userNameErrorMessage}
-            placeholder="Enter Name"
-            autoCapitalize="none"
-            mandatory
+    <>
+      <Layout
+        overridePaddingHorizontal
+        overridePaddingVertical
+        style={{paddingHorizontal: 15}}
+        icon="profile_icon"
+        // transform={}
+        title="My Account"
+        titleTransition>
+        <Text
+          size="body4"
+          fontVariant="bold"
+          style={{marginBottom: 15, marginTop: 30}}>
+          My Account
+        </Text>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            marginBottom: 10,
+          }}>
+          <RenderProfileIcon
+            size={60}
+            image={userData.userImageUrl || userData.userImage}
+            name={userData.name}
           />
-          <TextInput
-            label="Phone No."
-            value={phoneNum}
-            setValue={setPhoneNum}
-            errorMessage={phoneNumberErrorMessage}
-            placeholder="Enter Phone No."
-            autoCapitalize="none"
-            mandatory
-          />
-          <TextInput
-            label="Email"
-            value={email}
-            setValue={setEmail}
-            placeholder="Enter Email"
-            errorMessage={emailErrorMessage}
-            autoCapitalize="none"
-            mandatory
-          />
-          <TextInput
-            label="District"
-            value={district}
-            setValue={setDistrict}
-            errorMessage={districtErrorMessage}
-            placeholder="Enter District"
-            autoCapitalize="none"
-            mandatory
-          />
-          <TextInput
-            label="Area"
-            value={area}
-            errorMessage={areaErrorMessage}
-            setValue={setArea}
-            placeholder="Enter Area"
-            autoCapitalize="none"
-          />
-          <View
-            style={{
-              backgroundColor: 'lightgray',
-              width: '100%',
-              height: 1,
-              marginVertical: 20,
-            }}/>
-          <TextInput
-            label="Role"
-            value={userData.role}
-            setValue={setRole}
-            placeholder="Enter Role"
-            autoCapitalize="none"
-            editable={false}
-          />
-          <TextInput
-            label="Modules"
-            value={modules}
-            setValue={setModules}
-            placeholder="Enter Modules"
-            autoCapitalize="none"
-            editable={false}
-          />
-          <TextInput
-            label="Username"
-            value={userData.userName}
-            setValue={setUserName}
-            placeholder="Enter Username"
-            autoCapitalize="none"
-            mandatory
-            editable={false}
-          />
-          <TextInput
-            label="Password"
-            value={password}
-            setValue={setPassword}
-            placeholder="Enter Password"
-            autoCapitalize="none"
-            mandatory
-            secureTextEntry={true}
-            editable={false}
-          />
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'flex-end',
-              marginTop: 5,
-            }}>
-            <TouchableOpacity onPress={sendResetPasswordLink}>
-              <Text
-                style={{
-                  color: colors.blackColor,
-                  fontSize: 14,
-                  textDecorationLine: 'underline',
-                  lineHeight: 16,
-                }}>
-                Send reset password link
+          <View style={{marginLeft: 10}}>
+            <TouchableOpacity
+              onPress={onPressEditPhoto}
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                borderBottomWidth: 1,
+                borderColor: colors.blackColor,
+                height: 20,
+              }}>
+              <Icon name="edit_icon_red" />
+              <Text style={{marginLeft: 5}} size="small1">
+                Edit Photo
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={onPressDeletePhoto}
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                borderBottomWidth: 1,
+                borderColor: colors.dangerColor,
+                height: 20,
+              }}>
+              <Icon name="trash_icon_red" />
+              <Text style={{marginLeft: 5}} color="dangerColor" size="small1">
+                Delete Photo
               </Text>
             </TouchableOpacity>
           </View>
-          <TextInput
-            label="User Type"
-            value={userData.roleType || ''}
-            setValue={setUserType}
-            placeholder="Enter User Type"
-            autoCapitalize="none"
-            editable={false}
-          />
-        </Layout>
+        </View>
+        <TextInput
+          label="Name"
+          value={name}
+          setValue={setName}
+          errorMessage={userNameErrorMessage}
+          placeholder="Enter Name"
+          style={{marginVertical: 2}}
+          autoCapitalize="words"
+          mandatory
+        />
+        <TextInput
+          label="Phone No."
+          value={phoneNum}
+          setValue={setPhoneNum}
+          errorMessage={phoneNumberErrorMessage}
+          placeholder="Enter Phone No."
+          keyboardType="number-pad"
+          style={{marginVertical: 2}}
+          mandatory
+        />
+        <TextInput
+          label="Email"
+          value={email}
+          setValue={setEmail}
+          placeholder="Enter Email"
+          errorMessage={emailErrorMessage}
+          autoCapitalize="none"
+          keyboardType="email-address"
+          style={{marginVertical: 2}}
+          mandatory
+        />
+        <TextInput
+          label="District"
+          value={district}
+          setValue={setDistrict}
+          errorMessage={districtErrorMessage}
+          placeholder="Enter District"
+          style={{marginVertical: 2}}
+          autoCapitalize="words"
+          mandatory
+        />
+        <TextInput
+          label="Area"
+          value={area}
+          errorMessage={areaErrorMessage}
+          setValue={setArea}
+          placeholder="Enter Area"
+          style={{marginVertical: 2}}
+          autoCapitalize="words"
+        />
+        <View
+          style={{
+            backgroundColor: 'lightgray',
+            width: '100%',
+            height: 1,
+            marginVertical: 10,
+          }}
+        />
+        <TextInput
+          label="Role"
+          value={userData.role}
+          placeholder="Enter Role"
+          autoCapitalize="none"
+          editable={false}
+        />
+        <TextInput
+          label="Modules"
+          value={modules}
+          placeholder="Enter Modules"
+          autoCapitalize="none"
+          editable={false}
+        />
+        <TextInput
+          label="Username"
+          value={userData.userName}
+          placeholder="Enter Username"
+          autoCapitalize="none"
+          mandatory
+          editable={false}
+        />
+        <TextInput
+          label="Password"
+          value={'12313432'}
+          placeholder="Enter Password"
+          autoCapitalize="none"
+          mandatory
+          secureTextEntry={true}
+          editable={false}
+        />
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'flex-end',
+            marginTop: 5,
+          }}>
+          <TouchableOpacity onPress={sendResetPasswordLink}>
+            <Text
+              style={{
+                color: colors.blackColor,
+                fontSize: 12,
+                textDecorationLine: 'underline',
+                lineHeight: 16,
+                bottom: 4,
+              }}>
+              Send reset password link
+            </Text>
+          </TouchableOpacity>
+        </View>
+        <TextInput
+          label="User Type"
+          value={userData.roleType || ''}
+          placeholder="Enter User Type"
+          autoCapitalize="none"
+          editable={false}
+        />
+      </Layout>
 
       <FooterWithButtons
         proceedButtonText={'Save'}
         isActiveProceedButton
         cancelButtonText={'Cancel'}
-        style={{marginVertical: 10}}
-        onPressProceedButton={()=>{}}
-        onPressCancelButton={()=>{}}
+        style={{elevation: 10}}
+        onPressProceedButton={onPressSave}
+        onPressCancelButton={() => {
+          isAdmin
+            ? navigation.navigate('AdminDashboard')
+            : navigation.navigate('TeacherDashboard');
+        }}
       />
-    </KeyboardAvoidingView>
+    </>
   );
 };
 

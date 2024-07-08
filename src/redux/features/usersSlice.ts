@@ -23,6 +23,7 @@ export interface User {
   roleId: number;
   stateId: number;
   districtId: number;
+  userImageUrl:string;
   areaId: number;
   schoolId: number;
   createdDate: string;
@@ -129,7 +130,7 @@ export const getUser = createAsyncThunk<
   {rejectValue: ErrorResponse}
 >('users/getUser', async (userId, {dispatch, rejectWithValue}) => {
   try {
-    const response = await api.post(endPoints.GET_ALL_USERS + userId);
+    const response = await api.get(endPoints.GET_USER + userId);
     return response.data as GetUserResponse;
   } catch (error: any) {
     return rejectWithValue(error.response.data);
@@ -236,6 +237,7 @@ const usersSlice = createSlice({
         }
       })
       .addCase(getAllUsers.rejected, (state, action) => {
+
         state.usersShowMessage = {
           status: 'Error',
           message: action?.payload?.error?.errorMessage,
@@ -255,7 +257,11 @@ const usersSlice = createSlice({
         };
       })
 
-      .addCase(getAllUserGroups.pending, state => {})
+      .addCase(getAllUserGroups.pending, state => {
+        // state.allUserGroups=null;
+        // state.activeUserGroups=null;
+        // state.inactiveUserGroups=null;
+      })  
       .addCase(getAllUserGroups.fulfilled, (state, action) => {
         if (action.meta.arg.type === 'all') {
           state.allUserGroups = action.payload.payload;
@@ -266,6 +272,9 @@ const usersSlice = createSlice({
         }
       })
       .addCase(getAllUserGroups.rejected, (state, action) => {
+        state.allUserGroups=null;
+        state.activeUserGroups=null;
+        state.inactiveUserGroups=null;
         state.usersShowMessage = {
           status: 'Error',
           message: action?.payload?.error?.errorMessage,

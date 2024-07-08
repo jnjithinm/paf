@@ -41,6 +41,7 @@ interface LayoutPropsTypes extends ViewStyle {
   title?: string;
   icon?: ImageIconNames;
   titleTransition?: boolean;
+  isActive?:'Active'|'Inactive';
 }
 const Layout: FC<LayoutPropsTypes> = ({
   children,
@@ -66,6 +67,7 @@ const Layout: FC<LayoutPropsTypes> = ({
   title,
   icon,
   titleTransition,
+  isActive
 }) => {
   const {isLoading} = useAppSelector(state => state.auth);
 
@@ -158,10 +160,10 @@ const Layout: FC<LayoutPropsTypes> = ({
             avoidBackButton={avoidBackButton}
             dashboard={dashboard}
             onPressBellIcon={onPressBellIcon}
-            onPressProfileIcon={onPressProfileIcon}
             onPressBackArrow={onPressBackArrow}
             onPressLogoutButton={onPressLogoutButton}
             title={title}
+            isActive={isActive}
             onPressMenuIcon={onPressMenuIcon}
             icon={icon}
             scrollTransition={titleTransition}

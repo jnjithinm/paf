@@ -208,14 +208,14 @@ const FlowsMainPage: FC<FlowsMainPageScreenProps> = ({navigation, route}) => {
         <View style={{marginVertical: 10}}>
           <Tab
             tabs={[
-              {value: `All`, label: `All (${allFlows?.totalCount})`},
+              {value: `All`, label: `All (${allFlows?.totalCount || ''})`},
               {
                 value: `Owned by me`,
-                label: `Owned by me (${ownedByMeFlows?.totalCount})`,
+                label: `Owned by me (${ownedByMeFlows?.totalCount || ''})`,
               },
               {
                 value: `Not owned by me`,
-                label: `Not owned by me (${notOwnedByMeFlows?.totalCount})`,
+                label: `Not owned by me (${notOwnedByMeFlows?.totalCount || ''})`,
               },
             ]}
             textStyle={{fontSize: normaliseFont(12)}}

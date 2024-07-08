@@ -1,8 +1,4 @@
-import {
-  createAction,
-  createAsyncThunk,
-  createSlice,
-} from '@reduxjs/toolkit';
+import {createAction, createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 
 import api from '../../config/axios';
 import {
@@ -10,7 +6,7 @@ import {
   storeToken,
 } from '../../utils/functions/localStorageOperations';
 import endPoints from '../../config/endPoints';
-import {ErrorStatusObject} from '../../config/types';
+import {ErrorStatusObject, FileObject} from '../../config/types';
 import {ParentRoles, UserTypes} from '../../config/constants';
 import {getRoleLevel} from '../../components/DrawerContent';
 
@@ -25,6 +21,23 @@ interface AuthenticateResponse {
   };
 }
 
+interface Module {
+  moduleId: number;
+  moduleName: string;
+  description: string;
+  status: boolean;
+  isDeleted: boolean;
+  hasChildren: boolean;
+}
+
+interface PageItem {
+  pageId: number;
+  module: Module;
+  pageName: string;
+  status: boolean;
+  category: string;
+}
+
 interface LoginResponse {
   payload: {
     id: number;
@@ -35,11 +48,11 @@ interface LoginResponse {
     roleId: number;
     roleType: ParentRoles;
     isAdmin: boolean;
-    userImage:string;
+    userImage: string;
     userImageUrl: string;
     status: boolean;
     pageData: {
-      ObservationReports: [];
+      'Observation Reports': [];
       Courses: [];
     };
   };
@@ -54,6 +67,35 @@ interface ForgotPasswordResponse {
 }
 
 type ForgotPasswordResponsePayload = ForgotPasswordResponse['payload'];
+
+interface UpdateUserDetailsRequest {
+  name: string;
+  contactNumber: string;
+  email: string;
+  dateOfBirth: string;
+  grade: string;
+  area: number;
+  userType: string;
+  citizenship: string;
+  status: boolean;
+  roleId: number;
+  stateId: number;
+  districtId: number;
+  moduleId: number;
+  schoolId: number;
+  isAdmin: boolean;
+  loggedInUserName: string;
+}
+
+interface UpdateUserDetailsResponse {
+  payload: {
+    id: number;
+    message: string;
+  };
+  status: number;
+}
+
+type UpdateUserDetailsResponsePayload = UpdateUserDetailsResponse['payload'];
 
 export interface ErrorResponseObject {
   errorCode: string;
@@ -143,6 +185,65 @@ export const forgotPassword = createAsyncThunk<
     }
   },
 );
+
+export const updateUserDetails = createAsyncThunk<
+  UpdateUserDetailsResponse,
+  UpdateUserDetailsRequest,
+  {rejectValue: ErrorResponse}
+>('auth/updateUserDetails', async (payload, {dispatch, rejectWithValue}) => {
+  try {
+    dispatch(setLoading(true));
+    const response = await api.put(endPoints.UPDATE_USER, payload);
+    return response.data as UpdateUserDetailsResponse;
+  } catch (error: any) {
+    return rejectWithValue(error.response.data);
+  } finally {
+    dispatch(setLoading(false));
+  }
+});
+export const deleteUserPhoto = createAsyncThunk<
+  UpdateUserDetailsResponse,
+  [number, string],
+  {rejectValue: ErrorResponse}
+>(
+  'auth/deleteUserPhoto',
+  async ([userId, loggedInUserName], {dispatch, rejectWithValue}) => {
+    try {
+      dispatch(setLoading(true));
+      const response = await api.delete(
+        endPoints.DELETE_USER_PHOTO +
+          userId +
+          `loggedInUserName=${loggedInUserName}`,
+      );
+      return response.data as UpdateUserDetailsResponse;
+    } catch (error: any) {
+      return rejectWithValue(error.response.data);
+    } finally {
+      dispatch(setLoading(false));
+    }
+  },
+);
+export const updateUserPhoto = createAsyncThunk<
+  UpdateUserDetailsResponse,
+  [FileObject, string],
+  {rejectValue: ErrorResponse}
+>(
+  'auth/updateUserPhoto',
+  async ([file, loggedInUserName], {dispatch, rejectWithValue}) => {
+    try {
+      dispatch(setLoading(true));
+      const response = await api.put(endPoints.UPDATE_USER_PHOTO, {
+        profilePhoto: file,
+        loggedInUserName,
+      });
+      return response.data as UpdateUserDetailsResponse;
+    } catch (error: any) {
+      return rejectWithValue(error.response.data);
+    } finally {
+      dispatch(setLoading(false));
+    }
+  },
+);
 interface initialState {
   isLoading: boolean;
   isLoggedIn: boolean;
@@ -154,10 +255,11 @@ interface initialState {
     roleId: number;
     roleType: ParentRoles | null;
     isAdmin: boolean;
-    userImage:string;
+    userImage: string;
     userImageUrl: string;
   };
   isAdmin: boolean;
+  updateUserResponse: UpdateUserDetailsResponsePayload | null;
   forgotPasswordResponse: ForgotPasswordResponsePayload | null;
   authShowMessage: ErrorStatusObject | null;
   passwordErrorMessage: string;
@@ -175,10 +277,11 @@ const initialState: initialState = {
     roleId: 0,
     roleType: null,
     isAdmin: false,
-    userImage:'',
+    userImage: '',
     userImageUrl: '',
   },
   isAdmin: false,
+  updateUserResponse: null,
   forgotPasswordResponse: null,
   authShowMessage: null,
   passwordErrorMessage: '',
@@ -228,6 +331,16 @@ const authSlice = createSlice({
         action?.payload?.error?.errorMessage
           ? (state.usernameErrorMessage = 'Invalid username entered')
           : (state.passwordErrorMessage = 'Invalid password entered');
+      })
+
+      .addCase(updateUserDetails.pending, state => {
+        state.updateUserResponse = null;
+      })
+      .addCase(updateUserDetails.fulfilled, (state, action) => {
+        state.updateUserResponse = action.payload.payload;
+      })
+      .addCase(updateUserDetails.rejected, (state, action) => {
+        state.updateUserResponse = null;
       })
       .addCase(loginUser.pending, state => {
         state.isLoading = true;

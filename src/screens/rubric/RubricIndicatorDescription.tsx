@@ -62,6 +62,7 @@ const RubricIndicatorDescription: FC<RubricIndicatorDescriptionScreenProps> = ({
       style={{paddingHorizontal: 15}}
       title={title}
       focusedStack='RubricStack'
+      isActive={indicator.status?'Active':'Inactive'}
       icon="evaluation_icon">
       <View style={{marginVertical: 10}}>
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
