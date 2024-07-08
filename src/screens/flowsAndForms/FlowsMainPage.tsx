@@ -120,12 +120,27 @@ const FlowsItem: React.FC<FlowsItemProps> = ({
 const FlowsMainPage: FC<FlowsMainPageScreenProps> = ({navigation, route}) => {
   const [search, setSearch] = useState<string>('');
 
-  const {allFlows} = useAppSelector(state => state.flows);
+  const [flowsList,setFlowsList]=useState<FlowItem[]>();
+
+  const {allFlows,ownedByMeFlows, notOwnedByMeFlows } = useAppSelector(
+    state => state.flows,
+  );
   const {userData, isAdmin} = useAppSelector(state => state.auth);
   const dispatch = useAppDispatch();
 
-  const handleTabClick = (title: string) => {
+  useEffect(()=>{
+    setFlowsList(allFlows?.dataList);
 
+  },[allFlows])
+
+  const handleTabClick = (title: string) => {
+    if (title === 'All') {
+      setFlowsList(allFlows?.dataList);
+    }else if(title==='Owned By me'){
+      setFlowsList(ownedByMeFlows?.dataList);
+    }else{
+      setFlowsList(notOwnedByMeFlows?.dataList);
+    }
   };
 
   useEffect(() => {
@@ -150,7 +165,6 @@ const FlowsMainPage: FC<FlowsMainPageScreenProps> = ({navigation, route}) => {
           type: true,
         },
       ]),
-      
     );
     dispatch(
       getAllFlows([
@@ -162,8 +176,7 @@ const FlowsMainPage: FC<FlowsMainPageScreenProps> = ({navigation, route}) => {
           type: false,
         },
       ]),
-      
-    ); 
+    );
   }, []);
 
   const onPressDeleteFlow = (item: FlowItem) => {
@@ -179,7 +192,6 @@ const FlowsMainPage: FC<FlowsMainPageScreenProps> = ({navigation, route}) => {
   const filteredFlows = allFlows?.dataList?.filter(item =>
     item?.flowName?.toLocaleLowerCase()?.includes(search?.toLocaleLowerCase()),
   );
-
 
   return (
     <>
@@ -198,8 +210,14 @@ const FlowsMainPage: FC<FlowsMainPageScreenProps> = ({navigation, route}) => {
           <Tab
             tabs={[
               {value: 'All', label: 'All'},
-              {value: `Owned by me(${allFlows?.totalCount})`, label: 'Owned by me(20'},
-              {value: 'Not owned by me(20)', label: 'Not owned by me(20)'},
+              {
+                value: `Owned by me(${ownedByMeFlows?.totalCount})`,
+                label: `Owned by me(${ownedByMeFlows?.totalCount})`,
+              },
+              {
+                value: `Not owned by me(${notOwnedByMeFlows?.totalCount})`,
+                label: `Not owned by me(${notOwnedByMeFlows?.totalCount})`,
+              },
             ]}
             textStyle={{fontSize: normaliseFont(12)}}
             onClick={title => handleTabClick(title?.value)}

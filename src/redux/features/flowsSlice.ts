@@ -242,6 +242,8 @@ export const deleteFlow = createAsyncThunk<
 
 interface InitialState {
   allFlows: GetAllFlowsResponsePayload | null;
+  ownedByMeFlows: GetAllFlowsResponsePayload | null;
+  notOwnedByMeFlows: GetAllFlowsResponsePayload | null;
   flowById: GetFlowByIdResponsePayload | null;
   sendReminderFormResponse: SendReminderToAllPendingUsersResponsePayload | null;
   assignFlowResponse: AssignFlowResponsePayload | null;
@@ -253,6 +255,8 @@ interface InitialState {
 const initialState: InitialState = {
   allFlows: null,
   flowById: null,
+  ownedByMeFlows: null,
+  notOwnedByMeFlows: null,
   sendReminderFormResponse: null,
   assignFlowResponse: null,
   deleteFlowResponse: null,
@@ -279,8 +283,13 @@ const flowsSlice = createSlice({
         // state.isLoading = true;
       })
       .addCase(getAllFlows.fulfilled, (state, action) => {
-        // state.isLoading = false;
-        state.allFlows = action.payload.payload;
+        if (action.meta.arg[2].type === 'all') {
+          state.allFlows = action.payload.payload;
+        } else if (action.meta.arg[2].type === true) {
+          state.ownedByMeFlows = action.payload.payload;
+        } else {
+          state.notOwnedByMeFlows = action.payload.payload;
+        }
       })
       .addCase(getAllFlows.rejected, (state, action) => {
         // state.isLoading = false;

@@ -39,12 +39,29 @@ const PaginationBar: FC<PaginationBarTypes> = ({
           <Icon name="arrow_left_icon" />
         </TouchableOpacity>
       )}
+      <TouchableOpacity
+        key={1}
+        onPress={() => onPressPaginationIndex(1)}
+        style={[
+          styles.pageNumber,
+          1 === selectedPageIndex && styles.selectedPageNumber,
+        ]}>
+        <Text
+          style={
+            1 === selectedPageIndex
+              ? styles.selectedPageNumberText
+              : styles.pageNumberText
+          }
+          size="small1">
+          {1}
+        </Text>
+      </TouchableOpacity>
       <ScrollView
         style={{}}
         contentContainerStyle={styles.paginationContainer}
         horizontal>
         {[...Array(visiblePages)].map((_, index) => {
-          const pageIndex = index + 1;
+          const pageIndex = index + 2;
           return (
             <TouchableOpacity
               key={pageIndex}
@@ -90,7 +107,7 @@ const PaginationBar: FC<PaginationBarTypes> = ({
             );
           })}
       </ScrollView>
-      {isMorethanNinePages && <Text>...</Text>}
+      {/* {isMorethanNinePages && <Text>...</Text>} */}
       <TouchableOpacity
         key={roundedCount}
         onPress={() => onPressPaginationIndex(roundedCount)}
