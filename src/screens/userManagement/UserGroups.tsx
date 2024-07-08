@@ -96,6 +96,7 @@ type UserGroupsList = {
   count: number | undefined;
   selectedTab: 'all' | boolean;
 };
+
 interface UserGroupsScreenProps {
   navigation: UserGroupsNavigationProp;
   route: UserGroupsRouteProp;
@@ -112,9 +113,9 @@ const UserGroups: FC<UserGroupsScreenProps> = ({navigation, route}) => {
   const dispatch = useAppDispatch();
 
   const tabs: ItemType[] = [
-    {label: `All (${allUserGroups?.totalCount})`, value: 'All'},
-    {label: `Active (${activeUserGroups?.totalCount})`, value: 'Active'},
-    {label: `Inactive (${inactiveUserGroups?.totalCount})`, value: 'Inactive'},
+    {label: `All (${allUserGroups?.totalCount})`, value: 'all'},
+    {label: `Active (${activeUserGroups?.totalCount})`, value: 'active'},
+    {label: `Inactive (${inactiveUserGroups?.totalCount})`, value: 'inactive'},
   ];
 
   useEffect(() => {

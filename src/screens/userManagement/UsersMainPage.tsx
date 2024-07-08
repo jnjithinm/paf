@@ -183,9 +183,9 @@ const UsersMainPage: FC<UsersMainPageScreenProps> = ({navigation, route}) => {
   );
 
   const tabs: ItemType[] = [
-    {label: `All (${allUsers?.totalCount})`, value: 'All'},
-    {label: `Active (${activeUsers?.totalCount})`, value: 'Active'},
-    {label: `Inactive (${inactiveUsers?.totalCount})`, value: 'Inactive'},
+    {label: `All (${allUsers?.totalCount})`, value: 'all'},
+    {label: `Active (${activeUsers?.totalCount})`, value: 'active'},
+    {label: `Inactive (${inactiveUsers?.totalCount})`, value: 'inactive'},
   ];
 
   useEffect(() => {

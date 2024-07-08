@@ -137,9 +137,9 @@ const RolesAndAppAccess: FC<RolesAndAppAccessScreenProps> = ({
   );
 
   const tabs: ItemType[] = [
-    {label: `All (${allRoles?.totalCount})`, value: 'All'},
-    {label: `Active (${activeRoles?.totalCount})`, value: 'Active'},
-    {label: `Inactive (${inactiveRoles?.totalCount})`, value: 'Inactive'},
+    {label: `All (${allRoles?.totalCount})`, value: 'all'},
+    {label: `Active (${activeRoles?.totalCount})`, value: 'active'},
+    {label: `Inactive (${inactiveRoles?.totalCount})`, value: 'inactive'},
   ];
 
   const handleTabClick = (title: ItemType) => {
