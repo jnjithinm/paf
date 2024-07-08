@@ -29,6 +29,7 @@ import {ObservationStackParamList} from '../../navigation/ObservationStack';
 import moment from 'moment';
 import {getAllUsers} from '../../redux/features/usersSlice';
 import Image from '../../components/Image';
+import PaginationBar from '../../components/PaginationBar';
 
 type ObservationReportsMainPageNavigationProp = StackNavigationProp<
   ObservationStackParamList,
@@ -106,8 +107,8 @@ export const RenderCompleteStatus: FC<RenderCompleteStatusTypes> = ({
       flexDirection: 'row',
       backgroundColor: status === 'Completed' ? '#EBF9D9' : '#FFEDED',
       alignItems: 'center',
-      paddingHorizontal: 5,
-      paddingVertical: 2,
+      paddingHorizontal: 6,
+      paddingVertical: 3,
       borderRadius: 8,
       justifyContent: 'space-evenly',
     }}>
@@ -186,7 +187,7 @@ const ObservationReportsMainPage: FC<ObservationReportsMainPageScreenProps> = ({
     dispatch(
       getAllUsers({
         page: 0,
-        size: 15,
+        size: 10,
         type: 'all',
       }),
     );
@@ -292,6 +293,24 @@ const ObservationReportsMainPage: FC<ObservationReportsMainPageScreenProps> = ({
             <></>
           )}
         </View>
+        <PaginationBar
+          count={(allObservations?.dataList?.total || 0) / 10}
+          onPressPageIndex={(index) => {
+            dispatch(
+              getAllObservations([
+                userData.id,
+                {
+                  filterType: selectedFilter,
+                  paginationRequest: {
+                    page: index,
+                    size: 10,
+                    type: 'all',
+                  },
+                },
+              ]),
+            );
+          }}
+        />
       </Layout>
 
       <FloatingButton
@@ -299,6 +318,7 @@ const ObservationReportsMainPage: FC<ObservationReportsMainPageScreenProps> = ({
         onPress={() => {
           navigation.navigate('AddNewObservation');
         }}
+        style={{bottom:150}}
         iconSize={20}
       />
     </>

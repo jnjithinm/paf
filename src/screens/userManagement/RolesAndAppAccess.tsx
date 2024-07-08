@@ -1,5 +1,5 @@
 import React, {FC, useEffect, useState} from 'react';
-import {TouchableOpacity, View, ViewStyle} from 'react-native';
+import {TouchableOpacity, View} from 'react-native';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 
@@ -31,7 +31,6 @@ interface RolesAndAppAccessScreenProps {
   route: RolesAndAppAccessRouteProp;
 }
 
-
 type RolesAndAppAccessTileTypes = {
   role: Role;
   onPressItem: (item: Role) => void;
@@ -49,7 +48,8 @@ const RolesAndAppAccessTile: FC<RolesAndAppAccessTileTypes> = ({
       borderColor: '#F4C24A',
       borderRadius: 10,
       marginVertical: 5,
-      backgroundColor: role.roleName === selectedItem?.roleName ? '#FCEBC5' : undefined,
+      backgroundColor:
+        role.roleName === selectedItem?.roleName ? '#FCEBC5' : undefined,
     }}
     onPress={() => {
       onPressItem(role);
@@ -79,7 +79,7 @@ const RolesAndAppAccessTile: FC<RolesAndAppAccessTileTypes> = ({
             transform: [
               {
                 rotate:
-                role.roleId === selectedItem?.roleId ? '0deg' : '180deg',
+                  role.roleId === selectedItem?.roleId ? '0deg' : '180deg',
               },
             ],
           }}
@@ -103,9 +103,14 @@ const RolesAndAppAccessTile: FC<RolesAndAppAccessTileTypes> = ({
         <RenderLabelAndValue label={'Parent Role'} value={role.parentRole} />
         <RenderLabelAndValue label={'Users'} value={role.users} />
         <RenderLabelAndValue label={'Created By'} value={role.createdBy} />
-        <RenderLabelAndValue label={'Created On'} value={moment( role.createdDt).format('DD/MM/YYY')} />
-        <RenderLabelAndValue label={'Time'} value={moment( role.createdDt).format('hh:mm A')} />
-
+        <RenderLabelAndValue
+          label={'Created On'}
+          value={moment(role.createdDt).format('DD/MM/YYY')}
+        />
+        <RenderLabelAndValue
+          label={'Time'}
+          value={moment(role.createdDt).format('hh:mm A')}
+        />
       </View>
     )}
   </TouchableOpacity>
@@ -177,7 +182,9 @@ const RolesAndAppAccess: FC<RolesAndAppAccessScreenProps> = ({
             filteredRoles?.map(item => (
               <RolesAndAppAccessTile
                 role={item}
-                onPressItem={(role)=>{setSelectedItem(role)}}
+                onPressItem={role => {
+                  setSelectedItem(role);
+                }}
                 selectedItem={selectedItem}
               />
             ))

@@ -15,7 +15,8 @@ import {
   AutocompleteDropdown,
   TAutocompleteDropdownItem,
 } from 'react-native-autocomplete-dropdown';
-import { FONT_SIZES } from '../config/themes';
+import {FONT_SIZES} from '../config/themes';
+import Text from './Text';
 
 type RenderSearchTypes = {
   placeHolder?: string;
@@ -44,7 +45,6 @@ const SearchWithFilter: React.FC<RenderSearchTypes> = ({
     }
   };
 
-
   const onOptionPress = (option: TAutocompleteDropdownItem) => {
     onProceed({selectedItem: {value: option?.id, label: option?.title || ''}});
   };
@@ -61,27 +61,37 @@ const SearchWithFilter: React.FC<RenderSearchTypes> = ({
         isVisible={isOpenCalendar}
       />
       <View style={[styles.container, style]}>
-          <AutocompleteDropdown
-            inputContainerStyle={[
-              styles.dropdownTextInputStyle,
-              {width:filterNotNeeded ?normaliseDesigns(295):  normaliseDesigns(235)},
-            ]}
-            clearOnFocus={false}
-            closeOnBlur={true}
-            closeOnSubmit={false}
-            onChangeText={onSearch}
-            textInputProps={{style:{color:colors.blackColor}}}
-            suggestionsListTextStyle={{color:colors.blackColor,fontSize:FONT_SIZES.body1}}
-            suggestionsListContainerStyle={{borderRadius:10}}            
-            RightIconComponent={<Icon name="search_icon" style={styles.icon} />}
-            showChevron={false}
-            showClear={false}
-            onSelectItem={onOptionPress}
-            dataSet={options?.map(item => ({
-              id: item.value,
-              title: item.label,
-            }))}
-          />
+        <AutocompleteDropdown
+          inputContainerStyle={[
+            styles.dropdownTextInputStyle,
+            {
+              width: filterNotNeeded
+                ? normaliseDesigns(295)
+                : normaliseDesigns(235),
+            },
+          ]}
+          clearOnFocus={false}
+          closeOnBlur={true}
+          closeOnSubmit={false}
+          onChangeText={onSearch}
+          textInputProps={{style: {color: colors.blackColor,}}}
+          suggestionsListTextStyle={{
+            color: colors.blackColor,
+            fontSize: FONT_SIZES.body1,
+          }}
+          // placeholder={placeHolder}
+          emptyResultText={placeHolder}
+          EmptyResultComponent={<Text style={{color:colors.blackColor}}>{placeHolder}</Text>}
+          suggestionsListContainerStyle={{borderRadius: 10}}
+          RightIconComponent={<Icon name="search_icon" style={styles.icon} />}
+          showChevron={false}
+          showClear={false}
+          onSelectItem={onOptionPress}
+          dataSet={options?.map(item => ({
+            id: item.value,
+            title: item.label,
+          }))}
+        />
         {!filterNotNeeded && (
           <TouchableOpacity
             style={styles.filterButton}
@@ -116,13 +126,13 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingHorizontal: 10,
     height: 40,
-    color:colors.blackColor,
-    fontSize:FONT_SIZES.body1
+    color: colors.blackColor,
+    fontSize: FONT_SIZES.body1,
   },
-  dropdownTextInputStyle:{
+  dropdownTextInputStyle: {
     height: 40,
-    color:colors.blackColor,
-    fontSize:FONT_SIZES.body1,
+    color: colors.blackColor,
+    fontSize: FONT_SIZES.body1,
     backgroundColor: '#F5F7FA',
     borderRadius: 10,
   },

@@ -124,7 +124,9 @@ const FlowsMainPage: FC<FlowsMainPageScreenProps> = ({navigation, route}) => {
   const {userData, isAdmin} = useAppSelector(state => state.auth);
   const dispatch = useAppDispatch();
 
-  const handleTabClick = (title: string) => {};
+  const handleTabClick = (title: string) => {
+
+  };
 
   useEffect(() => {
     dispatch(
@@ -138,6 +140,30 @@ const FlowsMainPage: FC<FlowsMainPageScreenProps> = ({navigation, route}) => {
         },
       ]),
     );
+    dispatch(
+      getAllFlows([
+        userData.userName,
+        userData.id,
+        {
+          page: 0,
+          size: 15,
+          type: true,
+        },
+      ]),
+      
+    );
+    dispatch(
+      getAllFlows([
+        userData.userName,
+        userData.id,
+        {
+          page: 0,
+          size: 15,
+          type: false,
+        },
+      ]),
+      
+    ); 
   }, []);
 
   const onPressDeleteFlow = (item: FlowItem) => {
@@ -153,6 +179,7 @@ const FlowsMainPage: FC<FlowsMainPageScreenProps> = ({navigation, route}) => {
   const filteredFlows = allFlows?.dataList?.filter(item =>
     item?.flowName?.toLocaleLowerCase()?.includes(search?.toLocaleLowerCase()),
   );
+
 
   return (
     <>
@@ -171,7 +198,7 @@ const FlowsMainPage: FC<FlowsMainPageScreenProps> = ({navigation, route}) => {
           <Tab
             tabs={[
               {value: 'All', label: 'All'},
-              {value: 'Owned by me(20)', label: 'Owned by me(20'},
+              {value: `Owned by me(${allFlows?.totalCount})`, label: 'Owned by me(20'},
               {value: 'Not owned by me(20)', label: 'Not owned by me(20)'},
             ]}
             textStyle={{fontSize: normaliseFont(12)}}

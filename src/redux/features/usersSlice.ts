@@ -3,7 +3,7 @@ import {createAction, createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import api from '../../config/axios';
 import endPoints from '../../config/endPoints';
 import {ErrorStatusObject} from '../../config/types';
-import { ErrorResponse } from './authSlice';
+import {ErrorResponse} from './authSlice';
 
 export interface User {
   userId: number;
@@ -31,7 +31,7 @@ export interface User {
 export interface PaginationRequest {
   page: number;
   size: number;
-  type: string;
+  type: string | boolean;
   search?: string;
 }
 
@@ -44,7 +44,6 @@ interface GetAllUsersResponse {
   status: number;
 }
 type GetAllUsersResponsePayload = GetAllUsersResponse['payload'];
-
 
 interface GetUserResponse {
   payload: User;
@@ -71,7 +70,6 @@ interface GetAllUserGroupsResponse {
   status: number;
 }
 type GetAllUserGroupsResponsePayload = GetAllUserGroupsResponse['payload'];
-
 
 interface GetUserGroupResponse {
   payload: {
@@ -125,17 +123,18 @@ export const getAllUsers = createAsyncThunk<
   }
 });
 
-export const getUser = createAsyncThunk<GetUserResponse, number,  {rejectValue: ErrorResponse}>(
-  'users/getUser',
-  async (userId, {dispatch, rejectWithValue}) => {
-    try {
-      const response = await api.post(endPoints.GET_ALL_USERS + userId);
-      return response.data as GetUserResponse;
-    } catch (error: any) {
-      return rejectWithValue(error.response.data);
-    }
-  },
-);
+export const getUser = createAsyncThunk<
+  GetUserResponse,
+  number,
+  {rejectValue: ErrorResponse}
+>('users/getUser', async (userId, {dispatch, rejectWithValue}) => {
+  try {
+    const response = await api.post(endPoints.GET_ALL_USERS + userId);
+    return response.data as GetUserResponse;
+  } catch (error: any) {
+    return rejectWithValue(error.response.data);
+  }
+});
 
 export const getAllUserGroups = createAsyncThunk<
   GetAllUserGroupsResponse,
@@ -171,17 +170,18 @@ export const getUserGroups = createAsyncThunk<
 
 export const getPendingUsersListForSendReminder = createAsyncThunk<
   GetPendingUsersListForSendReminderResponse,
-  [number,number],
+  [number, number],
   {rejectValue: ErrorResponse}
 >(
   'users/getPendingUsersListForSendReminder',
-  async ([formId,flowId], {dispatch, rejectWithValue}) => {
+  async ([formId, flowId], {dispatch, rejectWithValue}) => {
     try {
       const response = await api.get(
-        endPoints.GET_PENDING_USERS_LIST_FOR_SEND_REMINDER + formId+`?flowId=${flowId}`,
+        endPoints.GET_PENDING_USERS_LIST_FOR_SEND_REMINDER +
+          formId +
+          `?flowId=${flowId}`,
       );
       return response.data as GetPendingUsersListForSendReminderResponse;
-      
     } catch (error: any) {
       return rejectWithValue(error.response.data);
     }
@@ -191,7 +191,7 @@ export const getPendingUsersListForSendReminder = createAsyncThunk<
 interface InitialState {
   allUserGroups: GetAllUserGroupsResponsePayload | null;
   allUsers: GetAllUsersResponsePayload | null;
-  user:GetUserResponsePayload|null;
+  user: GetUserResponsePayload | null;
   userGroups: GetUserGroupsResponsePayload | null;
   pendingUsersListForSendReminder: GetPendingUsersListForSendReminderResponsePayload | null;
   usersShowMessage: ErrorStatusObject | null;
@@ -201,7 +201,7 @@ interface InitialState {
 const initialState: InitialState = {
   allUserGroups: null,
   allUsers: null,
-  user:null,
+  user: null,
   userGroups: null,
   pendingUsersListForSendReminder: null,
   usersShowMessage: null,
@@ -217,9 +217,7 @@ const usersSlice = createSlice({
       .addCase(setUsersShowMessage, (state, action) => {
         state.usersShowMessage = action.payload;
       })
-      .addCase(getAllUsers.pending, state => {
-
-      })
+      .addCase(getAllUsers.pending, state => {})
       .addCase(getAllUsers.fulfilled, (state, action) => {
         state.allUsers = {
           ...state.allUsers,
@@ -231,13 +229,13 @@ const usersSlice = createSlice({
           status: 'Error',
           message: action?.payload?.error?.errorMessage,
         };
-        state.user=null;
+        state.user = null;
       })
       .addCase(getUser.pending, state => {
-        state.user=null;
+        state.user = null;
       })
       .addCase(getUser.fulfilled, (state, action) => {
-        state.user =action.payload.payload;
+        state.user = action.payload.payload;
       })
       .addCase(getUser.rejected, (state, action) => {
         state.usersShowMessage = {
@@ -246,10 +244,7 @@ const usersSlice = createSlice({
         };
       })
 
-      
-      .addCase(getAllUserGroups.pending, state => {
-
-      })
+      .addCase(getAllUserGroups.pending, state => {})
       .addCase(getAllUserGroups.fulfilled, (state, action) => {
         // state.isLoading = false;
         state.allUserGroups = {

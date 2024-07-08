@@ -246,7 +246,7 @@ const RenderQuestionAndAnswer: FC<RenderQuestionAndAnswerTypes> = ({
     {indicators &&
       indicators.map((item, index) => (
         <View>
-          <Text size="small2">{item.domainName}</Text>
+          <Text size="small2">{item.indicatorName}</Text>
           <RatingInput
             disabled
             rating={item.avgRating || 0}
