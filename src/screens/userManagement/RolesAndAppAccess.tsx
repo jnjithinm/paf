@@ -259,6 +259,7 @@ const RolesAndAppAccess: FC<RolesAndAppAccessScreenProps> = ({
               <PaginationBar
                 count={(rolesList?.count || 0) / 10}
                 onPressPageIndex={index => {
+                  if(rolesList){
                   dispatch(
                     getRoles({
                       page: index,
@@ -266,6 +267,7 @@ const RolesAndAppAccess: FC<RolesAndAppAccessScreenProps> = ({
                       type: rolesList?.selectedTab || 'all',
                     }),
                   );
+                }
                 }}
               />
             </View>

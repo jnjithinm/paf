@@ -115,7 +115,10 @@ const UserGroups: FC<UserGroupsScreenProps> = ({navigation, route}) => {
   const tabs: ItemType[] = [
     {label: `All (${allUserGroups?.totalCount || ''})`, value: 'all'},
     {label: `Active (${activeUserGroups?.totalCount || ''})`, value: 'active'},
-    {label: `Inactive (${inactiveUserGroups?.totalCount || ''})`, value: 'inactive'},
+    {
+      label: `Inactive (${inactiveUserGroups?.totalCount || ''})`,
+      value: 'inactive',
+    },
   ];
 
   useEffect(() => {
@@ -128,9 +131,8 @@ const UserGroups: FC<UserGroupsScreenProps> = ({navigation, route}) => {
     }
   }, [allUserGroups]);
 
-
   useEffect(() => {
-    if (activeUserGroups && userGroupList?.selectedTab===true) {
+    if (activeUserGroups && userGroupList?.selectedTab === true) {
       setUserGroupList({
         userGroupsList: activeUserGroups?.dataList,
         count: activeUserGroups.totalCount,
@@ -139,9 +141,8 @@ const UserGroups: FC<UserGroupsScreenProps> = ({navigation, route}) => {
     }
   }, [activeUserGroups]);
 
-
   useEffect(() => {
-    if (activeUserGroups && userGroupList?.selectedTab===false) {
+    if (activeUserGroups && userGroupList?.selectedTab === false) {
       setUserGroupList({
         userGroupsList: activeUserGroups?.dataList,
         count: activeUserGroups.totalCount,
@@ -237,13 +238,15 @@ const UserGroups: FC<UserGroupsScreenProps> = ({navigation, route}) => {
               <PaginationBar
                 count={(userGroupList?.count || 0) / 10}
                 onPressPageIndex={index => {
-                  dispatch(
-                    getAllUserGroups({
-                      page: index,
-                      size: 10,
-                      type: userGroupList?.selectedTab || 'all',
-                    }),
-                  );
+                  if (userGroupList) {
+                    dispatch(
+                      getAllUserGroups({
+                        page: index,
+                        size: 10,
+                        type: userGroupList?.selectedTab || 'all',
+                      }),
+                    );
+                  }
                 }}
               />
             </View>

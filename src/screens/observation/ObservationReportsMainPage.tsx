@@ -27,9 +27,10 @@ import {ItemType} from '../../config/types';
 import {normaliseDesigns} from '../../utils/helpers/responsiveHelpers';
 import {ObservationStackParamList} from '../../navigation/ObservationStack';
 import moment from 'moment';
-import {getAllUsers} from '../../redux/features/usersSlice';
+import {getAllUsers, searchUsers} from '../../redux/features/usersSlice';
 import Image from '../../components/Image';
 import PaginationBar from '../../components/PaginationBar';
+import { FilterObject } from '../../components/Calendar';
 
 type ObservationReportsMainPageNavigationProp = StackNavigationProp<
   ObservationStackParamList,
@@ -148,11 +149,12 @@ const ObservationReportsMainPage: FC<ObservationReportsMainPageScreenProps> = ({
   route,
 }) => {
   const [selectedFilter, setSelectedFilter] = useState<FilterType>('All');
-
+  const [search, setSearch] = useState<string>('');
+  const [filter, setFilter] = useState<FilterObject>();
   const dispatch = useAppDispatch();
   const {allObservations} = useAppSelector(state => state.observation);
   const {userData} = useAppSelector(state => state.auth);
-  const {allUsers} = useAppSelector(state => state.users);
+  const {allUsers, searchedUsers} = useAppSelector(state => state.users);
 
   const handleTabClick = (title: ItemType) => {
     setSelectedFilter(title?.value as FilterType);
@@ -211,6 +213,20 @@ const ObservationReportsMainPage: FC<ObservationReportsMainPageScreenProps> = ({
     }
   }, [selectedFilter]);
 
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      if (search.length >= 3) {
+        dispatch(searchUsers([search, {
+          page: 0,
+          size: 15,
+          type: 'all',
+        }]));
+      }
+    }, 500);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [search]);
+
   return (
     <>
       <Layout
@@ -240,12 +256,19 @@ const ObservationReportsMainPage: FC<ObservationReportsMainPageScreenProps> = ({
           onClick={title => handleTabClick(title)}
         />
         <SearchWithFilter
-          onTextChange={() => {}}
-          options={allUsers?.dataList?.map(item => ({
+          onTextChange={search => {
+            dispatch(searchUsers([search, {
+              page: 0,
+              size: 15,
+              type: 'all',
+            }]));
+          }}
+          options={searchedUsers?.dataList?.map(item => ({
             value: item.userId?.toString(),
             label: item.name,
           }))}
           onProceed={filter => {
+            setFilter(filter);
             dispatch(
               getAllObservations([
                 userData.id,
@@ -302,19 +325,22 @@ const ObservationReportsMainPage: FC<ObservationReportsMainPageScreenProps> = ({
               : allObservations?.dataList.forMe) || 0) / 10
           }
           onPressPageIndex={index => {
-            dispatch(
-              getAllObservations([
-                userData.id,
-                {
-                  filterType: selectedFilter,
-                  paginationRequest: {
-                    page: index,
-                    size: 10,
-                    type: 'all',
+            if (selectedFilter) {
+              dispatch(
+                getAllObservations([
+                  userData.id,
+                  {
+                    filterType: selectedFilter,
+                    ...filter,
+                    paginationRequest: {
+                      page: index,
+                      size: 10,
+                      type: 'all',
+                    },
                   },
-                },
-              ]),
-            );
+                ]),
+              );
+            }
           }}
         />
       </Layout>

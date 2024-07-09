@@ -663,6 +663,7 @@ const formatAnswer = (answers: AnswerObject[]): FormSubmission[] => {
           optionMappingId: (item.answer as QuestionOption).optionMappingId,
           responseValue: null,
           indicatorRating: null,
+          startResponseDate:new Date()?.toString()
         });
         break;
       case 2:
@@ -673,6 +674,7 @@ const formatAnswer = (answers: AnswerObject[]): FormSubmission[] => {
             optionMappingId: ele.optionMappingId,
             responseValue: null,
             indicatorRating: null,
+            startResponseDate:new Date()?.toString()
           });
         });
         break;
@@ -688,6 +690,7 @@ const formatAnswer = (answers: AnswerObject[]): FormSubmission[] => {
             optionMappingId: null,
             responseValue: shortAnswer.comment,
             indicatorRating: `{[${indicatorRatingString}]}`,
+            startResponseDate:new Date()?.toString()
           });
         } else {
           formattedAnswer.push({
@@ -696,6 +699,7 @@ const formatAnswer = (answers: AnswerObject[]): FormSubmission[] => {
             optionMappingId: null,
             responseValue: shortAnswer.comment,
             indicatorRating: null,
+            startResponseDate:new Date()?.toString()
           });
         }
         break;
@@ -708,6 +712,7 @@ const formatAnswer = (answers: AnswerObject[]): FormSubmission[] => {
           optionMappingId: null,
           responseValue: item.answer as string,
           indicatorRating: null,
+          startResponseDate:new Date()?.toString()
         });
         break;
 

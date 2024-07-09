@@ -71,11 +71,12 @@ const RubricEvaluationIndicatorList: FC<
   };
 
   const filteredIndicatorList = rubric?.dataList?.indicators?.filter(item =>
-    item?.domainName
+    item?.indicatorName
       ?.toLocaleLowerCase()
       ?.includes(search?.toLocaleLowerCase()),
   );
 
+  console.log("new date",new Date())
   return (
     <Layout
       overridePaddingHorizontal
@@ -98,7 +99,7 @@ const RubricEvaluationIndicatorList: FC<
           </Text>
         </View>
         <SearchWithFilter
-          placeHolder="Search domain"
+          placeHolder="Search indicator"
           onTextChange={text => {
             setSearch(text);
           }}

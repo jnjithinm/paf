@@ -321,6 +321,7 @@ const School: FC<SchoolsScreenProps> = ({navigation, route}) => {
               <PaginationBar
                 count={(schoolList?.count || 0) / 10}
                 onPressPageIndex={index => {
+                  if(schoolList){
                   dispatch(
                     getSchools({
                       page: index,
@@ -328,6 +329,7 @@ const School: FC<SchoolsScreenProps> = ({navigation, route}) => {
                       type: schoolList?.selectedTab || 'all',
                     }),
                   );
+                }
                 }}
               />
             </View>

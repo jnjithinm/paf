@@ -78,7 +78,7 @@ interface UpdateUserDetailsRequest {
   contactNumber: string;
   email: string;
   dateOfBirth: string;
-  grade: string;
+  grade?: string;
   area: number;
   userType: string;
   citizenship: string;
@@ -88,7 +88,7 @@ interface UpdateUserDetailsRequest {
   districtId: number;
   moduleId?: number;
   schoolId: number;
-  isAdmin: boolean;
+  isAdmin?: boolean;
   loggedInUserName: string;
 }
 
@@ -164,6 +164,10 @@ export const resetUpdateUserPhotoResponse = createAction<void>(
 
 export const resetDeleteUserPhotoResponse = createAction<void>(
   'RESET_DELETE_USER_PHOTO',
+);
+
+export const saveUpdatedUserPhoto= createAction<string>(
+  'SAVE_UPDATED_USER_PHOTO',
 );
 
 export const authenticateUser = createAsyncThunk<
@@ -405,7 +409,9 @@ const authSlice = createSlice({
       .addCase(resetDeleteUserPhotoResponse, state => {
         state.deleteUserPhotoResponse = null;
       })
-
+      .addCase(saveUpdatedUserPhoto, (state,action) => {
+        state.userData.userImageUrl = action.payload;
+      })
       .addCase(setAuthShowMessage, (state, action) => {
         state.authShowMessage = action.payload;
       })

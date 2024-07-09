@@ -325,6 +325,7 @@ const Areas: FC<AreasScreenProps> = ({navigation, route}) => {
               <PaginationBar
                 count={(areaList?.count || 0) / 10}
                 onPressPageIndex={index => {
+                  if(areaList){
                   dispatch(
                     getAreas({
                       page: index,
@@ -332,6 +333,7 @@ const Areas: FC<AreasScreenProps> = ({navigation, route}) => {
                       type: areaList?.selectedTab || 'all',
                     }),
                   );
+                }
                 }}
               />
             </View>

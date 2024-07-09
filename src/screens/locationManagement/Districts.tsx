@@ -237,6 +237,7 @@ const Districts: FC<DistrictsScreenProps> = ({navigation, route}) => {
               <PaginationBar
                 count={(districtList?.count || 0) / 10}
                 onPressPageIndex={index => {
+                  if(districtList){
                   dispatch(
                     getDistricts({
                       page: index,
@@ -244,6 +245,7 @@ const Districts: FC<DistrictsScreenProps> = ({navigation, route}) => {
                       type: districtList?.selectedTab || 'all',
                     }),
                   );
+                }
                 }}
               />
             </View>

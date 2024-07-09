@@ -176,6 +176,7 @@ export type FormSubmission = {
   optionMappingId: number | null;
   responseValue: string | null;
   indicatorRating: string | null;
+  startResponseDate:string
 };
 
 type SubmitPreviewFormRequest = {
@@ -276,7 +277,7 @@ type GetQuestionRatingByIndicatorIdResponsePayload =
   GetQuestionRatingByIndicatorIdResponse['payload'];
 
 
-  interface PrintFormResponsesRequest {
+ export interface PrintFormResponsesRequest {
     flowId: number;
     formId: number;
     ids: number[];
@@ -463,6 +464,7 @@ export const printFormResponses = createAsyncThunk<
       const response = await api.post(
         endPoints.PRINT_FORM_RESPONSES ,payload
       );
+      
       return response.data as PrintFormResponseResponse;
     } catch (error: any) {
       return rejectWithValue(error.response.data);

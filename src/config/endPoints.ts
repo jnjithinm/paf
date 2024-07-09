@@ -10,6 +10,7 @@ const endPoints = {
   GET_DASHBOARD_DETAILS_OBSERVATION: 'PAF/teachers/observation/dashBoard/',
   GET_ALL_USERS: `PAF/users/all`,
   GET_USER: `PAF/users/`,
+  SEARCH_USRS:`PAF/users/search?`,
   GET_ALL_USER_GROUPS: `PAF/userGroups/all`,
   GET_USER_GROUPS: `PAF/userGroups/`,
   GET_ALL_DOMAINS: `PAF/metadata/domains`,
@@ -47,6 +48,7 @@ const endPoints = {
   ASSIGN_FLOW_TO_USERS_AND_USER_GROUPS:`PAF/flows/assignFlowToUsersAndGroups`,
   ASSIGN_FORM_TO_USERS_AND_GROUPS:`PAF/forms/assignUsersAndGroups`,
   SCHEDULE_REMINDER_DATE:`PAF/flows/scheduleReminder?`,
-  PRINT_FORM_RESPONSES:`PAF/forms/printIndResponse`
+  PRINT_FORM_RESPONSES:`PAF/forms/printIndResponse`,
+  PRINT_QUESTION_WISE_RESPONSES:`PAF/forms/printQuestionWiseResponse`
 };
 export default endPoints;

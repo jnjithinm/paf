@@ -838,10 +838,24 @@ const FormResponses: FC<FormResponsesScreenProps> = ({navigation, route}) => {
             <RenderPrintResponsesModalContent
               flowDetailItem={flowDetailItem}
               ids={
-                formById?.dataList.individualResponses.map(
-                  item => item.userId,
-                ) || []
+                selectedTab === 'Individual'
+                  ? formById?.dataList?.individualResponses.map(
+                      item => item.userId,
+                    ) || []
+                  : formById?.dataList?.questionWiseResponses
+                  ? Object.keys(formById?.dataList?.questionWiseResponses)
+                      .map(key => parseInt(key, 10))
+                      .filter(key => !isNaN(key))
+                  : []
               }
+              printResponsesType={
+                selectedTab === 'Individual'
+                  ? 'Individual Wise'
+                  : 'Question Wise'
+              }
+              onClosePrintResponsesModal={() => {
+                setIsVisiblePrintResponsesModal(false);
+              }}
             />
           }
           isVisible={isVisiblePrintResponsesModal}

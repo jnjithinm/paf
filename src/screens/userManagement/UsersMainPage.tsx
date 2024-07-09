@@ -307,14 +307,16 @@ const UsersMainPage: FC<UsersMainPageScreenProps> = ({navigation, route}) => {
               <PaginationBar
                 count={(usersList?.count || 0) / 10}
                 onPressPageIndex={index => {
-                  console.log("se",usersList?.selectedTab)
+                  if(usersList){
                   dispatch(
                     getAllUsers({
                       page: index,
                       size: 10,
-                      type: usersList?.selectedTab || 'all',
+                      type: usersList?.selectedTab,
                     }),
+                    
                   );
+                }
                 }}
               />
             </View>
