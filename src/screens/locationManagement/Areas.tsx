@@ -170,6 +170,12 @@ const AreaTile: FC<AreaTileTypes> = ({area, selectedItem, onPressItem}) => (
   </TouchableOpacity>
 );
 
+type areaList = {
+  areaList : Area[] | undefined;
+  count: number | undefined;
+  selectedTab: 'all' | boolean;
+};
+
 interface AreasScreenProps {
   navigation: AreasNavigationProp;
   route: AreasRouteProp;
