@@ -97,7 +97,11 @@ interface DistrictsScreenProps {
 
 const Districts: FC<DistrictsScreenProps> = ({navigation, route}) => {
   const [selectedItem, setSelectedItem] = useState<District>();
-  const [districtList, setDistrictList] = useState<DistrictsList | undefined>();
+  const [districtList, setDistrictList] = useState<DistrictsList | undefined>({
+    districtsList: [],
+    count:0,
+    selectedTab: 'all',
+  });
   const [search, setSearch] = useState<string>('');
 
   const {allDistricts, activeDistricts, inactiveDistricts} = useAppSelector(
@@ -125,7 +129,7 @@ const Districts: FC<DistrictsScreenProps> = ({navigation, route}) => {
   }, [allDistricts]);
 
   useEffect(() => {
-    if (activeDistricts) {
+    if (activeDistricts && districtList?.selectedTab===true) {
       setDistrictList({
         districtsList: activeDistricts?.dataList,
         count: activeDistricts.totalCount,
@@ -135,7 +139,7 @@ const Districts: FC<DistrictsScreenProps> = ({navigation, route}) => {
   }, [activeDistricts]);
 
   useEffect(() => {
-    if (inactiveDistricts) {
+    if (inactiveDistricts && districtList?.selectedTab===false) {
       setDistrictList({
         districtsList: inactiveDistricts?.dataList,
         count: inactiveDistricts.totalCount,
