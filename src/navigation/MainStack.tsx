@@ -25,6 +25,7 @@ import LocationManagementStack, {
   LocationManagementStackParamList,
 } from './LocationManagementStack';
 import MyAccount from '../screens/dashboard/MyAccount';
+import FAQ from '../screens/dashboard/FAQ';
 
 export type MainStackParamList = {
   Splash: undefined;
@@ -36,6 +37,7 @@ export type MainStackParamList = {
   TeacherDashboard: undefined;
   AdminDashboard: undefined;
   MyAccount: undefined;
+  FAQ:undefined;
   ObservationStack: NavigatorScreenParams<ObservationStackParamList>;
   RubricStack: NavigatorScreenParams<RubricStackParamList>;
   FlowsAndFormsStack: NavigatorScreenParams<FlowsAndFormsStackParamList>;
@@ -79,6 +81,7 @@ const MainStackNavigator = () => {
         )}
         <MainStack.Screen name="MyAccount" component={MyAccount} />
         <MainStack.Screen name="Notifications" component={Notifications} />
+        <MainStack.Screen name="FAQ" component={FAQ} />
         <MainStack.Screen
           name="ObservationStack"
           component={ObservationStack}

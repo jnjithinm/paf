@@ -93,13 +93,13 @@ const RenderItem: FC<RenderItemTypes> = ({
         )}
         {expandItem && (
           <TouchableOpacity onPress={onPress}>
-          <Icon
-            name="chevron_up_black_icon"
-            style={{
-              transform: [{rotate: isExpanded ? '0deg' : '180deg'}],
-              alignSelf: subMenuLevel ? 'flex-end' : undefined,
-            }}
-          />
+            <Icon
+              name="chevron_up_black_icon"
+              style={{
+                transform: [{rotate: isExpanded ? '0deg' : '180deg'}],
+                alignSelf: subMenuLevel ? 'flex-end' : undefined,
+              }}
+            />
           </TouchableOpacity>
         )}
       </View>
@@ -148,6 +148,7 @@ const DrawerContent: FC<DrawerContentTypes> = ({closeDrawer}) => {
       itemName: 'Dashboard',
       onPressItem: () => {
         closeDrawer();
+        isAdmin ? navigate('AdminDashboard') : navigate('TeacherDashboard');
       },
     },
     {
@@ -482,6 +483,9 @@ const DrawerContent: FC<DrawerContentTypes> = ({closeDrawer}) => {
             justifyContent: 'center',
             padding: 10,
             borderRadius: 10,
+          }}
+          onPress={() => {
+            navigate('FAQ');
           }}>
           <Text color="backgroundColor" size="small1">
             Help Centre

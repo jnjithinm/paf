@@ -463,16 +463,18 @@ const TeacherDashboard: FC<TeacherDashboardScreenProps> = ({
 
   const { userData } = useAppSelector(state => state.auth);
   const { dashboardDetails } = useAppSelector(state => state.observation);
+  const closeDrawer = () => {
+    setIsDrawerOpen(false);
+  };
+
 
   useFocusEffect(
     React.useCallback(() => {
       dispatch(getDashboardDetailsAndObservationList(userData?.id));
+      closeDrawer();
     }, []),
   );
 
-  const closeDrawer = () => {
-    setIsDrawerOpen(false);
-  };
 
 
   const onSelectMenu = (label: string | undefined) => {
