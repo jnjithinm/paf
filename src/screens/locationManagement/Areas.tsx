@@ -15,6 +15,7 @@ import Tab from '../../components/Tab';
 import SearchWithFilter from '../../components/SearchWithFilter';
 import {ItemType} from '../../config/types';
 import {RenderEmptyPlaceholder} from '../observation/ObservationReportsMainPage';
+import PaginationBar from '../../components/PaginationBar';
 
 type AreasNavigationProp = StackNavigationProp<
   LocationManagementStackParamList,
@@ -186,7 +187,9 @@ const Areas: FC<AreasScreenProps> = ({navigation, route}) => {
   const [search, setSearch] = useState<string>('');
 
   const dispatch = useAppDispatch();
-  const {allAreas,activeAreas,inactiveAreas} = useAppSelector(state => state.master);
+  const {allAreas, activeAreas, inactiveAreas} = useAppSelector(
+    state => state.master,
+  );
 
   const tabs: ItemType[] = [
     {label: `All (${allAreas?.totalCount || ''})`, value: 'all'},
@@ -223,9 +226,35 @@ const Areas: FC<AreasScreenProps> = ({navigation, route}) => {
 
   useEffect(() => {
     if (allAreas) {
-      setAreaList({areasList:allAreas.dataList,count:allAreas.totalCount,selectedTab:'all'});
+      setAreaList({
+        areasList: allAreas.dataList,
+        count: allAreas.totalCount,
+        selectedTab: 'all',
+      });
     }
   }, [allAreas]);
+
+
+  useEffect(() => {
+    if (activeAreas) {
+      setAreaList({
+        areasList: activeAreas.dataList,
+        count: activeAreas.totalCount,
+        selectedTab: 'all',
+      });
+    }
+  }, [activeAreas]);
+
+  useEffect(() => {
+    if (inactiveAreas) {
+      setAreaList({
+        areasList: inactiveAreas.dataList,
+        count: inactiveAreas.totalCount,
+        selectedTab: 'all',
+      });
+    }
+  }, [inactiveAreas]);
+
 
   const handleTabClick = (title: ItemType) => {
     if (title.value == 'all') {
@@ -277,15 +306,29 @@ const Areas: FC<AreasScreenProps> = ({navigation, route}) => {
       <View style={{marginVertical: 10}}>
         {filteredAreas ? (
           filteredAreas.length > 0 ? (
-            filteredAreas?.map(item => (
-              <AreaTile
-                area={item}
-                onPressItem={school => {
-                  setSelectedItem(school);
+            <View>
+              {filteredAreas?.map(item => (
+                <AreaTile
+                  area={item}
+                  onPressItem={school => {
+                    setSelectedItem(school);
+                  }}
+                  selectedItem={selectedItem}
+                />
+              ))}
+              <PaginationBar
+                count={(areaList?.count || 0) / 10}
+                onPressPageIndex={index => {
+                  dispatch(
+                    getAreas({
+                      page: index,
+                      size: 10,
+                      type: areaList?.selectedTab || 'all',
+                    }),
+                  );
                 }}
-                selectedItem={selectedItem}
               />
-            ))
+            </View>
           ) : (
             <RenderEmptyPlaceholder />
           )
