@@ -65,7 +65,7 @@ const DistrictTile: FC<DistrictTileProps> = ({
         onPressItem(district);
       }}>
       <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-        <Text size="body2" fontVariant="bold">
+        <Text size="body2" fontVariant="bold" style={{width:'75%'}}>
           {district.districtName}
         </Text>
         <RenderActiveStatus isActive={district.status || false} />

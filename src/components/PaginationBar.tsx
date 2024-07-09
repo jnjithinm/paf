@@ -22,7 +22,7 @@ const PaginationBar: FC<PaginationBarTypes> = ({
   };
 
   console.log('sss', selectedPageIndex);
-
+  if (!count || count == 0) return null;
   return (
     <View
       style={{

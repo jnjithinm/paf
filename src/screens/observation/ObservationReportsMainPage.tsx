@@ -294,8 +294,14 @@ const ObservationReportsMainPage: FC<ObservationReportsMainPageScreenProps> = ({
           )}
         </View>
         <PaginationBar
-          count={(allObservations?.dataList?.total || 0) / 10}
-          onPressPageIndex={(index) => {
+          count={
+            ((selectedFilter === 'All'
+              ? allObservations?.dataList?.total
+              : selectedFilter === 'byMe'
+              ? allObservations?.dataList.byMe
+              : allObservations?.dataList.forMe) || 0) / 10
+          }
+          onPressPageIndex={index => {
             dispatch(
               getAllObservations([
                 userData.id,
@@ -318,7 +324,7 @@ const ObservationReportsMainPage: FC<ObservationReportsMainPageScreenProps> = ({
         onPress={() => {
           navigation.navigate('AddNewObservation');
         }}
-        style={{bottom:150}}
+        style={{bottom: 150}}
         iconSize={20}
       />
     </>

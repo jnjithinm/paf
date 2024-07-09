@@ -2,6 +2,7 @@ import {createAction, createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 
 import api from '../../config/axios';
 import {
+  getToken,
   removeToken,
   storeToken,
 } from '../../utils/functions/localStorageOperations';
@@ -9,6 +10,8 @@ import endPoints from '../../config/endPoints';
 import {ErrorStatusObject, FileObject} from '../../config/types';
 import {ParentRoles, UserTypes} from '../../config/constants';
 import {getRoleLevel} from '../../components/DrawerContent';
+import RNFetchBlob from 'rn-fetch-blob';
+import { logRequest } from '../../utils/functions/apiUtils';
 
 interface AuthenticateRequest {
   username: string;
@@ -83,7 +86,7 @@ interface UpdateUserDetailsRequest {
   roleId: number;
   stateId: number;
   districtId: number;
-  moduleId: number;
+  moduleId?: number;
   schoolId: number;
   isAdmin: boolean;
   loggedInUserName: string;
@@ -260,27 +263,69 @@ export const deleteUserPhoto = createAsyncThunk<
     }
   },
 );
+// export const updateUserPhoto = createAsyncThunk<
+//   UpdateUserDetailsResponse,
+//   [FileObject, string],
+//   {rejectValue: ErrorResponse}
+// >(
+//   'auth/updateUserPhoto',
+//   async ([file, loggedInUserName], {dispatch, rejectWithValue}) => {
+//     try {
+//       dispatch(setLoading(true));
+//       const response = await api.put(endPoints.UPDATE_USER_PHOTO, {
+//         profilePhoto: file,
+//         loggedInUserName,
+//       });
+//       return response.data as UpdateUserDetailsResponse;
+//     } catch (error: any) {
+//       return rejectWithValue(error.response.data);
+//     } finally {
+//       dispatch(setLoading(false));
+//     }
+//   },
+// );
+
 export const updateUserPhoto = createAsyncThunk<
   UpdateUserDetailsResponse,
-  [FileObject, string],
-  {rejectValue: ErrorResponse}
+  [number,FileObject, string],
+  { rejectValue: ErrorResponse }
 >(
   'auth/updateUserPhoto',
-  async ([file, loggedInUserName], {dispatch, rejectWithValue}) => {
+  async ([userId,file, loggedInUserName], { dispatch, rejectWithValue }) => {
     try {
       dispatch(setLoading(true));
-      const response = await api.put(endPoints.UPDATE_USER_PHOTO, {
-        profilePhoto: file,
-        loggedInUserName,
-      });
-      return response.data as UpdateUserDetailsResponse;
+      const token = await getToken();
+
+      const formData = [
+        {
+          name: 'profilePhoto',
+          filename: file.name,
+          type: file.type,
+          data: RNFetchBlob.wrap(file.uri),
+        },
+        { name: 'loggedInUserName', data: loggedInUserName }
+      ];
+      const requestUrl = 'http://65.1.32.205:8080/' + endPoints.UPDATE_USER_PHOTO+`/${userId}`;
+      const response = await RNFetchBlob.fetch(
+        'PUT',
+        requestUrl,
+        {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
+        },
+        formData
+      );
+      logRequest('PUT', requestUrl, JSON.stringify(formData));
+        const data = JSON.parse(response.data);
+        return data as UpdateUserDetailsResponse;
     } catch (error: any) {
-      return rejectWithValue(error.response.data);
+      return rejectWithValue(error.response?.data ?? { message: 'An error occurred' });
     } finally {
       dispatch(setLoading(false));
     }
-  },
+  }
 );
+
 interface initialState {
   isLoading: boolean;
   isLoggedIn: boolean;
@@ -451,12 +496,14 @@ const authSlice = createSlice({
       .addCase(updateUserPhoto.pending, state => {})
       .addCase(updateUserPhoto.fulfilled, (state, action) => {
         state.updateUserPhotoResponse = action.payload.payload;
+        console.log("efsf",action.payload)
         state.authShowMessage = {
           status: 'Success',
           message: action?.payload?.payload?.message?.toString(),
         };
       })
       .addCase(updateUserPhoto.rejected, (state, action) => {
+        console.log("efsf errrrr",action.payload)
         state.updateUserPhotoResponse = null;
         state.authShowMessage = {
           status: 'Error',

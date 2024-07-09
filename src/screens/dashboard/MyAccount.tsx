@@ -19,6 +19,7 @@ import {
   deleteUserPhoto,
   forgotPassword,
   resetDeleteUserPhotoResponse,
+  resetUpdateUserPhotoResponse,
   resetUpdateUserResponse,
   updateUserDetails,
   updateUserPhoto,
@@ -119,7 +120,7 @@ const MyAccount: FC<MyAccountScreenProps> = ({navigation, route}) => {
 
   const onPressEditPhoto = async () => {
     const file = await selectImageFile();
-    dispatch(updateUserPhoto([file, userData.userName]));
+    dispatch(updateUserPhoto([userData.id,file, userData.userName]));
   };
   const onPressDeletePhoto = () => {
     dispatch(deleteUserPhoto([userData.id, userData.userName]));
@@ -133,6 +134,23 @@ const MyAccount: FC<MyAccountScreenProps> = ({navigation, route}) => {
         : navigation.navigate('TeacherDashboard');
     }
   }, [updateUserResponse]);
+
+
+  useEffect(()=>{
+    if(updateUserPhotoResponse){
+      dispatch(getUser(userData.id));
+      dispatch(resetUpdateUserPhotoResponse());
+    }
+
+  },[updateUserPhotoResponse]);
+
+  useEffect(()=>{
+    if(deleteUserPhotoResponse){
+      dispatch(getUser(userData.id));
+      dispatch(resetDeleteUserPhotoResponse());
+    }
+
+  },[deleteUserPhotoResponse])
 
   const onPressSave = () => {
     dispatch(
@@ -192,7 +210,7 @@ const MyAccount: FC<MyAccountScreenProps> = ({navigation, route}) => {
           }}>
           <RenderProfileIcon
             size={60}
-            image={userData.userImageUrl || userData.userImage}
+            image= {user?.userImageUrl }
             name={userData.name}
           />
           <View style={{marginLeft: 10}}>

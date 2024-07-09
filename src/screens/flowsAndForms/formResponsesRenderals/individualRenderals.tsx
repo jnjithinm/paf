@@ -295,8 +295,8 @@ export const IndividualDescriptionRenderal: FC<
                 onChangeRating={() => {}}
                 showRating={false}
               />
-              <Text>
-                {`${individualResponse?.questionAvgRating?.toFixed(1)} / 5`}
+              <Text style={{paddingLeft:5}}>
+                {`${individualResponse?.questionAvgRating?.toFixed(1)||0} / 5`}
               </Text>
             </View>
             <View
@@ -324,7 +324,7 @@ export const IndividualDescriptionRenderal: FC<
         </View>
         {individualResponse?.responses.map((item, index) => (
           <RenderQuestionAndAnswer
-            index={item.questionId}
+            index={index+1}
             question={item.questionText}
             answer={item.responseValues}
             rating={item.avgRating}

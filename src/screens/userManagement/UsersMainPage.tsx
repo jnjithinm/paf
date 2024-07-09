@@ -183,9 +183,9 @@ const UsersMainPage: FC<UsersMainPageScreenProps> = ({navigation, route}) => {
   );
 
   const tabs: ItemType[] = [
-    {label: `All (${allUsers?.totalCount})`, value: 'all'},
-    {label: `Active (${activeUsers?.totalCount})`, value: 'active'},
-    {label: `Inactive (${inactiveUsers?.totalCount})`, value: 'inactive'},
+    {label: `All (${allUsers?.totalCount || ''})`, value: 'all'},
+    {label: `Active (${activeUsers?.totalCount || ''})`, value: 'active'},
+    {label: `Inactive (${inactiveUsers?.totalCount || ''})`, value: 'inactive'},
   ];
 
   useEffect(() => {
@@ -269,6 +269,7 @@ const UsersMainPage: FC<UsersMainPageScreenProps> = ({navigation, route}) => {
     item?.name?.toLocaleLowerCase()?.includes(search?.toLocaleLowerCase()),
   );
 
+  console.log("see",usersList?.selectedTab)
   return (
     <Layout
       overridePaddingHorizontal
@@ -306,6 +307,7 @@ const UsersMainPage: FC<UsersMainPageScreenProps> = ({navigation, route}) => {
               <PaginationBar
                 count={(usersList?.count || 0) / 10}
                 onPressPageIndex={index => {
+                  console.log("se",usersList?.selectedTab)
                   dispatch(
                     getAllUsers({
                       page: index,

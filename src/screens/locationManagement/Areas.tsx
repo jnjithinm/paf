@@ -271,14 +271,14 @@ const Areas: FC<AreasScreenProps> = ({navigation, route}) => {
       });
     } else if (title.value == 'active') {
       setAreaList({
-        areasList: allAreas?.dataList,
-        count: allAreas?.totalCount,
+        areasList: activeAreas?.dataList,
+        count: activeAreas?.totalCount,
         selectedTab: true,
       });
     } else {
       setAreaList({
-        areasList: allAreas?.dataList,
-        count: allAreas?.totalCount,
+        areasList: inactiveAreas?.dataList,
+        count: inactiveAreas?.totalCount,
         selectedTab: false,
       });
     }

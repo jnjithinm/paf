@@ -1,4 +1,5 @@
 import {createAction, createAsyncThunk, createSlice} from '@reduxjs/toolkit';
+import RNFetchBlob from 'rn-fetch-blob';
 
 import api from '../../config/axios';
 import endPoints from '../../config/endPoints';
@@ -6,7 +7,6 @@ import {ErrorStatusObject, FileObject, ItemType} from '../../config/types';
 import {PaginationRequest} from './usersSlice';
 import {ErrorResponse, setLoading} from './authSlice';
 import {DateFilterOption} from '../../components/Calendar';
-import RNFetchBlob from 'rn-fetch-blob';
 import {getToken} from '../../utils/functions/localStorageOperations';
 import {filterPayload, logRequest} from '../../utils/functions/apiUtils';
 

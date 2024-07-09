@@ -42,7 +42,7 @@ const StateTile: FC<StateTileTypes> = ({ state }) => (
         {state.stateCode}
       </Text>
     </View>
-    <Text style={{ marginLeft: 10 }} fontVariant="bold">
+    <Text style={{ paddingLeft: 10,width:'75%' }} fontVariant="bold" >
       {state.stateName}
     </Text>
   </View>

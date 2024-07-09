@@ -108,7 +108,7 @@ const SchoolTile: FC<SchoolTileTypes> = ({
         paddingHorizontal: 15,
         paddingVertical: 10,
       }}>
-      <Text size="body1" fontVariant="bold">
+      <Text size="body1" fontVariant="bold" style={{width:'75%'}}>
         {school.schoolName}
       </Text>
       <View
