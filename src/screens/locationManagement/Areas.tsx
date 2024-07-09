@@ -170,6 +170,12 @@ const AreaTile: FC<AreaTileTypes> = ({area, selectedItem, onPressItem}) => (
   </TouchableOpacity>
 );
 
+type areaList = {
+  areaList : Area[] | undefined;
+  count: number | undefined;
+  selectedTab: 'all' | boolean;
+};
+
 interface AreasScreenProps {
   navigation: AreasNavigationProp;
   route: AreasRouteProp;
@@ -181,23 +187,43 @@ const Areas: FC<AreasScreenProps> = ({navigation, route}) => {
   const [search, setSearch] = useState<string>('');
 
   const dispatch = useAppDispatch();
-  const {areas} = useAppSelector(state => state.master);
+  const {allAreas,activeAreas,inactiveAreas} = useAppSelector(state => state.master);
+
+
+  useEffect(() => {
+    if (allAreas) {
+      setAreaList({
+        areaList: allAreas?.dataList,
+        count: allAreas.totalCount,
+        selectedTab: 'all',
+      });
+    }
+  }, [allAreas]);
 
   useEffect(() => {
     dispatch(
       getAreas({
         page: 0,
-        size: 15,
+        size: 10,
         type: 'all',
+      }),
+    );
+    dispatch(
+      getAreas({
+        page: 0,
+        size: 10,
+        type: true,
+      }),
+    );
+    dispatch(
+      getAreas({
+        page: 0,
+        size: 10,
+        type: false,
       }),
     );
   }, []);
 
-  useEffect(() => {
-    if (areas) {
-      setAreaList(areas.dataList);
-    }
-  }, [areas]);
 
   const handleTabClick = (title: ItemType) => {
     if (areas?.dataList) {
