@@ -124,6 +124,26 @@ const Districts: FC<DistrictsScreenProps> = ({navigation, route}) => {
     }
   }, [allDistricts]);
 
+  useEffect(() => {
+    if (activeDistricts) {
+      setDistrictList({
+        districtsList: activeDistricts?.dataList,
+        count: activeDistricts.totalCount,
+        selectedTab: 'all',
+      });
+    }
+  }, [activeDistricts]);
+
+  useEffect(() => {
+    if (inactiveDistricts) {
+      setDistrictList({
+        districtsList: inactiveDistricts?.dataList,
+        count: inactiveDistricts.totalCount,
+        selectedTab: 'all',
+      });
+    }
+  }, [inactiveDistricts]);
+
   const handleTabClick = (title: ItemType) => {
     if (title.value == 'all') {
       setDistrictList({

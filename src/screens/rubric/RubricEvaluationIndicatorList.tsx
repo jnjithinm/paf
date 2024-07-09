@@ -36,7 +36,7 @@ const RubricEvaluationIndicatorList: FC<
 > = ({navigation, route}) => {
   const {rubricItem} = route.params;
   const [search, setSearch] = useState<string>('');
-  const {rubric,updateRubricResponse} = useAppSelector(state => state.rubric);
+  const {rubric, updateRubricResponse} = useAppSelector(state => state.rubric);
   const {userData} = useAppSelector(state => state.auth);
   const dispatch = useAppDispatch();
 
@@ -46,24 +46,27 @@ const RubricEvaluationIndicatorList: FC<
 
   const onPressDeleteIndicator = (RubricIndicatorItem: RubricIndicatorItem) => {
     dispatch(
-      updateRubric([rubricItem.rubricId,{
-        rubricName: rubricItem.rubricName,
-        indicatorRequestList:
-          rubric?.dataList?.indicators
-            ?.filter(
-              indicator =>
-                indicator.indicatorId !== RubricIndicatorItem.indicatorId,
-            )
-            .map(item => ({
-              indicatorName: item.indicatorName,
-              indicatorDescription: item.indicatorDescription,
-              indicatorId: item.indicatorId,
-              domainId: item.domainId,
-              loggedInUserName: userData.userName,
-              tagIds: item.tags.map(ele => ele.tagId),
-            })) || [],
-        loggedInUserName: userData.userName,
-      }]),
+      updateRubric([
+        rubricItem.rubricId,
+        {
+          rubricName: rubricItem.rubricName,
+          indicatorRequestList:
+            rubric?.dataList?.indicators
+              ?.filter(
+                indicator =>
+                  indicator.indicatorId !== RubricIndicatorItem.indicatorId,
+              )
+              .map(item => ({
+                indicatorName: item.indicatorName,
+                indicatorDescription: item.indicatorDescription,
+                indicatorId: item.indicatorId,
+                domainId: item.domainId,
+                loggedInUserName: userData.userName,
+                tagIds: item.tags.map(ele => ele.tagId),
+              })) || [],
+          loggedInUserName: userData.userName,
+        },
+      ]),
     );
   };
 
@@ -80,7 +83,7 @@ const RubricEvaluationIndicatorList: FC<
       style={{paddingHorizontal: 15}}
       title={rubricItem.rubricName}
       icon="evaluation_icon"
-      isActive={rubricItem.status?'Active':'Inactive'}
+      isActive={rubricItem.status ? 'Active' : 'Inactive'}
       focusedStack="RubricStack">
       <View style={{marginVertical: 10}}>
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
@@ -96,7 +99,9 @@ const RubricEvaluationIndicatorList: FC<
         </View>
         <SearchWithFilter
           placeHolder="Search domain"
-          onTextChange={(text) => {setSearch(text)}}
+          onTextChange={text => {
+            setSearch(text);
+          }}
           onProceed={() => {}}
           filterNotNeeded
         />

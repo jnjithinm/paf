@@ -204,6 +204,28 @@ const School: FC<SchoolsScreenProps> = ({navigation, route}) => {
     }
   }, [allSchools]);
 
+
+  useEffect(() => {
+    if (activeSchools) {
+      setSchoolList({
+        schoolList: activeSchools?.dataList,
+        count: activeSchools.totalCount,
+        selectedTab: 'all',
+      });
+    }
+  }, [activeSchools]);
+
+
+  useEffect(() => {
+    if (inactiveSchools) {
+      setSchoolList({
+        schoolList: inactiveSchools?.dataList,
+        count: inactiveSchools.totalCount,
+        selectedTab: 'all',
+      });
+    }
+  }, [inactiveSchools]);
+
   useEffect(() => {
     dispatch(
       getSchools({

@@ -128,7 +128,7 @@ interface GetAreaResponse {
   status: number;
 }
 
-type GetAllAreaResponsePayload = GetAreaResponse['payload'];
+type GetAreaResponsePayload = GetAreaResponse['payload'];
 
 export interface SchoolType {
   schoolId: number;
@@ -284,9 +284,9 @@ interface InitialState {
   allDistricts: GetAllDistrictResponsePayload | null;
   activeDistricts: GetAllDistrictResponsePayload | null;
   inactiveDistricts: GetAllDistrictResponsePayload | null;
-  allAreas: GetAllAreaResponsePayload | null;
-  activeAreas: GetAllAreaResponsePayload | null;
-  inactiveAreas: GetAllAreaResponsePayload | null;
+  allAreas: GetAreaResponsePayload | null,
+  activeAreas:GetAreaResponsePayload | null,
+  inactiveAreas:GetAreaResponsePayload | null,
   allSchools: GetAllSchoolResponsePayload | null;
   activeSchools: GetAllSchoolResponsePayload | null;
   inactiveSchools: GetAllSchoolResponsePayload | null;
@@ -305,8 +305,8 @@ const initialState: InitialState = {
   activeDistricts: null,
   inactiveDistricts: null,
   allAreas: null,
-  activeAreas: null,
-  inactiveAreas: null,
+  activeAreas:null,
+  inactiveAreas:null,
   allSchools: null,
   activeSchools: null,
   inactiveSchools: null,
@@ -373,11 +373,10 @@ const masterSlice = createSlice({
         }
       })
       .addCase(getAreas.rejected, (state, action) => {
-        state.activeAreas = null;
-        state.activeAreas = null;
-        state.inactiveAreas = null;
+        state.allAreas = null;
       })
       .addCase(getAreas.pending, state => {
+        state.allAreas = null;
       })
       .addCase(getAreas.fulfilled, (state, action) => {
         if (action.meta.arg.type === 'all') {

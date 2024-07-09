@@ -13,11 +13,11 @@ import Icon from '../../components/Icon';
 import SearchWithFilter from '../../components/SearchWithFilter';
 
 type RubricIndicatorDescriptionNavigationProp = StackNavigationProp<
-RubricStackParamList,
+  RubricStackParamList,
   'RubricIndicatorDescription'
 >;
 type RubricIndicatorDescriptionRouteProp = RouteProp<
-RubricStackParamList,
+  RubricStackParamList,
   'RubricIndicatorDescription'
 >;
 
@@ -39,7 +39,7 @@ const RenderTags: FC<RenderTagsTypes> = ({tags}) => (
       borderColor: '#EA7804',
       backgroundColor: '#FDF0E3',
       paddingHorizontal: 6,
-      paddingVertical:4,
+      paddingVertical: 4,
       borderRadius: 7,
       flex: 0,
       margin: 3,
@@ -52,7 +52,6 @@ const RubricIndicatorDescription: FC<RubricIndicatorDescriptionScreenProps> = ({
   navigation,
   route,
 }) => {
-
   const {indicator, title} = route.params;
 
   return (
@@ -61,8 +60,8 @@ const RubricIndicatorDescription: FC<RubricIndicatorDescriptionScreenProps> = ({
       overridePaddingVertical
       style={{paddingHorizontal: 15}}
       title={title}
-      focusedStack='RubricStack'
-      isActive={indicator.status?'Active':'Inactive'}
+      focusedStack="RubricStack"
+      isActive={indicator.status ? 'Active' : 'Inactive'}
       icon="evaluation_icon">
       <View style={{marginVertical: 10}}>
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
@@ -75,7 +74,12 @@ const RubricIndicatorDescription: FC<RubricIndicatorDescriptionScreenProps> = ({
             by Admin)
           </Text>
         </View>
-        <SearchWithFilter placeHolder="Search domain" onTextChange={()=>{}} onProceed={()=>{}} filterNotNeeded />
+        <SearchWithFilter
+          placeHolder="Search domain"
+          onTextChange={() => {}}
+          onProceed={() => {}}
+          filterNotNeeded
+        />
 
         <View style={{marginVertical: 5}}>
           <Text fontVariant="bold">Domain</Text>
@@ -96,9 +100,9 @@ const RubricIndicatorDescription: FC<RubricIndicatorDescriptionScreenProps> = ({
         </View>
         <View style={{marginVertical: 5}}>
           <Text fontVariant="bold">Tags</Text>
-          <View style={{flexDirection: 'row', flexWrap: 'wrap',marginTop:5}}>
+          <View style={{flexDirection: 'row', flexWrap: 'wrap', marginTop: 5}}>
             {indicator?.tags?.map(item => (
-              <RenderTags tags={item.tagName} key={item.tagId}/>
+              <RenderTags tags={item.tagName} key={item.tagId} />
             ))}
           </View>
         </View>

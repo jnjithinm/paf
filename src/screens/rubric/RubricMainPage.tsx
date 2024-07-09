@@ -41,7 +41,9 @@ export const tabs: ItemType[] = [
 const RubricMainPage: FC<RubricMainPageScreenProps> = ({navigation, route}) => {
   const [rubricList, setRubricList] = useState<RubricItem[]>();
 
-  const {allRubrics, rubricDeleteSuccessResponse} = useAppSelector(state => state.rubric);
+  const {allRubrics, rubricDeleteSuccessResponse} = useAppSelector(
+    state => state.rubric,
+  );
   const {userData} = useAppSelector(state => state.auth);
   const dispatch = useAppDispatch();
 
@@ -80,7 +82,6 @@ const RubricMainPage: FC<RubricMainPageScreenProps> = ({navigation, route}) => {
       deleteRubric({ids: [item.rubricId], loggedInUserName: userData.userName}),
     );
   };
-
 
   return (
     <Layout
