@@ -242,21 +242,21 @@ const Areas: FC<AreasScreenProps> = ({navigation, route}) => {
 
 
   useEffect(() => {
-    if (activeAreas) {
+    if (activeAreas && areaList?.selectedTab===true) {
       setAreaList({
         areasList: activeAreas.dataList,
         count: activeAreas.totalCount,
-        selectedTab: 'all',
+        selectedTab: true,
       });
     }
   }, [activeAreas]);
 
   useEffect(() => {
-    if (inactiveAreas) {
+    if (inactiveAreas && areaList?.selectedTab===false) {
       setAreaList({
         areasList: inactiveAreas.dataList,
         count: inactiveAreas.totalCount,
-        selectedTab: 'all',
+        selectedTab: false,
       });
     }
   }, [inactiveAreas]);

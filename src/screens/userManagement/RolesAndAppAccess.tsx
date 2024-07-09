@@ -198,6 +198,26 @@ const RolesAndAppAccess: FC<RolesAndAppAccessScreenProps> = ({
     }
   }, [allRoles]);
 
+  useEffect(() => {
+    if (activeRoles && rolesList?.selectedTab===true) {
+      setRolesList({
+        roleList: activeRoles?.dataList,
+        count: activeRoles?.totalCount,
+        selectedTab: true,
+      });
+    }
+  }, [activeRoles]);
+
+  useEffect(() => {
+    if (inactiveRoles && rolesList?.selectedTab===false) {
+      setRolesList({
+        roleList: inactiveRoles?.dataList,
+        count: inactiveRoles?.totalCount,
+        selectedTab: false,
+      });
+    }
+  }, [inactiveRoles]);
+
   const filteredRoles = rolesList?.roleList?.filter(item =>
     item?.roleName?.toLocaleLowerCase()?.includes(search?.toLocaleLowerCase()),
   );

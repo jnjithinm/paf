@@ -188,7 +188,7 @@ const School: FC<SchoolsScreenProps> = ({navigation, route}) => {
   const [search, setSearch] = useState<string>('');
 
   const dispatch = useAppDispatch();
-  
+
   const {allSchools, activeSchools, inactiveSchools} = useAppSelector(
     state => state.master,
   );
@@ -212,25 +212,25 @@ const School: FC<SchoolsScreenProps> = ({navigation, route}) => {
     }
   }, [allSchools]);
 
-  // useEffect(() => {
-  //   if (activeSchools) {
-  //     setSchoolList({
-  //       schoolList: activeSchools?.dataList,
-  //       count: activeSchools.totalCount,
-  //       selectedTab: 'all',
-  //     });
-  //   }
-  // }, [activeSchools]);
+  useEffect(() => {
+    if (activeSchools && schoolList?.selectedTab==true) {
+      setSchoolList({
+        schoolList: activeSchools?.dataList,
+        count: activeSchools.totalCount,
+        selectedTab: true,
+      });
+    }
+  }, [activeSchools]);
 
-  // useEffect(() => {
-  //   if (inactiveSchools) {
-  //     setSchoolList({
-  //       schoolList: inactiveSchools?.dataList,
-  //       count: inactiveSchools.totalCount,
-  //       selectedTab: 'all',
-  //     });
-  //   }
-  // }, [inactiveSchools]);
+  useEffect(() => {
+    if (inactiveSchools && schoolList?.selectedTab==false) {
+      setSchoolList({
+        schoolList: inactiveSchools?.dataList,
+        count: inactiveSchools.totalCount,
+        selectedTab: false,
+      });
+    }
+  }, [inactiveSchools]);
 
   useEffect(() => {
     dispatch(

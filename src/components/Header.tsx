@@ -8,7 +8,7 @@ import {normaliseDesigns} from '../utils/helpers/responsiveHelpers';
 import {FONT_SIZES, FONT_VARIANT} from '../config/themes';
 import Images, {ImageIconNames} from '../components/Image';
 import Text from './Text';
-import { RenderActiveStatus } from '../screens/userManagement/UsersMainPage';
+import {RenderActiveStatus} from '../screens/userManagement/UsersMainPage';
 
 type HeaderPropsTypes = {
   title?: string;
@@ -22,7 +22,7 @@ type HeaderPropsTypes = {
   icon?: ImageIconNames;
   scrollTransition?: boolean;
   isScrolled?: boolean;
-  isActive?:'Active'|'Inactive';
+  isActive?: 'Active' | 'Inactive';
 };
 
 const Header: FC<HeaderPropsTypes> = ({
@@ -37,24 +37,35 @@ const Header: FC<HeaderPropsTypes> = ({
   icon,
   scrollTransition,
   isScrolled,
-  isActive
+  isActive,
 }) => {
   const navigation = useNavigation();
-const onPressProfileIcon=()=>{
-  navigation.navigate('MyAccount' as never)
-}
+  const onPressProfileIcon = () => {
+    navigation.navigate('MyAccount' as never);
+  };
   return (
     <View style={styles.headerContainer}>
       {dashboard && (
         <View style={styles.dashboardContainer}>
-          <TouchableOpacity onPress={onPressMenuIcon}>
+          <TouchableOpacity
+            style={{
+              width: 25,
+              height: 25,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+            onPress={onPressMenuIcon}>
             <Icon name="menu_icon" />
           </TouchableOpacity>
           <View style={styles.iconRow}>
-            <TouchableOpacity onPress={onPressBellIcon}>
+            <TouchableOpacity
+         
+              onPress={onPressBellIcon}>
               <Icon name="bell_icon" />
             </TouchableOpacity>
-            <TouchableOpacity onPress={onPressProfileIcon}>
+            <TouchableOpacity
+   
+              onPress={onPressProfileIcon}>
               <Icon name="profile_icon" />
             </TouchableOpacity>
           </View>
@@ -77,9 +88,11 @@ const onPressProfileIcon=()=>{
           )}
           {((title && !scrollTransition) ||
             (title && scrollTransition && isScrolled)) && (
-              <View style={{flexDirection:'row'}}>
-            <Text style={styles.title}>{title}</Text>
-           {isActive && <RenderActiveStatus isActive={isActive=='Active'}/>}
+            <View style={{flexDirection: 'row'}}>
+              <Text style={styles.title}>{title}</Text>
+              {isActive && (
+                <RenderActiveStatus isActive={isActive == 'Active'} />
+              )}
             </View>
           )}
         </View>
@@ -105,7 +118,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     width: '100%',
     paddingBottom: 10,
-    paddingHorizontal: 15,
+    paddingHorizontal: 20,
     backgroundColor: colors.primaryLightColor,
     height: normaliseDesigns(50),
   },

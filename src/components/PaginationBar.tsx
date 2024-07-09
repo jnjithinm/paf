@@ -1,6 +1,5 @@
-
-import React, { FC, useState } from 'react';
-import { TouchableOpacity, View, StyleSheet, ScrollView } from 'react-native';
+import React, {FC, useState} from 'react';
+import {TouchableOpacity, View, StyleSheet, ScrollView} from 'react-native';
 import Text from './Text';
 import Icon from './Icon';
 
@@ -9,7 +8,10 @@ type PaginationBarTypes = {
   onPressPageIndex: (index: number) => void;
 };
 
-const PaginationBar: FC<PaginationBarTypes> = ({ count = 1, onPressPageIndex }) => {
+const PaginationBar: FC<PaginationBarTypes> = ({
+  count = 1,
+  onPressPageIndex,
+}) => {
   const [selectedPageIndex, setSelectedPageIndex] = useState(1);
   const roundedCount = Math.ceil(count);
   const isMoreThanNinePages = roundedCount > 9;
@@ -19,7 +21,7 @@ const PaginationBar: FC<PaginationBarTypes> = ({ count = 1, onPressPageIndex }) 
     onPressPageIndex(index - 1);
   };
 
-  console.log("sss", selectedPageIndex);
+  console.log('sss', selectedPageIndex);
 
   return (
     <View
@@ -60,28 +62,29 @@ const PaginationBar: FC<PaginationBarTypes> = ({ count = 1, onPressPageIndex }) 
         style={{}}
         contentContainerStyle={styles.paginationContainer}
         horizontal>
-        {roundedCount > 2 && [...Array(Math.max(roundedCount - 2, 0))].map((_, index) => {
-          const pageIndex = index + 2;
-          return (
-            <TouchableOpacity
-              key={pageIndex}
-              onPress={() => onPressPaginationIndex(pageIndex)}
-              style={[
-                styles.pageNumber,
-                pageIndex === selectedPageIndex && styles.selectedPageNumber,
-              ]}>
-              <Text
-                style={
-                  pageIndex === selectedPageIndex
-                    ? styles.selectedPageNumberText
-                    : styles.pageNumberText
-                }
-                size="small1">
-                {pageIndex}
-              </Text>
-            </TouchableOpacity>
-          );
-        })}
+        {roundedCount > 2 &&
+          [...Array(Math.max(roundedCount - 2, 0))].map((_, index) => {
+            const pageIndex = index + 2;
+            return (
+              <TouchableOpacity
+                key={pageIndex}
+                onPress={() => onPressPaginationIndex(pageIndex)}
+                style={[
+                  styles.pageNumber,
+                  pageIndex === selectedPageIndex && styles.selectedPageNumber,
+                ]}>
+                <Text
+                  style={
+                    pageIndex === selectedPageIndex
+                      ? styles.selectedPageNumberText
+                      : styles.pageNumberText
+                  }
+                  size="small1">
+                  {pageIndex}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
       </ScrollView>
       {roundedCount > 1 && (
         <TouchableOpacity

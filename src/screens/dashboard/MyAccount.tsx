@@ -18,6 +18,7 @@ import {getUser} from '../../redux/features/usersSlice';
 import {
   deleteUserPhoto,
   forgotPassword,
+  resetDeleteUserPhotoResponse,
   resetUpdateUserResponse,
   updateUserDetails,
   updateUserPhoto,
@@ -54,9 +55,13 @@ const MyAccount: FC<MyAccountScreenProps> = ({navigation, route}) => {
   const [district, setDistrict] = useState<string>('');
   const [area, setArea] = useState<string>('');
 
-  const {userData, isAdmin, updateUserResponse} = useAppSelector(
-    state => state.auth,
-  );
+  const {
+    userData,
+    isAdmin,
+    updateUserResponse,
+    deleteUserPhotoResponse,
+    updateUserPhotoResponse,
+  } = useAppSelector(state => state.auth);
   const {user} = useAppSelector(state => state.users);
   const {validateField} = useValidation();
 
@@ -90,6 +95,13 @@ const MyAccount: FC<MyAccountScreenProps> = ({navigation, route}) => {
   useEffect(() => {
     dispatch(getUser(userData.id));
   }, []);
+
+  useEffect(() => {
+    if (deleteUserPhotoResponse) {
+      dispatch(getUser(userData.id));
+      dispatch(resetDeleteUserPhotoResponse());
+    }
+  }, [deleteUserPhotoResponse]);
 
   useEffect(() => {
     if (user) {
@@ -141,7 +153,7 @@ const MyAccount: FC<MyAccountScreenProps> = ({navigation, route}) => {
           grade: user?.school || '',
           isAdmin,
           roleId: user?.roleId || 0,
-          moduleId: user?.stateId || 0,
+          moduleId: userData?.module?.moduleId || 0,
           loggedInUserName: userData.userName,
         },
       ]),

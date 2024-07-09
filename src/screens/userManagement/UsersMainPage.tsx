@@ -222,6 +222,27 @@ const UsersMainPage: FC<UsersMainPageScreenProps> = ({navigation, route}) => {
     }
   }, [allUsers]);
 
+  useEffect(() => {
+    if (activeUsers && usersList?.selectedTab===true) {
+      setUsersList({
+        usersList: activeUsers?.dataList,
+        count: activeUsers?.totalCount,
+        selectedTab: true,
+      });
+    }
+  }, [activeUsers]);
+
+
+  useEffect(() => {
+    if (inactiveUsers && usersList?.selectedTab===false) {
+      setUsersList({
+        usersList: inactiveUsers?.dataList,
+        count: inactiveUsers?.totalCount,
+        selectedTab: false,
+      });
+    }
+  }, [inactiveUsers]);
+
   const handleTabClick = (title: ItemType) => {
     if (title.value == 'all') {
       setUsersList({

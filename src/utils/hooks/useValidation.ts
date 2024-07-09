@@ -67,14 +67,21 @@ const useValidation = () => {
 
       case 'Mobile Number':
       case 'Phone Number':
+        let length = value?.length;
         if (value === '') {
-          errorMessage = `${fieldName} is required`;
+          errorMessage = `Mobile Number is required`;
         } else if (!mobileNumberRegex.test(value)) {
           if (!onlyDigits.test(value)) {
             errorMessage = 'Only digit values are allowed for a Mobile Number.';
-          } else if (!/^[+][0-9]{1,}$/.test(value)) {
+          }
+          if (
+            !value?.startsWith('6') &&
+            !value?.startsWith('7') &&
+            !value?.startsWith('8') &&
+            !value?.startsWith('9')
+          ) {
             errorMessage = `A Mobile Number(+91) should starts with a digit between 6 and 9.`;
-          } else if (value.length !== 10) {
+          } else if (length !== 10) {
             errorMessage = 'A Mobile Number(+91) should contain 10 digits.';
           } else {
             errorMessage = 'Invalid Mobile Number';

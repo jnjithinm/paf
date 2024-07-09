@@ -133,7 +133,7 @@ const Districts: FC<DistrictsScreenProps> = ({navigation, route}) => {
       setDistrictList({
         districtsList: activeDistricts?.dataList,
         count: activeDistricts.totalCount,
-        selectedTab: 'all',
+        selectedTab: true,
       });
     }
   }, [activeDistricts]);
@@ -143,7 +143,7 @@ const Districts: FC<DistrictsScreenProps> = ({navigation, route}) => {
       setDistrictList({
         districtsList: inactiveDistricts?.dataList,
         count: inactiveDistricts.totalCount,
-        selectedTab: 'all',
+        selectedTab: false,
       });
     }
   }, [inactiveDistricts]);

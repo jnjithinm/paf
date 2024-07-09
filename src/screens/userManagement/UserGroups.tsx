@@ -113,9 +113,9 @@ const UserGroups: FC<UserGroupsScreenProps> = ({navigation, route}) => {
   const dispatch = useAppDispatch();
 
   const tabs: ItemType[] = [
-    {label: `All (${allUserGroups?.totalCount})`, value: 'all'},
-    {label: `Active (${activeUserGroups?.totalCount})`, value: 'active'},
-    {label: `Inactive (${inactiveUserGroups?.totalCount})`, value: 'inactive'},
+    {label: `All (${allUserGroups?.totalCount || ''})`, value: 'all'},
+    {label: `Active (${activeUserGroups?.totalCount || ''})`, value: 'active'},
+    {label: `Inactive (${inactiveUserGroups?.totalCount || ''})`, value: 'inactive'},
   ];
 
   useEffect(() => {
@@ -127,6 +127,28 @@ const UserGroups: FC<UserGroupsScreenProps> = ({navigation, route}) => {
       });
     }
   }, [allUserGroups]);
+
+
+  useEffect(() => {
+    if (activeUserGroups && userGroupList?.selectedTab===true) {
+      setUserGroupList({
+        userGroupsList: activeUserGroups?.dataList,
+        count: activeUserGroups.totalCount,
+        selectedTab: true,
+      });
+    }
+  }, [activeUserGroups]);
+
+
+  useEffect(() => {
+    if (activeUserGroups && userGroupList?.selectedTab===false) {
+      setUserGroupList({
+        userGroupsList: activeUserGroups?.dataList,
+        count: activeUserGroups.totalCount,
+        selectedTab: false,
+      });
+    }
+  }, [activeUserGroups]);
 
   const handleTabClick = (title: ItemType) => {
     if (title.value == 'all') {
