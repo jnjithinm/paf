@@ -2,11 +2,7 @@ import {createAction, createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 
 import api from '../../config/axios';
 import endPoints from '../../config/endPoints';
-import {
-  ErrorStatusObject,
-  FileObject,
-  ItemType,
-} from '../../config/types';
+import {ErrorStatusObject, FileObject, ItemType} from '../../config/types';
 import {PaginationRequest} from './usersSlice';
 import {ErrorResponse, setLoading} from './authSlice';
 import {DateFilterOption} from '../../components/Calendar';
@@ -21,8 +17,8 @@ interface Observation {
   reportedByImage: string | null;
   ratings: number;
   observationId: number;
-  createdDate:string;
-  observationStatus:ObservationStatus
+  createdDate: string;
+  observationStatus: ObservationStatus;
 }
 
 interface ObservationsResponse {
@@ -97,7 +93,6 @@ type GetObservationByIdResponse = {
   status: number;
 };
 type GetObservationByIdResponsePayload = GetObservationByIdResponse['payload'];
-
 
 type GetAllObservationsResponse = {
   payload: {
@@ -175,9 +170,6 @@ interface DeleteAttachmentsRequest {
   ids: number[];
   loggedInUserName: string;
 }
-
-
-
 
 export const setObservationShowMessage = createAction<ErrorStatusObject | null>(
   'SET_OBSERVATION_SHOW_MESSAGE',

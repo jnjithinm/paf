@@ -13,7 +13,6 @@ import {LocationManagementStackParamList} from '../../navigation/LocationManagem
 import {Area, getAreas} from '../../redux/features/masterSlice';
 import Tab from '../../components/Tab';
 import SearchWithFilter from '../../components/SearchWithFilter';
-import {tabs} from '../userManagement/UsersMainPage';
 import {ItemType} from '../../config/types';
 import {RenderEmptyPlaceholder} from '../observation/ObservationReportsMainPage';
 
@@ -175,41 +174,82 @@ interface AreasScreenProps {
   route: AreasRouteProp;
 }
 
+type AreasList = {
+  areasList: Area[] | undefined;
+  count: number | undefined;
+  selectedTab: 'all' | boolean;
+};
+
 const Areas: FC<AreasScreenProps> = ({navigation, route}) => {
   const [selectedItem, setSelectedItem] = useState<Area>();
-  const [areaList, setAreaList] = useState<Area[]>();
+  const [areaList, setAreaList] = useState<AreasList>();
   const [search, setSearch] = useState<string>('');
 
   const dispatch = useAppDispatch();
-  const {areas} = useAppSelector(state => state.master);
+  const {allAreas,activeAreas,inactiveAreas} = useAppSelector(state => state.master);
+
+  const tabs: ItemType[] = [
+    {label: `All (${allAreas?.totalCount || ''})`, value: 'all'},
+    {label: `Active (${activeAreas?.totalCount || ''})`, value: 'active'},
+    {
+      label: `Inactive (${inactiveAreas?.totalCount || ''})`,
+      value: 'inactive',
+    },
+  ];
 
   useEffect(() => {
     dispatch(
       getAreas({
         page: 0,
-        size: 15,
+        size: 10,
         type: 'all',
+      }),
+    );
+    dispatch(
+      getAreas({
+        page: 0,
+        size: 10,
+        type: true,
+      }),
+    );
+    dispatch(
+      getAreas({
+        page: 0,
+        size: 15,
+        type: false,
       }),
     );
   }, []);
 
   useEffect(() => {
-    if (areas) {
-      setAreaList(areas.dataList);
+    if (allAreas) {
+      setAreaList({areasList:allAreas.dataList,count:allAreas.totalCount,selectedTab:'all'});
     }
-  }, [areas]);
+  }, [allAreas]);
 
   const handleTabClick = (title: ItemType) => {
-    if (areas?.dataList) {
-      title.value == 'Active'
-        ? setAreaList(areas?.dataList?.filter(item => item.status === true))
-        : title.value == 'Inactive'
-        ? setAreaList(areas?.dataList.filter(item => item.status === false))
-        : setAreaList(areas?.dataList);
+    if (title.value == 'all') {
+      setAreaList({
+        areasList: allAreas?.dataList,
+        count: allAreas?.totalCount,
+        selectedTab: 'all',
+      });
+    } else if (title.value == 'active') {
+      setAreaList({
+        areasList: allAreas?.dataList,
+        count: allAreas?.totalCount,
+        selectedTab: true,
+      });
+    } else {
+      setAreaList({
+        areasList: allAreas?.dataList,
+        count: allAreas?.totalCount,
+        selectedTab: false,
+      });
     }
   };
 
-  const filteredAreas = areaList?.filter(item =>
+  const filteredAreas = areaList?.areasList?.filter(item =>
     item?.area?.toLocaleLowerCase()?.includes(search?.toLocaleLowerCase()),
   );
   return (
