@@ -295,7 +295,6 @@ const CreateViewEvidenceCard: FC<CreateViewEvidenceCardScreenProps> = ({
     }
   };
 
-
   useEffect(() => {
     if (saveEvidenceCardResponse) {
       if (observationId && observationById) {
@@ -339,10 +338,9 @@ const CreateViewEvidenceCard: FC<CreateViewEvidenceCardScreenProps> = ({
 
   let isDisabledFields = Boolean(
     observationById !== null &&
-      evidenceCardDetails  &&
+      evidenceCardDetails &&
       observationById?.observationStatus === 'Completed',
   );
-
 
   return (
     <KeyboardAvoidingView
@@ -443,7 +441,7 @@ const CreateViewEvidenceCard: FC<CreateViewEvidenceCardScreenProps> = ({
               onPressDelete={item => {
                 if (evidenceCardDetails) {
                   setIsChanged(true);
-             
+
                   let idToDelete =
                     evidenceCardDetails?.attachmentResponse?.find(
                       ele => ele.fileUrl === item.uri,
@@ -460,7 +458,13 @@ const CreateViewEvidenceCard: FC<CreateViewEvidenceCardScreenProps> = ({
                 file?.uri?.includes('mp3') || file?.uri?.includes('m4a')
                   ? (setSelectedMusicFile(file),
                     setIsVisibleMusicPlayerModal(true))
-                  : navigation.navigate('PlayFile', {file});
+                  : navigation.navigate('PlayFile', {
+                      file,
+                      files,
+                      onDelete: files => {
+                        setFiles(files);
+                      },
+                    });
               }}
             />
           </View>

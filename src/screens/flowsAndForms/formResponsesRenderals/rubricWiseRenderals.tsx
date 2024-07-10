@@ -9,6 +9,7 @@ import colors from '../../../config/colors';
 import LabelDropdown from '../../../components/LabeledDropdown';
 import {
   RubricWiseResponse,
+  UserWiseResponse,
   getQuestionRatingByIndicatorId,
 } from '../../../redux/features/formsSlice';
 import {useAppDispatch, useAppSelector} from '../../../redux/store';
@@ -150,6 +151,64 @@ export const RubricWiseMainPageRenderal: FC<
   </View>
 );
 
+type RubricWiseTileTypes = {
+  title: string;
+  isSelected: boolean;
+  index: number;
+  userWiseResponse: UserWiseResponse[];
+  onSelect: (index: number) => void;
+};
+const RubricWiseTile: FC<RubricWiseTileTypes> = ({
+  title,
+  isSelected,
+  userWiseResponse,
+  onSelect,
+  index,
+}) => {
+  return (
+    <TouchableOpacity
+      onPress={() => {
+        onSelect(index);
+      }}
+      style={{
+        borderWidth: 1,
+        borderColor: '#F4C24A',
+        marginVertical: 8,
+        borderRadius: 10,
+      }}>
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          backgroundColor: isSelected ? '#FCEBC5' : colors.backgroundColor,
+          width: '100%',
+          borderRadius: 10,
+          padding: 8,
+        }}>
+        <Text size="small3" fontVariant="bold" style={{width: '90%'}}>
+          {title}
+        </Text>
+        <Icon
+          name="chevron_up_black_icon"
+          style={{
+            transform: [{rotate: isSelected ? '0deg' : '180deg'}],
+            //   alignSelf: isSelected ? 'flex-end' : undefined,
+          }}
+        />
+      </View>
+      {isSelected && (
+        <View style={{padding: 8}}>
+          {userWiseResponse.map(item => (
+            <View>
+              <Text>{item.responseValues}</Text>
+            </View>
+          ))}
+        </View>
+      )}
+    </TouchableOpacity>
+  );
+};
+
 type RubricWiseDescriptionRenderalTypes = {
   selectedRubricWise: RubricWiseResponse | null;
   formId: number;
@@ -161,6 +220,7 @@ export const RubricWiseDescriptionRenderal: FC<
   RubricWiseDescriptionRenderalTypes
 > = ({selectedRubricWise, flowId, formId}) => {
   const dispatch = useAppDispatch();
+  const [selected, setSelected] = useState<number>();
 
   const {questionRatingByIndicatorId} = useAppSelector(state => state.forms);
 
@@ -205,23 +265,34 @@ export const RubricWiseDescriptionRenderal: FC<
       </View>
       {questionRatingByIndicatorId?.dataList?.questionWiseResponses?.map(
         (item, index) => (
-          <LabelDropdown
-            options={
-              item?.userWiseResponses?.map((ele, index) => ({
-                value: index?.toString(),
-                label: ele.responseValues || ele.userRating?.toString(),
-              })) || []
-            }
-            disableSelection
-            key={item.questionId}
-            placeHolderStyle={{color: colors.blackColor}}
-            placeHolder={item.questionText}
-            dropdownStyle={{
-              borderColor: '#F4C24A',
-              minHeight: normaliseDesigns(40),
+          <RubricWiseTile
+            title={item.questionText}
+            isSelected={selected === item.questionId}
+            index={item.questionId}
+            key={index}
+            userWiseResponse={item.userWiseResponses}
+            onSelect={index => {
+              setSelected(index);
             }}
-            defaultValue={''}
           />
+
+          // <LabelDropdown
+          //   options={
+          //     item?.userWiseResponses?.map((ele, index) => ({
+          //       value: index?.toString(),
+          //       label: ele.responseValues || ele.userRating?.toString(),
+          //     })) || []
+          //   }
+          //   disableSelection
+          //   key={item.questionId}
+          //   placeHolderStyle={{color: colors.blackColor}}
+          //   placeHolder={item.questionText}
+          //   dropdownStyle={{
+          //     borderColor: '#F4C24A',
+          //     minHeight: normaliseDesigns(40),
+          //   }}
+          //   defaultValue={''}
+          // />
         ),
       )}
     </View>

@@ -9,12 +9,14 @@ import { FlowDetailItem, FlowItem } from '../redux/features/flowsSlice';
 import EvaluationForm from '../screens/flowsAndForms/EvaluationForm';
 import FormResponses from '../screens/flowsAndForms/FormResponses';
 import FormList from '../screens/flowsAndForms/FormList';
+import PreviewForm from '../screens/flowsAndForms/PreviewForm';
 
 export type FlowsAndFormsStackParamList = {
   FlowsMainPage: undefined;
   FormList: { flowItem: FlowItem };
   FormResponses: { flowDetailItem: FlowDetailItem };
   EvaluationForm: { flowDetailItem: FlowDetailItem; flowItem: FlowItem };
+  PreviewForm: { flowDetailItem: FlowDetailItem; };
 };
 
 const FlowsAndFormsStackTab =
@@ -59,6 +61,10 @@ const FlowsAndFormsStack = () => {
       <FlowsAndFormsStackTab.Screen
         name="EvaluationForm"
         component={EvaluationForm}
+      />
+         <FlowsAndFormsStackTab.Screen
+        name="PreviewForm"
+        component={PreviewForm}
       />
     </FlowsAndFormsStackTab.Navigator>
   );

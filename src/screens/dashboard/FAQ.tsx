@@ -17,6 +17,7 @@ import {normaliseDesigns} from '../../utils/helpers/responsiveHelpers';
 import Icon from '../../components/Icon';
 import {Drawer} from 'react-native-drawer-layout';
 import DrawerContent from '../../components/DrawerContent';
+import { useAppSelector } from '../../redux/store';
 
 type FAQNavigationProp = StackNavigationProp<MainStackParamList, 'FAQ'>;
 type FAQRouteProp = RouteProp<MainStackParamList, 'FAQ'>;
@@ -42,7 +43,7 @@ type FAQContent = {
 
 const faqContent: FAQContent[] = [
   {
-    title: 'How do I log in for the first time or re-login when logged out?',
+    title: 'Q. How do I log in for the first time or re-login when logged out?',
     content: (
       <View>
         <Text style={styles.faqText}>
@@ -248,6 +249,8 @@ const FAQ: FC<FAQScreenProps> = ({navigation, route}) => {
     setIsDrawerOpen(false);
   };
 
+  const {isLoggedIn}=useAppSelector(state=>state.auth)
+
   return (
     <Drawer
       open={isDrawerOpen}
@@ -258,9 +261,10 @@ const FAQ: FC<FAQScreenProps> = ({navigation, route}) => {
         overridePaddingHorizontal
         overridePaddingVertical
         style={{paddingHorizontal: 15}}
+        onPressBackArrow={()=>{navigation.goBack()}}
         onPressMenuIcon={()=>{setIsDrawerOpen(true)}}
-        dashboard
-        avoidBackButton>
+        dashboard={isLoggedIn}
+        avoidBackButton ={isLoggedIn}>
         <Text
           size="body4"
           fontVariant="bold"

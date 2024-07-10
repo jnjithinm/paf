@@ -121,6 +121,7 @@ const MainStackNavigator = () => {
         }}>
         <MainStack.Screen name="Splash" component={Splash} />
         <MainStack.Screen name="Login" component={Login} />
+        <MainStack.Screen name="FAQ" component={FAQ} />
         <MainStack.Screen name="ResetPassword" component={ResetPassword} />
         <MainStack.Screen
           name="CreateNewPassword"

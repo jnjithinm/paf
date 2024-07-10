@@ -27,7 +27,7 @@ import {ItemType} from '../../config/types';
 import {normaliseDesigns} from '../../utils/helpers/responsiveHelpers';
 import {ObservationStackParamList} from '../../navigation/ObservationStack';
 import moment from 'moment';
-import {getAllUsers, searchUsers} from '../../redux/features/usersSlice';
+import {getAllUsers} from '../../redux/features/usersSlice';
 import Image from '../../components/Image';
 import PaginationBar from '../../components/PaginationBar';
 import { FilterObject } from '../../components/Calendar';
@@ -154,7 +154,7 @@ const ObservationReportsMainPage: FC<ObservationReportsMainPageScreenProps> = ({
   const dispatch = useAppDispatch();
   const {allObservations} = useAppSelector(state => state.observation);
   const {userData} = useAppSelector(state => state.auth);
-  const {allUsers, searchedUsers} = useAppSelector(state => state.users);
+  const {allUsers} = useAppSelector(state => state.users);
 
   const handleTabClick = (title: ItemType) => {
     setSelectedFilter(title?.value as FilterType);
@@ -187,11 +187,11 @@ const ObservationReportsMainPage: FC<ObservationReportsMainPageScreenProps> = ({
 
   useEffect(() => {
     dispatch(
-      getAllUsers({
+      getAllUsers([{
         page: 0,
-        size: 10,
+        size: 15,
         type: 'all',
-      }),
+      }]),
     );
   }, []);
 
@@ -216,11 +216,11 @@ const ObservationReportsMainPage: FC<ObservationReportsMainPageScreenProps> = ({
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
       if (search.length >= 3) {
-        dispatch(searchUsers([search, {
+        dispatch(getAllUsers([ {
           page: 0,
           size: 15,
           type: 'all',
-        }]));
+        },search]));
       }
     }, 500);
 
@@ -257,13 +257,14 @@ const ObservationReportsMainPage: FC<ObservationReportsMainPageScreenProps> = ({
         />
         <SearchWithFilter
           onTextChange={search => {
-            dispatch(searchUsers([search, {
-              page: 0,
-              size: 15,
-              type: 'all',
-            }]));
+            // dispatch(getAllUsers([ {
+            //   page: 0,
+            //   size: 15,
+            //   type: 'all',
+            // }]));
+            setSearch(search)
           }}
-          options={searchedUsers?.dataList?.map(item => ({
+          options={allUsers?.dataList?.map(item => ({
             value: item.userId?.toString(),
             label: item.name,
           }))}
@@ -334,7 +335,7 @@ const ObservationReportsMainPage: FC<ObservationReportsMainPageScreenProps> = ({
                     ...filter,
                     paginationRequest: {
                       page: index,
-                      size: 10,
+                      size: 15,
                       type: 'all',
                     },
                   },

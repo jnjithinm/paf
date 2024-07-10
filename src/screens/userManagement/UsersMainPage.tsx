@@ -1,4 +1,4 @@
-import React, {FC, useEffect, useState} from 'react';
+import React, {FC, useCallback, useEffect, useState} from 'react';
 import {TouchableOpacity, View, ViewStyle} from 'react-native';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
@@ -175,7 +175,11 @@ type UsersList = {
 const UsersMainPage: FC<UsersMainPageScreenProps> = ({navigation, route}) => {
   const [selectedItem, setSelectedItem] = useState<User>();
   const [search, setSearch] = useState<string>('');
-  const [usersList, setUsersList] = useState<UsersList>();
+  const [usersList, setUsersList] = useState<UsersList>({
+    usersList: [],
+    count: 0,
+    selectedTab: 'all',
+  });
 
   const dispatch = useAppDispatch();
   const {allUsers, activeUsers, inactiveUsers} = useAppSelector(
@@ -190,25 +194,25 @@ const UsersMainPage: FC<UsersMainPageScreenProps> = ({navigation, route}) => {
 
   useEffect(() => {
     dispatch(
-      getAllUsers({
+      getAllUsers([{
         page: 0,
-        size: 10,
+        size: 15,
         type: 'all',
-      }),
+      }]),
     );
     dispatch(
-      getAllUsers({
+      getAllUsers([{
         page: 0,
-        size: 10,
+        size: 15,
         type: true,
-      }),
+      }]),
     );
     dispatch(
-      getAllUsers({
+      getAllUsers([{
         page: 0,
-        size: 10,
+        size: 15,
         type: false,
-      }),
+      }]),
     );
   }, []);
 
@@ -243,33 +247,48 @@ const UsersMainPage: FC<UsersMainPageScreenProps> = ({navigation, route}) => {
     }
   }, [inactiveUsers]);
 
-  const handleTabClick = (title: ItemType) => {
-    if (title.value == 'all') {
-      setUsersList({
-        usersList: allUsers?.dataList,
-        count: allUsers?.totalCount,
-        selectedTab: 'all',
-      });
-    } else if (title.value == 'active') {
-      setUsersList({
-        usersList: activeUsers?.dataList,
-        count: activeUsers?.totalCount,
-        selectedTab: true,
-      });
-    } else {
-      setUsersList({
-        usersList: inactiveUsers?.dataList,
-        count: inactiveUsers?.totalCount,
-        selectedTab: false,
-      });
-    }
-  };
 
-  const filteredUsers = usersList?.usersList?.filter(item =>
-    item?.name?.toLocaleLowerCase()?.includes(search?.toLocaleLowerCase()),
+
+  const handleTabClick = useCallback(
+    (title: ItemType) => {
+      if (title.value === 'all') {
+        if (title.value == 'all') {
+          setUsersList({
+            usersList: allUsers?.dataList,
+            count: allUsers?.totalCount,
+            selectedTab: 'all',
+          });
+        } else if (title.value == 'active') {
+          setUsersList({
+            usersList: activeUsers?.dataList,
+            count: activeUsers?.totalCount,
+            selectedTab: true,
+          });
+        } else {
+          setUsersList({
+            usersList: inactiveUsers?.dataList,
+            count: inactiveUsers?.totalCount,
+            selectedTab: false,
+          });
+        
+    }}
+  },
+    [activeUsers, activeUsers, inactiveUsers]
   );
 
-  console.log("see",usersList?.selectedTab)
+
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+        dispatch(getAllUsers([{
+          page: 0,
+          size: 15,
+          type: usersList?.selectedTab,
+        },search]));
+    }, 200);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [search,usersList?.selectedTab]);
+
   return (
     <Layout
       overridePaddingHorizontal
@@ -292,10 +311,10 @@ const UsersMainPage: FC<UsersMainPageScreenProps> = ({navigation, route}) => {
         filterNotNeeded
       />
       <View style={{marginVertical: 10}}>
-        {filteredUsers ? (
-          filteredUsers?.length > 0 ? (
+        {usersList?.usersList ? (
+          usersList?.usersList?.length > 0 ? (
             <View>
-              {filteredUsers.map(item => (
+              {usersList?.usersList.map(item => (
                 <UserTile
                   user={item}
                   onPressItem={user => {
@@ -309,11 +328,11 @@ const UsersMainPage: FC<UsersMainPageScreenProps> = ({navigation, route}) => {
                 onPressPageIndex={index => {
                   if(usersList){
                   dispatch(
-                    getAllUsers({
+                    getAllUsers([{
                       page: index,
-                      size: 10,
+                      size: 15,
                       type: usersList?.selectedTab,
-                    }),
+                    }]),
                     
                   );
                 }

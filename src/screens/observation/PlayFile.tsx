@@ -1,5 +1,5 @@
 import React, {FC, useEffect, useState} from 'react';
-import {View, Dimensions, ScrollView} from 'react-native';
+import {View, Dimensions, ScrollView, StyleSheet} from 'react-native';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import FastImage from 'react-native-fast-image';
@@ -7,8 +7,11 @@ import Pdf from 'react-native-pdf';
 
 import Layout from '../../components/Layout';
 import {ObservationStackParamList} from '../../navigation/ObservationStack';
-import VideoPlayer from '../../components/VideoPlayer'
+import VideoPlayer from '../../components/VideoPlayer';
 import Text from '../../components/Text';
+import {useAppSelector} from '../../redux/store';
+import Button from '../../components/Button';
+import colors from '../../config/colors';
 
 type PlayFileNavigationProp = StackNavigationProp<
   ObservationStackParamList,
@@ -46,10 +49,7 @@ const RenderFileContent: FC<RenderFileContentTypes> = ({uri, type}) => {
     case type.includes('jpeg'):
       return (
         <FastImage
-          style={{
-            width,
-            height: height / 2,
-          }}
+          style={styles.image}
           source={{
             uri,
             priority: FastImage.priority.normal,
@@ -70,11 +70,7 @@ const RenderFileContent: FC<RenderFileContentTypes> = ({uri, type}) => {
       return (
         <Pdf
           source={{uri, cache: true}}
-          style={{
-            flex: 1,
-            width,
-            height: height / 2,
-          }}
+          style={styles.pdf}
           onLoadComplete={(numberOfPages, filePath) => {
             console.log(`Number of pages: ${numberOfPages}`);
           }}
@@ -94,15 +90,8 @@ const RenderFileContent: FC<RenderFileContentTypes> = ({uri, type}) => {
     case type?.includes('txt'):
       return (
         <ScrollView
-          contentContainerStyle={{
-            padding: 10,
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-          style={{
-            width,
-            height: height / 2,
-          }}>
+          contentContainerStyle={styles.scrollViewContent}
+          style={styles.scrollView}>
           <Text>{fileContent}</Text>
         </ScrollView>
       );
@@ -112,33 +101,121 @@ const RenderFileContent: FC<RenderFileContentTypes> = ({uri, type}) => {
 };
 
 const PlayFile: FC<PlayFileScreenProps> = ({navigation, route}) => {
-  const {file} = route.params;
+  const {file, files, onDelete} = route.params;
+  const {newObservation} = useAppSelector(state => state.observation);
+
+  console.log('new ', newObservation);
 
   return (
     <Layout
       overridePaddingHorizontal
       overridePaddingVertical
-      style={{
-        paddingHorizontal: 15,
-        height: file.type?.includes('pdf') ? height : undefined,
-      }}
+      style={
+        // styles.layout,
+        {
+          paddingHorizontal: 15,
+          height: file.type?.includes('pdf') ? height : undefined,
+        }
+      }
       title={file.name}
       icon="search_reports_icon">
-      {file.type?.includes('pdf') ? (
-        <RenderFileContent uri={file.uri} type={file.type} />
+      {file.type?.includes('mp4') ? (
+        <View style={styles.videoContainer}>
+          <RenderFileContent uri={file.uri} type={file.type} />
+          {newObservation && (
+            <View style={styles.buttonContainer}>
+              <Button
+                text="Delete"
+                active
+                halfSize
+                onPress={() => {
+                  const newFiles = files.filter(item => item.uri !== file.uri);
+                  onDelete(newFiles);
+                  navigation.navigate('CreateViewEvidenceCard');
+                }}
+                style={styles.deleteButton}
+                textStyle={styles.buttonText}
+              />
+              <Button
+                text="Cancel"
+                active
+                halfSize
+                onPress={() => {
+                  navigation.navigate('CreateViewEvidenceCard');
+                }}
+                style={styles.cancelButton}
+                textStyle={{color: '#EA7804'}}
+              />
+            </View>
+          )}
+        </View>
       ) : (
         <View
-          style={{
-            alignItems: 'center',
-            alignSelf: 'center',
-            justifyContent: 'center',
-            marginTop: '45%',
-          }}>
+          style={[
+            styles.contentContainer,
+            {marginTop: file.type?.includes('pdf') ? 0 : '45%'},
+          ]}>
           <RenderFileContent uri={file.uri} type={file.type} />
         </View>
       )}
     </Layout>
   );
 };
+
+const styles = StyleSheet.create({
+  layout: {
+    paddingHorizontal: 15,
+  },
+  videoContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: '55%',
+  },
+  buttonContainer: {
+    // position: 'absolute',
+    marginTop: '65%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
+  deleteButton: {
+    backgroundColor: '#EA7804',
+    flex: 1,
+    marginRight: 10,
+  },
+  cancelButton: {
+    borderColor: '#EA7804',
+    borderWidth: 2,
+    backgroundColor: '#FFFFFF',
+    flex: 1,
+  },
+  buttonText: {
+    color: '#FFFFFF',
+  },
+  contentContainer: {
+    alignItems: 'center',
+    alignSelf: 'center',
+    justifyContent: 'center',
+  },
+  image: {
+    width,
+    height: height / 2,
+  },
+  pdf: {
+    flex: 1,
+    width,
+    height: height / 2,
+  },
+  scrollView: {
+    width,
+    height: height / 2,
+  },
+  scrollViewContent: {
+    padding: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
 
 export default PlayFile;

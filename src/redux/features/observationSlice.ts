@@ -532,12 +532,10 @@ const observationSlice = createSlice({
       })
       .addCase(getAllObservations.pending, state => {
         // state.isLoading = true;
+        state.allObservations=null;
       })
       .addCase(getAllObservations.fulfilled, (state, action) => {
-        state.allObservations = {
-          ...state.allObservations,
-          ...action.payload.payload,
-        };
+        state.allObservations = action.payload.payload;
       })
       .addCase(getAllObservations.rejected, (state, action) => {
         state.observationShowMessage = {

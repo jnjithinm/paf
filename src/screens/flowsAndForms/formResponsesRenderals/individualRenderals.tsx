@@ -160,7 +160,7 @@ export const IndividualMainPageRenderal: FC<
         individualResponse.length > 0 ? (
           individualResponse.map(item => (
             <IndividualTile
-              rating={item.questionAvgRating}
+              rating={item.questionAvgRating || 0}
               creationDate={moment(item.responses[0].responseDate).format(
                 'DD/MM/YYYY',
               )}

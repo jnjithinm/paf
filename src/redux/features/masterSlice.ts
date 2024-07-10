@@ -199,17 +199,28 @@ export const getIndicatorsByDomainId = createAsyncThunk<
   },
 );
 
-export const getRoles = createAsyncThunk<GetRolesResponse, PaginationRequest>(
+export const getRoles = createAsyncThunk<GetRolesResponse,[ PaginationRequest,string?]>(
   'master/getRoles',
-  async (payload, {dispatch, rejectWithValue}) => {
+  async ([payload,searchCriteria], {dispatch, rejectWithValue}) => {
     try {
-      dispatch(setLoading(true));
-      const response = await api.post(endPoints.GET_ROLES, payload);
+      // dispatch(setLoading(true));
+      let response;
+      if(searchCriteria){
+        response = await api.post(
+          endPoints.GET_ROLES_BY_SEARCH + `searchCriteria=${searchCriteria}`,
+          payload,
+        );
+      }else{
+        response = await api.post(
+          endPoints.GET_ROLES ,
+          payload,
+        );
+      }
       return response.data as GetRolesResponse;
     } catch (error: any) {
       return rejectWithValue(error.response.data);
     } finally {
-      dispatch(setLoading(false));
+      // dispatch(setLoading(false));
     }
   },
 );
@@ -218,59 +229,103 @@ export const getStates = createAsyncThunk<GetStatesResponse, PaginationRequest>(
   'master/getStates',
   async (payload, {dispatch, rejectWithValue}) => {
     try {
-      dispatch(setLoading(true));
-      const response = await api.post(endPoints.GET_STATES, payload);
+      // dispatch(setLoading(true));
+      let response;
+      // if(searchCriteria){
+      //   response = await api.post(
+      //     endPoints.GET_STATES_BY_SEARCH + `searchCriteria=${searchCriteria}`,
+      //     payload,
+      //   );
+      // }else{
+        response = await api.post(
+          endPoints.GET_STATES ,
+          payload,
+        );
+      // }
       return response.data as GetStatesResponse;
     } catch (error: any) {
       return rejectWithValue(error.response.data);
     } finally {
-      dispatch(setLoading(false));
+      // dispatch(setLoading(false));
     }
   },
 );
 
 export const getDistricts = createAsyncThunk<
   GetDistrictResponse,
-  PaginationRequest
->('master/getDistricts', async (payload, {dispatch, rejectWithValue}) => {
+  [PaginationRequest,string?]
+>('master/getDistricts', async ([payload,searchCriteria], {dispatch, rejectWithValue}) => {
   try {
-    dispatch(setLoading(true));
-    const response = await api.post(endPoints.GET_DISTRICTS, payload);
+    // dispatch(setLoading(true));
+    let response;
+    if(searchCriteria){
+      response = await api.post(
+        endPoints.GET_DISTRICTS_BY_SEARCH + `searchCriteria=${searchCriteria}`,
+        payload,
+      );
+    }else{
+      response = await api.post(
+        endPoints.GET_DISTRICTS ,
+        payload,
+      );
+    }
     return response.data as GetDistrictResponse;
   } catch (error: any) {
     return rejectWithValue(error.response.data);
   } finally {
-    dispatch(setLoading(false));
+    // dispatch(setLoading(false));
   }
 });
 
-export const getAreas = createAsyncThunk<GetAreaResponse, PaginationRequest>(
+export const getAreas = createAsyncThunk<GetAreaResponse, [PaginationRequest,string?]>(
   'master/getAreas',
-  async (payload, {dispatch, rejectWithValue}) => {
+  async ([payload,searchCriteria], {dispatch, rejectWithValue}) => {
     try {
-      dispatch(setLoading(true));
-      const response = await api.post(endPoints.GET_AREAS, payload);
+      // dispatch(setLoading(true));
+      let response;
+      if(searchCriteria){
+        response = await api.post(
+          endPoints.GET_AREAS_BY_SEARCH + `searchCriteria=${searchCriteria}`,
+          payload,
+        );
+      }else{
+        response = await api.post(
+          endPoints.GET_AREAS ,
+          payload,
+        );
+      }
       return response.data as GetAreaResponse;
     } catch (error: any) {
       return rejectWithValue(error.response.data);
     } finally {
-      dispatch(setLoading(false));
+      // dispatch(setLoading(false));
     }
   },
 );
 
 export const getSchools = createAsyncThunk<
   GetSchoolResponse,
-  PaginationRequest
->('master/getSchools', async (payload, {dispatch, rejectWithValue}) => {
+  [PaginationRequest,string?]
+>('master/getSchools', async ([payload,searchCriteria], {dispatch, rejectWithValue}) => {
   try {
-    dispatch(setLoading(true));
-    const response = await api.post(endPoints.GET_SCHOOLS, payload);
+    // dispatch(setLoading(true));
+    let response;
+    if(searchCriteria){
+      response = await api.post(
+        endPoints.GET_SCHOOLS_BY_SEARCH + `searchCriteria=${searchCriteria}`,
+        payload,
+      );
+    }else{
+      response = await api.post(
+        endPoints.GET_SCHOOLS ,
+        payload,
+      );
+    }
     return response.data as GetSchoolResponse;
   } catch (error: any) {
     return rejectWithValue(error.response.data);
   } finally {
-    dispatch(setLoading(false));
+    // dispatch(setLoading(false));
   }
 });
 
@@ -340,9 +395,9 @@ const masterSlice = createSlice({
         state.allRoles = null;
       })
       .addCase(getRoles.fulfilled, (state, action) => {
-        if (action.meta.arg.type === 'all') {
+        if (action.meta.arg[0].type === 'all') {
           state.allRoles = action.payload.payload;
-        } else if (action.meta.arg.type === true) {
+        } else if (action.meta.arg[0].type === true) {
           state.activeRoles = action.payload.payload;
         } else {
           state.inactiveRoles = action.payload.payload;
@@ -364,9 +419,9 @@ const masterSlice = createSlice({
       })
       .addCase(getDistricts.pending, state => {})
       .addCase(getDistricts.fulfilled, (state, action) => {
-        if (action.meta.arg.type === 'all') {
+        if (action.meta.arg[0].type === 'all') {
           state.allDistricts = action.payload.payload;
-        } else if (action.meta.arg.type === true) {
+        } else if (action.meta.arg[0].type === true) {
           state.activeDistricts = action.payload.payload;
         } else {
           state.inactiveDistricts = action.payload.payload;
@@ -379,9 +434,9 @@ const masterSlice = createSlice({
         state.allAreas = null;
       })
       .addCase(getAreas.fulfilled, (state, action) => {
-        if (action.meta.arg.type === 'all') {
+        if (action.meta.arg[0].type === 'all') {
           state.allAreas = action.payload.payload;
-        } else if (action.meta.arg.type === true) {
+        } else if (action.meta.arg[0].type === true) {
           state.activeAreas = action.payload.payload;
         } else {
           state.inactiveAreas = action.payload.payload;
@@ -396,9 +451,9 @@ const masterSlice = createSlice({
         state.activeRoles = null;
       })
       .addCase(getSchools.fulfilled, (state, action) => {
-        if (action.meta.arg.type === 'all') {
+        if (action.meta.arg[0].type === 'all') {
           state.allSchools = action.payload.payload;
-        } else if (action.meta.arg.type === true) {
+        } else if (action.meta.arg[0].type === true) {
           state.activeSchools = action.payload.payload;
         } else {
           state.inactiveSchools = action.payload.payload;

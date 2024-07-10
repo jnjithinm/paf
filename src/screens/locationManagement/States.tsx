@@ -66,7 +66,7 @@ const States: FC<StatesScreenProps> = ({ navigation, route }) => {
     dispatch(
       getStates({
         page: 0,
-        size: 10,
+        size: 15,
         type: 'all',
       }),
     );
@@ -109,7 +109,7 @@ const States: FC<StatesScreenProps> = ({ navigation, route }) => {
                   dispatch(
                     getStates({
                       page: index,
-                      size: 10,
+                      size: 15,
                       type: 'all',
                     }),
                   );

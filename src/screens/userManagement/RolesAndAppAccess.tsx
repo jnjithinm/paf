@@ -1,4 +1,4 @@
-import React, {FC, useEffect, useState} from 'react';
+import React, {FC, useCallback, useEffect, useState} from 'react';
 import {TouchableOpacity, View} from 'react-native';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
@@ -142,49 +142,51 @@ const RolesAndAppAccess: FC<RolesAndAppAccessScreenProps> = ({
     {label: `Inactive (${inactiveRoles?.totalCount || ''})`, value: 'inactive'},
   ];
 
-  const handleTabClick = (title: ItemType) => {
-    if (title.value == 'all') {
-      setRolesList({
-        roleList: allRoles?.dataList,
-        count: allRoles?.totalCount,
-        selectedTab: 'all',
-      });
-    } else if (title.value == 'active') {
-      setRolesList({
-        roleList: activeRoles?.dataList,
-        count: activeRoles?.totalCount,
-        selectedTab: true,
-      });
-    } else {
-      setRolesList({
-        roleList: inactiveRoles?.dataList,
-        count: inactiveRoles?.totalCount,
-        selectedTab: false,
-      });
-    }
-  };
+
+  const handleTabClick = useCallback(
+    (title: ItemType) => {
+      if (title.value == 'all') {
+        setRolesList({
+          roleList: allRoles?.dataList,
+          count: allRoles?.totalCount,
+          selectedTab: 'all',
+        });
+      } else if (title.value == 'active') {
+        setRolesList({
+          roleList: activeRoles?.dataList,
+          count: activeRoles?.totalCount,
+          selectedTab: true,
+        });
+      } else {
+        setRolesList({
+          roleList: inactiveRoles?.dataList,
+          count: inactiveRoles?.totalCount,
+          selectedTab: false,
+        });
+      }
+  }, [allRoles, activeRoles, inactiveRoles])
 
   useEffect(() => {
     dispatch(
-      getRoles({
+      getRoles([{
         page: 0,
         size: 15,
         type: 'all',
-      }),
+      }]),
     );
     dispatch(
-      getRoles({
+      getRoles([{
         page: 0,
         size: 15,
         type: true,
-      }),
+      }]),
     );
     dispatch(
-      getRoles({
+      getRoles([{
         page: 0,
         size: 15,
         type: false,
-      }),
+      }]),
     );
   }, []);
 
@@ -217,10 +219,20 @@ const RolesAndAppAccess: FC<RolesAndAppAccessScreenProps> = ({
       });
     }
   }, [inactiveRoles]);
+  
 
-  const filteredRoles = rolesList?.roleList?.filter(item =>
-    item?.roleName?.toLocaleLowerCase()?.includes(search?.toLocaleLowerCase()),
-  );
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+        dispatch(getRoles([{
+          page: 0,
+          size: 15,
+          type: 'all',
+        },search]));
+    }, 200);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [search,rolesList?.selectedTab]);
+
 
   return (
     <Layout
@@ -244,10 +256,10 @@ const RolesAndAppAccess: FC<RolesAndAppAccessScreenProps> = ({
         filterNotNeeded
       />
       <View>
-        {filteredRoles ? (
-          filteredRoles.length > 0 ? (
+        {rolesList?.roleList ? (
+          rolesList?.roleList?.length > 0 ? (
             <View>
-              {filteredRoles?.map(item => (
+              {rolesList?.roleList?.map(item => (
                 <RolesAndAppAccessTile
                   role={item}
                   onPressItem={role => {
@@ -261,11 +273,11 @@ const RolesAndAppAccess: FC<RolesAndAppAccessScreenProps> = ({
                 onPressPageIndex={index => {
                   if(rolesList){
                   dispatch(
-                    getRoles({
+                    getRoles([{
                       page: index,
-                      size: 10,
+                      size: 15,
                       type: rolesList?.selectedTab || 'all',
-                    }),
+                    },search]),
                   );
                 }
                 }}

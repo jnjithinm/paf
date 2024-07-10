@@ -173,18 +173,22 @@ export const RenderAssignFormModalContent: FC<
 
   useEffect(() => {
     dispatch(
-      getAllUsers({
-        page: 0,
-        size: 15,
-        type: 'all',
-      }),
+      getAllUsers([
+        {
+          page: 0,
+          size: 15,
+          type: 'all',
+        },
+      ]),
     );
     dispatch(
-      getAllUserGroups({
-        page: 0,
-        size: 15,
-        type: 'all',
-      }),
+      getAllUserGroups([
+        {
+          page: 0,
+          size: 15,
+          type: 'all',
+        },
+      ]),
     );
   }, []);
 
@@ -360,11 +364,13 @@ const RenderSendReminderModal: FC<RenderSendReminderModalTypes> = ({
 
   useEffect(() => {
     dispatch(
-      getAllUserGroups({
-        page: 0,
-        size: 15,
-        type: 'all',
-      }),
+      getAllUserGroups([
+        {
+          page: 0,
+          size: 15,
+          type: 'all',
+        },
+      ]),
     );
   }, []);
 
@@ -604,6 +610,8 @@ const FormResponses: FC<FormResponsesScreenProps> = ({navigation, route}) => {
   const [selectedRubricWise, setSelectedRubricWise] =
     useState<RubricWiseResponse | null>(null);
 
+  const [search, setSearch] = useState<string>('');
+
   const [isAcceptingResponses, setIsAcceptingResponses] =
     useState<boolean>(true);
 
@@ -687,6 +695,7 @@ const FormResponses: FC<FormResponsesScreenProps> = ({navigation, route}) => {
   };
 
   const handleTabClick = (title: ItemType) => {
+    // setSearch('');
     setSelectedTab(title.value as TabTypes);
   };
 
@@ -694,12 +703,24 @@ const FormResponses: FC<FormResponsesScreenProps> = ({navigation, route}) => {
     screen === 'main' ? navigation.goBack() : setScreen('main');
   };
 
+  const filteredIndividualResponses=  formById?.dataList?.individualResponses?.filter(item =>
+    item?.name?.toLocaleLowerCase()?.includes(search?.toLocaleLowerCase()),
+  );
+
+  const filteredQuestionWiseResponses =formById?.dataList?.questionList?.filter(item =>
+    item?.questionText?.toLocaleLowerCase()?.includes(search?.toLocaleLowerCase()),
+  );
+
+  const filteredRubricWiseResponses = formById?.dataList?.rubricWiseResponse?.filter(item =>
+    item?.indicatorName?.toLocaleLowerCase()?.includes(search?.toLocaleLowerCase()),
+  );
+
   const selectScreenSwitch = (selectedTab: TabTypes): ScreenComponentType => {
     let screen: ScreenSelectiontypes = 'main';
     let renderal: JSX.Element = (
       <IndividualMainPageRenderal
         onPress={onPressItem}
-        individualResponse={formById?.dataList?.individualResponses}
+        individualResponse={filteredIndividualResponses}
         flowDetailItem={flowDetailItem}
         totalQuestion={formById?.dataList?.totalQuestions || 0}
       />
@@ -714,7 +735,7 @@ const FormResponses: FC<FormResponsesScreenProps> = ({navigation, route}) => {
           renderal = (
             <IndividualMainPageRenderal
               onPress={onPressItem}
-              individualResponse={formById?.dataList?.individualResponses}
+              individualResponse={filteredIndividualResponses}
               flowDetailItem={flowDetailItem}
               totalQuestion={formById?.dataList?.totalQuestions || 0}
             />
@@ -736,7 +757,7 @@ const FormResponses: FC<FormResponsesScreenProps> = ({navigation, route}) => {
             <QuestionWiseMainPageRenderal
               key={1}
               onPressItem={onPressItem}
-              questionList={formById?.dataList?.questionList}
+              questionList={filteredQuestionWiseResponses}
             />
           );
         } else {
@@ -762,7 +783,7 @@ const FormResponses: FC<FormResponsesScreenProps> = ({navigation, route}) => {
         if (rubricWiseScreen === 'main') {
           renderal = (
             <RubricWiseMainPageRenderal
-              indicatorsList={formById?.dataList?.rubricWiseResponse || []}
+              indicatorsList={filteredRubricWiseResponses || []}
               onPressItem={onPressItem}
             />
           );
@@ -927,8 +948,10 @@ const FormResponses: FC<FormResponsesScreenProps> = ({navigation, route}) => {
           />
           {isMainPage && (
             <SearchWithFilter
-              placeHolder={'Search by user name'}
-              onTextChange={() => {}}
+              placeHolder={'Search'}
+              onTextChange={search => {
+                setSearch(search);
+              }}
               onProceed={() => {}}
               filterNotNeeded
             />
@@ -943,7 +966,9 @@ const FormResponses: FC<FormResponsesScreenProps> = ({navigation, route}) => {
             onPressProceedButton={() => {
               setIsAssignFormModalVisible(true);
             }}
-            onPressCancelButton={() => {}}
+            onPressCancelButton={() => {
+              navigation.navigate('PreviewForm', {flowDetailItem});
+            }}
             proceedButtonText={'Assign form'}
             cancelButtonText={'Preview From'}
           />

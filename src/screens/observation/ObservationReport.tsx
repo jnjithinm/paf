@@ -207,7 +207,7 @@ const ObservationReport: FC<ObservationReportScreenProps> = ({
         }}
         style={{paddingHorizontal: 15, paddingVertical: 0}}
         icon="reports_icon"
-        title="Report">
+        title="Observation Report">
         <View style={{marginVertical: 20}}>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
             <RenderProfileIcon
@@ -221,7 +221,7 @@ const ObservationReport: FC<ObservationReportScreenProps> = ({
               size={50}
             />
             <View style={{flex: 1, justifyContent: 'center', marginLeft: 10}}>
-              <View style={{flexDirection: 'row', alignItems: 'center'}}>
+              <View style={{flexDirection: 'row', alignItems: 'center',width:'70%'}}>
                 <Text fontVariant="bold" size="body2">
                   {observationById
                     ? `${observationById?.userName || ''} (${
@@ -232,7 +232,7 @@ const ObservationReport: FC<ObservationReportScreenProps> = ({
                       })`}
                 </Text>
                 <RenderCompleteStatus
-                  style={{left: 5}}
+                  style={{marginLeft: 5}}
                   status={observationById?.observationStatus}
                 />
               </View>

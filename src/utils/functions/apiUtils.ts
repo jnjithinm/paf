@@ -24,7 +24,7 @@ export const filterPayload = <T extends object>(payload: T): Partial<T> => {
 export const downloadFile = async (
   printResponsesType: PrintResponsesType,
   payload: PrintFormResponsesRequest,
-): Promise<boolean> => {
+): Promise<{downloadStatus:boolean,savedFilePath:string|null}> => {
 
   try {
     const timestamp = new Date().getTime();
@@ -64,9 +64,9 @@ export const downloadFile = async (
     } else if (Platform.OS === 'ios') {
       RNFetchBlob.ios.previewDocument(response.path());
     }
-    return true;
+    return {downloadStatus: true,savedFilePath:response.path()?.toString()};
   } catch (error) {
     console.error('Error downloading file:', error);
-    return false;
+    return {downloadStatus: false,savedFilePath:null};
   }
 };

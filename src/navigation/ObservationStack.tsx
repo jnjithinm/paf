@@ -17,7 +17,7 @@ export type ObservationStackParamList = {
   AddNewObservation: {isEvidenceCardCreated: boolean}|undefined;
   CreateViewEvidenceCard: undefined;
   ObservationReport: undefined;
-  PlayFile: {file: FileObject};
+  PlayFile: {file: FileObject,files:FileObject[],onDelete:(files:FileObject[])=>void};
 };
 
 const ObservationStackTab = createStackNavigator<ObservationStackParamList>();

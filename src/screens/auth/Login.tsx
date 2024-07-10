@@ -37,6 +37,7 @@ const Login: FC<LoginScreenProps> = ({navigation, route}) => {
   const [password, setPassword] = useState<string>('');
   const [isChanged, setIsChanged] = useState<boolean>(false);
   const [isRememberMe, setIsRememberMe] = useState<boolean>(false);
+  const [isShowError,setIsShowError]=useState<boolean>(false);
 
   const dispatch = useAppDispatch();
   const {usernameErrorMessage, passwordErrorMessage} = useAppSelector(
@@ -55,8 +56,9 @@ const Login: FC<LoginScreenProps> = ({navigation, route}) => {
   });
 
   const onPressLogin = async () => {
-    dispatch(resetUsernamePasswordErrorMessages());
-    if (!usernameErrorMessage && !passwordErrorMessage) {
+    // dispatch(resetUsernamePasswordErrorMessages());
+    setIsShowError(true);
+    if (!usernameValidationErrorMessage && !passwordValidationErrorMessage) {
       if (isRememberMe && isChanged) {
         setIsChanged(false);
         await storeUserCredentials(username, password);
@@ -82,6 +84,7 @@ const Login: FC<LoginScreenProps> = ({navigation, route}) => {
   useFocusEffect(
     React.useCallback(() => {
       dispatch(logoutAndclearToken());
+    setIsShowError(false);
       const getUserDetails = async () => {
         try {
           const data = await getUserCredentials();
@@ -98,6 +101,7 @@ const Login: FC<LoginScreenProps> = ({navigation, route}) => {
     }, []),
   );
 
+  console.log("err",usernameErrorMessage,passwordErrorMessage)
   return (
     <Layout
       style={{
@@ -128,6 +132,7 @@ const Login: FC<LoginScreenProps> = ({navigation, route}) => {
           }}
           errorMessage={usernameValidationErrorMessage || usernameErrorMessage}
           placeholder="Enter your username"
+          isShowErrorButtonPress={isShowError}
           autoCapitalize="none"
         />
         <TextInput
@@ -140,6 +145,7 @@ const Login: FC<LoginScreenProps> = ({navigation, route}) => {
           }}
           errorMessage={passwordValidationErrorMessage || passwordErrorMessage}
           placeholder="Enter your password"
+          isShowErrorButtonPress={isShowError}
           passwordVisibility
           style={{marginTop: 10}}
           autoCapitalize="none"
@@ -218,7 +224,7 @@ const Login: FC<LoginScreenProps> = ({navigation, route}) => {
           <Text style={{color: '#ABB4BD', marginVertical: 20}} size="body1">
             Can't access your account ?
           </Text>
-          <TouchableOpacity disabled>
+          <TouchableOpacity onPress={()=>{navigation.navigate('FAQ')}}>
             <Text
               style={{
                 textDecorationLine: 'underline',

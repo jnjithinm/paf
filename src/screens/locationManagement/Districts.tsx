@@ -1,4 +1,4 @@
-import React, {FC, useEffect, useState} from 'react';
+import React, {FC, useCallback, useEffect, useState} from 'react';
 import {TouchableOpacity, View, ViewStyle} from 'react-native';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
@@ -97,7 +97,7 @@ interface DistrictsScreenProps {
 
 const Districts: FC<DistrictsScreenProps> = ({navigation, route}) => {
   const [selectedItem, setSelectedItem] = useState<District>();
-  const [districtList, setDistrictList] = useState<DistrictsList | undefined>({
+  const [districtList, setDistrictList] = useState<DistrictsList>({
     districtsList: [],
     count:0,
     selectedTab: 'all',
@@ -120,85 +120,106 @@ const Districts: FC<DistrictsScreenProps> = ({navigation, route}) => {
 
   useEffect(() => {
     if (allDistricts) {
-      setDistrictList({
-        districtsList: allDistricts?.dataList,
+      setDistrictList((prev) => ({
+        ...prev,
+        districtsList: allDistricts.dataList,
         count: allDistricts.totalCount,
         selectedTab: 'all',
-      });
+      }));
     }
   }, [allDistricts]);
 
   useEffect(() => {
-    if (activeDistricts && districtList?.selectedTab===true) {
-      setDistrictList({
-        districtsList: activeDistricts?.dataList,
+    if (activeDistricts && districtList.selectedTab === true) {
+      setDistrictList((prev) => ({
+        ...prev,
+        districtsList: activeDistricts.dataList,
         count: activeDistricts.totalCount,
-        selectedTab: true,
-      });
+      }));
     }
   }, [activeDistricts]);
 
   useEffect(() => {
-    if (inactiveDistricts && districtList?.selectedTab===false) {
-      setDistrictList({
-        districtsList: inactiveDistricts?.dataList,
+    if (inactiveDistricts && districtList.selectedTab === false) {
+      setDistrictList((prev) => ({
+        ...prev,
+        districtsList: inactiveDistricts.dataList,
         count: inactiveDistricts.totalCount,
-        selectedTab: false,
-      });
+      }));
     }
   }, [inactiveDistricts]);
 
-  const handleTabClick = (title: ItemType) => {
-    if (title.value == 'all') {
-      setDistrictList({
-        districtsList: allDistricts?.dataList,
-        count: allDistricts?.totalCount,
-        selectedTab: 'all',
-      });
-    } else if (title.value == 'active') {
-      setDistrictList({
-        districtsList: activeDistricts?.dataList,
-        count: activeDistricts?.totalCount,
-        selectedTab: true,
-      });
-    } else {
-      setDistrictList({
-        districtsList: inactiveDistricts?.dataList,
-        count: inactiveDistricts?.totalCount,
-        selectedTab: false,
-      });
-    }
-  };
+  const handleTabClick = useCallback(
+    (title: ItemType) => {
+      if (title.value === 'all') {
+        setDistrictList({
+          districtsList: allDistricts?.dataList,
+          count: allDistricts?.totalCount,
+          selectedTab: 'all',
+        });
+      } else if (title.value === 'active') {
+        setDistrictList({
+          districtsList: activeDistricts?.dataList,
+          count: activeDistricts?.totalCount,
+          selectedTab: true,
+        });
+      } else {
+        setDistrictList({
+          districtsList: inactiveDistricts?.dataList,
+          count: inactiveDistricts?.totalCount,
+          selectedTab: false,
+        });
+      }
+    },
+    [allDistricts, activeDistricts, inactiveDistricts]
+  );
 
   useEffect(() => {
     dispatch(
-      getDistricts({
-        page: 0,
-        size: 10,
-        type: 'all',
-      }),
+      getDistricts([
+        {
+          page: 0,
+          size: 15,
+          type: 'all',
+        },
+      ])
     );
     dispatch(
-      getDistricts({
-        page: 0,
-        size: 10,
-        type: true,
-      }),
+      getDistricts([
+        {
+          page: 0,
+          size: 15,
+          type: true,
+        },
+      ])
     );
     dispatch(
-      getDistricts({
-        page: 0,
-        size: 10,
-        type: false,
-      }),
+      getDistricts([
+        {
+          page: 0,
+          size: 15,
+          type: false,
+        },
+      ])
     );
   }, []);
 
-  const filteredDistricts = districtList?.districtsList?.filter(item =>
-    item?.districtName
-      ?.toLocaleLowerCase()
-      ?.includes(search?.toLocaleLowerCase()),
-  );
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      dispatch(
+        getDistricts([
+          {
+            page: 0,
+            size: 15,
+            type: districtList.selectedTab ,
+          },
+          search,
+        ])
+      );
+    }, 300);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [search, districtList.selectedTab]);
 
   return (
     <Layout
@@ -222,10 +243,10 @@ const Districts: FC<DistrictsScreenProps> = ({navigation, route}) => {
         filterNotNeeded
       />
       <View style={{marginBottom: 15}}>
-        {filteredDistricts ? (
-          filteredDistricts.length > 0 ? (
+        {districtList?.districtsList ? (
+          districtList?.districtsList.length > 0 ? (
             <View>
-              {filteredDistricts.map(item => (
+              {districtList?.districtsList.map(item => (
                 <DistrictTile
                   district={item}
                   onPressItem={district => {
@@ -239,11 +260,11 @@ const Districts: FC<DistrictsScreenProps> = ({navigation, route}) => {
                 onPressPageIndex={index => {
                   if(districtList){
                   dispatch(
-                    getDistricts({
+                    getDistricts([{
                       page: index,
-                      size: 10,
+                      size: 15,
                       type: districtList?.selectedTab || 'all',
-                    }),
+                    },search]),
                   );
                 }
                 }}

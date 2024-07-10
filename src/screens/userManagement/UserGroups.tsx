@@ -1,4 +1,4 @@
-import React, {FC, useEffect, useState} from 'react';
+import React, {FC, useCallback, useEffect, useState} from 'react';
 import {TouchableOpacity, View} from 'react-native';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
@@ -60,6 +60,7 @@ const UserGroupTile: FC<UserGroupTileProps> = ({
         padding: 10,
         borderRadius: 10,
       }}
+      disabled
       onPress={userGroup => {}}>
       <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
         <Text size="body2" fontVariant="bold">
@@ -92,7 +93,7 @@ const UserGroupTile: FC<UserGroupTileProps> = ({
 };
 
 type UserGroupsList = {
-  userGroupsList: UserGroup[] | undefined;
+  userGroupsList: UserGroup[]|undefined ;
   count: number | undefined;
   selectedTab: 'all' | boolean;
 };
@@ -105,7 +106,11 @@ interface UserGroupsScreenProps {
 const UserGroups: FC<UserGroupsScreenProps> = ({navigation, route}) => {
   const [selectedItem, setSelectedItem] = useState<UserGroup>();
   const [search, setSearch] = useState<string>('');
-  const [userGroupList, setUserGroupList] = useState<UserGroupsList>();
+  const [userGroupList, setUserGroupList] = useState<UserGroupsList>({
+    userGroupsList: [],
+    count: 0,
+    selectedTab: 'all',
+  });
 
   const {allUserGroups, activeUserGroups, inactiveUserGroups} = useAppSelector(
     state => state.users,
@@ -142,64 +147,75 @@ const UserGroups: FC<UserGroupsScreenProps> = ({navigation, route}) => {
   }, [activeUserGroups]);
 
   useEffect(() => {
-    if (activeUserGroups && userGroupList?.selectedTab === false) {
-      setUserGroupList({
-        userGroupsList: activeUserGroups?.dataList,
-        count: activeUserGroups.totalCount,
-        selectedTab: false,
-      });
-    }
-  }, [activeUserGroups]);
-
-  const handleTabClick = (title: ItemType) => {
-    if (title.value == 'all') {
-      setUserGroupList({
-        userGroupsList: allUserGroups?.dataList,
-        count: allUserGroups?.totalCount,
-        selectedTab: 'all',
-      });
-    } else if (title.value == 'active') {
-      setUserGroupList({
-        userGroupsList: activeUserGroups?.dataList,
-        count: activeUserGroups?.totalCount,
-        selectedTab: true,
-      });
-    } else {
+    if (inactiveUserGroups && userGroupList?.selectedTab === false) {
       setUserGroupList({
         userGroupsList: inactiveUserGroups?.dataList,
-        count: inactiveUserGroups?.totalCount,
+        count: inactiveUserGroups.totalCount,
         selectedTab: false,
       });
     }
-  };
+  }, [inactiveUserGroups]);
 
   useEffect(() => {
     dispatch(
-      getAllUserGroups({
+      getAllUserGroups([{
         page: 0,
-        size: 10,
+        size: 15,
         type: 'all',
-      }),
+      }]),
     );
     dispatch(
-      getAllUserGroups({
+      getAllUserGroups([{
         page: 0,
-        size: 10,
+        size: 15,
         type: true,
-      }),
+      }]),
     );
     dispatch(
-      getAllUserGroups({
+      getAllUserGroups([{
         page: 0,
-        size: 10,
+        size: 15,
         type: false,
-      }),
+      }]),
     );
   }, []);
+  const handleTabClick = useCallback(
+    (title: ItemType) => {
+      if (title.value == 'all') {
+        setUserGroupList({
+          userGroupsList: allUserGroups?.dataList,
+          count: allUserGroups?.totalCount,
+          selectedTab: 'all',
+        });
+      } else if (title.value == 'active') {
+        setUserGroupList({
+          userGroupsList: activeUserGroups?.dataList,
+          count: activeUserGroups?.totalCount,
+          selectedTab: true,
+        });
+      } else {
+        setUserGroupList({
+          userGroupsList: inactiveUserGroups?.dataList,
+          count: inactiveUserGroups?.totalCount,
+          selectedTab: false,
+        });
+      }
+  }, [allUserGroups, activeUserGroups, inactiveUserGroups])
 
-  const filteredUserGroups = userGroupList?.userGroupsList?.filter(item =>
-    item?.groupName?.toLocaleLowerCase()?.includes(search?.toLocaleLowerCase()),
-  );
+
+
+
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+        dispatch(getAllUserGroups([{
+          page: 0,
+          size: 15,
+          type: userGroupList.selectedTab,
+        },search]));
+    }, 200);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [search,userGroupList.selectedTab]);
 
   return (
     <Layout
@@ -223,10 +239,10 @@ const UserGroups: FC<UserGroupsScreenProps> = ({navigation, route}) => {
         filterNotNeeded
       />
       <View>
-        {filteredUserGroups ? (
-          filteredUserGroups.length > 0 ? (
+        {userGroupList?.userGroupsList ? (
+          userGroupList?.userGroupsList.length > 0 ? (
             <View>
-              {filteredUserGroups?.map(item => (
+              {userGroupList?.userGroupsList?.map(item => (
                 <UserGroupTile
                   userGroup={item}
                   onPressItem={user => {
@@ -240,11 +256,11 @@ const UserGroups: FC<UserGroupsScreenProps> = ({navigation, route}) => {
                 onPressPageIndex={index => {
                   if (userGroupList) {
                     dispatch(
-                      getAllUserGroups({
+                      getAllUserGroups([{
                         page: index,
-                        size: 10,
+                        size: 15,
                         type: userGroupList?.selectedTab || 'all',
-                      }),
+                      },search]),
                     );
                   }
                 }}

@@ -1,34 +1,32 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Dimensions } from 'react-native';
 import Video from 'react-native-video';
 import Orientation from 'react-native-orientation-locker';
 
 interface VideoPlayerProps {
-    uri: string;
+  uri: string;
+  isFullscreen?: boolean;
+  onFullscreenChange?: (isFullscreen: boolean) => void;
 }
 
-const VideoPlayer: React.FC<VideoPlayerProps> = ({ uri }) => {
-  const [isFullscreen, setIsFullscreen] = useState(false);
-
-  const onEnterFullscreen = () => {
-    setIsFullscreen(true);
-    Orientation.lockToLandscape();
-  };
-
-  const onExitFullscreen = () => {
-    setIsFullscreen(false);
-    Orientation.lockToPortrait();
-  };
+const VideoPlayer: React.FC<VideoPlayerProps> = ({ uri, isFullscreen = false, onFullscreenChange }) => {
+  useEffect(() => {
+    if (isFullscreen) {
+      Orientation.lockToLandscape();
+    } else {
+      Orientation.lockToPortrait();
+    }
+  }, [isFullscreen]);
 
   return (
     <View style={isFullscreen ? styles.fullscreenContainer : styles.container}>
       <Video
-        source={{uri}}
+        source={{ uri }}
         style={isFullscreen ? styles.fullscreenVideo : styles.video}
         controls={true}
         resizeMode="contain"
-        onFullscreenPlayerWillPresent={onEnterFullscreen}
-        onFullscreenPlayerWillDismiss={onExitFullscreen}
+        onFullscreenPlayerWillPresent={() => onFullscreenChange && onFullscreenChange(true)}
+        onFullscreenPlayerWillDismiss={() => onFullscreenChange && onFullscreenChange(false)}
       />
     </View>
   );
@@ -50,6 +48,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#000',
+    // marginTop:"20%"
   },
   video: {
     width: Dimensions.get('window').width,

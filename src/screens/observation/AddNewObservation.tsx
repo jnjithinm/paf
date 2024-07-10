@@ -149,11 +149,11 @@ const AddNewObservation: FC<AddNewObservationScreenProps> = ({
 
   useEffect(() => {
     dispatch(
-      getAllUserGroups({
+      getAllUserGroups([{
         page: 0,
         size: 15,
         type: 'all',
-      }),
+      }]),
     );
   }, []);
 

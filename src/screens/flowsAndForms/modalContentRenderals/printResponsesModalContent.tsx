@@ -1,5 +1,6 @@
-import {FC, useState} from 'react';
+import {FC, useEffect, useState} from 'react';
 import {TextInput, View} from 'react-native';
+import RNPrint from 'react-native-print';
 
 import {FlowDetailItem} from '../../../redux/features/flowsSlice';
 import Button from '../../../components/Button';
@@ -29,16 +30,43 @@ export const RenderPrintResponsesModalContent: FC<
   const [selectedPagingMethod, setSelectedPagingMethod] = useState<ItemType>();
   const [selectedLayout, setSelectedLayout] = useState<ItemType>();
   const [pagesCount, setPagesCount] = useState<string>();
+  const [printerOptions, setPrinterOptions] = useState<ItemType[]>([]);
 
   const dispatch = useAppDispatch();
 
+  const handlePrint = async (filePath: string) => {
+    try {
+      await RNPrint.print({filePath});
+    } catch (error) {
+      console.error('Print error:', error);
+    }
+  };
+
+  useEffect(() => {
+    const fetchPrinters = async () => {
+      try {
+        const printers = await RNPrint.selectPrinter({x: 100, y: 100});
+        if (printers) {
+          setPrinterOptions([{value: printers.url, label: printers.name}]);
+        }
+      } catch (error) {
+        console.error('Failed to fetch printers:', error);
+      }
+    };
+    fetchPrinters();
+  }, []);
+
   const handleSave = async () => {
     console.log('aaa');
-    const downloadStatus = await downloadFile(printResponsesType, {
-      flowId: flowDetailItem.flowId,
-      formId: flowDetailItem.formId,
-      ids,
-    });
+
+    const {downloadStatus, savedFilePath} = await downloadFile(
+      printResponsesType,
+      {
+        flowId: flowDetailItem.flowId,
+        formId: flowDetailItem.formId,
+        ids,
+      },
+    );
     if (downloadStatus) {
       dispatch(
         setFormsShowMessage({
@@ -54,7 +82,7 @@ export const RenderPrintResponsesModalContent: FC<
     }
   };
 
-  const handlePrint = () => {};
+  // const handlePrint = () => {};
   return (
     <View style={{paddingHorizontal: 5}}>
       <LabelDropdown

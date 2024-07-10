@@ -51,7 +51,7 @@ type RenderSectionTitleTypes = {
   description?: string;
 };
 
-const RenderSectionTitle: FC<RenderSectionTitleTypes> = ({
+export const RenderSectionTitle: FC<RenderSectionTitleTypes> = ({
   title,
   description,
 }) => (
@@ -90,7 +90,7 @@ type RenderTaskItemTypes = {
   isRequired: boolean;
 };
 
-const RenderTaskItem: FC<RenderTaskItemTypes> = ({
+export const RenderTaskItem: FC<RenderTaskItemTypes> = ({
   index,
   question,
   renderSelection,
@@ -137,6 +137,7 @@ type RenderInputAnswerTypes = {
   questionId: number;
   questionOptionId: number;
   longText?: boolean;
+  disabled?:boolean
 };
 const RenderInputAnswer: FC<RenderInputAnswerTypes> = ({
   itemAnswer,
@@ -145,9 +146,11 @@ const RenderInputAnswer: FC<RenderInputAnswerTypes> = ({
   questionId,
   questionOptionId,
   longText = false,
+  disabled
 }) => (
   <TextInput
     value={itemAnswer?.answer as string}
+    editable={!disabled}
     onChangeText={(text: string) => {
       if (itemAnswer) {
         setAnswers(
@@ -179,6 +182,7 @@ type RenderShortAnswerWithRatingInputTypes = {
   questionId: number;
   questionOptionId: number;
   indicators?: IndicatorPreviewForm[];
+  disabled?:boolean;
 };
 const RenderShortAnswerWithRatingInput: FC<
   RenderShortAnswerWithRatingInputTypes
@@ -189,6 +193,7 @@ const RenderShortAnswerWithRatingInput: FC<
   questionId,
   questionOptionId,
   indicators,
+  disabled
 }) => {
   const handleTextChange = (text: string) => {
     if (itemAnswer) {
@@ -241,6 +246,7 @@ const RenderShortAnswerWithRatingInput: FC<
         indicators.map((item, index) => (
           <RatingInput
             key={index}
+            disabled={disabled}
             label={item.indicatorName}
             rating={
               (itemAnswer?.answer as ShortAnswer)?.rating?.find(
@@ -263,6 +269,7 @@ const RenderShortAnswerWithRatingInput: FC<
         value={(itemAnswer?.answer as ShortAnswer)?.comment || ''}
         onChangeText={handleTextChange}
         placeholderTextColor={'#ABB4BD'}
+        editable={!disabled}
         placeholder="Type your answer here"
         style={{
           borderBottomColor: '#E4E7EB',
@@ -285,6 +292,7 @@ type RenderDropdownTypes = {
   questionOptionId: number;
   options: QuestionOption[];
   placeHolder?: string;
+  disabled?:boolean
 };
 const RenderDrodpwown: FC<RenderDropdownTypes> = ({
   itemAnswer,
@@ -294,6 +302,7 @@ const RenderDrodpwown: FC<RenderDropdownTypes> = ({
   questionOptionId,
   options,
   placeHolder = 'Select an Item',
+  disabled
 }) => {
   return (
     <Dropdown
@@ -302,6 +311,7 @@ const RenderDrodpwown: FC<RenderDropdownTypes> = ({
       )?.optionMappingId?.toString()}
       labelField="label"
       valueField="value"
+      disable={disabled}
       data={options.map(item => ({
         value: item.optionMappingId?.toString(),
         label: item.optionText,
@@ -368,6 +378,7 @@ type RenderDateSelectorTypes = {
   setAnswers: Dispatch<SetStateAction<AnswerObject[]>>;
   questionId: number;
   questionOptionId: number;
+  disabled?:boolean
 };
 const RenderDateSelector: FC<RenderDateSelectorTypes> = ({
   itemAnswer,
@@ -375,13 +386,13 @@ const RenderDateSelector: FC<RenderDateSelectorTypes> = ({
   setAnswers,
   questionId,
   questionOptionId,
+  disabled
 }) => {
   const [isPickeOpen, setIsPickerOpen] = useState<boolean>(false);
 
-  
   const handleDateSelection = (date: string) => {
     setIsPickerOpen(false);
-    console.log('date',date)
+    console.log('date', date);
     const formattedDateTime = moment(date).format('YYYY-MM-DD HH:mm:ss');
     if (itemAnswer) {
       setAnswers(
@@ -409,11 +420,13 @@ const RenderDateSelector: FC<RenderDateSelectorTypes> = ({
         selectedDate={itemAnswer?.answer as string}
         onDateChange={handleDateSelection}
         showPicker={isPickeOpen}
+        
       />
       <TouchableOpacity
         onPress={() => {
           setIsPickerOpen(true);
         }}
+        disabled={disabled}
         style={{}}>
         <View>
           <View
@@ -457,6 +470,7 @@ type RenderTimeSelectorTypes = {
   setAnswers: Dispatch<SetStateAction<AnswerObject[]>>;
   questionId: number;
   questionOptionId: number;
+  disabled?:boolean
 };
 const RenderTimeSelector: FC<RenderTimeSelectorTypes> = ({
   itemAnswer,
@@ -464,6 +478,7 @@ const RenderTimeSelector: FC<RenderTimeSelectorTypes> = ({
   setAnswers,
   questionId,
   questionOptionId,
+  disabled
 }) => {
   const [isPickeOpen, setIsPickerOpen] = useState<boolean>(false);
 
@@ -492,6 +507,7 @@ const RenderTimeSelector: FC<RenderTimeSelectorTypes> = ({
         onPress={() => {
           setIsPickerOpen(!isPickeOpen);
         }}
+        disabled={disabled}
         style={{}}>
         <View>
           <View
@@ -552,15 +568,17 @@ type QuestionTypeSelectorTypes = {
   setAnswers: Dispatch<SetStateAction<AnswerObject[]>>;
   options?: QuestionOption[];
   indicators?: IndicatorPreviewForm[];
+  disabled?:boolean;
 };
 
-const QuestionTypeSelector: FC<QuestionTypeSelectorTypes> = ({
+export const QuestionTypeSelector: FC<QuestionTypeSelectorTypes> = ({
   questionOptionId,
   questionId,
   answers,
   setAnswers,
   options,
   indicators,
+  disabled
 }) => {
   let itemAnswer = answers?.find(item => item.questionId === questionId);
   switch (questionOptionId) {
@@ -574,6 +592,7 @@ const QuestionTypeSelector: FC<QuestionTypeSelectorTypes> = ({
           questionOptionId={questionOptionId}
           answers={answers}
           key={questionId}
+          disabled={disabled}
         />
       );
     case 2:
@@ -586,6 +605,7 @@ const QuestionTypeSelector: FC<QuestionTypeSelectorTypes> = ({
           questionOptionId={questionOptionId}
           answers={answers}
           key={questionId}
+          disabled={disabled}
         />
       );
     case 3:
@@ -598,6 +618,7 @@ const QuestionTypeSelector: FC<QuestionTypeSelectorTypes> = ({
           questionOptionId={questionOptionId}
           answers={answers}
           key={questionId}
+          disabled={disabled}
         />
       );
     case 4:
@@ -610,6 +631,7 @@ const QuestionTypeSelector: FC<QuestionTypeSelectorTypes> = ({
           answers={answers}
           indicators={indicators}
           key={questionId}
+          disabled={disabled}
         />
       );
 
@@ -622,6 +644,7 @@ const QuestionTypeSelector: FC<QuestionTypeSelectorTypes> = ({
           questionOptionId={questionOptionId}
           answers={answers}
           key={questionId}
+          disabled={disabled}
         />
       );
     case 6:
@@ -632,6 +655,7 @@ const QuestionTypeSelector: FC<QuestionTypeSelectorTypes> = ({
           questionId={questionId}
           questionOptionId={questionOptionId}
           answers={answers}
+          disabled={disabled}
           key={questionId}
         />
       );
@@ -643,6 +667,7 @@ const QuestionTypeSelector: FC<QuestionTypeSelectorTypes> = ({
           questionId={questionId}
           questionOptionId={questionOptionId}
           answers={answers}
+          disabled={disabled}
           key={questionId}
         />
       );
@@ -653,6 +678,7 @@ const QuestionTypeSelector: FC<QuestionTypeSelectorTypes> = ({
 
 const formatAnswer = (answers: AnswerObject[]): FormSubmission[] => {
   let formattedAnswer: FormSubmission[] = [];
+  const currentDate = moment().format('YYYY-MM-DDTHH:mm:ss.SSS');
   answers.map(item => {
     switch (item.questionOptionId) {
       case 1:
@@ -663,7 +689,7 @@ const formatAnswer = (answers: AnswerObject[]): FormSubmission[] => {
           optionMappingId: (item.answer as QuestionOption).optionMappingId,
           responseValue: null,
           indicatorRating: null,
-          startResponseDate: moment().toISOString()
+          startResponseDate: currentDate,
         });
         break;
       case 2:
@@ -674,7 +700,7 @@ const formatAnswer = (answers: AnswerObject[]): FormSubmission[] => {
             optionMappingId: ele.optionMappingId,
             responseValue: null,
             indicatorRating: null,
-            startResponseDate: moment().toISOString()
+            startResponseDate: currentDate,
           });
         });
         break;
@@ -682,7 +708,9 @@ const formatAnswer = (answers: AnswerObject[]): FormSubmission[] => {
         const shortAnswer = item.answer as ShortAnswer;
         if (shortAnswer.rating && shortAnswer.rating.length > 0) {
           const indicatorRatingString = shortAnswer.rating
-            .map(rating => `{${rating.indicatorId},${rating.rating?.toFixed(1)}}`)
+            .map(
+              rating => `{${rating.indicatorId},${rating.rating?.toFixed(1)}}`,
+            )
             .join(',');
           formattedAnswer.push({
             questionId: item.questionId,
@@ -690,7 +718,7 @@ const formatAnswer = (answers: AnswerObject[]): FormSubmission[] => {
             optionMappingId: null,
             responseValue: shortAnswer.comment,
             indicatorRating: `{[${indicatorRatingString}]}`,
-            startResponseDate: moment().toISOString()
+            startResponseDate: currentDate,
           });
         } else {
           formattedAnswer.push({
@@ -699,7 +727,7 @@ const formatAnswer = (answers: AnswerObject[]): FormSubmission[] => {
             optionMappingId: null,
             responseValue: shortAnswer.comment,
             indicatorRating: null,
-            startResponseDate: moment().toISOString()
+            startResponseDate: currentDate,
           });
         }
         break;
@@ -712,7 +740,7 @@ const formatAnswer = (answers: AnswerObject[]): FormSubmission[] => {
           optionMappingId: null,
           responseValue: item.answer as string,
           indicatorRating: null,
-          startResponseDate: moment().toISOString()
+          startResponseDate: currentDate,
         });
         break;
 
@@ -765,7 +793,7 @@ const EvaluationForm: FC<EvaluationFormScreenProps> = ({navigation, route}) => {
 
   useEffect(() => {
     validateSubmission();
-  }, [answers,previewForm]);
+  }, [answers, previewForm]);
 
   const validateSubmission = () => {
     let canProceed = true;
@@ -842,7 +870,7 @@ const EvaluationForm: FC<EvaluationFormScreenProps> = ({navigation, route}) => {
       </Layout>
       {!isShownKeyboard && (
         <FooterWithButtons
-          isActiveProceedButton={canSubmit}
+          isActiveProceedButton={canSubmit && answers?.length !== 0}
           onPressProceedButton={onPressSubmit}
           onPressCancelButton={() => {
             setAnswers([]);

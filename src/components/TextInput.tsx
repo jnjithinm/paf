@@ -58,12 +58,12 @@ export interface TextInputPropsTypes extends TextInputProps {
   mandatory?: boolean;
   avoidTransform?: boolean;
   style?: ViewStyle;
-  isShowErrorOnButtonPress?: boolean;
   errorMessage?: string;
   warningMessage?: string;
   dismiss?: boolean;
   textInputStyle?: TextStyle;
   manualHeight?: boolean;
+  isShowErrorButtonPress?:boolean;
 }
 
 type RenderLabelTypes = {
@@ -85,6 +85,7 @@ const TextInput: FC<TextInputPropsTypes> = ({
   dismiss,
   textInputStyle,
   manualHeight,
+  isShowErrorButtonPress,
   ...rest
 }) => {
   const [isFocused, setIsFocused] = useState(false);
@@ -132,6 +133,7 @@ const TextInput: FC<TextInputPropsTypes> = ({
       event.preventDefault();
     }
   };
+  console.log("err stat",isShowError)
 
   return (
     <View style={{ ...style, minHeight: 65, width: '100%' }}>
@@ -213,7 +215,7 @@ const TextInput: FC<TextInputPropsTypes> = ({
       {warningMessage && (
         <RenderWarningMessage warningMessage={warningMessage} />
       )}
-      {errorMessage && isShowError && (
+      {errorMessage && (isShowError || isShowErrorButtonPress) && (
         <View
           style={{ flexDirection: 'row', alignItems: 'center', marginTop: 2 }}
         >

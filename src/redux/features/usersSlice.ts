@@ -32,7 +32,7 @@ export interface User {
 export interface PaginationRequest {
   page: number;
   size: number;
-  type: string | boolean;
+  type: 'all' | boolean;
   search?: string;
 }
 
@@ -110,19 +110,32 @@ export const setUsersShowMessage = createAction<ErrorStatusObject | null>(
   'SET_USERS_SHOW_MESSAGE',
 );
 
-export const getAllUsers = createAsyncThunk<
-  GetAllUsersResponse,
-  PaginationRequest,
-  {rejectValue: ErrorResponse}
->('users/getAllUsers', async (payload, {dispatch, rejectWithValue}) => {
+export const getAllUsers  = createAsyncThunk<
+GetAllUsersResponse,
+[PaginationRequest, string?],
+{rejectValue: ErrorResponse}
+>(
+'users/getAllUsers',
+async ([payload, searchCriteria], {dispatch, rejectWithValue}) => {
   try {
-    const response = await api.post(endPoints.GET_ALL_USERS, payload);
-
+    let response;
+    if(searchCriteria){
+      response = await api.post(
+        endPoints.GET_USERS_BY_SEARCH + `searchCriteria=${searchCriteria}`,
+        payload,
+      );
+    }else{
+      response = await api.post(
+        endPoints.GET_ALL_USERS ,
+        payload,
+      );
+    }
     return response.data as GetAllUsersResponse;
   } catch (error: any) {
     return rejectWithValue(error.response.data);
   }
-});
+},
+);
 
 export const getUser = createAsyncThunk<
   GetUserResponse,
@@ -137,32 +150,25 @@ export const getUser = createAsyncThunk<
   }
 });
 
-export const searchUsers = createAsyncThunk<
-GetAllUsersResponse,
-  [string, PaginationRequest],
-  {rejectValue: ErrorResponse}
->(
-  'users/searchUsers',
-  async ([searchCriteria, payload], {dispatch, rejectWithValue}) => {
-    try {
-      const response = await api.post(
-        endPoints.SEARCH_USRS + `searchCriteria=${searchCriteria}`,
-        payload,
-      );
-      return response.data as GetAllUsersResponse;
-    } catch (error: any) {
-      return rejectWithValue(error.response.data);
-    }
-  },
-);
 
 export const getAllUserGroups = createAsyncThunk<
   GetAllUserGroupsResponse,
-  PaginationRequest,
+[PaginationRequest,string?],
   {rejectValue: ErrorResponse}
->('users/getAllUserGroups', async (payload, {dispatch, rejectWithValue}) => {
+>('users/getAllUserGroups', async ([payload,searchCriteria], {dispatch, rejectWithValue}) => {
   try {
-    const response = await api.post(endPoints.GET_ALL_USER_GROUPS, payload);
+    let response;
+    if(searchCriteria){
+      response = await api.post(
+        endPoints.GET_USER_GROUPS_BY_SEARCH + `searchCriteria=${searchCriteria}`,
+        payload,
+      );
+    }else{
+      response = await api.post(
+        endPoints.GET_ALL_USER_GROUPS ,
+        payload,
+      );
+    }
     return response.data as GetAllUserGroupsResponse;
   } catch (error: any) {
     return rejectWithValue(error.response.data);
@@ -213,7 +219,7 @@ interface InitialState {
   activeUsers: GetAllUsersResponsePayload | null;
   inactiveUsers: GetAllUsersResponsePayload | null;
   user: GetUserResponsePayload | null;
-  searchedUsers: GetAllUsersResponsePayload | null;
+  // searchedUsers: GetAllUsersResponsePayload | null;
   userGroup: GetUserGroupsResponsePayload | null;
   allUserGroups: GetAllUserGroupsResponsePayload | null;
   activeUserGroups: GetAllUserGroupsResponsePayload | null;
@@ -228,7 +234,7 @@ const initialState: InitialState = {
   activeUsers: null,
   inactiveUsers: null,
   user: null,
-  searchedUsers: null,
+  // searchedUsers: null,
   userGroup: null,
   allUserGroups: null,
   activeUserGroups: null,
@@ -249,9 +255,9 @@ const usersSlice = createSlice({
       })
       .addCase(getAllUsers.pending, state => {})
       .addCase(getAllUsers.fulfilled, (state, action) => {
-        if (action.meta.arg.type === 'all') {
+        if (action.meta.arg[0].type === 'all') {
           state.allUsers = action.payload.payload;
-        } else if (action.meta.arg.type === true) {
+        } else if (action.meta.arg[0].type === true) {
           state.activeUsers = action.payload.payload;
         } else {
           state.inactiveUsers = action.payload.payload;
@@ -263,19 +269,6 @@ const usersSlice = createSlice({
           message: action?.payload?.error?.errorMessage,
         };
         state.user = null;
-      })
-      .addCase(searchUsers.pending, state => {
-        state.searchedUsers = null;
-      })
-      .addCase(searchUsers.fulfilled, (state, action) => {
-        state.searchedUsers = action.payload.payload;
-      })
-      .addCase(searchUsers.rejected, (state, action) => {
-        state.searchedUsers = null;
-        state.usersShowMessage = {
-          status: 'Error',
-          message: action?.payload?.error?.errorMessage,
-        };
       })
       .addCase(getUser.pending, state => {
         state.user = null;
@@ -296,9 +289,9 @@ const usersSlice = createSlice({
         // state.inactiveUserGroups=null;
       })
       .addCase(getAllUserGroups.fulfilled, (state, action) => {
-        if (action.meta.arg.type === 'all') {
+        if (action.meta.arg[0].type === 'all') {
           state.allUserGroups = action.payload.payload;
-        } else if (action.meta.arg.type === true) {
+        } else if (action.meta.arg[0].type === true) {
           state.activeUserGroups = action.payload.payload;
         } else {
           state.inactiveUserGroups = action.payload.payload;

@@ -1,20 +1,20 @@
-import React, { FC, useEffect, useState } from 'react';
-import { RouteProp } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { TouchableOpacity, View } from 'react-native';
+import React, {FC, useEffect, useState} from 'react';
+import {RouteProp} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {TouchableOpacity, View} from 'react-native';
 import DocumentPicker from 'react-native-document-picker';
 
 import Layout from '../../components/Layout';
 import Text from '../../components/Text';
-import { MainStackParamList } from '../../navigation/MainStack';
+import {MainStackParamList} from '../../navigation/MainStack';
 import TextInput from '../../components/TextInput';
 import useValidation from '../../utils/hooks/useValidation';
-import { RenderProfileIcon } from './TeacherDashboard';
+import {RenderProfileIcon} from './TeacherDashboard';
 import colors from '../../config/colors';
 import FooterWithButtons from '../../components/FooterWithButtons';
-import { useAppDispatch, useAppSelector } from '../../redux/store';
+import {useAppDispatch, useAppSelector} from '../../redux/store';
 import Icon from '../../components/Icon';
-import { getUser } from '../../redux/features/usersSlice';
+import {getUser} from '../../redux/features/usersSlice';
 import {
   deleteUserPhoto,
   forgotPassword,
@@ -25,7 +25,14 @@ import {
   updateUserDetails,
   updateUserPhoto,
 } from '../../redux/features/authSlice';
-import { FileObject } from '../../config/types';
+import {FileObject, ItemType} from '../../config/types';
+import LabelDropdown from '../../components/LabeledDropdown';
+import {
+  getAreas,
+  getDistricts,
+  getStates,
+} from '../../redux/features/masterSlice';
+import moment from 'moment';
 
 type MyAccountNavigationProp = StackNavigationProp<
   MainStackParamList,
@@ -49,23 +56,31 @@ const selectImageFile = async (): Promise<FileObject> => {
   };
 };
 
-const MyAccount: FC<MyAccountScreenProps> = ({ navigation, route }) => {
+const MyAccount: FC<MyAccountScreenProps> = ({navigation, route}) => {
   const [isChanged, setIsChanged] = useState<boolean>(false);
   const [name, setName] = useState<string>('');
   const [phoneNum, setPhoneNum] = useState<string>('');
   const [email, setEmail] = useState<string>('');
-  const [district, setDistrict] = useState<string>('');
-  const [area, setArea] = useState<string>('');
+  const [district, setDistrict] = useState<ItemType>();
+  const [area, setArea] = useState<ItemType>();
+  const [state, setState] = useState<ItemType>();
 
   const {
     userData,
     isAdmin,
+    pageData,
+    moduleNames,
     updateUserResponse,
     deleteUserPhotoResponse,
     updateUserPhotoResponse,
   } = useAppSelector(state => state.auth);
-  const { user } = useAppSelector(state => state.users);
-  const { validateField } = useValidation();
+
+  const {user} = useAppSelector(state => state.users);
+  const {states, allDistricts, allAreas} = useAppSelector(
+    state => state.master,
+  );
+
+  const {validateField} = useValidation();
 
   const dispatch = useAppDispatch();
 
@@ -84,18 +99,33 @@ const MyAccount: FC<MyAccountScreenProps> = ({ navigation, route }) => {
     value: email,
   });
 
-  const districtErrorMessage = validateField({
-    fieldName: 'District',
-    value: district,
-  });
-
-  const areaErrorMessage = validateField({
-    fieldName: 'Area',
-    value: area,
-  });
-
   useEffect(() => {
     dispatch(getUser(userData.id));
+    dispatch(
+      getStates({
+        page: 0,
+        size: 0,
+        type: 'all',
+      }),
+    );
+    dispatch(
+      getAreas([
+        {
+          page: 0,
+          size: 0,
+          type: 'all',
+        },
+      ]),
+    );
+    dispatch(
+      getDistricts([
+        {
+          page: 0,
+          size: 0,
+          type: 'all',
+        },
+      ]),
+    );
   }, []);
 
   useEffect(() => {
@@ -104,15 +134,18 @@ const MyAccount: FC<MyAccountScreenProps> = ({ navigation, route }) => {
       dispatch(resetDeleteUserPhotoResponse());
     }
   }, [deleteUserPhotoResponse]);
-
+  console.log('user',user)
   useEffect(() => {
+
     if (user) {
+      console.log('user',user)
       setName(user.name);
       setPhoneNum(user.contactNumber);
       setEmail(user.email);
-      setDistrict(user.district);
-      setArea(user.area);
-      user.userImageUrl && dispatch(saveUpdatedUserPhoto(user.userImageUrl))
+      setState({value:user.stateId?.toString(),label:user.state})
+      setDistrict({value: user.districtId?.toString(), label: user.district});
+      setArea({value: user.areaId?.toString(), label: user.area});
+      user.userImageUrl && dispatch(saveUpdatedUserPhoto(user.userImageUrl));
     }
   }, [user]);
 
@@ -137,13 +170,11 @@ const MyAccount: FC<MyAccountScreenProps> = ({ navigation, route }) => {
     }
   }, [updateUserResponse]);
 
-
   useEffect(() => {
     if (updateUserPhotoResponse) {
       dispatch(getUser(userData.id));
       dispatch(resetUpdateUserPhotoResponse());
     }
-
   }, [updateUserPhotoResponse]);
 
   useEffect(() => {
@@ -151,8 +182,7 @@ const MyAccount: FC<MyAccountScreenProps> = ({ navigation, route }) => {
       dispatch(getUser(userData.id));
       dispatch(resetDeleteUserPhotoResponse());
     }
-
-  }, [deleteUserPhotoResponse])
+  }, [deleteUserPhotoResponse]);
 
   const onPressSave = () => {
     dispatch(
@@ -167,8 +197,10 @@ const MyAccount: FC<MyAccountScreenProps> = ({ navigation, route }) => {
           status: user?.status || false,
           stateId: user?.stateId || 0,
           area: user?.areaId || 0,
-          dateOfBirth: user?.dateOfBirth || '',
+          dateOfBirth:
+            moment(user?.dateOfBirth, 'YYYYMMDD').format('YYYY-MM-DD') || '',
           name,
+          isAdmin: true,
           citizenship: user?.citizenship || '',
           roleId: user?.roleId || 0,
           loggedInUserName: userData.userName,
@@ -177,20 +209,31 @@ const MyAccount: FC<MyAccountScreenProps> = ({ navigation, route }) => {
     );
   };
 
-  console.log(
-    'is,i',
-    isChanged,
-    nameErrorMessage,
-    emailErrorMessage,
-    districtErrorMessage,
-  );
+  console.log('is,i',state, nameErrorMessage, emailErrorMessage);
 
+  const filteredDistricts = allDistricts?.dataList
+    .filter(item => item.stateId?.toString() === state?.value)
+    .map(ele => ({value: ele.districtId?.toString(), label: ele.districtName}));
+
+  const filteredAreas = allAreas?.dataList
+    .filter(item => item.districtId?.toString() === district?.value)
+    .map(ele => ({value: ele.pinId?.toString(), label: ele.area}));
+
+    // const moduleNames = Object.keys(pageData); // This gives you an array of module names
+
+// Join module names with commas and spaces
+// const moduleNamesString = moduleNames.join(', ');x
+
+console.log("page",pageData)
+
+    const modules=pageData ? Object.keys(pageData).join(', ') : ''
+    const moduleNamesString =moduleNames ? moduleNames.join(', '):''
   return (
     <>
       <Layout
         overridePaddingHorizontal
         overridePaddingVertical
-        style={{ paddingHorizontal: 15 }}
+        style={{paddingHorizontal: 15}}
         icon="profile_icon"
         // transform={}
         title="My Account"
@@ -198,7 +241,7 @@ const MyAccount: FC<MyAccountScreenProps> = ({ navigation, route }) => {
         <Text
           size="body4"
           fontVariant="bold"
-          style={{ marginBottom: 15, marginTop: 30 }}>
+          style={{marginBottom: 15, marginTop: 30}}>
           My Account
         </Text>
         <View
@@ -212,7 +255,7 @@ const MyAccount: FC<MyAccountScreenProps> = ({ navigation, route }) => {
             image={user?.userImageUrl}
             name={userData.name}
           />
-          <View style={{ marginLeft: 10 }}>
+          <View style={{marginLeft: 10}}>
             <TouchableOpacity
               onPress={onPressEditPhoto}
               style={{
@@ -223,21 +266,23 @@ const MyAccount: FC<MyAccountScreenProps> = ({ navigation, route }) => {
                 height: 20,
               }}>
               <Icon name="edit_icon_red" />
-              <Text style={{ marginLeft: 5 }} size="small1">
+              <Text style={{marginLeft: 5}} size="small1">
                 Edit Photo
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={onPressDeletePhoto}
+              disabled={Boolean(!user?.userImageUrl)}
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
                 borderBottomWidth: 1,
                 borderColor: colors.dangerColor,
                 height: 20,
+                opacity:Boolean(!user?.userImageUrl) ?0.3:undefined
               }}>
               <Icon name="trash_icon_red" />
-              <Text style={{ marginLeft: 5 }} color="dangerColor" size="small1">
+              <Text style={{marginLeft: 5}} color="dangerColor" size="small1">
                 Delete Photo
               </Text>
             </TouchableOpacity>
@@ -249,7 +294,7 @@ const MyAccount: FC<MyAccountScreenProps> = ({ navigation, route }) => {
           setValue={setName}
           errorMessage={nameErrorMessage}
           placeholder="Enter Name"
-          style={{ marginVertical: 2 }}
+          style={{marginVertical: 2}}
           onChange={() => {
             setIsChanged(true);
           }}
@@ -264,7 +309,7 @@ const MyAccount: FC<MyAccountScreenProps> = ({ navigation, route }) => {
           placeholder="Enter Phone No."
           keyboardType="number-pad"
           maxLength={10}
-          style={{ marginVertical: 2 }}
+          style={{marginVertical: 2}}
           onChange={() => {
             setIsChanged(true);
           }}
@@ -278,36 +323,47 @@ const MyAccount: FC<MyAccountScreenProps> = ({ navigation, route }) => {
           errorMessage={emailErrorMessage}
           autoCapitalize="none"
           keyboardType="email-address"
-          style={{ marginVertical: 2 }}
+          style={{marginVertical: 2}}
           onChange={() => {
             setIsChanged(true);
           }}
           mandatory
         />
-        <TextInput
+        <LabelDropdown
+          label="State"
+          defaultValue={state?.value || ''}
+          searchable
+          setIsChanged={setIsChanged}
+          options={
+            states?.dataList.map(item => ({
+              value: item.stateId?.toString(),
+              label: item.stateName,
+            })) || []
+          }
+          onChangeItem={setState}
+          placeHolder="Enter District"
+          style={{marginVertical: 4}}
+          mandatory
+        />
+        <LabelDropdown
           label="District"
-          value={district}
-          setValue={setDistrict}
-          errorMessage={districtErrorMessage}
-          placeholder="Enter District"
-          style={{ marginVertical: 2 }}
-          onChange={() => {
-            setIsChanged(true);
-          }}
-          autoCapitalize="words"
+          defaultValue={district?.value || ''}
+          onChangeItem={setDistrict}
+          setIsChanged={setIsChanged}
+          searchable
+          options={filteredDistricts || []}
+          placeHolder="Enter District"
+          style={{marginVertical: 4}}
           mandatory
         />
-        <TextInput
+        <LabelDropdown
           label="Area"
-          value={area}
-          errorMessage={areaErrorMessage}
-          setValue={setArea}
-          placeholder="Enter Area"
-          style={{ marginVertical: 2 }}
-          onChange={() => {
-            setIsChanged(true);
-          }}
-          autoCapitalize="words"
+          defaultValue={area?.value || ''}
+          onChangeItem={setArea}
+          setIsChanged={setIsChanged}
+          options={filteredAreas || []}
+          placeHolder="Enter Area"
+          style={{marginVertical: 4}}
         />
         <View
           style={{
@@ -326,7 +382,7 @@ const MyAccount: FC<MyAccountScreenProps> = ({ navigation, route }) => {
         />
         <TextInput
           label="Modules"
-          value={userData.module?.moduleName || ''}
+          value={moduleNamesString}
           placeholder="Enter Modules"
           autoCapitalize="none"
           editable={false}
@@ -373,7 +429,7 @@ const MyAccount: FC<MyAccountScreenProps> = ({ navigation, route }) => {
           placeholder="Enter User Type"
           autoCapitalize="none"
           editable={false}
-          style={{ marginBottom: 20 }}
+          style={{marginBottom: 20}}
         />
       </Layout>
 
@@ -381,14 +437,15 @@ const MyAccount: FC<MyAccountScreenProps> = ({ navigation, route }) => {
         proceedButtonText={'Save'}
         isActiveProceedButton={Boolean(
           isChanged &&
-          !nameErrorMessage &&
-          !emailErrorMessage &&
-          !phoneNumberErrorMessage &&
-          !districtErrorMessage &&
-          !areaErrorMessage,
+            !nameErrorMessage &&
+            !emailErrorMessage &&
+            !phoneNumberErrorMessage &&
+            state?.value &&
+            district?.value &&
+            area?.value,
         )}
         cancelButtonText={'Cancel'}
-        style={{ elevation: 10 }}
+        style={{elevation: 10}}
         onPressProceedButton={onPressSave}
         onPressCancelButton={() => {
           isAdmin

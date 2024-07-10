@@ -241,7 +241,7 @@ interface DeleteFormResponse {
   status: number;
 }
 
-interface UserWiseResponse {
+export interface UserWiseResponse {
   userId: number;
   name: string;
   userName: string;

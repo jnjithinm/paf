@@ -11,7 +11,7 @@ import {ErrorStatusObject, FileObject} from '../../config/types';
 import {ParentRoles, UserTypes} from '../../config/constants';
 import {getRoleLevel} from '../../components/DrawerContent';
 import RNFetchBlob from 'rn-fetch-blob';
-import { logRequest } from '../../utils/functions/apiUtils';
+import {logRequest} from '../../utils/functions/apiUtils';
 
 interface AuthenticateRequest {
   username: string;
@@ -24,22 +24,24 @@ interface AuthenticateResponse {
   };
 }
 
-interface Module {
-  moduleId: number;
-  moduleName: string;
-  description: string;
-  status: boolean;
-  isDeleted: boolean;
-  hasChildren: boolean;
-}
-
-interface PageItem {
+type PageItem = {
   pageId: number;
-  module: Module;
+  module: {
+    moduleId: number;
+    moduleName: string;
+    description: string;
+    status: boolean;
+    isDeleted: boolean;
+    hasChildren: boolean;
+  };
   pageName: string;
   status: boolean;
   category: string;
-}
+};
+
+type PageData = {
+  [moduleName: string]: PageItem[] | [];
+};
 
 interface LoginResponse {
   payload: {
@@ -54,13 +56,9 @@ interface LoginResponse {
     userImage: string;
     userImageUrl: string;
     status: boolean;
-    pageData: {
-      'Classroom Observations': [];
-      'Teaching Aids': PageItem[];
-      'Session Schedules': [];
-      'Give Feedback': [];
-    };
+    PageData: PageData;
   };
+  status: number;
 }
 
 interface ForgotPasswordResponse {
@@ -166,7 +164,7 @@ export const resetDeleteUserPhotoResponse = createAction<void>(
   'RESET_DELETE_USER_PHOTO',
 );
 
-export const saveUpdatedUserPhoto= createAction<string>(
+export const saveUpdatedUserPhoto = createAction<string>(
   'SAVE_UPDATED_USER_PHOTO',
 );
 
@@ -267,35 +265,14 @@ export const deleteUserPhoto = createAsyncThunk<
     }
   },
 );
-// export const updateUserPhoto = createAsyncThunk<
-//   UpdateUserDetailsResponse,
-//   [FileObject, string],
-//   {rejectValue: ErrorResponse}
-// >(
-//   'auth/updateUserPhoto',
-//   async ([file, loggedInUserName], {dispatch, rejectWithValue}) => {
-//     try {
-//       dispatch(setLoading(true));
-//       const response = await api.put(endPoints.UPDATE_USER_PHOTO, {
-//         profilePhoto: file,
-//         loggedInUserName,
-//       });
-//       return response.data as UpdateUserDetailsResponse;
-//     } catch (error: any) {
-//       return rejectWithValue(error.response.data);
-//     } finally {
-//       dispatch(setLoading(false));
-//     }
-//   },
-// );
 
 export const updateUserPhoto = createAsyncThunk<
   UpdateUserDetailsResponse,
-  [number,FileObject, string],
-  { rejectValue: ErrorResponse }
+  [number, FileObject, string],
+  {rejectValue: ErrorResponse}
 >(
   'auth/updateUserPhoto',
-  async ([userId,file, loggedInUserName], { dispatch, rejectWithValue }) => {
+  async ([userId, file, loggedInUserName], {dispatch, rejectWithValue}) => {
     try {
       dispatch(setLoading(true));
       const token = await getToken();
@@ -307,9 +284,10 @@ export const updateUserPhoto = createAsyncThunk<
           type: file.type,
           data: RNFetchBlob.wrap(file.uri),
         },
-        { name: 'loggedInUserName', data: loggedInUserName }
+        {name: 'loggedInUserName', data: loggedInUserName},
       ];
-      const requestUrl = 'http://65.1.32.205:8080/' + endPoints.UPDATE_USER_PHOTO+`/${userId}`;
+      const requestUrl =
+        'http://65.1.32.205:8080/' + endPoints.UPDATE_USER_PHOTO + `/${userId}`;
       const response = await RNFetchBlob.fetch(
         'PUT',
         requestUrl,
@@ -317,17 +295,19 @@ export const updateUserPhoto = createAsyncThunk<
           Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',
         },
-        formData
+        formData,
       );
       logRequest('PUT', requestUrl, JSON.stringify(formData));
-        const data = JSON.parse(response.data);
-        return data as UpdateUserDetailsResponse;
+      const data = JSON.parse(response.data);
+      return data as UpdateUserDetailsResponse;
     } catch (error: any) {
-      return rejectWithValue(error.response?.data ?? { message: 'An error occurred' });
+      return rejectWithValue(
+        error.response?.data ?? {message: 'An error occurred'},
+      );
     } finally {
       dispatch(setLoading(false));
     }
-  }
+  },
 );
 
 interface initialState {
@@ -343,9 +323,10 @@ interface initialState {
     isAdmin: boolean;
     userImage: string;
     userImageUrl: string;
-    module?: Module | null;
   };
   isAdmin: boolean;
+  pageData: PageData | null;
+  moduleNames: string[] | null;
   updateUserResponse: UpdateUserDetailsResponsePayload | null;
   forgotPasswordResponse: ForgotPasswordResponsePayload | null;
   updateUserPhotoResponse: UpdateUserPhotoResponsePayload | null;
@@ -368,15 +349,16 @@ const initialState: initialState = {
     isAdmin: false,
     userImage: '',
     userImageUrl: '',
-    module: null,
   },
   isAdmin: false,
+  pageData: null,
+  moduleNames: null,
   updateUserResponse: null,
   forgotPasswordResponse: null,
   updateUserPhotoResponse: null,
   deleteUserPhotoResponse: null,
   authShowMessage: null,
-  passwordErrorMessage: '',
+  passwordErrorMessage: 'sfdds',
   usernameErrorMessage: '',
 };
 
@@ -409,7 +391,7 @@ const authSlice = createSlice({
       .addCase(resetDeleteUserPhotoResponse, state => {
         state.deleteUserPhotoResponse = null;
       })
-      .addCase(saveUpdatedUserPhoto, (state,action) => {
+      .addCase(saveUpdatedUserPhoto, (state, action) => {
         state.userData.userImageUrl = action.payload;
       })
       .addCase(setAuthShowMessage, (state, action) => {
@@ -431,9 +413,11 @@ const authSlice = createSlice({
       .addCase(authenticateUser.rejected, (state, action) => {
         state.isLoading = false;
         state.isLoggedIn = false;
-        action?.payload?.error?.errorMessage
-          ? (state.usernameErrorMessage = 'Invalid username entered')
-          : (state.passwordErrorMessage = 'Invalid password entered');
+        if (action?.payload?.error?.errorMessage) {
+          state.usernameErrorMessage = 'Invalid username entered';
+        } else {
+          state.passwordErrorMessage = 'Invalid password entered';
+        }
       })
 
       .addCase(updateUserDetails.pending, state => {
@@ -456,19 +440,14 @@ const authSlice = createSlice({
       .addCase(loginUser.pending, state => {
         state.isLoading = true;
         state.isLoading = false;
-        state.passwordErrorMessage = '';
-        state.usernameErrorMessage = '';
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isLoggedIn = true;
         state.passwordErrorMessage = '';
         state.usernameErrorMessage = '';
-        
-        state.userData = {
-          ...action.payload.payload,
-          // module: action.payload.payload.pageData['Teaching Aids'][0].module,
-        };
+        state.userData = action.payload.payload;
+        state.pageData = action.payload.payload.PageData;
         state.isAdmin = Boolean(
           getRoleLevel(action.payload.payload.roleType) === UserTypes.PAF_USER,
         );
@@ -476,8 +455,6 @@ const authSlice = createSlice({
       .addCase(loginUser.rejected, (state, action) => {
         state.isLoading = false;
         state.isLoggedIn = false;
-        state.passwordErrorMessage = '';
-        state.usernameErrorMessage = '';
       })
       .addCase(forgotPassword.pending, state => {
         state.passwordErrorMessage = '';
@@ -502,14 +479,14 @@ const authSlice = createSlice({
       .addCase(updateUserPhoto.pending, state => {})
       .addCase(updateUserPhoto.fulfilled, (state, action) => {
         state.updateUserPhotoResponse = action.payload.payload;
-        console.log("efsf",action.payload)
+        console.log('efsf', action.payload);
         state.authShowMessage = {
           status: 'Success',
           message: action?.payload?.payload?.message?.toString(),
         };
       })
       .addCase(updateUserPhoto.rejected, (state, action) => {
-        console.log("efsf errrrr",action.payload)
+        console.log('efsf errrrr', action.payload);
         state.updateUserPhotoResponse = null;
         state.authShowMessage = {
           status: 'Error',
