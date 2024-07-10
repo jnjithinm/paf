@@ -18,9 +18,10 @@ const customSearchInput = (onSearch: (arg0: string) => void) => (
         borderWidth: 1,
         borderRadius: 5,
         paddingHorizontal: 10,
+        color:colors.blackColor
       }}
       placeholder="Search"
-      onChangeText={text => onSearch(text)}
+      onChangeText={text => {onSearch(text)}}
     />
   </View>
 );
@@ -34,6 +35,7 @@ type MultiSelectDropdownTypes = {
   selectedValues: string[];
   setSelectedValues:Dispatch<SetStateAction<string[]>>;
   onSelectItem?: () => void;
+  onSearch:(text:string)=>void;
   disabled?:boolean
 };
 
@@ -46,6 +48,7 @@ const MultiSelectDropdown: FC<MultiSelectDropdownTypes> = ({
   selectedValues,
   onSelectItem,
   setSelectedValues,
+  onSearch,
   disabled
 }) => (
   <View style={{...containerStyle, marginVertical: 5}}>
@@ -69,12 +72,14 @@ const MultiSelectDropdown: FC<MultiSelectDropdownTypes> = ({
 
         ...style
       }}
+
       search
       value={selectedValues}
       onChange={(value: string[]) => {
         setSelectedValues(value);
         onSelectItem && onSelectItem();
       }}
+      onChangeText={(text)=>{onSearch(text)}}
       containerStyle={{paddingHorizontal: 8}}
       renderInputSearch={customSearchInput}
       renderItem={({label, value}) => (

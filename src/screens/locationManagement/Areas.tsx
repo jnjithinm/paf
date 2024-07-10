@@ -344,7 +344,7 @@ const Areas: FC<AreasScreenProps> = ({ navigation, route }) => {
                 />
               ))}
               <PaginationBar
-                count={(areaList?.count || 0) / 10}
+                count={(areaList?.count || 0) / 15}
                 onPressPageIndex={(index) => {
                   if (areaList) {
                     dispatch(

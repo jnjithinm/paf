@@ -337,7 +337,7 @@ const School: FC<SchoolsScreenProps> = ({navigation, route}) => {
                 />
               ))}
               <PaginationBar
-                count={(schoolList.count || 0) / 10}
+                count={(schoolList.count || 0) / 15}
                 onPressPageIndex={index => {
                   dispatch(
                     getSchools([{

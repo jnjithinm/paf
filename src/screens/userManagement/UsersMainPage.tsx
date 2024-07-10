@@ -324,7 +324,7 @@ const UsersMainPage: FC<UsersMainPageScreenProps> = ({navigation, route}) => {
                 />
               ))}
               <PaginationBar
-                count={(usersList?.count || 0) / 10}
+                count={(usersList?.count || 0) / 15}
                 onPressPageIndex={index => {
                   if(usersList){
                   dispatch(

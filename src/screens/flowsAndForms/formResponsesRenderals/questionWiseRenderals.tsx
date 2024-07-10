@@ -58,8 +58,12 @@ const RenderQuestions: FC<RenderQuestionsTypes> = ({
   </TouchableOpacity>
 );
 
+export type QuestionWiseIndexAddedResponse={
+  item:Question;
+  index:number;
+}
 type QuestionWiseMainPageRenderalTypes = {
-  onPressItem: (item: Question) => void;
+  onPressItem: (item: QuestionWiseIndexAddedResponse) => void;
   questionList: Question[] | undefined;
 };
 
@@ -75,7 +79,7 @@ export const QuestionWiseMainPageRenderal: FC<
             index={index}
             question={item.questionText}
             onPressItem={() => {
-              onPressItem(item);
+              onPressItem({item,index});
             }}
           />
         ))
@@ -155,14 +159,15 @@ const QuestionResponseTile: FC<QuestionResponseTileTypes> = ({
 );
 
 type QuestionWiseDescriptionRenderalTypes = {
-  question: Question | null;
-  questionResponses: QuestionWiseResponse[] | undefined;
+  question: Question | undefined;
+  questionResponses: QuestionWiseResponse[] | null;
+  index:number;
 };
 
 //IndividualMainScreenRenderals
 export const QuestionWiseDescriptionRenderal: FC<
   QuestionWiseDescriptionRenderalTypes
-> = ({question, questionResponses}) => {
+> = ({question, questionResponses,index}) => {
   const totalAvgRating =
     questionResponses?.reduce((sum, item) => sum + (item?.avgRating || 0), 0) ||
     0;
@@ -174,7 +179,7 @@ export const QuestionWiseDescriptionRenderal: FC<
   return (
     <View>
       <RenderQuestions
-        index={question?.questionId || 0}
+        index={index}
         question={question?.questionText || ''}
         hideBorder
       />

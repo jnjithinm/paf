@@ -69,12 +69,10 @@ const MyAccount: FC<MyAccountScreenProps> = ({navigation, route}) => {
     userData,
     isAdmin,
     pageData,
-    moduleNames,
     updateUserResponse,
     deleteUserPhotoResponse,
     updateUserPhotoResponse,
   } = useAppSelector(state => state.auth);
-
   const {user} = useAppSelector(state => state.users);
   const {states, allDistricts, allAreas} = useAppSelector(
     state => state.master,
@@ -134,15 +132,14 @@ const MyAccount: FC<MyAccountScreenProps> = ({navigation, route}) => {
       dispatch(resetDeleteUserPhotoResponse());
     }
   }, [deleteUserPhotoResponse]);
-  console.log('user',user)
+  console.log('user', user);
   useEffect(() => {
-
     if (user) {
-      console.log('user',user)
+      console.log('user', user);
       setName(user.name);
       setPhoneNum(user.contactNumber);
       setEmail(user.email);
-      setState({value:user.stateId?.toString(),label:user.state})
+      setState({value: user.stateId?.toString(), label: user.state});
       setDistrict({value: user.districtId?.toString(), label: user.district});
       setArea({value: user.areaId?.toString(), label: user.area});
       user.userImageUrl && dispatch(saveUpdatedUserPhoto(user.userImageUrl));
@@ -209,7 +206,7 @@ const MyAccount: FC<MyAccountScreenProps> = ({navigation, route}) => {
     );
   };
 
-  console.log('is,i',state, nameErrorMessage, emailErrorMessage);
+  console.log('is,i', state, nameErrorMessage, emailErrorMessage);
 
   const filteredDistricts = allDistricts?.dataList
     .filter(item => item.stateId?.toString() === state?.value)
@@ -219,15 +216,8 @@ const MyAccount: FC<MyAccountScreenProps> = ({navigation, route}) => {
     .filter(item => item.districtId?.toString() === district?.value)
     .map(ele => ({value: ele.pinId?.toString(), label: ele.area}));
 
-    // const moduleNames = Object.keys(pageData); // This gives you an array of module names
+  const modules = pageData ? Object.keys(pageData).join(', ') : '';
 
-// Join module names with commas and spaces
-// const moduleNamesString = moduleNames.join(', ');x
-
-console.log("page",pageData)
-
-    const modules=pageData ? Object.keys(pageData).join(', ') : ''
-    const moduleNamesString =moduleNames ? moduleNames.join(', '):''
   return (
     <>
       <Layout
@@ -279,7 +269,7 @@ console.log("page",pageData)
                 borderBottomWidth: 1,
                 borderColor: colors.dangerColor,
                 height: 20,
-                opacity:Boolean(!user?.userImageUrl) ?0.3:undefined
+                opacity: Boolean(!user?.userImageUrl) ? 0.3 : undefined,
               }}>
               <Icon name="trash_icon_red" />
               <Text style={{marginLeft: 5}} color="dangerColor" size="small1">
@@ -380,13 +370,27 @@ console.log("page",pageData)
           autoCapitalize="none"
           editable={false}
         />
-        <TextInput
-          label="Modules"
-          value={moduleNamesString}
-          placeholder="Enter Modules"
-          autoCapitalize="none"
-          editable={false}
-        />
+        <View style={{marginVertical: 4}}>
+          <Text
+            color="blackColor"
+            fontVariant="bold"
+            size='small3'
+            style={{fontWeight: '700'}}>
+            Modules
+          </Text>
+          <Text
+            style={{
+              backgroundColor: '#FDF0E3',
+              borderWidth: 1,
+              borderColor: '#ABB4BD',
+              borderRadius: 8,
+              padding: 10,
+              marginTop: 3,
+            }}
+            size="small3">
+            {modules}
+          </Text>
+        </View>
         <TextInput
           label="Username"
           value={userData.userName}

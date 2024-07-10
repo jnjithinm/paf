@@ -183,9 +183,23 @@ const RubricWiseTile: FC<RubricWiseTileTypes> = ({
           backgroundColor: isSelected ? '#FCEBC5' : colors.backgroundColor,
           width: '100%',
           borderRadius: 10,
+          justifyContent: 'space-between',
           padding: 8,
+          paddingHorizontal: 10,
         }}>
-        <Text size="small3" fontVariant="bold" style={{width: '90%'}}>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'center',
+            alignItems: 'center',
+            width: '15%',
+          }}>
+          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <Text>{index + 1}.</Text>
+            <Icon name="arrow_narrow_right" style={{marginHorizontal: 4}} />
+          </View>
+        </View>
+        <Text size="body1" style={{width: '80%'}}>
           {title}
         </Text>
         <Icon
@@ -263,38 +277,22 @@ export const RubricWiseDescriptionRenderal: FC<
           </Text>
         </View>
       </View>
+      <View style={{marginVertical:8}}>
       {questionRatingByIndicatorId?.dataList?.questionWiseResponses?.map(
         (item, index) => (
           <RubricWiseTile
             title={item.questionText}
-            isSelected={selected === item.questionId}
-            index={item.questionId}
+            isSelected={selected === index}
+            index={index}
             key={index}
             userWiseResponse={item.userWiseResponses}
             onSelect={index => {
               setSelected(index);
             }}
           />
-
-          // <LabelDropdown
-          //   options={
-          //     item?.userWiseResponses?.map((ele, index) => ({
-          //       value: index?.toString(),
-          //       label: ele.responseValues || ele.userRating?.toString(),
-          //     })) || []
-          //   }
-          //   disableSelection
-          //   key={item.questionId}
-          //   placeHolderStyle={{color: colors.blackColor}}
-          //   placeHolder={item.questionText}
-          //   dropdownStyle={{
-          //     borderColor: '#F4C24A',
-          //     minHeight: normaliseDesigns(40),
-          //   }}
-          //   defaultValue={''}
-          // />
         ),
       )}
+      </View>
     </View>
   );
 };

@@ -323,7 +323,7 @@ const ObservationReportsMainPage: FC<ObservationReportsMainPageScreenProps> = ({
               ? allObservations?.dataList?.total
               : selectedFilter === 'byMe'
               ? allObservations?.dataList.byMe
-              : allObservations?.dataList.forMe) || 0) / 10
+              : allObservations?.dataList.forMe) || 0) / 15
           }
           onPressPageIndex={index => {
             if (selectedFilter) {

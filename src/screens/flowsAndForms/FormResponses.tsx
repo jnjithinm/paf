@@ -28,6 +28,7 @@ import {
 } from './formResponsesRenderals/individualRenderals';
 import {
   QuestionWiseDescriptionRenderal,
+  QuestionWiseIndexAddedResponse,
   QuestionWiseMainPageRenderal,
 } from './formResponsesRenderals/questionWiseRenderals';
 import {
@@ -96,6 +97,7 @@ const ResponseAccessToggle: FC<ResponseAccessToggleTypes> = ({
   const dispatch = useAppDispatch();
   const {userData} = useAppSelector(state => state.auth);
   const onPressAcceptingResponses = () => {
+    setIsAcceptingResponses(!isAcceptingResponses);
     dispatch(
       acceptingFormResponses({
         formId: flowDetailItem.formId,
@@ -168,7 +170,11 @@ export const RenderAssignFormModalContent: FC<
 > = ({onPressAssign}) => {
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [selectedUserGroups, setSelectedUserGroups] = useState<string[]>([]);
+  const [userSearch, setUserSearch] = useState<string>('');
+  const [groupSearch,setGroupSearch]=useState<string>('');
+
   const {allUserGroups, allUsers} = useAppSelector(state => state.users);
+
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -192,6 +198,39 @@ export const RenderAssignFormModalContent: FC<
     );
   }, []);
 
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      dispatch(
+        getAllUsers([
+          {
+            page: 0,
+            size: 15,
+            type: 'all',
+          },
+          userSearch,
+        ]),
+      );
+    }, 200);
+    return () => clearTimeout(delayDebounceFn);
+  }, [userSearch]);
+
+
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      dispatch(
+        getAllUsers([
+          {
+            page: 0,
+            size: 15,
+            type: 'all',
+          },
+          groupSearch,
+        ]),
+      );
+    }, 200);
+    return () => clearTimeout(delayDebounceFn);
+  }, [groupSearch]);
+
   const handlePress = () => {
     const selectedUsersNumbers = selectedUsers.map(user => parseInt(user, 10));
     const selectedUserGroupsNumbers = selectedUserGroups.map(group =>
@@ -200,6 +239,7 @@ export const RenderAssignFormModalContent: FC<
     onPressAssign(selectedUsersNumbers, selectedUserGroupsNumbers);
   };
 
+  console.log("sdfds",userSearch)
   return (
     <View style={{paddingHorizontal: 10}}>
       <MultiSelectDropdown
@@ -210,6 +250,9 @@ export const RenderAssignFormModalContent: FC<
             label: item.userName,
           })) || []
         }
+        onSearch={search => {
+          setUserSearch(search);
+        }}
         selectedValues={selectedUsers}
         setSelectedValues={setSelectedUsers}
       />
@@ -221,6 +264,9 @@ export const RenderAssignFormModalContent: FC<
             label: item.groupName,
           })) || []
         }
+        onSearch={search => {
+          setGroupSearch(search);
+        }}
         selectedValues={selectedUserGroups}
         setSelectedValues={setSelectedUserGroups}
       />
@@ -604,9 +650,8 @@ const FormResponses: FC<FormResponsesScreenProps> = ({navigation, route}) => {
 
   const [selectedIndividual, setSelectedIndividual] =
     useState<IndividualResponse | null>(null);
-  const [selectedQuestion, setSelectedQuestion] = useState<Question | null>(
-    null,
-  );
+  const [selectedQuestion, setSelectedQuestion] =
+    useState<QuestionWiseIndexAddedResponse | null>(null);
   const [selectedRubricWise, setSelectedRubricWise] =
     useState<RubricWiseResponse | null>(null);
 
@@ -639,12 +684,15 @@ const FormResponses: FC<FormResponsesScreenProps> = ({navigation, route}) => {
   const dispatch = useAppDispatch();
 
   const onPressItem = (
-    item: IndividualResponse | Question | RubricWiseResponse,
+    item:
+      | IndividualResponse
+      | QuestionWiseIndexAddedResponse
+      | RubricWiseResponse,
   ) => {
     if (selectedTab === 'Individual') {
       setSelectedIndividual(item as IndividualResponse);
     } else if (selectedTab === 'Question Wise') {
-      setSelectedQuestion(item as Question);
+      setSelectedQuestion(item as QuestionWiseIndexAddedResponse);
     } else {
       setSelectedRubricWise(item as RubricWiseResponse);
     }
@@ -703,17 +751,24 @@ const FormResponses: FC<FormResponsesScreenProps> = ({navigation, route}) => {
     screen === 'main' ? navigation.goBack() : setScreen('main');
   };
 
-  const filteredIndividualResponses=  formById?.dataList?.individualResponses?.filter(item =>
-    item?.name?.toLocaleLowerCase()?.includes(search?.toLocaleLowerCase()),
-  );
+  const filteredIndividualResponses =
+    formById?.dataList?.individualResponses?.filter(item =>
+      item?.name?.toLocaleLowerCase()?.includes(search?.toLocaleLowerCase()),
+    );
 
-  const filteredQuestionWiseResponses =formById?.dataList?.questionList?.filter(item =>
-    item?.questionText?.toLocaleLowerCase()?.includes(search?.toLocaleLowerCase()),
-  );
+  const filteredQuestionWiseResponses =
+    formById?.dataList?.questionList?.filter(item =>
+      item?.questionText
+        ?.toLocaleLowerCase()
+        ?.includes(search?.toLocaleLowerCase()),
+    );
 
-  const filteredRubricWiseResponses = formById?.dataList?.rubricWiseResponse?.filter(item =>
-    item?.indicatorName?.toLocaleLowerCase()?.includes(search?.toLocaleLowerCase()),
-  );
+  const filteredRubricWiseResponses =
+    formById?.dataList?.rubricWiseResponse?.filter(item =>
+      item?.indicatorName
+        ?.toLocaleLowerCase()
+        ?.includes(search?.toLocaleLowerCase()),
+    );
 
   const selectScreenSwitch = (selectedTab: TabTypes): ScreenComponentType => {
     let screen: ScreenSelectiontypes = 'main';
@@ -764,12 +819,13 @@ const FormResponses: FC<FormResponsesScreenProps> = ({navigation, route}) => {
           renderal = (
             <QuestionWiseDescriptionRenderal
               key={2}
-              question={selectedQuestion}
+              index={selectedQuestion?.index || 0}
+              question={selectedQuestion?.item}
               questionResponses={
-                selectedQuestion?.questionId &&
+                selectedQuestion?.item?.questionId &&
                 formById?.dataList?.questionWiseResponses
                   ? formById?.dataList?.questionWiseResponses[
-                      selectedQuestion?.questionId
+                      selectedQuestion.item?.questionId
                     ]
                   : []
               }

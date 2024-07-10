@@ -269,7 +269,7 @@ const RolesAndAppAccess: FC<RolesAndAppAccessScreenProps> = ({
                 />
               ))}
               <PaginationBar
-                count={(rolesList?.count || 0) / 10}
+                count={(rolesList?.count || 0) / 15}
                 onPressPageIndex={index => {
                   if(rolesList){
                   dispatch(

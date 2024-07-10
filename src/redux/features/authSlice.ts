@@ -56,7 +56,7 @@ interface LoginResponse {
     userImage: string;
     userImageUrl: string;
     status: boolean;
-    PageData: PageData;
+    pageData: PageData;
   };
   status: number;
 }
@@ -447,7 +447,7 @@ const authSlice = createSlice({
         state.passwordErrorMessage = '';
         state.usernameErrorMessage = '';
         state.userData = action.payload.payload;
-        state.pageData = action.payload.payload.PageData;
+        state.pageData = action.payload.payload.pageData;
         state.isAdmin = Boolean(
           getRoleLevel(action.payload.payload.roleType) === UserTypes.PAF_USER,
         );

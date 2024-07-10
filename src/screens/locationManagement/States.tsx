@@ -66,7 +66,7 @@ const States: FC<StatesScreenProps> = ({ navigation, route }) => {
     dispatch(
       getStates({
         page: 0,
-        size: 15,
+        size: 40,
         type: 'all',
       }),
     );
@@ -104,7 +104,7 @@ const States: FC<StatesScreenProps> = ({ navigation, route }) => {
                 <StateTile state={item} key={item.stateId} />
               ))}
               <PaginationBar
-                count={(states?.totalCount || 10) / 10}
+                count={(states?.totalCount || 10) / 36}
                 onPressPageIndex={index => {
                   dispatch(
                     getStates({

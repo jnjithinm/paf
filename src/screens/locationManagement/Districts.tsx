@@ -256,7 +256,7 @@ const Districts: FC<DistrictsScreenProps> = ({navigation, route}) => {
                 />
               ))}
               <PaginationBar
-                count={(districtList?.count || 0) / 10}
+                count={(districtList?.count || 0) / 15}
                 onPressPageIndex={index => {
                   if(districtList){
                   dispatch(
