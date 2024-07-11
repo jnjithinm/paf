@@ -185,7 +185,7 @@ export const RenderAssignFormModalContent: FC<
       getAllUsers([
         {
           page: 0,
-          size: 15,
+          size: 100,
           type: 'all',
         },
       ]),
@@ -194,7 +194,7 @@ export const RenderAssignFormModalContent: FC<
       getAllUserGroups([
         {
           page: 0,
-          size: 15,
+          size: 100,
           type: 'all',
         },
       ]),
@@ -217,16 +217,12 @@ export const RenderAssignFormModalContent: FC<
       let formAssignedUserGroups =
         formAssignedUserAndUserGroups.dataList.UserGroups;
       if (formAssignedUsers?.length !== 0) {
-        setSelectedUsers(prev => [
-          ...prev,
-          ...formAssignedUsers.map(item => item?.userId?.toString()),
-        ]);
+        setSelectedUsers(formAssignedUsers.map(item => item?.userId?.toString()),
+        );
       }
       if (formAssignedUserGroups?.length !== 0) {
-        setSelectedUserGroups(prev => [
-          ...prev,
-          ...formAssignedUserGroups.map(item => item?.userGroupId?.toString()),
-        ]);
+        setSelectedUserGroups(formAssignedUserGroups.map(item => item?.userGroupId?.toString()),
+        );
       }
     }
   }, [formAssignedUserAndUserGroups]);
@@ -237,7 +233,7 @@ export const RenderAssignFormModalContent: FC<
         getAllUsers([
           {
             page: 0,
-            size: 15,
+            size: 50,
             type: 'all',
           },
           userSearch,
@@ -253,7 +249,7 @@ export const RenderAssignFormModalContent: FC<
         getAllUsers([
           {
             page: 0,
-            size: 15,
+            size: 50,
             type: 'all',
           },
           groupSearch,
@@ -271,6 +267,7 @@ export const RenderAssignFormModalContent: FC<
     onPressAssign(selectedUsersNumbers, selectedUserGroupsNumbers);
   };
 
+  console.log("ssssssssssss",selectedUsers,selectedUserGroups)
   return (
     <View style={{paddingHorizontal: 10}}>
       <MultiSelectDropdown

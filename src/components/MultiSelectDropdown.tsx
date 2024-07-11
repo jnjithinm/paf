@@ -125,9 +125,13 @@ const MultiSelectDropdown: FC<MultiSelectDropdownTypes> = ({
             marginLeft: 5,
             borderRadius: 5,
             marginVertical: 5,
-          }}>
+          }}
+          >
           <Text style={{marginLeft: 5}}>{label}</Text>
-          <TouchableOpacity style={{marginLeft: 7}}>
+          <TouchableOpacity style={{marginLeft: 7}} onPress={()=>{
+          let filteredValues=  selectedValues.filter(item => item !== value)
+          setSelectedValues(filteredValues);
+          }}>
             <Icon name="cross_icon" width={10} height={10} />
           </TouchableOpacity>
         </View>
