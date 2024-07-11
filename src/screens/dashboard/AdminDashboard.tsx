@@ -100,7 +100,7 @@ const AdminDashboard: FC<AdminDashboardScreenProps> = ({navigation, route}) => {
     {
       icon: 'admin_dashboard_analytics_icon',
       label: 'Analytics',
-      onPress: () => {},
+      onPress: () => {navigation.navigate('AnalyticsStack',{screen:'UserAndRoleAnalyticsMainPage'})},
     },
     {
       icon: 'admin_dashboard_schedules_icon',

@@ -45,7 +45,7 @@ export const RenderPrintResponsesModalContent: FC<
   useEffect(() => {
     const fetchPrinters = async () => {
       try {
-        const printers = await RNPrint.selectPrinter({x: 100, y: 100});
+        const printers = await RNPrint.selectPrinter({x: '100', y: '100'});
         if (printers) {
           setPrinterOptions([{value: printers.url, label: printers.name}]);
         }

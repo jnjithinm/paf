@@ -6,7 +6,7 @@ import Icon from './Icon';
 import colors from '../config/colors';
 import {normaliseDesigns} from '../utils/helpers/responsiveHelpers';
 import {FONT_SIZES, FONT_VARIANT} from '../config/themes';
-import Images, {ImageIconNames} from '../components/Image';
+import Image, {ImageIconNames} from '../components/Image';
 import Text from './Text';
 import {RenderActiveStatus} from '../screens/userManagement/UsersMainPage';
 
@@ -48,24 +48,17 @@ const Header: FC<HeaderPropsTypes> = ({
       {dashboard && (
         <View style={styles.dashboardContainer}>
           <TouchableOpacity
-            style={{
-              width: 25,
-              height: 25,
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-            onPress={onPressMenuIcon}>
+            onPress={onPressMenuIcon}
+            style={{height: '70%', justifyContent: 'flex-end', width: '20%'}}>
             <Icon name="menu_icon" />
           </TouchableOpacity>
           <View style={styles.iconRow}>
-            <TouchableOpacity
-         
-              onPress={onPressBellIcon}>
+            <TouchableOpacity onPress={onPressBellIcon} style={{width: '50%'}}>
               <Icon name="bell_icon" />
             </TouchableOpacity>
             <TouchableOpacity
-   
-              onPress={onPressProfileIcon}>
+              onPress={onPressProfileIcon}
+              style={{width: '50%'}}>
               <Icon name="profile_icon" />
             </TouchableOpacity>
           </View>
@@ -99,8 +92,12 @@ const Header: FC<HeaderPropsTypes> = ({
         {icon && (
           <TouchableOpacity
             onPress={() => {}}
-            style={scrollTransition && !isScrolled ? styles.iconScrolled : {}}>
-            <Images
+            style={
+              scrollTransition && !isScrolled
+                ? {...styles.iconScrolled, ...styles.iconContainer}
+                : styles.iconContainer
+            }>
+            <Image
               name={icon}
               size={
                 !scrollTransition || (scrollTransition && isScrolled) ? 0.5 : 1
@@ -117,7 +114,7 @@ const styles = StyleSheet.create({
   headerContainer: {
     justifyContent: 'flex-end',
     width: '100%',
-    paddingBottom: 10,
+    paddingBottom: 15,
     paddingHorizontal: 20,
     backgroundColor: colors.primaryLightColor,
     height: normaliseDesigns(50),
@@ -125,12 +122,16 @@ const styles = StyleSheet.create({
   dashboardContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-end',
     width: '100%',
+    height: '100%',
   },
   iconRow: {
     flexDirection: 'row',
-    alignItems: 'center',
+    width: '20%',
+    height: '70%',
+    justifyContent: 'space-around',
+    alignItems: 'flex-end',
   },
   mainHeader: {
     flexDirection: 'row',
@@ -141,24 +142,27 @@ const styles = StyleSheet.create({
   titleContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 20,
   },
   backButton: {
-    right: 15,
-    width: 25,
-    height: 25,
     alignItems: 'center',
     justifyContent: 'center',
+    height: '70%',
+    width: normaliseDesigns(30),
   },
   title: {
     fontSize: FONT_SIZES.body3,
     fontFamily: FONT_VARIANT.bold,
     color: colors.blackColor,
-    paddingRight: 5,
+    textAlign:'left'
   },
   iconScrolled: {
     top: 35,
-    right: 10,
+    // right: 10,
+  },
+  iconContainer: {
+    width: '25%',
+    height: '100%',
+    alignItems: 'center',
   },
 });
 

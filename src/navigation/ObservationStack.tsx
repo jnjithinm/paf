@@ -14,10 +14,14 @@ import CreateViewEvidenceCard from '../screens/observation/CreateViewEvidenceCar
 export type ObservationStackParamList = {
   ObservationReportsMainPage: undefined;
   ReportsEvidenceCard: {userAccessed: string};
-  AddNewObservation: {isEvidenceCardCreated: boolean}|undefined;
+  AddNewObservation: {isEvidenceCardCreated: boolean} | undefined;
   CreateViewEvidenceCard: undefined;
   ObservationReport: undefined;
-  PlayFile: {file: FileObject,files:FileObject[],onDelete:(files:FileObject[])=>void};
+  PlayFile: {
+    file: FileObject;
+    files: FileObject[];
+    onDelete: (files: FileObject[]) => void;
+  };
 };
 
 const ObservationStackTab = createStackNavigator<ObservationStackParamList>();

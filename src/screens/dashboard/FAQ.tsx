@@ -1,4 +1,4 @@
-import React, {FC, ReactNode, useEffect, useState} from 'react';
+import React, {FC, ReactNode, useState} from 'react';
 import {StyleSheet} from 'react-native';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
@@ -6,18 +6,14 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import Layout from '../../components/Layout';
 import Text from '../../components/Text';
 import {MainStackParamList} from '../../navigation/MainStack';
-import TextInput from '../../components/TextInput';
-import useValidation from '../../utils/hooks/useValidation';
 import Button from '../../components/Button';
-import Modal from '../../components/Modal';
 import {TouchableOpacity, View} from 'react-native';
-import Image from '../../components/Image';
 import colors from '../../config/colors';
-import {normaliseDesigns} from '../../utils/helpers/responsiveHelpers';
 import Icon from '../../components/Icon';
 import {Drawer} from 'react-native-drawer-layout';
 import DrawerContent from '../../components/DrawerContent';
-import { useAppSelector } from '../../redux/store';
+import {useAppSelector} from '../../redux/store';
+import {sendEmail} from '../../utils/functions/linkingUtils';
 
 type FAQNavigationProp = StackNavigationProp<MainStackParamList, 'FAQ'>;
 type FAQRouteProp = RouteProp<MainStackParamList, 'FAQ'>;
@@ -249,7 +245,7 @@ const FAQ: FC<FAQScreenProps> = ({navigation, route}) => {
     setIsDrawerOpen(false);
   };
 
-  const {isLoggedIn}=useAppSelector(state=>state.auth)
+  const {isLoggedIn} = useAppSelector(state => state.auth);
 
   return (
     <Drawer
@@ -261,10 +257,14 @@ const FAQ: FC<FAQScreenProps> = ({navigation, route}) => {
         overridePaddingHorizontal
         overridePaddingVertical
         style={{paddingHorizontal: 15}}
-        onPressBackArrow={()=>{navigation.goBack()}}
-        onPressMenuIcon={()=>{setIsDrawerOpen(true)}}
+        onPressBackArrow={() => {
+          navigation.goBack();
+        }}
+        onPressMenuIcon={() => {
+          setIsDrawerOpen(true);
+        }}
         dashboard={isLoggedIn}
-        avoidBackButton ={isLoggedIn}>
+        avoidBackButton={isLoggedIn}>
         <Text
           size="body4"
           fontVariant="bold"
@@ -285,7 +285,18 @@ const FAQ: FC<FAQScreenProps> = ({navigation, route}) => {
             />
           ))}
         </View>
-        <Button onPress={()=>{}} active text='Contact us' style={{width:'40%',alignSelf:'center',marginVertical:10}}  />
+        <Button
+          onPress={() => {
+            sendEmail(
+              'admin_paf@analyticsfoxsoftwares.com',
+              'Pehla Akshar Foundation',
+              'Hi',
+            );
+          }}
+          active
+          text="Contact us"
+          style={{width: '40%', alignSelf: 'center', marginVertical: 10}}
+        />
       </Layout>
     </Drawer>
   );

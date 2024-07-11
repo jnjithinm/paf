@@ -26,6 +26,7 @@ import LocationManagementStack, {
 } from './LocationManagementStack';
 import MyAccount from '../screens/dashboard/MyAccount';
 import FAQ from '../screens/dashboard/FAQ';
+import AnalyticsStack, { AnalyticsStackParamList } from './AnalyticsStack';
 
 export type MainStackParamList = {
   Splash: undefined;
@@ -43,6 +44,7 @@ export type MainStackParamList = {
   FlowsAndFormsStack: NavigatorScreenParams<FlowsAndFormsStackParamList>;
   UserManagementStack: NavigatorScreenParams<UserManagementStackParamList>;
   LocationManagementStack: NavigatorScreenParams<LocationManagementStackParamList>;
+  AnalyticsStack:NavigatorScreenParams<AnalyticsStackParamList>;
 };
 
 const MainStack = createStackNavigator<MainStackParamList>();
@@ -99,6 +101,11 @@ const MainStackNavigator = () => {
           name="LocationManagementStack"
           component={LocationManagementStack}
         />
+              <MainStack.Screen
+          name="AnalyticsStack"
+          component={AnalyticsStack}
+        />
+
 
       </MainStack.Navigator>
     );

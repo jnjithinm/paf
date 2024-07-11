@@ -213,6 +213,7 @@ const ObservationReportsMainPage: FC<ObservationReportsMainPageScreenProps> = ({
     }
   }, [selectedFilter]);
 
+
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
       if (search.length >= 3) {
@@ -222,7 +223,7 @@ const ObservationReportsMainPage: FC<ObservationReportsMainPageScreenProps> = ({
           type: 'all',
         },search]));
       }
-    }, 500);
+    }, 200);
 
     return () => clearTimeout(delayDebounceFn);
   }, [search]);
@@ -257,11 +258,6 @@ const ObservationReportsMainPage: FC<ObservationReportsMainPageScreenProps> = ({
         />
         <SearchWithFilter
           onTextChange={search => {
-            // dispatch(getAllUsers([ {
-            //   page: 0,
-            //   size: 15,
-            //   type: 'all',
-            // }]));
             setSearch(search)
           }}
           options={allUsers?.dataList?.map(item => ({
@@ -269,6 +265,7 @@ const ObservationReportsMainPage: FC<ObservationReportsMainPageScreenProps> = ({
             label: item.name,
           }))}
           onProceed={filter => {
+            console.log("ddd",filter)
             setFilter(filter);
             dispatch(
               getAllObservations([

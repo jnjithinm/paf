@@ -95,6 +95,7 @@ interface DistrictsScreenProps {
   route: DistrictsRouteProp;
 }
 
+
 const Districts: FC<DistrictsScreenProps> = ({navigation, route}) => {
   const [selectedItem, setSelectedItem] = useState<District>();
   const [districtList, setDistrictList] = useState<DistrictsList>({

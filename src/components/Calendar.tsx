@@ -15,7 +15,7 @@ import {Dropdown} from 'react-native-element-dropdown';
 import {normaliseDesigns} from '../utils/helpers/responsiveHelpers';
 import Button from './Button';
 import RatingInput from './RatingInput';
-import { ItemType } from '../config/types';
+import {ItemType} from '../config/types';
 
 const generateCalendar = (
   month: number | undefined,
@@ -65,7 +65,7 @@ const RenderDropdown: FC<RenderDropdownTypes> = ({
   disabled,
 }) => {
   const currentYear = moment().year();
-  const currentMonth = moment().month();
+  const currentMonth = moment().month() + 1;
   const generateMonths = () => {
     const startMonth =
       selection === 'End'
@@ -73,15 +73,21 @@ const RenderDropdown: FC<RenderDropdownTypes> = ({
           ? selectedStartMonth
           : selectedEndYear === currentYear
           ? currentMonth
+          : selectedStartYear == currentYear
+          ? selectedStartMonth
           : 1
         : 1;
 
     const endMonth =
       selection === 'Start'
-        ? selectedStartYear === currentYear
+        ? selectedStartYear === currentYear || !selectedStartYear
           ? currentMonth
           : 12
-        : 12;
+        : selectedEndYear
+        ? selectedEndYear === currentYear
+          ? currentMonth
+          : 12
+        : currentMonth;
 
     const months = [];
     for (let i = startMonth; i <= endMonth; i++) {
@@ -144,15 +150,13 @@ const dateFilterOptions = [
 export type DateFilterOption = (typeof dateFilterOptions)[number];
 
 export type FilterObject = {
-  rating?: number ;
+  rating?: number;
   dateFilterOption?: DateFilterOption;
-  date?:
-    {
-        startDate: string;
-        endDate: string;
-      }
-    ;
-  selectedItem?:ItemType
+  date?: {
+    startDate: string;
+    endDate: string;
+  };
+  selectedItem?: ItemType;
 };
 
 interface CalendarPropsTypes {
@@ -186,9 +190,10 @@ const Calendar: FC<CalendarPropsTypes> = ({onProceed, onClose, isVisible}) => {
   const [endDate, setEndDate] = useState<moment.Moment | undefined>(undefined);
 
   const weekdays = moment.weekdays();
-  const days = startDate && selectedEndMonth && selectedEndYear
-    ? generateCalendar(selectedEndMonth, selectedEndYear)
-    : generateCalendar(selectedStartMonth, selectedStartYear);
+  const days =
+    startDate && selectedEndMonth && selectedEndYear
+      ? generateCalendar(selectedEndMonth, selectedEndYear)
+      : generateCalendar(selectedStartMonth, selectedStartYear);
   const shortWeekdays = weekdays.map(day => day.slice(0, 2));
 
   const handleStartDateChange = (month: number, year: number) => {
@@ -197,27 +202,47 @@ const Calendar: FC<CalendarPropsTypes> = ({onProceed, onClose, isVisible}) => {
     setStartDate(undefined);
     setSelectedEndMonth(undefined);
     setSelectedEndYear(undefined);
-
   };
 
   const handleEndDateChange = (month: number, year: number) => {
     setSelectedEndMonth(month);
     setSelectedEndYear(year);
     setEndDate(undefined);
-
   };
 
   const handleDateSelect = (day: moment.Moment) => {
     if (!startDate || (startDate && endDate)) {
       setStartDate(day);
       setEndDate(undefined);
+      // Automatically set month and year dropdowns
+      setSelectedStartMonth(day.month() + 1);
+      setSelectedStartYear(day.year());
+      setSelectedEndMonth(undefined);
+      setSelectedEndYear(undefined);
     } else if (startDate && !endDate) {
       if (day.isBefore(startDate, 'day')) {
         setStartDate(day);
+        // Automatically set month and year dropdowns
+        setSelectedStartMonth(day.month() + 1);
+        setSelectedStartYear(day.year());
       } else {
         setEndDate(day);
+        // Automatically set month and year dropdowns
+        setSelectedEndMonth(day.month() + 1);
+        setSelectedEndYear(day.year());
       }
     }
+  };
+
+  const resetFilterState = () => {
+    setRating(undefined);
+    setSelectedStartMonth(undefined);
+    setSelectedStartYear(undefined);
+    setSelectedEndMonth(undefined);
+    setSelectedEndYear(undefined);
+    setSelectedFilterByDate(undefined);
+    setStartDate(undefined);
+    setEndDate(undefined);
   };
 
   const isDateInRange = (day: moment.Moment) => {
@@ -251,6 +276,12 @@ const Calendar: FC<CalendarPropsTypes> = ({onProceed, onClose, isVisible}) => {
     years.push({label: year.toString(), value: year.toString()});
   }
 
+  const onCloseFilter = () => {
+    resetFilterState();
+    onClose();
+  };
+
+  console.log('cake', startDate, endDate);
   return (
     <RNModal visible={isVisible} animationType="slide" transparent>
       <View style={styles.CalendarOverlay} />
@@ -267,49 +298,52 @@ const Calendar: FC<CalendarPropsTypes> = ({onProceed, onClose, isVisible}) => {
                   width: normaliseDesigns(15),
                   height: normaliseDesigns(15),
                 }}
-                onPress={() => onClose()}>
+                onPress={() => onCloseFilter()}>
                 <Icon name="cross_icon_thin" width={15} height={15} />
               </TouchableOpacity>
             </View>
             <RatingInput
-              label={'sort by rating'}
+              label={'Sort by rating'}
               style={{marginVertical: 5}}
               rating={rating || 0}
+              size={25}
               onChangeRating={setRating}
               showRating={false}
             />
-            <Text size="body1" fontVariant="bold" style={{marginVertical: 10}}>
-              By date
-            </Text>
-            <View
-              style={{
-                flexDirection: 'row',
-                flexWrap: 'wrap',
-                justifyContent: 'space-evenly',
-                width: '85%',
-                alignContent: 'flex-start',
-              }}>
-              {dateFilterOptions.map((item, index) => (
-                <TouchableOpacity
-                  key={index}
-                  style={{
-                    borderColor:
-                      selectedFilterByDate === item ? '#F4C24A' : '#E4E7EB',
-                    borderWidth: 1,
-                    backgroundColor:
-                      selectedFilterByDate === item ? '#FCEBC5' : undefined,
-                    paddingHorizontal: 20,
-                    paddingVertical: 5,
-                    borderRadius: 5,
-                    marginBottom: 10,
-                    alignContent: 'flex-start',
-                  }}
-                  onPress={() => {
-                    setSelectedFilterByDate(item);
-                  }}>
-                  <Text>{item}</Text>
-                </TouchableOpacity>
-              ))}
+            <View style={{marginVertical: 10}}>
+              <Text size="body1" fontVariant="bold" style={{marginBottom: 10}}>
+                By date
+              </Text>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  flexWrap: 'wrap',
+                  justifyContent: 'space-evenly',
+                  width: '85%',
+                  alignContent: 'flex-start',
+                }}>
+                {dateFilterOptions.map((item, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    style={{
+                      borderColor:
+                        selectedFilterByDate === item ? '#F4C24A' : '#E4E7EB',
+                      borderWidth: 1,
+                      backgroundColor:
+                        selectedFilterByDate === item ? '#FCEBC5' : undefined,
+                      paddingHorizontal: 20,
+                      paddingVertical: 7,
+                      borderRadius: 8,
+                      marginBottom: 10,
+                      alignContent: 'flex-start',
+                    }}
+                    onPress={() => {
+                      setSelectedFilterByDate(item);
+                    }}>
+                    <Text size="small3">{item}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
             </View>
             <View
               style={{
@@ -318,7 +352,12 @@ const Calendar: FC<CalendarPropsTypes> = ({onProceed, onClose, isVisible}) => {
                 alignItems: 'center',
               }}>
               <View style={{width: '50%'}}>
-                <Text style={{color: '#ABB4BD'}} size="small1">
+                <Text
+                  style={{
+                    color: selectedStartMonth ? colors.blackColor : '#ABB4BD',
+                  }}
+                  fontVariant={selectedStartMonth ? 'bold' : undefined}
+                  size="small3">
                   Start date
                 </Text>
                 <View style={{flexDirection: 'row'}}>
@@ -355,7 +394,12 @@ const Calendar: FC<CalendarPropsTypes> = ({onProceed, onClose, isVisible}) => {
                 }}
               />
               <View style={{width: '50%'}}>
-                <Text style={{color: '#ABB4BD'}} size="small1">
+                <Text
+                  style={{
+                    color: selectedEndMonth ? colors.blackColor : '#ABB4BD',
+                  }}
+                  fontVariant={selectedEndMonth ? 'bold' : undefined}
+                  size="small3">
                   End date
                 </Text>
                 <View style={{flexDirection: 'row'}}>
@@ -387,6 +431,7 @@ const Calendar: FC<CalendarPropsTypes> = ({onProceed, onClose, isVisible}) => {
                     selectedEndYear={selectedEndYear}
                     selectedStartYear={selectedStartYear || initialYear}
                     value={selectedEndYear}
+                    disabled={startDate == undefined}
                   />
                 </View>
               </View>
@@ -424,11 +469,18 @@ const Calendar: FC<CalendarPropsTypes> = ({onProceed, onClose, isVisible}) => {
                       isStartDate(day) && styles.startDate,
                       isEndDate(day) && styles.endDate,
                       isDateInRange(day) && styles.inRangeDate,
+                      {opacity: day.isAfter(moment(), 'day') ? 0.1 : undefined},
                     ]}
-                    onPress={() => handleDateSelect(day)}>
+                    onPress={() => handleDateSelect(day)}
+                    disabled={day.isAfter(moment(), 'day')}>
                     <Text
                       style={{
-                        color: day.isSame(moment(), 'day') ? '#000' : '#ABB4BD',
+                        color:
+                          day.month() === moment().month()
+                            ? colors.blackColor
+                            : day.isSame(moment(), 'day')
+                            ? '#000'
+                            : '#ABB4BD',
                         fontWeight: day.isSame(moment(), 'day')
                           ? 'bold'
                           : 'normal',
@@ -444,11 +496,9 @@ const Calendar: FC<CalendarPropsTypes> = ({onProceed, onClose, isVisible}) => {
 
             <Button
               text="Apply"
-              style={{marginBottom: 20}}
+              style={{marginTop: 25}}
               active={Boolean(
-                rating !== 0 ||
-                  selectedFilterByDate !== undefined ||
-                  Boolean(startDate && endDate),
+                rating || selectedFilterByDate || Boolean(startDate && endDate),
               )}
               onPress={() => {
                 onProceed({
@@ -488,18 +538,19 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     alignSelf: 'flex-end',
-    marginTop: normaliseDesigns(135),
+    marginTop: '35%',
     height: '100%',
   },
   CalendarContent: {
     backgroundColor: colors.backgroundColor,
-    borderRadius: 20,
-    // width: '80%',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    marginBottom: 13,
   },
   contentContainer: {
     paddingHorizontal: 15,
@@ -535,6 +586,8 @@ const styles = StyleSheet.create({
   startDate: {
     backgroundColor: '#F4C24A',
     borderRadius: 20,
+    // borderWidth:1.5,
+    // borderColor: '#F4C24A'
   },
   endDate: {
     backgroundColor: '#F4C24A',
@@ -542,5 +595,6 @@ const styles = StyleSheet.create({
   },
   inRangeDate: {
     backgroundColor: '#FCEBC5',
+    borderRadius: 20,
   },
 });

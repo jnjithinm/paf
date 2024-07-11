@@ -55,6 +55,7 @@ const endPoints = {
   ASSIGN_FORM_TO_USERS_AND_GROUPS:`PAF/forms/assignUsersAndGroups`,
   SCHEDULE_REMINDER_DATE:`PAF/flows/scheduleReminder?`,
   PRINT_FORM_RESPONSES:`PAF/forms/printIndResponse`,
-  PRINT_QUESTION_WISE_RESPONSES:`PAF/forms/printQuestionWiseResponse`
+  PRINT_QUESTION_WISE_RESPONSES:`PAF/forms/printQuestionWiseResponse`,
+  USER_COUNT_ANAYTICS:`PAF/analytics/userCountAnalytics`
 };
 export default endPoints;
