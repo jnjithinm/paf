@@ -56,6 +56,7 @@ const endPoints = {
   SCHEDULE_REMINDER_DATE:`PAF/flows/scheduleReminder?`,
   PRINT_FORM_RESPONSES:`PAF/forms/printIndResponse`,
   PRINT_QUESTION_WISE_RESPONSES:`PAF/forms/printQuestionWiseResponse`,
-  USER_COUNT_ANAYTICS:`PAF/analytics/userCountAnalytics`
+  USER_COUNT_ANAYTICS:`PAF/analytics/userCountAnalytics`,
+   GET_FORM_COUNT_ANALYTICS: `PAF/analytics/countOfFormAndResponse`
 };
 export default endPoints;

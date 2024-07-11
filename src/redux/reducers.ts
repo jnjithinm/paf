@@ -7,15 +7,17 @@ import masterSlice from './features/masterSlice';
 import rubricSlice from './features/rubricSlice';
 import flowsSlice from './features/flowsSlice';
 import formsSlice from './features/formsSlice';
+import analyticsSlice from './features/analyticsSlice';
 
 const rootReducer = combineReducers({
   auth: authSlice,
-  observation: observationSlice,
-  users: usersSlice,
-  master: masterSlice,
-  rubric: rubricSlice,
+  analytics:analyticsSlice,
   flows: flowsSlice,
   forms: formsSlice,
+  master: masterSlice,
+  observation: observationSlice,
+  rubric: rubricSlice,
+  users: usersSlice,
 });
 
 export default rootReducer;

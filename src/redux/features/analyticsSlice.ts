@@ -6,59 +6,100 @@ import {PaginationRequest} from './usersSlice';
 import {ErrorResponse, setLoading} from './authSlice';
 import {ErrorStatusObject} from '../../config/types';
 
+//   interface UserAnalyticsCount
+interface GetUserCountAnalyticsRequest {
+  userStatusType: string;
+  dateType: string;
+  startDate: string;
+  endDate: string;
+}
 
+interface GetUserCountAnalyticsResponse {
+  payload: {
+    message: string;
+    dataList: {
+      totalUserCount: number[];
+      userCount: Array<[string, string | number]>;
+      totalUserGroupCount: number[];
+      totalRoleCount: number[];
+    };
+  };
+  status: number;
+}
 
-  
-  
-//   interface UserAnalyticsCount 
+type GetUserCountAnalyticsResponsePayload =
+  GetUserCountAnalyticsResponse['payload'];
 
-  interface UserCountAnalyticsResponse {
-    payload: {
-        message: string;
-        dataList: {
-            totalUserCount: number[];
-            userCount: Array<[string, string | number]>;
-            totalUserGroupCount: number[];
-            totalRoleCount: number[];
-          };
-      };
-    status: number;
-  }
+interface GetFormCountAnalyticsRequest {
+  dateType: 'selected_date';
+  startDate: string;
+  endDate: string;
+}
 
+interface GetFormCountAnalyticsResponse {
+  payload: {
+    dataList: {
+      totalResponseAverageTime: number[];
+      formAnalytics: Array<[string, string, string, string]>;
+      totalFormCount: number[];
+      totalResponseCount: number[];
+    };
+  };
+  status: number;
+}
 
+type GetFormCountAnalyticsResponsePayload =
+GetFormCountAnalyticsResponse['payload'];
 
-
-export const userCountAnalytics = createAsyncThunk<
-UserCountAnalyticsResponse,
-  [number,UpdateRubricRequest],
+export const getUserCountAnalytics = createAsyncThunk<
+  GetUserCountAnalyticsResponse,
+  GetUserCountAnalyticsRequest,
   {rejectValue: ErrorResponse}
->('analytics/updateRubric', async ([rubricId, payload], {dispatch, rejectWithValue}) => {
-  try {
-    dispatch(setLoading(true));
-    const response = await api.put(endPoints.USER_COUNT_ANAYTICS + rubricId, payload);
-    return response.data as UserCountAnalyticsResponse;
-  } catch (error: any) {
-    return rejectWithValue(error.response.data);
-  } finally {
-    dispatch(setLoading(false));
-  }
-});
+>(
+  'analytics/getUserCountAnalytics',
+  async (payload, {dispatch, rejectWithValue}) => {
+    try {
+      dispatch(setLoading(true));
+      const response = await api.post(endPoints.USER_COUNT_ANAYTICS, payload);
+      return response.data as GetUserCountAnalyticsResponse;
+    } catch (error: any) {
+      return rejectWithValue(error.response.data);
+    } finally {
+      dispatch(setLoading(false));
+    }
+  },
+);
+
+export const getFormCountAnalytics = createAsyncThunk<
+  GetFormCountAnalyticsResponse,
+  GetFormCountAnalyticsRequest,
+  {rejectValue: ErrorResponse}
+>(
+  'analytics/getFormCountAnalytics',
+  async (payload, {dispatch, rejectWithValue}) => {
+    try {
+      dispatch(setLoading(true));
+      const response = await api.post(endPoints.GET_FORM_COUNT_ANALYTICS, payload);
+      return response.data as GetFormCountAnalyticsResponse;
+    } catch (error: any) {
+      return rejectWithValue(error.response.data);
+    } finally {
+      dispatch(setLoading(false));
+    }
+  },
+);
 
 interface InitialState {
-  allRubrics: GetAllRubricsResponsePayload | null;
-  analytics: GetRubricResponsePayload | null;
-  rubricDeleteSuccessResponse: DeleteSuccessResponsePayload|null;
-  updateRubricResponse:boolean;
-  rubricShowMessage: ErrorStatusObject | null;
+  userCountAnalytics: GetUserCountAnalyticsResponsePayload | null;
+  formCountAnalytics:GetFormCountAnalyticsResponsePayload|null;
+  analyticsShowMessage: ErrorStatusObject | null;
   errorMessage: string;
 }
 
 const initialState: InitialState = {
-  allRubrics: null,
-  analytics: null,
-  rubricDeleteSuccessResponse: null,
-  updateRubricResponse:false,
-  rubricShowMessage: null,
+  userCountAnalytics: null,
+  formCountAnalytics:null,
+  analyticsShowMessage: null,
   errorMessage: '',
 };
 
@@ -68,62 +109,24 @@ const analyticsSlice = createSlice({
   reducers: {},
   extraReducers: builder => {
     builder
-      .addCase(setRubricShowMessage, (state, action) => {
-        state.rubricShowMessage = action.payload;
+      .addCase(getUserCountAnalytics.pending, state => {
+        state.userCountAnalytics = null;
       })
-      .addCase(getAllRubrics.pending, state => {
+      .addCase(getUserCountAnalytics.fulfilled, (state, action) => {
+        state.userCountAnalytics = action.payload.payload;
       })
-      .addCase(getAllRubrics.fulfilled, (state, action) => {
-        state.allRubrics = {
-          ...state.allRubrics,
-          ...action.payload.payload,
-        };
+      .addCase(getUserCountAnalytics.rejected, state => {
+        state.userCountAnalytics = null;
       })
-      .addCase(getAllRubrics.rejected, (state, action) => {
-
+      .addCase(getFormCountAnalytics.pending, state => {
+        state.formCountAnalytics = null;
       })
-      .addCase(getRubric.pending, state => {
-
+      .addCase(getFormCountAnalytics.fulfilled, (state, action) => {
+        state.formCountAnalytics = action.payload.payload;
       })
-      .addCase(getRubric.fulfilled, (state, action) => {
-        state.analytics = action.payload.payload;
-      })
-      .addCase(getRubric.rejected, (state, action) => {
-      })
-      .addCase(deleteRubric.pending, (state, action) => {
-        state.rubricDeleteSuccessResponse = null;
-      })
-      .addCase(deleteRubric.fulfilled, (state, action) => {
-        state.rubricShowMessage = {
-          status: 'Success',
-          message: action.payload.payload.message?.toString(),
-        };
-        state.rubricDeleteSuccessResponse = action.payload.payload;
-      })
-      .addCase(deleteRubric.rejected, (state, action) => {
-        state.rubricShowMessage = {
-          status: 'Error',
-          message: action?.payload?.error?.errorMessage,
-        };
-      })
-      .addCase(updateRubric.pending, state => {
-        state.updateRubricResponse = false;
-      })
-      .addCase(updateRubric.fulfilled, (state, action) => {
-        state.updateRubricResponse = true;
-        state.rubricShowMessage = {
-          status: 'Success',
-          message: 'Indicator deleted',
-        };
-
-      })
-      .addCase(updateRubric.rejected, (state, action) => {
-        state.updateRubricResponse = false;
-        state.rubricShowMessage = {
-          status: 'Error',
-          message: action?.payload?.error?.errorMessage ,
-        };
-      })
+      .addCase(getFormCountAnalytics.rejected, state => {
+        state.formCountAnalytics = null;
+      });
   },
 });
 

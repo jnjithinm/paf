@@ -210,9 +210,9 @@ export const RenderAssignFormModalContent: FC<
           userSearch,
         ]),
       );
-    }, 200);
+    }, 400);
     return () => clearTimeout(delayDebounceFn);
-  }, [userSearch]);
+  }, [userSearch,dispatch]);
 
 
   useEffect(() => {
@@ -227,9 +227,9 @@ export const RenderAssignFormModalContent: FC<
           groupSearch,
         ]),
       );
-    }, 200);
+    }, 400);
     return () => clearTimeout(delayDebounceFn);
-  }, [groupSearch]);
+  }, [groupSearch,dispatch]);
 
   const handlePress = () => {
     const selectedUsersNumbers = selectedUsers.map(user => parseInt(user, 10));
@@ -239,15 +239,15 @@ export const RenderAssignFormModalContent: FC<
     onPressAssign(selectedUsersNumbers, selectedUserGroupsNumbers);
   };
 
-  console.log("sdfds",userSearch)
+  console.log("sdfds",allUsers?.dataList)
   return (
     <View style={{paddingHorizontal: 10}}>
       <MultiSelectDropdown
         label="Select user"
         options={
-          allUsers?.dataList.map(item => ({
+          allUsers?.dataList?.map(item => ({
             value: item.userId?.toString(),
-            label: item.userName,
+            label: item.name,
           })) || []
         }
         onSearch={search => {
@@ -543,19 +543,16 @@ const RenderSendReminderModal: FC<RenderSendReminderModalTypes> = ({
             }}
           />
           <MultiSelectDropdown
-            options={
-              pendingUsersListForSendReminder?.dataList?.UserGroups?.map(
-                item => ({
-                  value: item.userGroupId?.toString(),
-                  label: item.groupName,
-                }),
-              ) || []
-            }
+            options={pendingUsersListForSendReminder?.dataList?.UserGroups?.map(
+              item => ({
+                value: item.userGroupId?.toString(),
+                label: item.groupName,
+              })
+            ) || []}
             selectedValues={selectedUserGroups}
             setSelectedValues={setSelectedUserGroups}
-            style={{paddingVertical: 0, width: '80%'}}
-            disabled={selectedRemindMethod?.value !== 'By User Groups'}
-          />
+            style={{ paddingVertical: 0, width: '80%' }}
+            disabled={selectedRemindMethod?.value !== 'By User Groups'} onSearch={(search)=>{}}          />
         </View>
       </View>
       <Button

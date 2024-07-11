@@ -4,6 +4,7 @@ import {
   createStackNavigator,
 } from '@react-navigation/stack';
 import UserAndRoleAnalyticsMainPage from '../screens/analytics/UserAndRoleAnalyticsMainPage';
+import FlowsAndFormsAnalytics from '../screens/analytics/FlowsAndFormsAnalytics';
 
 
 export type AnalyticsStackParamList = {
@@ -41,7 +42,7 @@ const AnalyticsStack = ({}) => {
         keyboardHidesTabBar: true,
       })}>
       <AnalyticsTab.Screen name="UserAndRoleAnalyticsMainPage" component={UserAndRoleAnalyticsMainPage} />
-
+      <AnalyticsTab.Screen name='FlowsAndFormsAnalytics' component={FlowsAndFormsAnalytics} />
     </AnalyticsTab.Navigator>
   );
 };

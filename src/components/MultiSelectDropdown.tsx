@@ -50,7 +50,9 @@ const MultiSelectDropdown: FC<MultiSelectDropdownTypes> = ({
   setSelectedValues,
   onSearch,
   disabled
-}) => (
+}) =>{
+  console.log("sdfdsaaaaaaaaaaaa",options)
+  return (
   <View style={{...containerStyle, marginVertical: 5}}>
     {label && (
       <Text style={{marginBottom: 4}} size='small2' fontVariant="bold">
@@ -133,6 +135,6 @@ const MultiSelectDropdown: FC<MultiSelectDropdownTypes> = ({
       )}
     />
   </View>
-);
+)};
 
 export default MultiSelectDropdown;

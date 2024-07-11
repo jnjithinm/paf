@@ -32,10 +32,9 @@ const adminStack: StackItem[] = [
     focusedIcon: 'tabbar_icon_flows_and_forms_focused',
   },
   {
-    stack:undefined,
+    stack:'AnalyticsStack',
     icon: 'tabbar_icon_graph',
     focusedIcon: 'tabbar_icon_graph_focused',
-    disabled: true,
   },
 ];
 
