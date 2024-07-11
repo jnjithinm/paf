@@ -51,6 +51,7 @@ import {
   acceptingFormResponses,
   assignFormToUsersAndGroups,
   getFormById,
+  getFormAssignedUserAndUserGroups,
   resetAssignFormResponse,
 } from '../../redux/features/formsSlice';
 import SearchWithFilter from '../../components/SearchWithFilter';
@@ -159,6 +160,7 @@ type ScreenComponentType = {
 };
 
 type RenderAssignFormModalContentTypes = {
+  flowDetailItem?: FlowDetailItem;
   onPressAssign: (
     selectedUsers: number[],
     selectedUserGroups: number[],
@@ -167,14 +169,15 @@ type RenderAssignFormModalContentTypes = {
 
 export const RenderAssignFormModalContent: FC<
   RenderAssignFormModalContentTypes
-> = ({onPressAssign}) => {
+> = ({flowDetailItem, onPressAssign}) => {
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [selectedUserGroups, setSelectedUserGroups] = useState<string[]>([]);
   const [userSearch, setUserSearch] = useState<string>('');
-  const [groupSearch,setGroupSearch]=useState<string>('');
+  const [groupSearch, setGroupSearch] = useState<string>('');
 
   const {allUserGroups, allUsers} = useAppSelector(state => state.users);
 
+  const {formAssignedUserAndUserGroups} = useAppSelector(state => state.forms);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -199,6 +202,36 @@ export const RenderAssignFormModalContent: FC<
   }, []);
 
   useEffect(() => {
+    flowDetailItem &&
+      dispatch(
+        getFormAssignedUserAndUserGroups([
+          flowDetailItem.formId,
+          flowDetailItem.flowId,
+        ]),
+      );
+  }, [flowDetailItem]);
+
+  useEffect(() => {
+    if (formAssignedUserAndUserGroups) {
+      let formAssignedUsers = formAssignedUserAndUserGroups.dataList.Users;
+      let formAssignedUserGroups =
+        formAssignedUserAndUserGroups.dataList.UserGroups;
+      if (formAssignedUsers?.length !== 0) {
+        setSelectedUsers(prev => [
+          ...prev,
+          ...formAssignedUsers.map(item => item?.userId?.toString()),
+        ]);
+      }
+      if (formAssignedUserGroups?.length !== 0) {
+        setSelectedUserGroups(prev => [
+          ...prev,
+          ...formAssignedUserGroups.map(item => item?.userGroupId?.toString()),
+        ]);
+      }
+    }
+  }, [formAssignedUserAndUserGroups]);
+
+  useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
       dispatch(
         getAllUsers([
@@ -210,10 +243,9 @@ export const RenderAssignFormModalContent: FC<
           userSearch,
         ]),
       );
-    }, 400);
+    }, 200);
     return () => clearTimeout(delayDebounceFn);
-  }, [userSearch,dispatch]);
-
+  }, [userSearch]);
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
@@ -227,9 +259,9 @@ export const RenderAssignFormModalContent: FC<
           groupSearch,
         ]),
       );
-    }, 400);
+    }, 200);
     return () => clearTimeout(delayDebounceFn);
-  }, [groupSearch,dispatch]);
+  }, [groupSearch]);
 
   const handlePress = () => {
     const selectedUsersNumbers = selectedUsers.map(user => parseInt(user, 10));
@@ -239,7 +271,6 @@ export const RenderAssignFormModalContent: FC<
     onPressAssign(selectedUsersNumbers, selectedUserGroupsNumbers);
   };
 
-  console.log("sdfds",allUsers?.dataList)
   return (
     <View style={{paddingHorizontal: 10}}>
       <MultiSelectDropdown
@@ -274,7 +305,7 @@ export const RenderAssignFormModalContent: FC<
         text="Assign"
         active={selectedUsers.length !== 0 || selectedUserGroups.length !== 0}
         onPress={handlePress}
-        style={{marginTop: normaliseDesigns(100)}}
+        style={{marginTop: '50%'}}
       />
     </View>
   );
@@ -543,16 +574,20 @@ const RenderSendReminderModal: FC<RenderSendReminderModalTypes> = ({
             }}
           />
           <MultiSelectDropdown
-            options={pendingUsersListForSendReminder?.dataList?.UserGroups?.map(
-              item => ({
-                value: item.userGroupId?.toString(),
-                label: item.groupName,
-              })
-            ) || []}
+            options={
+              pendingUsersListForSendReminder?.dataList?.UserGroups?.map(
+                item => ({
+                  value: item.userGroupId?.toString(),
+                  label: item.groupName,
+                }),
+              ) || []
+            }
             selectedValues={selectedUserGroups}
             setSelectedValues={setSelectedUserGroups}
-            style={{ paddingVertical: 0, width: '80%' }}
-            disabled={selectedRemindMethod?.value !== 'By User Groups'} onSearch={(search)=>{}}          />
+            style={{paddingVertical: 0, width: '80%'}}
+            disabled={selectedRemindMethod?.value !== 'By User Groups'}
+            onSearch={search => {}}
+          />
         </View>
       </View>
       <Button
@@ -879,7 +914,10 @@ const FormResponses: FC<FormResponsesScreenProps> = ({navigation, route}) => {
           closeButton
           contentStyle={{width: '100%'}}
           content={
-            <RenderAssignFormModalContent onPressAssign={onPressAssignForm} />
+            <RenderAssignFormModalContent
+              flowDetailItem={flowDetailItem}
+              onPressAssign={onPressAssignForm}
+            />
           }
         />
         <Modal

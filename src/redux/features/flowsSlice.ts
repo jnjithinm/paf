@@ -69,7 +69,6 @@ interface AssignFlowRequest {
   userIds: number[];
   userGroupIds: number[];
   flowId: number;
-  formId: number;
   loggedInUserName: string;
 }
 

@@ -132,6 +132,7 @@ const MyAccount: FC<MyAccountScreenProps> = ({navigation, route}) => {
       dispatch(resetDeleteUserPhotoResponse());
     }
   }, [deleteUserPhotoResponse]);
+
   console.log('user', user);
   useEffect(() => {
     if (user) {
@@ -197,7 +198,7 @@ const MyAccount: FC<MyAccountScreenProps> = ({navigation, route}) => {
           dateOfBirth:
             moment(user?.dateOfBirth, 'YYYYMMDD').format('YYYY-MM-DD') || '',
           name,
-          isAdmin: true,
+          isAdmin:isAdmin,
           citizenship: user?.citizenship || '',
           roleId: user?.roleId || 0,
           loggedInUserName: userData.userName,
@@ -440,6 +441,7 @@ const MyAccount: FC<MyAccountScreenProps> = ({navigation, route}) => {
       <FooterWithButtons
         proceedButtonText={'Save'}
         isActiveProceedButton={Boolean(
+          isAdmin &&
           isChanged &&
             !nameErrorMessage &&
             !emailErrorMessage &&

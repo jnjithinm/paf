@@ -67,11 +67,13 @@ const FlowsAndFormsAnalytics: FC<
       open={isDrawerOpen}
       onOpen={() => setIsDrawerOpen(true)}
       onClose={() => setIsDrawerOpen(false)}
-      renderDrawerContent={() => <DrawerContent closeDrawer={closeDrawer} />}>
+      renderDrawerContent={() => <DrawerContent closeDrawer={closeDrawer} />}
+      >
       <Layout
         overridePaddingHorizontal
         overridePaddingVertical
         style={{paddingHorizontal: 15}}
+        focusedStack='AnalyticsStack'
         dashboard>
         <Text
           size="body4"

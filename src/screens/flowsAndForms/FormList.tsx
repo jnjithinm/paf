@@ -70,6 +70,7 @@ const FormList: FC<FormListScreenProps> = ({navigation, route}) => {
     useState<boolean>(false);
 
   const [search, setSearch] = useState<string>('');
+
   const {flowById, assignFlowResponse} = useAppSelector(state => state.flows);
   const {userData, isAdmin} = useAppSelector(state => state.auth);
   const dispatch = useAppDispatch();
@@ -109,7 +110,6 @@ const FormList: FC<FormListScreenProps> = ({navigation, route}) => {
         userGroupIds: selectedUserGroups,
         loggedInUserName: userData.userName,
         flowId: flowItem.flowId,
-        formId: flowItem.flowId,
       }),
     );
   };

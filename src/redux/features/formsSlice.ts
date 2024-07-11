@@ -294,6 +294,28 @@ type GetQuestionRatingByIndicatorIdResponsePayload =
 
 type PrintFormResponseResponsePayload = PrintFormResponseResponse['payload'];
 
+
+interface AssignFormToUsersAndGroupsResponse {
+  payload: {
+      id: number;
+      message: string;
+      dataList: {
+          Users: Array<{
+              userId: number;
+              userName: string;
+              name: string;
+          }>;
+          UserGroups: Array<{
+              userGroupId: number;
+              groupName: string;
+          }>;
+      };
+  };
+  status: number;
+}
+
+type AssignFormToUsersAndGroupsResponsePayload = AssignFormToUsersAndGroupsResponse['payload'];
+
 export const setFormsShowMessage = createAction<ErrorStatusObject | null>(
   'SET_FORMS_SHOW_MESSAGE',
 );
@@ -428,6 +450,27 @@ export const assignFormToUsersAndGroups = createAsyncThunk<
   },
 );
 
+export const getFormAssignedUserAndUserGroups = createAsyncThunk<
+AssignFormToUsersAndGroupsResponse,
+  [number,number],
+  {rejectValue: ErrorResponse}
+>(
+  'forms/getFormAssignedUserAndUserGroups',
+  async ([formId,flowId], {dispatch, rejectWithValue}) => {
+    try {
+      // dispatch(setLoading(true));
+      const response = await api.get(
+        endPoints.GET_FORM_ASSIGNED_USER_AND_USER_GROUPS+formId+`?flowId=${flowId}`
+      );
+      return response.data as AssignFormToUsersAndGroupsResponse;
+    } catch (error: any) {
+      return rejectWithValue(error.response.data);
+    } finally {
+      // dispatch(setLoading(false));
+    }
+  },
+);
+
 export const deleteForm = createAsyncThunk<
   DeleteFormResponse,
   [number, number, DeleteFormRequest],
@@ -480,6 +523,7 @@ interface InitialState {
   submitPreviewFormResponse: SubmitPreviewFormResponsePayload | null;
   acceptingFormResponses: AcceptingFormResponsesResponsePayload | null;
   assignFormResponse: AssignFormResponsePayload | null;
+  formAssignedUserAndUserGroups:AssignFormToUsersAndGroupsResponsePayload|null;
   questionRatingByIndicatorId: GetQuestionRatingByIndicatorIdResponsePayload | null;
   deleteFormResponse: DeleteFormResponse | null;
   printResponsesResponse:PrintFormResponseResponsePayload|null;
@@ -494,6 +538,7 @@ const initialState: InitialState = {
   acceptingFormResponses: null,
   deleteFormResponse: null,
   assignFormResponse: null,
+  formAssignedUserAndUserGroups:null,
   questionRatingByIndicatorId: null,
   printResponsesResponse:null,
   formsShowMessage: null,
@@ -592,12 +637,26 @@ const formsSlice = createSlice({
         };
       })
       .addCase(assignFormToUsersAndGroups.pending, state => {
-        // state.isLoading = true;
+        state.acceptingFormResponses=null
       })
       .addCase(assignFormToUsersAndGroups.fulfilled, (state, action) => {
         state.assignFormResponse = action.payload.payload;
       })
       .addCase(assignFormToUsersAndGroups.rejected, (state, action) => {
+        state.acceptingFormResponses=null
+        state.formsShowMessage = {
+          status: 'Error',
+          message: action?.payload?.error?.errorMessage?.toString(),
+        };
+      })
+      .addCase(getFormAssignedUserAndUserGroups.pending, state => {
+        state.deleteFormResponse = null;
+      })
+      .addCase(getFormAssignedUserAndUserGroups.fulfilled, (state, action) => {
+        state.formAssignedUserAndUserGroups = action.payload.payload;
+
+      })
+      .addCase(getFormAssignedUserAndUserGroups.rejected, (state, action) => {
         state.formsShowMessage = {
           status: 'Error',
           message: action?.payload?.error?.errorMessage?.toString(),
@@ -619,6 +678,7 @@ const formsSlice = createSlice({
           message: action?.payload?.error?.errorMessage?.toString(),
         };
       })
+      
       .addCase(printFormResponses.pending, state => {
         state.deleteFormResponse = null;
       })

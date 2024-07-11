@@ -145,6 +145,7 @@ const UserAndRoleAnalyticsMainPage: FC<
         onPressMenuIcon={() => {
           setIsDrawerOpen(true);
         }}
+        focusedStack='AnalyticsStack'
         avoidBackButton
         dashboard>
         <Text
