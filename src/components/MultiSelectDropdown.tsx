@@ -51,7 +51,6 @@ const MultiSelectDropdown: FC<MultiSelectDropdownTypes> = ({
   onSearch,
   disabled
 }) =>{
-  console.log("sdfdsaaaaaaaaaaaa",options)
   return (
   <View style={{...containerStyle, marginVertical: 5}}>
     {label && (

@@ -84,7 +84,7 @@ const Header: FC<HeaderPropsTypes> = ({
             <View style={{flexDirection: 'row'}}>
               <Text style={styles.title}>{title}</Text>
               {isActive && (
-                <RenderActiveStatus isActive={isActive == 'Active'} />
+                <RenderActiveStatus style={{left:5}} isActive={isActive == 'Active'} />
               )}
             </View>
           )}
