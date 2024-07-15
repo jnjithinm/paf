@@ -333,9 +333,9 @@ const DrawerContent: FC<DrawerContentTypes> = ({closeDrawer}) => {
             {
               itemName: 'User & Role Analytics',
               onPressItem: () => {
-                // navigate('AnalyticsStack', {
-                //   screen: 'UserAndRoleAnalyticsMainPage',
-                // });
+                navigate('AnalyticsStack', {
+                  screen: 'UserAndRoleAnalyticsMainPage',
+                });
               },
               icon: 'extend_item_level_2_icon',
               subMenuLevel: 'two',

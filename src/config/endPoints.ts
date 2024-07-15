@@ -64,7 +64,8 @@ const endPoints = {
   LOCATION_IN_COUNT_SYSTEM:`analytics/countOfStateAndAreaAndSchool`,
   OBSERVATION_ANALYTICS_BY_USER_ID:`analytics/teacherObservation/observationByUserId`,
   OBSERVATION_COUNT_ANALYTICS:`analytics/teacherObservation/observation`,
-  RUBRIC_WIESE_OBSERVATION:`analytics/teacherObservation/rubric`
+  RUBRIC_WIESE_OBSERVATION:`analytics/teacherObservation/rubric`,
+  GET_TEACHER_OBSERVATION_COUNTS:`analytics/teacherObservation`
 
 }
 export default endPoints;

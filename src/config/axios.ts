@@ -1,9 +1,11 @@
 import axios, { AxiosInstance } from 'axios';
+import Config from 'react-native-config'
+
 import endPoints from './endPoints';
 import { getToken } from '../utils/functions/localStorageOperations';
 
 
-import Config from 'react-native-config'
+
 
 const api: AxiosInstance = axios.create({
   baseURL: Config.BASE_URL,
