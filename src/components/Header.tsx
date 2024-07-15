@@ -70,7 +70,7 @@ const Header: FC<HeaderPropsTypes> = ({
             styles.titleContainer,
             {top: scrollTransition && !isScrolled ? 20 : 0},
           ]}>
-          {!avoidBackButton && (
+          {!avoidBackButton && !dashboard && (
             <TouchableOpacity
               onPress={() => {
                 onPressBackArrow ? onPressBackArrow() : navigation.goBack();

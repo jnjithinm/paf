@@ -281,7 +281,7 @@ const Calendar: FC<CalendarPropsTypes> = ({onProceed, onClose, isVisible}) => {
     onClose();
   };
 
-  console.log('cake', startDate, endDate);
+  // console.log('cake', startDate, endDate);
   return (
     <RNModal visible={isVisible} animationType="slide" transparent>
       <View style={styles.CalendarOverlay} />

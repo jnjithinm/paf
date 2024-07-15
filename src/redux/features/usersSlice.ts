@@ -29,10 +29,12 @@ export interface User {
   createdDate: string;
 }
 
+export type RequestActiveTypes='all'|boolean;
+
 export interface PaginationRequest {
   page: number;
   size: number;
-  type: 'all' | boolean;
+  type: RequestActiveTypes;
   search?: string;
 }
 

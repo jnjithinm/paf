@@ -1,7 +1,6 @@
 import React, {Dispatch, SetStateAction, useState, FC, useEffect} from 'react';
 import {View, TouchableOpacity, StyleSheet, ViewStyle} from 'react-native';
 import Text from './Text';
-import colors from '../config/colors';
 import {normaliseDesigns} from '../utils/helpers/responsiveHelpers';
 
 type RatingRadioButtonPropsTypes = {

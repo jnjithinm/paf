@@ -392,7 +392,7 @@ const masterSlice = createSlice({
         state.allRoles = null;
       })
       .addCase(getRoles.pending, state => {
-        state.allRoles = null;
+        // state.allRoles = null;
       })
       .addCase(getRoles.fulfilled, (state, action) => {
         if (action.meta.arg[0].type === 'all') {
@@ -407,7 +407,7 @@ const masterSlice = createSlice({
         state.states = null;
       })
       .addCase(getStates.pending, state => {
-        state.states = null;
+        // state.states = null;
       })
       .addCase(getStates.fulfilled, (state, action) => {
         state.states = action.payload.payload;

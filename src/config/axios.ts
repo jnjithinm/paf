@@ -2,15 +2,21 @@ import axios, { AxiosInstance } from 'axios';
 import endPoints from './endPoints';
 import { getToken } from '../utils/functions/localStorageOperations';
 
+
+import Config from 'react-native-config'
+
 const api: AxiosInstance = axios.create({
-  baseURL: 'http://65.1.32.205:8080',
+  baseURL: Config.BASE_URL,
   timeout: 5000,
 });
 
+
+
+
 api.interceptors.request.use(
   async config => {
+    console.log("dfsf",Config.BASE_URL)
     const token = await getToken();
-
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`;
     }

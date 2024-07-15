@@ -1,7 +1,6 @@
 import React, {FC} from 'react';
 import {
   DimensionValue,
-  Platform,
   Text,
   TextStyle,
   TouchableOpacity,
@@ -10,7 +9,6 @@ import {
 } from 'react-native';
 
 import Icon, {IconTypes} from './Icon';
-import Images, {ImageIconNames} from '../components/Image';
 import {ColorTypes} from '../config/types';
 import colors from '../config/colors';
 import {FONT_SIZES, FONT_VARIANT} from '../config/themes';

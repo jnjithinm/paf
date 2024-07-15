@@ -1,8 +1,5 @@
 import React, {FC, useState} from 'react';
-import {
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import {TouchableOpacity, View} from 'react-native';
 import {RouteProp, useFocusEffect} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {Drawer} from 'react-native-drawer-layout';
@@ -74,33 +71,36 @@ const AdminDashboard: FC<AdminDashboardScreenProps> = ({navigation, route}) => {
   const closeDrawer = () => {
     setIsDrawerOpen(false);
   };
-  
+
   useFocusEffect(
     React.useCallback(() => {
       closeDrawer();
     }, []),
   );
 
-
   const menuItemArray: AdminDashboardMenuItemTypes[] = [
     {
       icon: 'admin_dashboard_user_management_icon',
       label: 'User Management',
       onPress: () => {
-        navigation.navigate('UserManagementStack',{screen:'UsersMainPage'})
+        navigation.navigate('UserManagementStack', {screen: 'UsersMainPage'});
       },
     },
     {
       icon: 'admin_dashboard_location_management_icon',
       label: 'Location Management',
       onPress: () => {
-        navigation.navigate('LocationManagementStack',{screen:'States'})
+        navigation.navigate('LocationManagementStack', {screen: 'States'});
       },
     },
     {
       icon: 'admin_dashboard_analytics_icon',
       label: 'Analytics',
-      onPress: () => {navigation.navigate('AnalyticsStack',{screen:'UserAndRoleAnalyticsMainPage'})},
+      onPress: () => {
+        navigation.navigate('AnalyticsStack', {
+          screen: 'UserAndRoleAnalyticsMainPage',
+        });
+      },
     },
     {
       icon: 'admin_dashboard_schedules_icon',

@@ -1,11 +1,12 @@
 import {FC, useEffect, useState} from 'react';
-import {FlowsAndFormsStackParamList} from '../../navigation/FlowsAndFormsStack';
+import {View} from 'react-native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {RouteProp} from '@react-navigation/native';
+
 import {useAppDispatch, useAppSelector} from '../../redux/store';
+import {FlowsAndFormsStackParamList} from '../../navigation/FlowsAndFormsStack';
 import {getPreviewForm} from '../../redux/features/formsSlice';
 import Layout from '../../components/Layout';
-import {View} from 'react-native';
 import {
   AnswerObject,
   QuestionTypeSelector,
@@ -30,12 +31,15 @@ interface PreviewFormScreenProps {
 const PreviewForm: FC<PreviewFormScreenProps> = ({navigation, route}) => {
   const {flowDetailItem} = route.params;
   const [answers, setAnswers] = useState<AnswerObject[]>([]);
+  
   const dispatch = useAppDispatch();
 
   const {previewForm} = useAppSelector(state => state.forms);
+
   useEffect(() => {
     dispatch(getPreviewForm(flowDetailItem.formId));
   }, [flowDetailItem]);
+
   return (
     <Layout
       overridePaddingHorizontal

@@ -1,5 +1,6 @@
 import {createAction, createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import RNFetchBlob from 'rn-fetch-blob';
+import Config from 'react-native-config';
 
 import api from '../../config/axios';
 import endPoints from '../../config/endPoints';
@@ -9,6 +10,8 @@ import {ErrorResponse, setLoading} from './authSlice';
 import {DateFilterOption} from '../../components/Calendar';
 import {getToken} from '../../utils/functions/localStorageOperations';
 import {filterPayload, logRequest} from '../../utils/functions/apiUtils';
+
+
 
 interface Observation {
   userAssessed: string;
@@ -312,6 +315,7 @@ export const saveEvidenceCard = createAsyncThunk<
 >(
   'observation/saveEvidenceCard',
   async ([evidenceInfo, file, evidenceId], {dispatch, rejectWithValue}) => {
+    const {BASE_URL}=Config;
     try {
       const token = await getToken();
       dispatch(setLoading(true));
@@ -330,9 +334,9 @@ export const saveEvidenceCard = createAsyncThunk<
         data: RNFetchBlob.wrap(file.uri),
       });
 
-      const url = 'http://65.1.32.205:8080/' + endPoints.SAVE_EVIDENCE_CARD;
+      const url = BASE_URL+'/' + endPoints.SAVE_EVIDENCE_CARD;
       const updateUrl =
-        'http://65.1.32.205:8080/' + endPoints.UPDATE_EVIDENCE_CARD;
+      BASE_URL+'/' + endPoints.UPDATE_EVIDENCE_CARD;
       let response, parsedResponse;
       if (evidenceId) {
         const requestUrl = updateUrl + evidenceId;
@@ -363,6 +367,7 @@ export const saveEvidenceCard = createAsyncThunk<
 
       return parsedResponse as SaveEvidenceCardResponse;
     } catch (error: any) {
+      console.log("re",error)
       return rejectWithValue(error.response.data);
     } finally {
       dispatch(setLoading(false));

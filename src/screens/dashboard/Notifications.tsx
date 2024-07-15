@@ -1,18 +1,10 @@
-import React, {FC, useEffect, useState} from 'react';
+import React, {FC} from 'react';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 
 import Layout from '../../components/Layout';
 import Text from '../../components/Text';
 import {MainStackParamList} from '../../navigation/MainStack';
-import TextInput from '../../components/TextInput';
-import useValidation from '../../utils/hooks/useValidation';
-import Button from '../../components/Button';
-import Modal from '../../components/Modal';
-import {View} from 'react-native';
-import Image from '../../components/Image';
-import colors from '../../config/colors';
-import {normaliseDesigns} from '../../utils/helpers/responsiveHelpers';
 
 type NotificationsNavigationProp = StackNavigationProp<
   MainStackParamList,

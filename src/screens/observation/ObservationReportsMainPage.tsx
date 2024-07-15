@@ -134,9 +134,13 @@ export const RenderCompleteStatus: FC<RenderCompleteStatusTypes> = ({
   </View>
 );
 
-export const RenderEmptyPlaceholder: FC = () => (
+type RenderEmptyPlaceholderTypes={
+  style?:ViewStyle
+}
+
+export const RenderEmptyPlaceholder: FC<RenderEmptyPlaceholderTypes> = ({style}) => (
   <View
-    style={{marginTop: '40%', alignItems: 'center', justifyContent: 'center'}}>
+    style={{marginTop: '40%', alignItems: 'center', justifyContent: 'center',...style}}>
     <Image name="empty_cart_icon" size={3.5} />
     <Text color="blackColor" size="body3" fontVariant="bold">
       No results found.!

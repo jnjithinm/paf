@@ -267,6 +267,7 @@ const CreateViewEvidenceCard: FC<CreateViewEvidenceCardScreenProps> = ({
             }),
           );
         }
+        console.log("evvv",evidenceCardDetails)
         dispatch(
           saveEvidenceCard([
             {

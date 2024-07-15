@@ -85,7 +85,8 @@ const ObservationReport: FC<ObservationReportScreenProps> = ({
   };
 
   useEffect(() => {
-    dispatch(getUser(userData.id));
+    newObservation &&
+      dispatch(getUser(Number(newObservation.selectedUser.value)));
   }, []);
 
   const onPressSubmit = () => {
@@ -211,7 +212,7 @@ const ObservationReport: FC<ObservationReportScreenProps> = ({
         <View style={{marginVertical: 20}}>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
             <RenderProfileIcon
-              image={observationById?.userImage || user?.userImageUrl}
+              image={observationById?.userImage || user?.userImageUrl }
               name={
                 observationById?.userName?.toString() ||
                 newObservation?.selectedUser?.label?.toString() ||
@@ -221,7 +222,12 @@ const ObservationReport: FC<ObservationReportScreenProps> = ({
               size={50}
             />
             <View style={{flex: 1, justifyContent: 'center', marginLeft: 10}}>
-              <View style={{flexDirection: 'row', alignItems: 'center',width:'70%'}}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  width: '70%',
+                }}>
                 <Text fontVariant="bold" size="body2">
                   {observationById
                     ? `${observationById?.userName || ''} (${
@@ -247,7 +253,7 @@ const ObservationReport: FC<ObservationReportScreenProps> = ({
                   }}
                 />
                 <Text style={{color: '#4E565F'}} size="small3">
-                  {observationById?.observationAvgRatings?.toFixed(1) || ''}/5
+                  {rating?.toFixed(1) || ''}/5
                 </Text>
               </View>
             </View>

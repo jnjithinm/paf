@@ -14,27 +14,36 @@ const persistConfig = {
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 const tokenMiddleware = (store: any) => (next: any) => (action: any) => {
-  if (action?.payload?.message === 'Network Error') {
-    store.dispatch(
-      setAuthShowMessage({
-        status: 'Error',
-        message: 'Network error: Internet might not be available.',
-      }),
-    );
-  } else if (
-    action?.payload?.errorMessage &&
-    action.payload.errorMessage?.toString()?.includes('JWT')
-  ) {
-    store.dispatch(logoutAndclearToken());
-  } else if (action.statusCode === 401) {
-    store.dispatch(
-      setAuthShowMessage({
-        status: 'Error',
-        message: 'Unauthorized access. Logging out user...',
-      }),
-    );
-    store.dispatch(logoutAndclearToken());
-  }
+  // if (action?.type?.endsWith('/rejected')) {
+  //   const error = action.payload;
+  //   console.log("ERR",error)
+  //   if (error?.message === 'Network Error') {
+  //     store.dispatch(
+  //       setAuthShowMessage({
+  //         status: 'Error',
+  //         message: 'Network error: Internet might not be available.',
+  //       }),
+  //     );
+  //   } else if (error?.error?.includes('JWT')) {
+  //     store.dispatch(
+  //       setAuthShowMessage({
+  //         status: 'Error',
+  //         message: 'Unauthorized access. Logging out user...',
+  //       }),
+  //     );
+  //     store.dispatch(logoutAndclearToken());
+  //   } else if (error?.status === 401) {
+  //     store.dispatch(
+  //       setAuthShowMessage({
+  //         status: 'Error',
+  //         message: 'Unauthorized access. Logging out user...',
+  //       }),
+  //     );
+  //     store.dispatch(logoutAndclearToken());
+  //   } else {
+  //     return next(action);
+  //   }
+  // }
 
   return next(action);
 };

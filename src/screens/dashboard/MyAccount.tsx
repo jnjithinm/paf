@@ -57,6 +57,7 @@ const selectImageFile = async (): Promise<FileObject> => {
 };
 
 const MyAccount: FC<MyAccountScreenProps> = ({navigation, route}) => {
+  
   const [isChanged, setIsChanged] = useState<boolean>(false);
   const [name, setName] = useState<string>('');
   const [phoneNum, setPhoneNum] = useState<string>('');
@@ -73,10 +74,13 @@ const MyAccount: FC<MyAccountScreenProps> = ({navigation, route}) => {
     deleteUserPhotoResponse,
     updateUserPhotoResponse,
   } = useAppSelector(state => state.auth);
+
   const {user} = useAppSelector(state => state.users);
+
   const {states, allDistricts, allAreas} = useAppSelector(
     state => state.master,
   );
+
 
   const {validateField} = useValidation();
 
@@ -133,10 +137,8 @@ const MyAccount: FC<MyAccountScreenProps> = ({navigation, route}) => {
     }
   }, [deleteUserPhotoResponse]);
 
-  console.log('user', user);
   useEffect(() => {
     if (user) {
-      console.log('user', user);
       setName(user.name);
       setPhoneNum(user.contactNumber);
       setEmail(user.email);
@@ -198,7 +200,7 @@ const MyAccount: FC<MyAccountScreenProps> = ({navigation, route}) => {
           dateOfBirth:
             moment(user?.dateOfBirth, 'YYYYMMDD').format('YYYY-MM-DD') || '',
           name,
-          isAdmin:isAdmin,
+          isAdmin:true,
           citizenship: user?.citizenship || '',
           roleId: user?.roleId || 0,
           loggedInUserName: userData.userName,
@@ -207,7 +209,7 @@ const MyAccount: FC<MyAccountScreenProps> = ({navigation, route}) => {
     );
   };
 
-  console.log('is,i', state, nameErrorMessage, emailErrorMessage);
+
 
   const filteredDistricts = allDistricts?.dataList
     .filter(item => item.stateId?.toString() === state?.value)
@@ -226,7 +228,6 @@ const MyAccount: FC<MyAccountScreenProps> = ({navigation, route}) => {
         overridePaddingVertical
         style={{paddingHorizontal: 15}}
         icon="profile_icon"
-        // transform={}
         title="My Account"
         titleTransition>
         <Text
@@ -441,7 +442,6 @@ const MyAccount: FC<MyAccountScreenProps> = ({navigation, route}) => {
       <FooterWithButtons
         proceedButtonText={'Save'}
         isActiveProceedButton={Boolean(
-          isAdmin &&
           isChanged &&
             !nameErrorMessage &&
             !emailErrorMessage &&

@@ -129,7 +129,11 @@ const RolesAndAppAccess: FC<RolesAndAppAccessScreenProps> = ({
 }) => {
   const [selectedItem, setSelectedItem] = useState<Role>();
   const [search, setSearch] = useState<string>('');
-  const [rolesList, setRolesList] = useState<RolesList>();
+  const [rolesList, setRolesList] = useState<RolesList>({
+    roleList: [],
+    count: 0,
+    selectedTab: 'all',
+  });
 
   const dispatch = useAppDispatch();
   const {allRoles, activeRoles, inactiveRoles} = useAppSelector(
@@ -145,6 +149,7 @@ const RolesAndAppAccess: FC<RolesAndAppAccessScreenProps> = ({
 
   const handleTabClick = useCallback(
     (title: ItemType) => {
+
       if (title.value == 'all') {
         setRolesList({
           roleList: allRoles?.dataList,
@@ -191,10 +196,10 @@ const RolesAndAppAccess: FC<RolesAndAppAccessScreenProps> = ({
   }, []);
 
   useEffect(() => {
-    if (allRoles) {
+    if (allRoles && rolesList.selectedTab==='all') {
       setRolesList({
-        roleList: allRoles?.dataList,
-        count: allRoles?.totalCount,
+        roleList: allRoles.dataList,
+        count: allRoles.totalCount,
         selectedTab: 'all',
       });
     }
@@ -202,21 +207,21 @@ const RolesAndAppAccess: FC<RolesAndAppAccessScreenProps> = ({
 
   useEffect(() => {
     if (activeRoles && rolesList?.selectedTab===true) {
-      setRolesList({
-        roleList: activeRoles?.dataList,
-        count: activeRoles?.totalCount,
-        selectedTab: true,
-      });
+      setRolesList((prev) => ({
+        ...prev,
+        roleList: activeRoles.dataList,
+        count: activeRoles.totalCount,
+      }));
     }
   }, [activeRoles]);
 
   useEffect(() => {
     if (inactiveRoles && rolesList?.selectedTab===false) {
-      setRolesList({
-        roleList: inactiveRoles?.dataList,
-        count: inactiveRoles?.totalCount,
-        selectedTab: false,
-      });
+      setRolesList((prev) => ({
+        ...prev,
+        roleList: inactiveRoles.dataList,
+        count: inactiveRoles.totalCount,
+      }));
     }
   }, [inactiveRoles]);
   
@@ -226,14 +231,15 @@ const RolesAndAppAccess: FC<RolesAndAppAccessScreenProps> = ({
         dispatch(getRoles([{
           page: 0,
           size: 15,
-          type: 'all',
+          type: rolesList.selectedTab
         },search]));
     }, 200);
 
     return () => clearTimeout(delayDebounceFn);
-  }, [search,rolesList?.selectedTab]);
+  }, [search,rolesList.selectedTab]);
 
 
+  // console.log("ACC",activeRoles?.dataList)
   return (
     <Layout
       overridePaddingHorizontal

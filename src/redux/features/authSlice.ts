@@ -1,4 +1,5 @@
 import {createAction, createAsyncThunk, createSlice} from '@reduxjs/toolkit';
+import Config from 'react-native-config';
 
 import api from '../../config/axios';
 import {
@@ -276,7 +277,7 @@ export const updateUserPhoto = createAsyncThunk<
     try {
       dispatch(setLoading(true));
       const token = await getToken();
-
+      const {BASE_URL}=Config;
       const formData = [
         {
           name: 'profilePhoto',
@@ -287,7 +288,7 @@ export const updateUserPhoto = createAsyncThunk<
         {name: 'loggedInUserName', data: loggedInUserName},
       ];
       const requestUrl =
-        'http://65.1.32.205:8080/' + endPoints.UPDATE_USER_PHOTO + `/${userId}`;
+        BASE_URL + '/' + endPoints.UPDATE_USER_PHOTO + `${userId}`;
       const response = await RNFetchBlob.fetch(
         'PUT',
         requestUrl,

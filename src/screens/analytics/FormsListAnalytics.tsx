@@ -13,55 +13,32 @@ import {
   resetAssignFlowResponse,
 } from '../../redux/features/flowsSlice';
 import {FlowsAndFormsStackParamList} from '../../navigation/FlowsAndFormsStack';
-import {
-  RenderAssignFormModalContent,
-  RenderSuccessModalContent,
-} from './FormResponses';
+
 import Modal from '../../components/Modal';
 import {
   FloatingButton,
   RenderEmptyPlaceholder,
 } from '../observation/ObservationReportsMainPage';
 import SearchWithFilter from '../../components/SearchWithFilter';
-import { resetAssignFormResponse } from '../../redux/features/formsSlice';
+import {resetAssignFormResponse} from '../../redux/features/formsSlice';
+import {AnalyticsStackParamList} from '../../navigation/AnalyticsStack';
+import {FormItemTile} from '../flowsAndForms/FormList';
 
 type FormListNavigationProp = StackNavigationProp<
-  FlowsAndFormsStackParamList,
-  'FormList'
+  AnalyticsStackParamList,
+  'FormsListAnalytics'
 >;
-type FormListRouteProp = RouteProp<FlowsAndFormsStackParamList, 'FormList'>;
-
-type FormItemTileTypes = {
-  title: string;
-  onPressItem: () => void;
-};
-
-export const FormItemTile: FC<FormItemTileTypes> = ({title, onPressItem}) => (
-  <TouchableOpacity
-    style={{
-      flexDirection: 'row',
-      width: '100%',
-      paddingHorizontal: 15,
-      paddingVertical: 10,
-      borderWidth: 1,
-      borderColor: '#F4C24A',
-      borderRadius: 10,
-      marginVertical: 5,
-    }}
-    onPress={onPressItem}>
-    <Icon name="form_list" />
-    <Text style={{marginLeft: 10}} fontVariant="bold">
-      {title}
-    </Text>
-  </TouchableOpacity>
-);
+type FormListRouteProp = RouteProp<
+  AnalyticsStackParamList,
+  'FormsListAnalytics'
+>;
 
 interface FormListScreenProps {
   navigation: FormListNavigationProp;
   route: FormListRouteProp;
 }
 
-const FormList: FC<FormListScreenProps> = ({navigation, route}) => {
+const FormsListAnalytics: FC<FormListScreenProps> = ({navigation, route}) => {
   const {flowItem} = route.params;
 
   const [isAssignFlowModalVisible, setIsAssignFlowModalVisible] =
@@ -88,10 +65,9 @@ const FormList: FC<FormListScreenProps> = ({navigation, route}) => {
           },
         ]),
       );
-      dispatch(resetAssignFormResponse())
-    },[]))
-
-
+      dispatch(resetAssignFormResponse());
+    }, []),
+  );
 
   useEffect(() => {
     if (assignFlowResponse) {
@@ -125,39 +101,7 @@ const FormList: FC<FormListScreenProps> = ({navigation, route}) => {
         overridePaddingVertical
         style={{paddingHorizontal: 15}}
         title={flowItem.flowName}
-        isActive={flowItem.status?'Active':'Inactive'}>
-        <Modal
-          onProceed={() => {}}
-          onClose={() => {
-            setIsAssignFlowModalVisible(false);
-          }}
-          isVisible={isAssignFlowModalVisible}
-          title="Assign flow"
-          closeButton
-          contentStyle={{width: '100%'}}
-          content={
-            <RenderAssignFormModalContent onPressAssign={onPressAssignFlow} />
-          }
-        />
-        <Modal
-          onProceed={() => {}}
-          onClose={() => {
-            setIsVisibleAssignFormSuccessModal(false);
-            dispatch(resetAssignFlowResponse());
-          }}
-          closeButton
-          content={
-            <RenderSuccessModalContent
-              icon="flow_icon"
-              highlightText="Success!"
-              descriptionText="Flow assigned to selected user and user groups."
-            />
-          }
-          isVisible={isVisibleAssignFormSuccessModal}
-          containerStyle={{justifyContent: 'center'}}
-          contentStyle={{width: '70%'}}
-        />
-
+        isActive={flowItem.status ? 'Active' : 'Inactive'}>
         <SearchWithFilter
           onTextChange={text => {
             setSearch(text);
@@ -168,18 +112,13 @@ const FormList: FC<FormListScreenProps> = ({navigation, route}) => {
         <View>
           {filteredFlows ? (
             filteredFlows.length > 0 ? (
-              filteredFlows?.map((item) => (
+              filteredFlows?.map(item => (
                 <FormItemTile
                   title={item.formName}
                   onPressItem={() => {
-                    isAdmin
-                      ? navigation.navigate('FormResponses', {
-                          flowDetailItem: item,
-                        })
-                      : navigation.navigate('EvaluationForm', {
-                          flowDetailItem: item,
-                          flowItem,
-                        });
+                    navigation.navigate('FormResponsesAnalytics', {
+                      flowDetailItem: item,
+                    });
                   }}
                   key={item.formId}
                 />
@@ -192,16 +131,7 @@ const FormList: FC<FormListScreenProps> = ({navigation, route}) => {
           )}
         </View>
       </Layout>
-      {isAdmin && (
-        <FloatingButton
-          icon="user_and_usergroup_icon"
-          onPress={() => {
-            setIsAssignFlowModalVisible(true);
-          }}
-          iconSize={20}
-        />
-      )}
     </>
   );
 };
-export default FormList;
+export default FormsListAnalytics;

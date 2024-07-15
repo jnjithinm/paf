@@ -205,6 +205,7 @@ const DrawerContent: FC<DrawerContentTypes> = ({closeDrawer}) => {
       itemName: 'Dashboard',
       onPressItem: () => {
         closeDrawer();
+        isAdmin ? navigate('AdminDashboard') : navigate('TeacherDashboard');
       },
     },
     {
@@ -331,7 +332,11 @@ const DrawerContent: FC<DrawerContentTypes> = ({closeDrawer}) => {
           expandItem: [
             {
               itemName: 'User & Role Analytics',
-              onPressItem: () => {navigate('AnalyticsStack',{screen:'UserAndRoleAnalyticsMainPage'})},
+              onPressItem: () => {
+                // navigate('AnalyticsStack', {
+                //   screen: 'UserAndRoleAnalyticsMainPage',
+                // });
+              },
               icon: 'extend_item_level_2_icon',
               subMenuLevel: 'two',
             },
@@ -343,13 +348,17 @@ const DrawerContent: FC<DrawerContentTypes> = ({closeDrawer}) => {
             },
             {
               itemName: 'Teacher & Observation Analytics',
-              onPressItem: () => {},
+              onPressItem: () => {
+                navigate('AnalyticsStack',{screen:'TeacherObservationAnalytics'})
+              },
               icon: 'extend_item_level_2_icon',
               subMenuLevel: 'two',
             },
             {
               itemName: 'Flows & Forms Analytics',
-              onPressItem: () => {},
+              onPressItem: () => {
+                navigate('AnalyticsStack',{screen:'FlowsAndFormAnalytics'})
+              },
               icon: 'extend_item_level_2_icon',
               subMenuLevel: 'two',
             },

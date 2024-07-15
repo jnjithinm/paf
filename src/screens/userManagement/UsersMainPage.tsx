@@ -217,33 +217,34 @@ const UsersMainPage: FC<UsersMainPageScreenProps> = ({navigation, route}) => {
   }, []);
 
   useEffect(() => {
-    if (allUsers) {
-      setUsersList({
-        usersList: allUsers?.dataList,
-        count: allUsers?.totalCount,
-        selectedTab: 'all',
-      });
+    if (allUsers && usersList.selectedTab==='all') {
+
+      setUsersList((prev) => ({
+        ...prev,
+        usersList: allUsers.dataList,
+        count: allUsers.totalCount,
+      }))
     }
   }, [allUsers]);
 
   useEffect(() => {
     if (activeUsers && usersList?.selectedTab===true) {
-      setUsersList({
-        usersList: activeUsers?.dataList,
-        count: activeUsers?.totalCount,
-        selectedTab: true,
-      });
+      setUsersList((prev) => ({
+        ...prev,
+        usersList: activeUsers.dataList,
+        count: activeUsers.totalCount,
+      }))
     }
   }, [activeUsers]);
 
 
   useEffect(() => {
     if (inactiveUsers && usersList?.selectedTab===false) {
-      setUsersList({
-        usersList: inactiveUsers?.dataList,
-        count: inactiveUsers?.totalCount,
-        selectedTab: false,
-      });
+      setUsersList((prev) => ({
+        ...prev,
+        usersList: inactiveUsers.dataList,
+        count: inactiveUsers.totalCount,
+      }))
     }
   }, [inactiveUsers]);
 
@@ -251,7 +252,7 @@ const UsersMainPage: FC<UsersMainPageScreenProps> = ({navigation, route}) => {
 
   const handleTabClick = useCallback(
     (title: ItemType) => {
-      if (title.value === 'all') {
+    
         if (title.value == 'all') {
           setUsersList({
             usersList: allUsers?.dataList,
@@ -259,6 +260,7 @@ const UsersMainPage: FC<UsersMainPageScreenProps> = ({navigation, route}) => {
             selectedTab: 'all',
           });
         } else if (title.value == 'active') {
+          console.log("cccc")
           setUsersList({
             usersList: activeUsers?.dataList,
             count: activeUsers?.totalCount,
@@ -271,7 +273,7 @@ const UsersMainPage: FC<UsersMainPageScreenProps> = ({navigation, route}) => {
             selectedTab: false,
           });
         
-    }}
+    }
   },
     [activeUsers, activeUsers, inactiveUsers]
   );
@@ -282,12 +284,14 @@ const UsersMainPage: FC<UsersMainPageScreenProps> = ({navigation, route}) => {
         dispatch(getAllUsers([{
           page: 0,
           size: 15,
-          type: usersList?.selectedTab,
+          type: usersList.selectedTab,
         },search]));
     }, 200);
 
     return () => clearTimeout(delayDebounceFn);
-  }, [search,usersList?.selectedTab]);
+  }, [search,usersList.selectedTab]);
+
+  console.log('active',activeUsers?.dataList)
 
   return (
     <Layout

@@ -92,7 +92,7 @@ import arrow_left_icon from '../assets/svg/arrow_left_icon.svg'
 import trash_icon_red from '../assets/svg/trash_icon_red.svg'
 import edit_icon_red from '../assets/svg/edit_icon_red.svg'
 import informative_message_icon from '../assets/svg/informative_message_icon.svg'
-
+import list_of_flows_icon from '../assets/svg/list_of_flows_icon.svg'
 
 
 const Icons = {
@@ -185,7 +185,8 @@ const Icons = {
   drawer_icon_teacher_evaluation,
   arrow_right_pagination,
   arrow_left_icon,
-  informative_message_icon
+  informative_message_icon,
+  list_of_flows_icon
   
 };
 

@@ -4,6 +4,7 @@ import {RouteProp, useFocusEffect} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {Drawer} from 'react-native-drawer-layout';
 import FastImage from 'react-native-fast-image';
+import moment from 'moment';
 
 import Layout from '../../components/Layout';
 import Icon, {IconTypes} from '../../components/Icon';
@@ -21,7 +22,7 @@ import SearchWithFilter from '../../components/SearchWithFilter';
 import {MainStackParamList} from '../../navigation/MainStack';
 import {RenderCompleteStatus} from '../observation/ObservationReportsMainPage';
 import {ItemType} from '../../config/types';
-import moment from 'moment';
+
 
 type TeacherDashboardNavigationProp = StackNavigationProp<
   MainStackParamList,
@@ -45,7 +46,7 @@ type RenderTitleWithLinkTypes = {
   style?: ViewStyle;
 };
 
-const RenderTitleWithLink: FC<RenderTitleWithLinkTypes> = ({
+export const RenderTitleWithLink: FC<RenderTitleWithLinkTypes> = ({
   icon,
   titleText,
   onPress,
@@ -130,7 +131,7 @@ export const ObservationsTile: FC<ObservationTileTypes> = ({
     };
   }, [isPressed]);
 
-  console.log("")
+  console.log('');
   return (
     <TouchableOpacity
       onPress={() => {
@@ -149,7 +150,7 @@ export const ObservationsTile: FC<ObservationTileTypes> = ({
         borderRadius: 10,
         marginVertical: 3,
         backgroundColor: isPressed ? '#FCEBC5' : colors.backgroundColor,
-        justifyContent:'space-between',
+        justifyContent: 'space-between',
         ...style,
       }}>
       <View
@@ -157,36 +158,50 @@ export const ObservationsTile: FC<ObservationTileTypes> = ({
           flexDirection: 'row',
           padding: 8,
           backgroundColor: '#EAF1FE',
-          height:30,
-          maxWidth:'15%',
+          height: 30,
+          maxWidth: '15%',
           borderTopLeftRadius: 10,
-          borderBottomRightRadius:10,
+          borderBottomRightRadius: 10,
           alignItems: 'center',
-          justifyContent:'center'
+          justifyContent: 'center',
         }}>
         <Text size="small2" fontVariant="bold">
           {Number(rating).toFixed(1)}
         </Text>
         <Icon style={{left: 5}} name="star_icon" width={10} />
       </View>
-      <View style={{padding:10,width:'85%'}}>
-        <View style={{flexDirection: 'row',justifyContent:'space-between'}}>
+      <View style={{padding: 10, width: '85%'}}>
+        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
           <View>
             <Text size="verysmall3" opacity="0.50">
               User Assessed
             </Text>
-            <View style={{flexDirection: 'row', alignItems: 'center',marginTop:2}}>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                marginTop: 2,
+              }}>
               <RenderProfileIcon image={image} name={userAssisted} />
 
-                <Text fontVariant="bold" size="small3" style={{left:3}}>
-                  {userAssisted}
-                </Text>
+              <Text fontVariant="bold" size="small3" style={{left: 3}}>
+                {userAssisted}
+              </Text>
             </View>
           </View>
-          <RenderCompleteStatus status={status} style={{paddingVertical:2,height:20}}/>
+          <RenderCompleteStatus
+            status={status}
+            style={{paddingVertical: 2, height: 20}}
+          />
         </View>
 
-        <View style={{flexDirection: 'row',marginTop:5,width:'90%',justifyContent:'space-between'}}>
+        <View
+          style={{
+            flexDirection: 'row',
+            marginTop: 5,
+            width: '90%',
+            justifyContent: 'space-between',
+          }}>
           <View>
             <Text size="verysmall3" opacity="0.50">
               Reported By

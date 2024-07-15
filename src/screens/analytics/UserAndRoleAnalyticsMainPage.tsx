@@ -1,25 +1,23 @@
-import React, {FC, ReactNode, useEffect, useState} from 'react';
-import {StyleSheet} from 'react-native';
+import React, {FC, useEffect, useState} from 'react';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 
 import Layout from '../../components/Layout';
 import Text from '../../components/Text';
-import {MainStackParamList} from '../../navigation/MainStack';
-import Button from '../../components/Button';
 import {TouchableOpacity, View} from 'react-native';
-import colors from '../../config/colors';
-import Icon from '../../components/Icon';
 import {Drawer} from 'react-native-drawer-layout';
 import DrawerContent from '../../components/DrawerContent';
 import {useAppDispatch, useAppSelector} from '../../redux/store';
-import {sendEmail} from '../../utils/functions/linkingUtils';
 import {AnalyticsStackParamList} from '../../navigation/AnalyticsStack';
 import {
-  getFormCountAnalytics,
+  getUserAndRoleCountAnalytics,
   getUserCountAnalytics,
 } from '../../redux/features/analyticsSlice';
-import {FormAndFlowAnalyticsCountLabelTypes} from './FlowsAndFormsAnalytics';
+import {FormAndFlowAnalyticsCountLabelTypes} from './FlowsAndFormAnalytics';
+import {navigate} from '../../utils/helpers/navigationHelpers';
+import LineChart, {LineDataItem} from '../../components/CurvedLineChart';
+import moment from 'moment';
+import { TeacherObservatioAnalyticsCountLabelTypes } from './TeacherObservationAnalytics';
 
 type UserAndRoleAnalyticsMainPageNavigationProp = StackNavigationProp<
   AnalyticsStackParamList,
@@ -41,7 +39,7 @@ type UserAndRoleAnalyticsLabelTypes =
   | 'Total Groups';
 
 type AnalyticsCountTileTypes = {
-  text: UserAndRoleAnalyticsLabelTypes | FormAndFlowAnalyticsCountLabelTypes;
+  text: UserAndRoleAnalyticsLabelTypes | FormAndFlowAnalyticsCountLabelTypes | TeacherObservatioAnalyticsCountLabelTypes;
   color: 'green' | 'red' | 'orange';
   count: number;
   onPress: () => void;
@@ -76,6 +74,7 @@ export const AnalyticsCountTile: FC<AnalyticsCountTileTypes> = ({
       paddingHorizontal: 13,
       borderRadius: 10,
       paddingVertical: 7,
+      
     }}
     disabled={disabled}
     onPress={() => {}}>
@@ -91,7 +90,7 @@ export const AnalyticsCountTile: FC<AnalyticsCountTileTypes> = ({
       fontVariant="bold"
       size="body3"
       onPress={onPress}>
-      {count} {color == 'red' ? 'hr' : ''}
+      {count} {text == 'Avg Response Time' ? 'hr' : ''}
     </Text>
     <Text
       style={{
@@ -109,28 +108,95 @@ export const AnalyticsCountTile: FC<AnalyticsCountTileTypes> = ({
     </Text>
   </TouchableOpacity>
 );
+export const getMonthsArray = () => {
+  const months = [];
+  for (let i = 0; i < 12; i++) {
+    const monthName = moment().month(i).format('MMMM');
+    months.push(monthName);
+  }
+  return months;
+};
+
+
 const UserAndRoleAnalyticsMainPage: FC<
   UserAndRoleAnalyticsMainPageScreenProps
 > = ({navigation, route}) => {
-  const [selectedIndex, setSelectedIndex] = useState<number>();
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
   const closeDrawer = () => {
     setIsDrawerOpen(false);
   };
 
   const dispatch = useAppDispatch();
-  const {userCountAnalytics} = useAppSelector(state => state.analytics);
+  const {userCountAnalytics, userAndRoleCountAnalytics} = useAppSelector(
+    state => state.analytics,
+  );
 
   useEffect(() => {
+    dispatch(getUserCountAnalytics());
     dispatch(
-      getUserCountAnalytics({
-        userStatusType: 'all',
+      getUserAndRoleCountAnalytics({
+        userStatusType: null,
+        roleStatusType: null,
+        userGroupStatusType: null,
+        stateId: null,
+        districtId: null,
+        area: null,
         dateType: 'selected_date',
-        startDate: '2024-07-09',
-        endDate: '2024-07-09',
+        startDate: '2024-01-01',
+        endDate: '2024-12-31',
       }),
     );
   }, []);
+
+
+  const dataList = {
+    UserAndRole: [
+      ['Month Name', 'Count of Users', 'Count of Roles', 'Count of UserGroups'],
+      ['April', 6, 3, 0],
+      ['December', 0, 8, 0],
+      ['February', 41, 0, 0],
+      ['January', 4, 0, 0],
+      ['July', 7, 0, 0],
+      ['June', 14, 0, 1],
+      ['March', 100, 0, 13],
+      ['May', 45, 3, 7],
+    ],
+  };
+
+  // const formattedUserAndRoleCountAnalytics =
+  // dataList.UserAndRole.slice(1).map(row => ({
+  //   month: row[0],
+  //   countOfUsers: row[1],
+  //   countOfRoles: row[2],
+  //   countOfUserGroups: row[3],
+  // }));
+
+
+  const formattedUserAndRoleCountAnalytics =
+    userAndRoleCountAnalytics?.dataList.UserAndRole.slice(1).map(row => ({
+      month: row[0],
+      countOfUsers: row[1],
+      countOfRoles: row[2],
+      countOfUserGroups: row[3],
+    }));
+
+  const countOfUsers: number[] = formattedUserAndRoleCountAnalytics?.map(
+    item => ( item.countOfUsers),
+  ) || []
+  const countOfRoles: number[] = formattedUserAndRoleCountAnalytics?.map(
+    item => ( item.countOfRoles),
+  ) || []
+
+  const countOfUserGroups:number[] = formattedUserAndRoleCountAnalytics?.map(
+    item => ( item.countOfUserGroups),
+  ) || []
+
+  const months =
+    formattedUserAndRoleCountAnalytics?.map(item =>
+      moment().month(item.month).format('MMM'),
+    ) || getMonthsArray();
+
+  console.log('month', months, countOfUsers);
 
   return (
     <Drawer
@@ -142,10 +208,13 @@ const UserAndRoleAnalyticsMainPage: FC<
         overridePaddingHorizontal
         overridePaddingVertical
         style={{paddingHorizontal: 15}}
+        onPressBellIcon={() => {
+          navigate('Notifications');
+        }}
         onPressMenuIcon={() => {
           setIsDrawerOpen(true);
         }}
-        focusedStack='AnalyticsStack'
+        focusedStack="AnalyticsStack"
         avoidBackButton
         dashboard>
         <Text
@@ -163,7 +232,7 @@ const UserAndRoleAnalyticsMainPage: FC<
           <AnalyticsCountTile
             text={'Total Roles'}
             color={'green'}
-            count={userCountAnalytics?.dataList.totalRoleCount[0] || 0}
+            count={userCountAnalytics?.dataList?.totalRoleCount[0] || 0}
             onPress={() => {}}
           />
           <AnalyticsCountTile
@@ -179,6 +248,18 @@ const UserAndRoleAnalyticsMainPage: FC<
             onPress={() => {}}
           />
         </View>
+        {userAndRoleCountAnalytics && (
+          <>
+        <LineChart
+          value1={countOfUsers}
+          value2={countOfRoles}
+          value3={countOfUserGroups}
+          labels={months || ['']}
+          indicators={['Count of users','Count of roles','User groups']}
+        />
+        <LineChart value1={countOfUsers}  labels={months || ['']} />
+        </>
+       ) }
       </Layout>
     </Drawer>
   );

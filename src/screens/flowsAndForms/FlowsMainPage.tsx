@@ -39,12 +39,12 @@ interface FlowsItemProps {
   createdBy: string;
   createdDate: string;
   userCount: number;
-  onDelete: () => void;
+  onDelete?: () => void;
   onPress: () => void;
-  isAdmin: boolean;
+  isAdmin?: boolean;
 }
 
-const FlowsItem: React.FC<FlowsItemProps> = ({
+export const FlowsItem: React.FC<FlowsItemProps> = ({
   title,
   active,
   createdBy,

@@ -29,11 +29,12 @@ export const downloadFile = async (
   try {
     const timestamp = new Date().getTime();
     const token = await getToken();
-    const url = `http://65.1.32.205:8080/${
+    const url = `https://app-uat.pehlayakshar.org/${
       printResponsesType === 'Individual Wise'
         ? endPoints.PRINT_FORM_RESPONSES
         : endPoints.PRINT_QUESTION_WISE_RESPONSES
     }`;
+
     const downloadDir =
       Platform.OS === 'android'
         ? RNFetchBlob.fs.dirs.DownloadDir
@@ -46,6 +47,7 @@ export const downloadFile = async (
     const response = await RNFetchBlob.config({
       fileCache: true,
       appendExt: 'pdf',
+      
       path: path,
     }).fetch(
       'POST',
@@ -58,7 +60,7 @@ export const downloadFile = async (
     );
 
     console.log('File saved to:', response.path());
-
+    console.log('ggvhvghgh diugu kjhjkhjhkv',url)
     if (Platform.OS === 'android') {
       RNFetchBlob.android.actionViewIntent(response.path(), 'application/pdf');
     } else if (Platform.OS === 'ios') {

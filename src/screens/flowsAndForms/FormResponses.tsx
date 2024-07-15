@@ -46,7 +46,6 @@ import Button from '../../components/Button';
 import Image, {ImageIconNames} from '../../components/Image';
 import {
   IndividualResponse,
-  Question,
   RubricWiseResponse,
   acceptingFormResponses,
   assignFormToUsersAndGroups,
@@ -175,9 +174,10 @@ export const RenderAssignFormModalContent: FC<
   const [userSearch, setUserSearch] = useState<string>('');
   const [groupSearch, setGroupSearch] = useState<string>('');
 
-  const {allUserGroups, allUsers} = useAppSelector(state => state.users);
+  const {activeUserGroups, activeUsers} = useAppSelector(state => state.users);
 
   const {formAssignedUserAndUserGroups} = useAppSelector(state => state.forms);
+  
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -185,8 +185,8 @@ export const RenderAssignFormModalContent: FC<
       getAllUsers([
         {
           page: 0,
-          size: 100,
-          type: 'all',
+          size: 15,
+          type: true,
         },
       ]),
     );
@@ -194,8 +194,8 @@ export const RenderAssignFormModalContent: FC<
       getAllUserGroups([
         {
           page: 0,
-          size: 100,
-          type: 'all',
+          size: 15,
+          type: true,
         },
       ]),
     );
@@ -217,11 +217,13 @@ export const RenderAssignFormModalContent: FC<
       let formAssignedUserGroups =
         formAssignedUserAndUserGroups.dataList.UserGroups;
       if (formAssignedUsers?.length !== 0) {
-        setSelectedUsers(formAssignedUsers.map(item => item?.userId?.toString()),
+        setSelectedUsers(
+          formAssignedUsers.map(item => item?.userId?.toString()),
         );
       }
       if (formAssignedUserGroups?.length !== 0) {
-        setSelectedUserGroups(formAssignedUserGroups.map(item => item?.userGroupId?.toString()),
+        setSelectedUserGroups(
+          formAssignedUserGroups.map(item => item?.userGroupId?.toString()),
         );
       }
     }
@@ -233,8 +235,8 @@ export const RenderAssignFormModalContent: FC<
         getAllUsers([
           {
             page: 0,
-            size: 50,
-            type: 'all',
+            size: 15,
+            type: true,
           },
           userSearch,
         ]),
@@ -249,8 +251,8 @@ export const RenderAssignFormModalContent: FC<
         getAllUsers([
           {
             page: 0,
-            size: 50,
-            type: 'all',
+            size: 15,
+            type: true,
           },
           groupSearch,
         ]),
@@ -267,17 +269,48 @@ export const RenderAssignFormModalContent: FC<
     onPressAssign(selectedUsersNumbers, selectedUserGroupsNumbers);
   };
 
-  console.log("ssssssssssss",selectedUsers,selectedUserGroups)
+  let uniqueUsers = new Map<string, ItemType>();
+
+  (activeUsers?.dataList || []).forEach(item => {
+    uniqueUsers.set(item.userId?.toString(), {
+      value: item.userId?.toString(),
+      label: item.name,
+    });
+  });
+
+  (formAssignedUserAndUserGroups?.dataList?.Users || []).forEach(ele => {
+    uniqueUsers.set(ele.userId?.toString(), {
+      value: ele.userId?.toString(),
+      label: ele.name,
+    });
+  });
+
+  let usersList: ItemType[] = Array.from(uniqueUsers.values());
+
+  let uniqueUserGroups = new Map<string, ItemType>();
+
+  (activeUserGroups?.dataList || []).forEach(item => {
+    uniqueUserGroups.set(item?.userGroupId?.toString(), {
+      value: item?.userGroupId?.toString(),
+      label: item.groupName,
+    });
+  });
+
+  (formAssignedUserAndUserGroups?.dataList?.UserGroups || []).forEach(ele => {
+    uniqueUserGroups.set(ele.userGroupId.toString(), {
+      value: ele.userGroupId.toString(),
+      label: ele.groupName,
+    });
+  });
+
+  let userGroupsList: ItemType[] = Array.from(uniqueUserGroups.values());
+
+
   return (
     <View style={{paddingHorizontal: 10}}>
       <MultiSelectDropdown
         label="Select user"
-        options={
-          allUsers?.dataList?.map(item => ({
-            value: item.userId?.toString(),
-            label: item.name,
-          })) || []
-        }
+        options={usersList}
         onSearch={search => {
           setUserSearch(search);
         }}
@@ -286,12 +319,7 @@ export const RenderAssignFormModalContent: FC<
       />
       <MultiSelectDropdown
         label="Select user groups"
-        options={
-          allUserGroups?.dataList.map(item => ({
-            value: item.userGroupId?.toString(),
-            label: item.groupName,
-          })) || []
-        }
+        options={userGroupsList}
         onSearch={search => {
           setGroupSearch(search);
         }}
@@ -362,10 +390,16 @@ const LabeledSingleRadioButton: FC<LabeledSingleRadioButtonTypes> = ({
       <Text size="small3" style={{width: '90%'}}>
         {value.label}
       </Text>
-      <View>
-        <TouchableOpacity
-          key={value.value}
-          onPress={() => onValueChange(value)}
+      <TouchableOpacity
+        onPress={() => onValueChange(value)}
+        key={value.value}
+        style={{
+          width: normaliseDesigns(30),
+          height:normaliseDesigns(30),
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}>
+        <View
           style={[
             {
               width: normaliseDesigns(14),
@@ -388,8 +422,8 @@ const LabeledSingleRadioButton: FC<LabeledSingleRadioButtonTypes> = ({
               }}
             />
           )}
-        </TouchableOpacity>
-      </View>
+        </View>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -432,18 +466,6 @@ const RenderSendReminderModal: FC<RenderSendReminderModalTypes> = ({
       getPendingUsersListForSendReminder([
         flowDetailItem.formId,
         flowDetailItem.flowId,
-      ]),
-    );
-  }, []);
-
-  useEffect(() => {
-    dispatch(
-      getAllUserGroups([
-        {
-          page: 0,
-          size: 15,
-          type: 'all',
-        },
       ]),
     );
   }, []);

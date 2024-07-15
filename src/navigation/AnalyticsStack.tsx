@@ -3,15 +3,28 @@ import {
   StackCardInterpolationProps,
   createStackNavigator,
 } from '@react-navigation/stack';
+
+import FlowsAndFormAnalytics from '../screens/analytics/FlowsAndFormAnalytics';
+import TeacherObservationAnalytics from '../screens/analytics/TeacherObservationAnalytics';
+import ObservationAnalytics from '../screens/analytics/ObservationAnalytics';
+import ObservationsListAnalytics from '../screens/analytics/ObservationsListAnalytics';
+import { FlowDetailItem, FlowItem } from '../redux/features/flowsSlice';
+import FormsListAnalytics from '../screens/analytics/FormsListAnalytics';
+import FlowsListAnalytics from '../screens/analytics/FlowsListAnalytics';
 import UserAndRoleAnalyticsMainPage from '../screens/analytics/UserAndRoleAnalyticsMainPage';
-import FlowsAndFormsAnalytics from '../screens/analytics/FlowsAndFormsAnalytics';
+import FormResponsesAnalytics from '../screens/analytics/FormResponsesAnalytics';
 
 
 export type AnalyticsStackParamList = {
   UserAndRoleAnalyticsMainPage: undefined;
   LocationAnalytics: undefined;
   TeacherObservationAnalytics: undefined;
-  FlowsAndFormsAnalytics: undefined;
+  FlowsAndFormAnalytics: undefined;
+  FlowsListAnalytics: undefined;
+  FormsListAnalytics:{ flowItem: FlowItem };
+  ObservationsListAnalytics:undefined
+  ObservationAnalytics:{observationId:number};
+  FormResponsesAnalytics:{flowDetailItem:FlowDetailItem}
 };
 
 const AnalyticsTab =
@@ -42,7 +55,13 @@ const AnalyticsStack = ({}) => {
         keyboardHidesTabBar: true,
       })}>
       <AnalyticsTab.Screen name="UserAndRoleAnalyticsMainPage" component={UserAndRoleAnalyticsMainPage} />
-      <AnalyticsTab.Screen name='FlowsAndFormsAnalytics' component={FlowsAndFormsAnalytics} />
+      <AnalyticsTab.Screen name='FlowsAndFormAnalytics' component={FlowsAndFormAnalytics} />
+      <AnalyticsTab.Screen name='FlowsListAnalytics' component={FlowsListAnalytics} />
+      <AnalyticsTab.Screen name='FormsListAnalytics' component={FormsListAnalytics} />
+      <AnalyticsTab.Screen name='FormResponsesAnalytics' component={FormResponsesAnalytics} />
+      <AnalyticsTab.Screen name='TeacherObservationAnalytics' component={TeacherObservationAnalytics} />
+      <AnalyticsTab.Screen name='ObservationsListAnalytics' component={ObservationsListAnalytics} />
+      <AnalyticsTab.Screen name='ObservationAnalytics' component={ObservationAnalytics} />
     </AnalyticsTab.Navigator>
   );
 };

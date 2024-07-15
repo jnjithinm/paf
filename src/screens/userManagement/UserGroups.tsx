@@ -127,7 +127,7 @@ const UserGroups: FC<UserGroupsScreenProps> = ({navigation, route}) => {
   ];
 
   useEffect(() => {
-    if (allUserGroups) {
+    if (allUserGroups && userGroupList.selectedTab==='all') {
       setUserGroupList({
         userGroupsList: allUserGroups?.dataList,
         count: allUserGroups.totalCount,
