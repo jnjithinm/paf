@@ -293,6 +293,9 @@ export const getAreas = createAsyncThunk<GetAreaResponse, [PaginationRequest,str
           endPoints.GET_AREAS ,
           payload,
         );
+        console.log("hhhh",api.post(
+          endPoints.GET_AREAS ,
+          payload,))
       }
       return response.data as GetAreaResponse;
     } catch (error: any) {

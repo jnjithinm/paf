@@ -152,8 +152,8 @@ const ObservationsListAnalytics: FC<ObservationsListAnalyticsScreenProps> = ({
                     image={item.userImage}
                     reportedBy={item.reportedBy}
                     onPress={() => {
-
-                      navigation.navigate('ObservationAnalytics',{observationId:item.observationId});
+                      console.log("hhhhhhhhhhhhh")
+                      navigation.navigate('ObservationAnalytics',{observationId:item?.observationId});
                     }}
                     creationDate={moment(item.createdDate).format('DD/MM/YYYY')}
                     creationTime={moment(item.createdDate).format('h:mmA')}

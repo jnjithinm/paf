@@ -390,15 +390,39 @@ const RenderDateSelector: FC<RenderDateSelectorTypes> = ({
 }) => {
   const [isPickeOpen, setIsPickerOpen] = useState<boolean>(false);
 
-  const handleDateSelection = (date: string) => {
+  // const handleDateSelection = (date: string) => {
+  //   setIsPickerOpen(false);
+  //   console.log('date', date);
+  //   const formattedDateTime = moment(date).format('YYYY-MM-DD HH:mm:ss');
+  //   if (itemAnswer) {
+  //     setAnswers(
+  //       answers.map(item =>
+  //         item === itemAnswer
+  //           ? {...item, answer: moment(date).format('YYYY-MM-DD HH:mm:ss')}
+  //           : item,
+  //       ),
+  //     );
+  //   } else {
+  //     setAnswers([
+  //       ...answers,
+  //       {
+  //         questionId,
+  //         questionOptionId,
+  //         answer: moment(date).format('YYYY-MM-DD HH:mm:ss'),
+  //       },
+  //     ]);
+  //   }
+  // };
+
+  const handleDateSelection = (selectedDate: Date) => {
     setIsPickerOpen(false);
-    console.log('date', date);
-    const formattedDateTime = moment(date).format('YYYY-MM-DD HH:mm:ss');
+    const formattedDate = moment(selectedDate).format('YYYY-MM-DD'); // Format to YYYY-MM-DD
+    //console.log("formattedDate--",formattedDate)
     if (itemAnswer) {
       setAnswers(
         answers.map(item =>
           item === itemAnswer
-            ? {...item, answer: moment(date).format('YYYY-MM-DD HH:mm:ss')}
+            ? { ...item, answer: formattedDate }
             : item,
         ),
       );
@@ -408,11 +432,12 @@ const RenderDateSelector: FC<RenderDateSelectorTypes> = ({
         {
           questionId,
           questionOptionId,
-          answer: moment(date).format('YYYY-MM-DD HH:mm:ss'),
+          answer: formattedDate,
         },
       ]);
     }
   };
+  
 
   return (
     <>
@@ -452,6 +477,7 @@ const RenderDateSelector: FC<RenderDateSelectorTypes> = ({
             </Text>
             <TouchableOpacity
               onPress={() => {
+                console.log("hhjjjjjj")
                 setIsPickerOpen(!isPickeOpen);
               }}
               style={{}}>

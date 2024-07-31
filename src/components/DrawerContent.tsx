@@ -311,7 +311,9 @@ const DrawerContent: FC<DrawerContentTypes> = ({closeDrawer}) => {
     {
       icon: 'drawer_icon_session_schedules',
       itemName: 'Schedules',
-      onPressItem: () => {},
+      onPressItem: () => {
+        navigate('Schedules')
+      },
     },
     {
       icon: 'drawer_icon_analytics',
@@ -342,7 +344,7 @@ const DrawerContent: FC<DrawerContentTypes> = ({closeDrawer}) => {
             },
             {
               itemName: 'Location Analytics',
-              onPressItem: () => {},
+              onPressItem: () => {navigate('AnalyticsStack',{screen:'LocationAnalytics'})},
               icon: 'extend_item_level_2_icon',
               subMenuLevel: 'two',
             },

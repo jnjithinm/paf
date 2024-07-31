@@ -57,6 +57,7 @@ const endPoints = {
   PRINT_FORM_RESPONSES: `forms/printIndResponse`,
   PRINT_QUESTION_WISE_RESPONSES: `forms/printQuestionWiseResponse`,
   USER_COUNT_ANAYTICS: `analytics/userCountAnalytics`,
+  USER_COUNT_ANAYTICS_USER_AND_ROLE:`analytics/userCountAnalytics`,
   USER_AND_ROLE_COUNT_ANALYTICS:`analytics/userAndRoleCountAnalytics`,
   GET_FORM_ASSIGNED_USER_AND_USER_GROUPS:`forms/getUsersAndGroups/`,
   GET_FORM_ANALYTICS:`analytics/formAnalytics/`,
@@ -65,7 +66,11 @@ const endPoints = {
   OBSERVATION_ANALYTICS_BY_USER_ID:`analytics/teacherObservation/observationByUserId`,
   OBSERVATION_COUNT_ANALYTICS:`analytics/teacherObservation/observation`,
   RUBRIC_WIESE_OBSERVATION:`analytics/teacherObservation/rubric`,
-  GET_TEACHER_OBSERVATION_COUNTS:`analytics/teacherObservation`
+  GET_TEACHER_OBSERVATION_COUNTS:`analytics/teacherObservation`,
+  GET_STATES_ANALYTICS:`analytics/metadata/states`,
+  GET_AREAS_ANALYTICS:`analytics/metadata/areas`,
+  GET_DISTRICS_ANALYTICS:`analytics/metadata/districts`,
+  
 
 }
 export default endPoints;

@@ -93,7 +93,13 @@ import trash_icon_red from '../assets/svg/trash_icon_red.svg'
 import edit_icon_red from '../assets/svg/edit_icon_red.svg'
 import informative_message_icon from '../assets/svg/informative_message_icon.svg'
 import list_of_flows_icon from '../assets/svg/list_of_flows_icon.svg'
-
+import three_dots from '../assets/svg/three_dots.svg'
+import sorting_icon from '../assets/svg/sorting_icon.svg'
+import zoomout_icon from '../assets/svg/zoomout_icon.svg'
+import downloads_icon  from '../assets/svg/downloads_icon.svg'
+import share_icon from '../assets/svg/share_icon.svg'
+import three_dots_orange from '../assets/svg/three_dots_orange.svg'
+import crosscircle from '../assets/svg/crosscircle.svg'
 
 const Icons = {
   app_logo,
@@ -186,7 +192,14 @@ const Icons = {
   arrow_right_pagination,
   arrow_left_icon,
   informative_message_icon,
-  list_of_flows_icon
+  list_of_flows_icon,
+  three_dots,
+  sorting_icon,
+  zoomout_icon,
+  share_icon,
+  downloads_icon,
+  three_dots_orange,
+  crosscircle,
   
 };
 

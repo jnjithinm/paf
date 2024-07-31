@@ -13,6 +13,19 @@ interface GetUserCountAnalyticsRequest {
   endDate: string;
 }
 
+interface GetUserCountAnalyticsUserAndRoleResponse{
+  payload: {
+      message: string;
+      dataList: {
+        userCount: Array<[string, string | number]>;
+      }
+  },
+  status: number
+}
+
+type GetUserCountAnalyticsUserAndRoleResponsePayload =
+GetUserCountAnalyticsUserAndRoleResponse['payload'];
+  
 interface GetUserCountAnalyticsResponse {
   payload: {
     message: string;
@@ -90,6 +103,7 @@ interface ResponseValue {
 
 interface GetFormAnalyticsResponse {
   payload: {
+    optionId: number;
     questionId: number;
     questionText: string;
     questionOptionId: number;
@@ -124,6 +138,21 @@ interface GetObservationCountAnalyticsResponse {
 
 type GetObservationCountAnalyticsResponsePayload =
   GetObservationCountAnalyticsResponse['payload'];
+
+interface GetTeacherObservationAnalyticsResponse {
+  payload: {
+    message: string;
+    dataList: {
+      totalObservationAverage:number[];
+      totalIndicatorCount:number[];
+      totalObservationCount:number[];
+    };
+  };
+  status: number;
+}
+
+type GetTeacherObservationAnalyticsResponsePayload =
+GetTeacherObservationAnalyticsResponse['payload'];
 
 interface GetObservationAnalyticsRequest {
   userId: number;
@@ -176,6 +205,108 @@ interface ObservationAndAverageCountEntry {
   averageRating: number;
 }
 
+export interface State {
+  stateId: number;
+  stateName: string;
+  stateCode: string;
+  countryId: number;
+  status: boolean;
+}
+
+interface GetStatesResponse {
+  payload: {
+    message: string;
+    dataList: State[];
+    totalCount: number;
+  };
+  status: number;
+}
+
+type GetStatesResponsePayload = GetStatesResponse['payload'];
+
+export interface District {
+  stateId: number;
+  stateCode: string;
+  stateName: string;
+  districtId: number;
+  districtCode: string;
+  districtName: string;
+  status: boolean;
+  users: number;
+  areas: number;
+  schools: number;
+  createdBy: string;
+  creationDate: string;
+}
+
+interface GetDistrictResponse {
+  payload: {
+    message: string;
+    dataList: District[];
+    totalCount: number;
+  };
+  status: number;
+}
+
+type GetAllDistrictResponsePayload = GetDistrictResponse['payload'];
+
+export interface Area {
+  pinId: number;
+  area: string;
+  pinCode: string;
+  districtId: number;
+  districtCode: string;
+  districtName: string;
+  stateId: number;
+  stateCode: string;
+  stateName: string;
+  status: boolean;
+  schools: number;
+  users: number;
+  createdBy: string;
+  creationDate: string;
+}
+interface GetAreaResponse {
+  payload: {
+    message: string;
+    dataList: Area[];
+    totalCount: number;
+  };
+  status: number;
+}
+
+type GetAreaResponsePayload = GetAreaResponse['payload'];
+
+export interface SchoolType {
+  schoolId: number;
+  schoolName: string;
+  pinId: number;
+  area: string;
+  pinCode: string;
+  districtId: number;
+  districtCode: string;
+  districtName: string;
+  stateId: number;
+  stateCode: string;
+  stateName: string;
+  status: boolean;
+  users: number;
+  classrooms: number;
+  createdBy: string;
+  creationDate: string;
+}
+
+interface GetSchoolResponse {
+  payload: {
+    message: string;
+    dataList: SchoolType[];
+    totalCount: number;
+  };
+  status: number;
+}
+
+type GetAllSchoolResponsePayload = GetSchoolResponse['payload'];
+
 export const getUserCountAnalytics = createAsyncThunk<
   GetUserCountAnalyticsResponse,
   void,
@@ -191,6 +322,28 @@ export const getUserCountAnalytics = createAsyncThunk<
     dispatch(setLoading(false));
   }
 });
+
+export const getUserCountAnalyticsUserAndRole = createAsyncThunk<
+GetUserCountAnalyticsUserAndRoleResponse,
+GetUserCountAnalyticsRequest,
+  {rejectValue: ErrorResponse}
+>(
+  'analytics/userCountAnalyticsUserAndRole',
+  async (payload, {dispatch, rejectWithValue}) => {
+    try {
+      dispatch(setLoading(true));
+      const response = await api.post(
+        endPoints.USER_COUNT_ANAYTICS_USER_AND_ROLE,
+        payload,
+      );
+      return response.data as GetUserCountAnalyticsUserAndRoleResponse;
+    } catch (error: any) {
+      return rejectWithValue(error.response.data);
+    } finally {
+      dispatch(setLoading(false));
+    }
+  },
+);
 
 export const getUserAndRoleCountAnalytics = createAsyncThunk<
   GetUserAndRoleCountAnalyticsResponse,
@@ -227,6 +380,7 @@ export const getFormCountAnalytics = createAsyncThunk<
         endPoints.GET_FORM_COUNT_AND_RESPONSE,
         payload,
       );
+      console.log('jjjjj', endPoints.GET_FORM_COUNT_AND_RESPONSE, payload);
       return response.data as GetFormCountAnalyticsResponse;
     } catch (error: any) {
       return rejectWithValue(error.response.data);
@@ -270,6 +424,7 @@ export const getObservationCountAnalytics = createAsyncThunk<
         endPoints.OBSERVATION_ANALYTICS_BY_USER_ID,
         payload,
       );
+      console.log('iuserid---------', response.data);
       return response.data as GetObservationCountAnalyticsResponse;
     } catch (error: any) {
       return rejectWithValue(error.response.data);
@@ -301,6 +456,22 @@ export const getObservationAnalytics = createAsyncThunk<
   },
 );
 
+export const getTeacherObservationAnalytics = createAsyncThunk<
+GetTeacherObservationAnalyticsResponse,
+  void,
+  {rejectValue: ErrorResponse}
+>('analytics/teacherObservation', async (_, {dispatch, rejectWithValue}) => {
+  try {
+    dispatch(setLoading(true));
+    const response = await api.get(endPoints.GET_TEACHER_OBSERVATION_COUNTS);
+    return response.data as GetTeacherObservationAnalyticsResponse;
+  } catch (error: any) {
+    return rejectWithValue(error.response.data);
+  } finally {
+    dispatch(setLoading(false));
+  }
+});
+
 export const getRubricWiseObservationAnalytics = createAsyncThunk<
   GetRubricWiseObservationAnalyticsResponse,
   GetRubricWiseObservationAnalyticsRequest,
@@ -323,8 +494,111 @@ export const getRubricWiseObservationAnalytics = createAsyncThunk<
   },
 );
 
+export const getStates = createAsyncThunk<GetStatesResponse, PaginationRequest>(
+  'analytics/getStates',
+  async (payload, {dispatch, rejectWithValue}) => {
+    console.log('sttttttttt');
+    try {
+      // dispatch(setLoading(true));
+      let response;
+      // if(searchCriteria){
+      //   response = await api.post(
+      //     endPoints.GET_STATES_BY_SEARCH + `searchCriteria=${searchCriteria}`,
+      //     payload,
+      //   );
+      // }else{
+      response = await api.post(endPoints.GET_STATES_ANALYTICS, payload);
+      // }
+      console.log('--------', endPoints.GET_STATES_ANALYTICS, payload);
+      return response.data as GetStatesResponse;
+    } catch (error: any) {
+      return rejectWithValue(error.response.data);
+    } finally {
+      // dispatch(setLoading(false));
+    }
+  },
+);
+
+export const getDistricts = createAsyncThunk<
+  GetDistrictResponse,
+  [PaginationRequest]
+>('analytics/getDistricts', async (payload, {dispatch, rejectWithValue}) => {
+  try {
+    // dispatch(setLoading(true));
+    let response;
+    // if (searchCriteria) {
+    //   response = await api.post(
+    //     endPoints.GET_DISTRICTS_BY_SEARCH +
+    //       `searchCriteria=${searchCriteria}`,
+    //     payload,
+    //   );
+    // } else {
+
+    response = await api.post(endPoints.GET_DISTRICS_ANALYTICS, payload);
+    console.log(
+      'endPoints.GET_DISTRICS_ANALYTICS, payload---------',
+      endPoints.GET_DISTRICS_ANALYTICS,
+      payload,
+    );
+    // }
+    return response.data as GetDistrictResponse;
+  } catch (error: any) {
+    return rejectWithValue(error.response.data);
+  } finally {
+    // dispatch(setLoading(false));
+  }
+});
+
+export const getAreas = createAsyncThunk<
+  GetAreaResponse,
+  [PaginationRequest, string?]
+>('analytics/getAreas', async (payload, {dispatch, rejectWithValue}) => {
+  try {
+    // dispatch(setLoading(true));
+    let response;
+    // if (searchCriteria) {
+    //   response = await api.post(
+    //     endPoints.GET_AREAS_BY_SEARCH + `searchCriteria=${searchCriteria}`,
+    //     payload,
+    //   );
+    // } else {
+    response = await api.post(endPoints.GET_AREAS_ANALYTICS, payload);
+    console.log('hhhh', api.post(endPoints.GET_AREAS_ANALYTICS, payload));
+    // }
+    return response.data as GetAreaResponse;
+  } catch (error: any) {
+    return rejectWithValue(error.response.data);
+  } finally {
+    // dispatch(setLoading(false));
+  }
+});
+
+export const getSchools = createAsyncThunk<
+  GetSchoolResponse,
+  [PaginationRequest, string?]
+>('analytics/getSchools', async (payload, {dispatch, rejectWithValue}) => {
+  try {
+    // dispatch(setLoading(true));
+    let response;
+    // if(searchCriteria){
+    //   response = await api.post(
+    //     endPoints.GET_SCHOOLS_BY_SEARCH + `searchCriteria=${searchCriteria}`,
+    //     payload,
+    //   );
+    // }else{
+    response = await api.post(endPoints.GET_SCHOOLS, payload);
+    //}
+    return response.data as GetSchoolResponse;
+  } catch (error: any) {
+    return rejectWithValue(error.response.data);
+  } finally {
+    // dispatch(setLoading(false));
+  }
+});
+
 interface InitialState {
   userCountAnalytics: GetUserCountAnalyticsResponsePayload | null;
+  teacherObservationAnalytics: GetTeacherObservationAnalyticsResponsePayload|null;
   userAndRoleCountAnalytics: GetUserAndRoleCountAnalyticsResponsePayload | null;
   formCountAnalytics: GetFormCountAnalyticsResponsePayload | null;
   formAnalytics: GetFormAnalyticsResponsePayload | null;
@@ -333,10 +607,20 @@ interface InitialState {
   rubricWiseObservationAnalytics: GetRubricWiseObservationAnalyticsResponsePayload | null;
   analyticsShowMessage: ErrorStatusObject | null;
   errorMessage: string;
+  states: GetStatesResponsePayload | null;
+  districts: GetAllDistrictResponsePayload | null;
+  areas: GetAreaResponsePayload | null;
+  activeAreas: GetAreaResponsePayload | null;
+  inactiveAreas: GetAreaResponsePayload | null;
+  activeDistricts: GetAllDistrictResponsePayload | null;
+  inactiveDistricts: GetAllDistrictResponsePayload | null;
+  schools: GetAllSchoolResponsePayload | null;
+  userCountAnalyticsUserAndRole:GetUserCountAnalyticsUserAndRoleResponsePayload|null;
 }
 
 const initialState: InitialState = {
   userCountAnalytics: null,
+  teacherObservationAnalytics:null,
   userAndRoleCountAnalytics: null,
   formCountAnalytics: null,
   formAnalytics: null,
@@ -345,6 +629,15 @@ const initialState: InitialState = {
   rubricWiseObservationAnalytics: null,
   analyticsShowMessage: null,
   errorMessage: '',
+  states: null,
+  districts: null,
+  areas: null,
+  activeAreas: null,
+  inactiveAreas: null,
+  activeDistricts: null,
+  inactiveDistricts: null,
+  schools: null,
+  userCountAnalyticsUserAndRole:null
 };
 
 const analyticsSlice = createSlice({
@@ -353,6 +646,15 @@ const analyticsSlice = createSlice({
   reducers: {},
   extraReducers: builder => {
     builder
+      .addCase(getUserCountAnalyticsUserAndRole.pending, state => {
+        state.userCountAnalyticsUserAndRole = null;
+      })
+      .addCase(getUserCountAnalyticsUserAndRole.fulfilled, (state, action) => {
+        state.userCountAnalyticsUserAndRole = action.payload.payload;
+      })
+      .addCase(getUserCountAnalyticsUserAndRole.rejected, state => {
+        state.userCountAnalyticsUserAndRole = null;
+      })
       .addCase(getUserCountAnalytics.pending, state => {
         state.userCountAnalytics = null;
       })
@@ -361,6 +663,15 @@ const analyticsSlice = createSlice({
       })
       .addCase(getUserCountAnalytics.rejected, state => {
         state.userCountAnalytics = null;
+      })
+      .addCase(getTeacherObservationAnalytics.pending, state => {
+        state.teacherObservationAnalytics = null;
+      })
+      .addCase(getTeacherObservationAnalytics.fulfilled, (state, action) => {
+        state.teacherObservationAnalytics = action.payload.payload;
+      })
+      .addCase(getTeacherObservationAnalytics.rejected, state => {
+        state.teacherObservationAnalytics = null;
       })
       .addCase(getUserAndRoleCountAnalytics.pending, state => {
         state.userAndRoleCountAnalytics = null;
@@ -393,6 +704,7 @@ const analyticsSlice = createSlice({
         state.observationAnalytics = null;
       })
       .addCase(getObservationCountAnalytics.fulfilled, (state, action) => {
+        console.log('action---', action);
         state.observationCountAnalytics = action.payload.payload;
       })
       .addCase(getObservationCountAnalytics.rejected, state => {
@@ -415,6 +727,43 @@ const analyticsSlice = createSlice({
       })
       .addCase(getRubricWiseObservationAnalytics.rejected, state => {
         state.rubricWiseObservationAnalytics = null;
+      })
+      .addCase(getStates.rejected, (state, action) => {
+        state.states = null;
+      })
+      .addCase(getStates.pending, state => {
+        // state.states = null;
+      })
+      .addCase(getStates.fulfilled, (state, action) => {
+        state.states = action.payload.payload;
+      })
+      .addCase(getDistricts.rejected, (state, action) => {
+        state.districts = null;
+      })
+      .addCase(getDistricts.pending, state => {
+        // state.states = null;
+      })
+      .addCase(getDistricts.fulfilled, (state, action) => {
+        console.log('hhhh');
+        state.districts = action.payload.payload;
+      })
+      .addCase(getAreas.rejected, (state, action) => {
+        state.areas = null;
+      })
+      .addCase(getAreas.pending, state => {
+        // state.states = null;
+      })
+      .addCase(getAreas.fulfilled, (state, action) => {
+        state.areas = action.payload.payload;
+      })
+      .addCase(getSchools.rejected, (state, action) => {
+        state.schools = null;
+      })
+      .addCase(getSchools.pending, state => {
+        // state.states = null;
+      })
+      .addCase(getSchools.fulfilled, (state, action) => {
+        state.schools = action.payload.payload;
       });
   },
 });

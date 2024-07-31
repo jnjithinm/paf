@@ -174,14 +174,16 @@ export const authenticateUser = createAsyncThunk<
   AuthenticateRequest,
   {rejectValue: ErrorResponse}
 >('auth/authenticate', async (payload, {dispatch, rejectWithValue}) => {
+  console.log("login----11111111")
   try {
     dispatch(setLoading(true));
     await removeToken();
     const response = await api.post(endPoints.AUTHENTICATE_USER, payload);
+    console.log("login----",endPoints.AUTHENTICATE_USER, payload)
     await storeToken(response.data.payload.token);
     return response.data as AuthenticateResponse;
   } catch (error: any) {
-    console.log('errr', error);
+    console.log('errr1111', error);
     return rejectWithValue(error.response.data);
   } finally {
     dispatch(setLoading(true));

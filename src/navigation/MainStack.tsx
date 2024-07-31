@@ -26,7 +26,8 @@ import LocationManagementStack, {
 } from './LocationManagementStack';
 import MyAccount from '../screens/dashboard/MyAccount';
 import FAQ from '../screens/dashboard/FAQ';
-import AnalyticsStack, { AnalyticsStackParamList } from './AnalyticsStack';
+import AnalyticsStack, {AnalyticsStackParamList} from './AnalyticsStack';
+import Schedules from '../screens/schedules/Schedules';
 
 export type MainStackParamList = {
   Splash: undefined;
@@ -38,13 +39,14 @@ export type MainStackParamList = {
   TeacherDashboard: undefined;
   AdminDashboard: undefined;
   MyAccount: undefined;
-  FAQ:undefined;
+  Schedules: undefined;
+  FAQ: undefined;
   ObservationStack: NavigatorScreenParams<ObservationStackParamList>;
   RubricStack: NavigatorScreenParams<RubricStackParamList>;
   FlowsAndFormsStack: NavigatorScreenParams<FlowsAndFormsStackParamList>;
   UserManagementStack: NavigatorScreenParams<UserManagementStackParamList>;
   LocationManagementStack: NavigatorScreenParams<LocationManagementStackParamList>;
-  AnalyticsStack:NavigatorScreenParams<AnalyticsStackParamList>;
+  AnalyticsStack: NavigatorScreenParams<AnalyticsStackParamList>;
 };
 
 const MainStack = createStackNavigator<MainStackParamList>();
@@ -101,12 +103,8 @@ const MainStackNavigator = () => {
           name="LocationManagementStack"
           component={LocationManagementStack}
         />
-              <MainStack.Screen
-          name="AnalyticsStack"
-          component={AnalyticsStack}
-        />
-
-
+        <MainStack.Screen name="AnalyticsStack" component={AnalyticsStack} />
+        <MainStack.Screen name="Schedules" component={Schedules} />
       </MainStack.Navigator>
     );
   } else {
@@ -127,6 +125,7 @@ const MainStackNavigator = () => {
           }
         }}>
         <MainStack.Screen name="Splash" component={Splash} />
+
         <MainStack.Screen name="Login" component={Login} />
         <MainStack.Screen name="FAQ" component={FAQ} />
         <MainStack.Screen name="ResetPassword" component={ResetPassword} />

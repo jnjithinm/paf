@@ -105,7 +105,7 @@ const AdminDashboard: FC<AdminDashboardScreenProps> = ({navigation, route}) => {
     {
       icon: 'admin_dashboard_schedules_icon',
       label: 'Schedules',
-      onPress: () => {},
+      onPress: () => {navigation.navigate("Schedules")},
     },
   ];
   return (

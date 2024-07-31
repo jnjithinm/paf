@@ -1,25 +1,41 @@
-import React, {FC, useEffect, useState} from 'react';
-import {View} from 'react-native';
-import {RouteProp} from '@react-navigation/native';
-import {StackNavigationProp} from '@react-navigation/stack';
-import {Drawer} from 'react-native-drawer-layout';
+import React, { FC, useEffect, useRef, useState } from 'react';
+import {
+  Alert,
+  Platform,
+  Share,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { RouteProp } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { Drawer } from 'react-native-drawer-layout';
 
 import Layout from '../../components/Layout';
 import Text from '../../components/Text';
 import DrawerContent from '../../components/DrawerContent';
-import {useAppDispatch, useAppSelector} from '../../redux/store';
-import {AnalyticsStackParamList} from '../../navigation/AnalyticsStack';
+import { useAppDispatch, useAppSelector } from '../../redux/store';
+import { AnalyticsStackParamList } from '../../navigation/AnalyticsStack';
 import {
   getFormCountAnalytics,
   getUserCountAnalytics,
 } from '../../redux/features/analyticsSlice';
-import {AnalyticsCountTile} from './UserAndRoleAnalyticsMainPage';
+import { AnalyticsCountTile } from './UserAndRoleAnalyticsMainPage';
 import CurvedLineChart from '../../components/CurvedLineChart';
-import {RenderTitleWithLink} from '../dashboard/TeacherDashboard';
-import {RenderEmptyPlaceholder} from '../observation/ObservationReportsMainPage';
-import {FlowsItem} from '../flowsAndForms/FlowsMainPage';
+import { RenderTitleWithLink } from '../dashboard/TeacherDashboard';
+import { RenderEmptyPlaceholder } from '../observation/ObservationReportsMainPage';
+import { FlowsItem } from '../flowsAndForms/FlowsMainPage';
 import moment from 'moment';
-import {getAllFlows} from '../../redux/features/flowsSlice';
+import { getAllFlows } from '../../redux/features/flowsSlice';
+import Icon from '../../components/Icon';
+import colors from '../../config/colors';
+import RNFetchBlob from 'rn-fetch-blob';
+import ViewShot from 'react-native-view-shot';
+import FlashMessage, { showMessage } from 'react-native-flash-message';
+import { FONT_VARIANT } from '../../config/themes';
+import Modal from '../../components/Modal';
+import Calendar, { DateFilterOption } from "../analytics/FlowsandFormFilterList";
+import { FilterObject } from '../analytics/FlowsandFormFilterList';
 
 type FlowsAndFormAnalyticsNavigationProp = StackNavigationProp<
   AnalyticsStackParamList,
@@ -46,24 +62,57 @@ const FlowsAndFormAnalytics: FC<FlowsAndFormAnalyticsScreenProps> = ({
 }) => {
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
   const [search, setSearch] = useState<string>('');
+  const [isclicked, setIsClicked] = useState<boolean>(false);
+  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
+  const [isZoomed, setIsZoomed] = useState<boolean>(false);
+  const [isSortIconClick, setIsSortIconClick] = useState(false);
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [dateFilter, setDateFilter] = useState<{ startDate: string; endDate: string } | undefined>(undefined);
+  const [dateFilterOption, setDateFilterOption] = useState<DateFilterOption | undefined>(undefined);
 
-  const closeDrawer = () => {
-    setIsDrawerOpen(false);
-  };
+  const viewShotRef = useRef(null); // Create a ref for ViewShot
+
+  const [isZoomButtonClicked, setIsZoomButtonClicked] = useState(false);
+  const [isDownloadButtonClicked, setIsDownloadButtonClicked] = useState(false);
+  const [isShareButtonClicked, setIsShareButtonClicked] = useState(false);
 
   const dispatch = useAppDispatch();
-  const {formCountAnalytics} = useAppSelector(state => state.analytics);
-  const {userData} = useAppSelector(state => state.auth);
-  const {allFlows} = useAppSelector(state => state.flows);
+  const { formCountAnalytics } = useAppSelector(state => state.analytics);
+  const { userData } = useAppSelector(state => state.auth);
+  const { allFlows } = useAppSelector(state => state.flows);
+
+  console.log("allFlows==", formCountAnalytics);
 
   useEffect(() => {
+    let dateType = 'selected_date';
+    let startDate = dateFilter?.startDate || '2024-04-19';
+    let endDate = dateFilter?.endDate || '2024-06-19';
+
+    if (dateFilterOption) {
+      switch (dateFilterOption) {
+        case 'Last week':
+          dateType = 'Week';
+          break;
+        case 'This month':
+          dateType = 'Month';
+          break;
+        case 'Past 3 months':
+          dateType = 'past_3_months';
+          break;
+        case 'Past 1 year':
+          dateType = 'Past_1_Year';
+          break;
+      }
+    }
+
     dispatch(
       getFormCountAnalytics({
-        dateType: 'selected_date',
-        startDate: '2024-04-19',
-        endDate: '2024-06-19',
+        dateType,
+        startDate,
+        endDate,
       }),
     );
+
     dispatch(
       getAllFlows([
         userData.userName,
@@ -75,7 +124,145 @@ const FlowsAndFormAnalytics: FC<FlowsAndFormAnalyticsScreenProps> = ({
         },
       ]),
     );
-  }, []);
+  }, [dateFilter, dateFilterOption]);
+
+  const captureAndDownload = async (viewShotRef: React.RefObject<ViewShot>) => {
+    console.log("Starting captureAndDownload function");
+    try {
+      if (viewShotRef.current) {
+        console.log("ViewShot ref is available, capturing the view");
+        const uri = await viewShotRef.current.capture();
+        console.log("Capture URI:", uri);
+
+        const downloadDir = Platform.OS === 'android'
+          ? RNFetchBlob.fs.dirs.DownloadDir
+          : RNFetchBlob.fs.dirs.DocumentDir;
+        const fileName = 'chart_screenshot.jpg';
+        const filePath = `${downloadDir}/${fileName}`;
+        console.log("File will be saved to:", filePath);
+
+        const data = await RNFetchBlob.fs.readFile(uri, 'base64');
+        console.log("File data read successfully");
+
+        await RNFetchBlob.fs.writeFile(filePath, data, 'base64');
+        console.log("File written successfully");
+
+        showMessage({
+          message: "Success",
+          description: "File Downloaded successfully",
+          type: "success",
+        });
+        console.log("Downloaded successfully:", filePath);
+      } else {
+        console.error("ViewShot ref is not available");
+      }
+    } catch (error) {
+      console.error("Failed to capture or download:", error);
+    }
+  };
+
+  const shareImage = async (viewShotRef: React.RefObject<ViewShot>) => {
+    console.log("Starting shareImage function");
+    try {
+      if (viewShotRef.current) {
+        const uri = await viewShotRef.current.capture();
+        console.log("Capture URI:", uri);
+
+        const shareOptions = {
+          title: 'Share Chart Image',
+          url: uri,
+          failOnCancel: false,
+        };
+
+        Share.share(shareOptions)
+          .then(res => console.log(res))
+          .catch(err => console.log('Error =>', err));
+      } else {
+        console.error("ViewShot ref is not available");
+      }
+    } catch (error) {
+      console.error('Failed to capture or share:', error);
+    }
+  };
+
+  const ModalContent: FC<{ onClose: () => void }> = ({ onClose }) => {
+    const handleZoomClick = () => {
+      setIsZoomButtonClicked(true);
+      setIsDownloadButtonClicked(false);
+      setIsShareButtonClicked(false);
+      setIsZoomed(true);
+      onClose();
+    };
+
+    const handleDownloadClick = () => {
+      setIsZoomButtonClicked(false);
+      setIsDownloadButtonClicked(true);
+      setIsShareButtonClicked(false);
+      captureAndDownload(viewShotRef);
+    };
+
+    const handleShareClick = () => {
+      setIsZoomButtonClicked(false);
+      setIsDownloadButtonClicked(false);
+      setIsShareButtonClicked(true);
+      shareImage(viewShotRef);
+    };
+
+    return (
+      <View style={styles.modalContent}>
+        <TouchableOpacity
+          style={[
+            styles.modalOption,
+            isZoomButtonClicked && { backgroundColor: '#FDF0E3' },
+          ]}
+          onPress={handleZoomClick}
+        >
+          <Icon name='zoomout_icon' color={colors.darkGrey} />
+          <Text style={styles.modalOptionText}>Zoom In</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[
+            styles.modalOption,
+            isDownloadButtonClicked && { backgroundColor: '#FDF0E3' },
+          ]}
+          onPress={handleDownloadClick}
+        >
+          <Icon name='downloads_icon' color={colors.darkGrey} />
+          <Text style={styles.modalOptionText}>Download</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[
+            styles.modalOption,
+            isShareButtonClicked && { backgroundColor: '#FDF0E3' },
+          ]}
+          onPress={handleShareClick}
+        >
+          <Icon name='share_icon' color={colors.darkGrey} />
+          <Text style={styles.modalOptionText}>Share</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  };
+
+  const ZoomedChartView = ({ onClose }) => (
+    <View style={styles.zoomedChartContainer}>
+      <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+        <Icon name='cross_icon' />
+      </TouchableOpacity>
+      <CurvedLineChart
+        value1={countOfForms}
+        value2={countOfResponses}
+        value3={averageResponseTime}
+        labels={months || ['']}
+        indicators={[
+          'Count of forms',
+          'Count of Responses',
+          'Average Response Time',
+        ]}
+        style={{ paddingTop: 40, width: '100%', height: '100%' }}
+      />
+    </View>
+  );
 
   const formattedFormCountAnalytics =
     formCountAnalytics?.dataList?.formAnalytics.slice(1).map(row => ({
@@ -92,7 +279,6 @@ const FlowsAndFormAnalytics: FC<FlowsAndFormAnalyticsScreenProps> = ({
   const countOfResponses: number[] =
     formattedFormCountAnalytics?.map(item => Number(item.countOfResponses)) ||
     [];
-
   const averageResponseTime: number[] =
     formattedFormCountAnalytics?.map(item =>
       Number(item.averageResponseTime),
@@ -102,22 +288,43 @@ const FlowsAndFormAnalytics: FC<FlowsAndFormAnalyticsScreenProps> = ({
     item?.flowName?.toLocaleLowerCase()?.includes(search?.toLocaleLowerCase()),
   );
 
+  const closeDrawer = () => {
+    setIsDrawerOpen(false);
+  };
+
+  const handleSortIconClick = () => {
+    setIsSortIconClick(true);
+    setFilterOpen(true);
+  };
+  const handleProceed = (filterObject: FilterObject) => {
+    setDateFilter(filterObject.date);
+    setDateFilterOption(filterObject.dateFilterOption);
+  };
+
   return (
     <Drawer
       open={isDrawerOpen}
       onOpen={() => setIsDrawerOpen(true)}
       onClose={() => setIsDrawerOpen(false)}
-      renderDrawerContent={() => <DrawerContent closeDrawer={closeDrawer} />}>
+      renderDrawerContent={() => <DrawerContent closeDrawer={closeDrawer} />}
+    >
       <Layout
         overridePaddingHorizontal
         overridePaddingVertical
-        style={{paddingHorizontal: 15}}
+        style={{ paddingHorizontal: 15 }}
         focusedStack="AnalyticsStack"
-        dashboard>
+        dashboard
+      >
+        <Calendar
+          onProceed={handleProceed}
+          onClose={() => setFilterOpen(false)}
+          isVisible={filterOpen}
+        />
         <Text
           size="body4"
           fontVariant="bold"
-          style={{marginBottom: 10, marginTop: 30}}>
+          style={{ marginBottom: 10, marginTop: 30 }}
+        >
           Flows and Form Analytics
         </Text>
         <View
@@ -125,41 +332,79 @@ const FlowsAndFormAnalytics: FC<FlowsAndFormAnalyticsScreenProps> = ({
             flexDirection: 'row',
             justifyContent: 'space-between',
             marginVertical: 10,
-          }}>
+          }}
+        >
           <AnalyticsCountTile
             text={'Total Forms Created'}
             color={'green'}
             count={formCountAnalytics?.dataList?.totalFormCount[0] || 0}
-            onPress={() => {}}
+            onPress={() => { }}
           />
           <AnalyticsCountTile
             text={'Responses Collected'}
             color={'orange'}
             count={formCountAnalytics?.dataList?.totalResponseCount[0] || 0}
-            onPress={() => {}}
+            onPress={() => { }}
           />
           <AnalyticsCountTile
             text={'Avg Response Time'}
             color={'red'}
             count={
-              Number(formCountAnalytics?.dataList?.totalResponseAverageTime[0]?.toFixed(1)) || 0
+              Number(
+                formCountAnalytics?.dataList?.totalResponseAverageTime[0]?.toFixed(
+                  1,
+                ),
+              ) || 0
             }
-            onPress={() => {}}
+            onPress={() => { }}
           />
         </View>
+
         {formCountAnalytics &&
           formCountAnalytics?.dataList?.formAnalytics?.length !== 0 && (
-            <CurvedLineChart
-              value1={countOfForms}
-              value2={countOfResponses}
-              value3={averageResponseTime}
-              labels={months || ['']}
-              indicators={[
-                'Count of forms',
-                'Count of Responses',
-                'Average Response Time',
-              ]}
-            />
+            <View style={{ position: 'relative' }}>
+              <View style={styles.iconContainer}>
+                <TouchableOpacity
+                  onPress={handleSortIconClick}
+                  style={styles.iconButton}
+                >
+                  <Icon name='sorting_icon' color={colors.blackColor} />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => {
+                    setIsModalVisible(true);
+                    //setIsDotsClick(true);
+                  }}
+                  style={styles.iconButton}
+                >
+                  <Icon name='three_dots' />
+                </TouchableOpacity>
+              </View>
+              <View style={{ marginTop: 10 }}>
+                <ViewShot
+                  ref={viewShotRef}
+                  options={{ format: 'jpg', quality: 0.9 }}
+                >
+                  <CurvedLineChart
+                    value1={countOfForms}
+                    value2={countOfResponses}
+                    value3={averageResponseTime}
+                    labels={months || ['']}
+                    indicators={[
+                      'Count of forms',
+                      'Count of Responses',
+                      'Average Response Time',
+                    ]}
+                    style={{ paddingTop: 40 }}
+                  />
+                </ViewShot>
+                {isModalVisible && (
+                  <View style={styles.modalContainer}>
+                    <ModalContent onClose={() => setIsModalVisible(false)} />
+                  </View>
+                )}
+              </View>
+            </View>
           )}
         <RenderTitleWithLink
           icon="list_of_flows_icon"
@@ -169,7 +414,6 @@ const FlowsAndFormAnalytics: FC<FlowsAndFormAnalyticsScreenProps> = ({
             navigation.navigate('FlowsListAnalytics');
           }}
         />
-
         {filteredFlows ? (
           filteredFlows.length > 0 ? (
             filteredFlows
@@ -188,7 +432,7 @@ const FlowsAndFormAnalytics: FC<FlowsAndFormAnalyticsScreenProps> = ({
                   userCount={ele.responses}
                   key={ele.flowId}
                   onPress={() => {
-                    navigation.navigate('FormsListAnalytics', {flowItem: ele});
+                    navigation.navigate('FormsListAnalytics', { flowItem: ele });
                   }}
                 />
               ))
@@ -199,7 +443,77 @@ const FlowsAndFormAnalytics: FC<FlowsAndFormAnalyticsScreenProps> = ({
           <></>
         )}
       </Layout>
+      {isZoomed && <ZoomedChartView onClose={() => setIsZoomed(false)} />}
     </Drawer>
   );
 };
+
+const styles = StyleSheet.create({
+  iconContainer: {
+    position: 'absolute',
+    top: 27,
+    right: 5,
+    flexDirection: 'row',
+    zIndex: 1,
+  },
+  iconButton: {
+    padding: 5,
+    marginLeft: 10,
+  },
+  modalContainer: {
+    position: 'absolute',
+    top: 50,
+    right: 1,
+    backgroundColor: 'white',
+    borderRadius: 8,
+    padding: 12,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  modalContent: {
+    width: "100%",
+  },
+  modalOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 10,
+    marginVertical: 1,
+  },
+  modalOptionText: {
+    marginLeft: 10,
+    fontSize: 14,
+  },
+  zoomedChartContainer: {
+    position: 'absolute',
+    top: 50,
+    left: 0,
+    right: 0,
+    bottom: 50,
+    backgroundColor: 'white',
+    zIndex: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 10,
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 20,
+    right: 10,
+    backgroundColor: colors.borderColor,
+    padding: 10,
+    borderRadius: 5,
+    zIndex: 11,
+  },
+  closeButtonText: {
+    color: 'white',
+    fontSize: 16,
+  },
+});
+
 export default FlowsAndFormAnalytics;

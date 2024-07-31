@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FusionCharts</title>
+    <script type="text/javascript" src="https://cdn.fusioncharts.com/fusioncharts/latest/fusioncharts.js"></script>
+    <script type="text/javascript" src="https://cdn.fusioncharts.com/fusioncharts/latest/fusioncharts.maps.js"></script>
+    <script type="text/javascript" src="https://cdn.fusioncharts.com/fusioncharts/latest/maps/fusioncharts.india.js"></script>
+</head>
+<body>
+    <div id="chart-container">FusionCharts will render here</div>
+    <script type="text/javascript">
+        document.addEventListener("message", function (event) {
+            var chartConfig = JSON.parse(event.data);
+            FusionCharts.ready(function () {
+                var fusioncharts = new FusionCharts(chartConfig);
+                fusioncharts.render();
+            });
+        });
+    </script>
+</body>
+</html>

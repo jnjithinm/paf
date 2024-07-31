@@ -13,6 +13,7 @@ import FormsListAnalytics from '../screens/analytics/FormsListAnalytics';
 import FlowsListAnalytics from '../screens/analytics/FlowsListAnalytics';
 import UserAndRoleAnalyticsMainPage from '../screens/analytics/UserAndRoleAnalyticsMainPage';
 import FormResponsesAnalytics from '../screens/analytics/FormResponsesAnalytics';
+import LocationAnalytics from '../screens/analytics/LocationAnalytics';
 
 
 export type AnalyticsStackParamList = {
@@ -55,6 +56,7 @@ const AnalyticsStack = ({}) => {
         keyboardHidesTabBar: true,
       })}>
       <AnalyticsTab.Screen name="UserAndRoleAnalyticsMainPage" component={UserAndRoleAnalyticsMainPage} />
+      <AnalyticsTab.Screen name='LocationAnalytics' component={LocationAnalytics} />
       <AnalyticsTab.Screen name='FlowsAndFormAnalytics' component={FlowsAndFormAnalytics} />
       <AnalyticsTab.Screen name='FlowsListAnalytics' component={FlowsListAnalytics} />
       <AnalyticsTab.Screen name='FormsListAnalytics' component={FormsListAnalytics} />

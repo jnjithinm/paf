@@ -56,15 +56,20 @@ const Login: FC<LoginScreenProps> = ({navigation, route}) => {
   });
 
   const onPressLogin = async () => {
+    console.log("logiiiiii 111")
     // dispatch(resetUsernamePasswordErrorMessages());
     setIsShowError(true);
     if (!usernameValidationErrorMessage && !passwordValidationErrorMessage) {
+      console.log("logiiiiii 2222")
       if (isRememberMe && isChanged) {
+        console.log("logiiiiii 3333")
         setIsChanged(false);
         await storeUserCredentials(username, password);
         await dispatch(authenticateUser({username, password}));
       } else {
+        console.log("logiiiiii 44444")
         await dispatch(authenticateUser({username, password}));
+        console.log('lllllll5555')
       }
     }
   };
@@ -101,7 +106,7 @@ const Login: FC<LoginScreenProps> = ({navigation, route}) => {
     }, []),
   );
 
-  console.log("err",usernameErrorMessage,passwordErrorMessage)
+  //console.log("err",usernameErrorMessage,passwordErrorMessage)
   return (
     <Layout
       style={{
@@ -157,6 +162,7 @@ const Login: FC<LoginScreenProps> = ({navigation, route}) => {
             marginTop: 5,
           }}>
           <View
+          
             style={{
               flexDirection: 'row',
               alignItems: 'center',
