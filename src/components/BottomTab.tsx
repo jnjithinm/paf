@@ -9,7 +9,7 @@ import {ScreenNames, navigate} from '../utils/helpers/navigationHelpers';
 import Text from './Text';
 
 interface StackItem {
-  stack: ScreenNames|undefined;
+  stack: ScreenNames | undefined;
   icon: IconTypes;
   focusedIcon: IconTypes;
   disabled?: boolean;
@@ -32,7 +32,7 @@ const adminStack: StackItem[] = [
     focusedIcon: 'tabbar_icon_flows_and_forms_focused',
   },
   {
-    stack:'AnalyticsStack',
+    stack: 'AnalyticsStack',
     icon: 'tabbar_icon_graph',
     focusedIcon: 'tabbar_icon_graph_focused',
   },
@@ -96,9 +96,12 @@ const BottomTab: FC<BottomTabTypes> = ({focusedStack}) => {
             shadowOpacity: 0.3,
             shadowRadius: 4,
           },
-          android: {
-            elevation: 10,
-          },
+          android:{
+            elevation: 20,
+            shadowColor: 'rgba(0, 0, 5, 5)',  // Dark black color with 80% opacity
+            shadowOpacity: 10,  // Increase shadow opacity (1 is the maximum)
+            shadowOffset: { width: 10, height: 20 },  // Offset for the shadow
+          }
         }),
       }}>
       {selectedTabStack.map((item, index) => {
@@ -119,28 +122,34 @@ const BottomTab: FC<BottomTabTypes> = ({focusedStack}) => {
                     backgroundColor: '#F4C24A',
                     justifyContent: 'center',
                     borderRadius: 8,
+                    width: 40,
                   }
                 : {
                     alignItems: 'center',
-                    height: '100%',
+                    height: 32,
+                    width: 32,
                     justifyContent: 'center',
                   }
             }
             onPress={() => {
-              if(item.stack){
-                onTabPress(item.stack)
+              if (item.stack) {
+                onTabPress(item.stack);
               }
-              }}
+            }}
             key={index}
             disabled={focused || item.disabled}>
-              <View style={{alignItems:'center'}}>
-            <Icon
-              name={focused ? item.focusedIcon:item.icon  }
-              strokeWidth={2}
-              width={size}
-              height={size}
-            />
-           {item.disabled && <Text size='verysmall1' style={{top:2}} color='dangerColor'>Coming soon</Text>}
+            <View style={{alignItems: 'center'}}>
+              <Icon
+                name={focused ? item.focusedIcon : item.icon}
+                strokeWidth={2}
+                width={size}
+                height={size}
+              />
+              {item.disabled && (
+                <Text size="verysmall1" style={{top: 2}} color="dangerColor">
+                  Coming soon
+                </Text>
+              )}
             </View>
           </TouchableOpacity>
         );

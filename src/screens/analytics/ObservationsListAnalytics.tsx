@@ -15,7 +15,6 @@ import {useAppDispatch, useAppSelector} from '../../redux/store';
 import {
   FilterType,
   ObservationStatus,
-  getAllObservations,
   resetObservationById,
   resetSaveEvidenceCardResponse,
   resetSaveObservationResponse,
@@ -35,6 +34,7 @@ import PaginationBar from '../../components/PaginationBar';
 import { FilterObject } from '../../components/Calendar';
 import { FloatingButton, RenderEmptyPlaceholder } from '../observation/ObservationReportsMainPage';
 import { AnalyticsStackParamList } from '../../navigation/AnalyticsStack';
+import { getAllObservations } from '../../redux/features/analyticsSlice';
 
 
 type ObservationsListAnalyticsNavigationProp = StackNavigationProp<
@@ -61,7 +61,7 @@ const ObservationsListAnalytics: FC<ObservationsListAnalyticsScreenProps> = ({
 
 
     const dispatch = useAppDispatch();
-    const {allObservations} = useAppSelector(state => state.observation);
+    const {allObservations} = useAppSelector(state => state.analytics);
     const {userData} = useAppSelector(state => state.auth);
 
     const {allUsers}=useAppSelector(state=>state.users);
@@ -111,7 +111,7 @@ const ObservationsListAnalytics: FC<ObservationsListAnalyticsScreenProps> = ({
           focusedStack='AnalyticsStack'
           titleTransition>
           <Text size="body3" fontVariant="bold" style={{marginVertical: 10}}>
-            ObservationsListAnalytics
+            Observations
           </Text>
         
           <SearchWithFilter

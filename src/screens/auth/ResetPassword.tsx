@@ -57,12 +57,6 @@ const RenderConfirmEmailModal: FC<RenderConfirmEmailModalTypes> = ({
         width: '100%',
       }}>
       <Button
-        text="Open"
-        active
-        onPress={onPressOpen}
-        style={{width: '45%', height: normaliseDesigns(30)}}
-      />
-      <Button
         text="Cancel"
         active
         onPress={onPressCancel}
@@ -74,6 +68,12 @@ const RenderConfirmEmailModal: FC<RenderConfirmEmailModalTypes> = ({
           borderWidth: 1,
           borderColor: '#EA7804',
         }}
+      />
+        <Button
+        text="Open"
+        active
+        onPress={onPressOpen}
+        style={{width: '45%', height: normaliseDesigns(30)}}
       />
     </View>
   </View>

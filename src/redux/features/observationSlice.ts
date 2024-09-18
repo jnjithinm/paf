@@ -292,15 +292,28 @@ export const getAllObservations = createAsyncThunk<
   async ([id, payload], {dispatch, rejectWithValue}) => {
     try {
       dispatch(setLoading(true));
+
       const filteredPayload = filterPayload(payload);
+      console.log(filteredPayload,
+        "filteredPayload"
+      );
+      
       const response = await api.post(endPoints.DASHBOARD_FILTER + id, {
         ...filteredPayload,
         paginationRequest: payload.paginationRequest,
         filterType: payload.filterType,
       });
-      console.log('[API] Success:', JSON.stringify(response.data));
+      // console.log("looooo-----",endPoints.DASHBOARD_FILTER + id, {
+      //   ...filteredPayload,
+      //   paginationRequest: payload.paginationRequest,
+      //   filterType: payload.filterType,
+      // });
+      
+    // console.log('[API] Success:-----11111111111111', response.data?.dataList[0]);
       return response.data as GetAllObservationsResponse;
     } catch (error: any) {
+      //console.log('errrrrr---',error);
+      
       return rejectWithValue(error.response.data);
     } finally {
       dispatch(setLoading(false));

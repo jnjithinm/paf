@@ -1,5 +1,12 @@
 import React, {FC, useEffect, useRef, useState} from 'react';
-import {KeyboardAvoidingView, Platform, Share, StyleSheet, TouchableOpacity, View} from 'react-native';
+import {
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {RouteProp, useFocusEffect} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 
@@ -12,13 +19,17 @@ import {ObservationStackParamList} from '../../navigation/ObservationStack';
 import {useAppDispatch, useAppSelector} from '../../redux/store';
 import {
   EvidenceResponse,
-  getObservationById,
   resetSaveEvidenceCardResponse,
   resetSaveObservationResponse,
   saveEvidenceCardDetails,
   saveObservation,
 } from '../../redux/features/observationSlice';
-import {getObservationCountAnalytics} from '../../redux/features/analyticsSlice'
+import Share from 'react-native-share';
+import {getObservationById} from '../../redux/features/analyticsSlice';
+import {
+  getObservationCountAnalytics,
+  getUserSearchAnalytics,
+} from '../../redux/features/analyticsSlice';
 import {RatingStars, RenderProfileIcon} from '../dashboard/TeacherDashboard';
 
 import FooterWithButtons from '../../components/FooterWithButtons';
@@ -31,14 +42,18 @@ import CurvedLineChart from '../../components/CurvedLineChart';
 import ViewShot from 'react-native-view-shot';
 import Icon from '../../components/Icon';
 import colors from '../../config/colors';
-import { showMessage } from 'react-native-flash-message';
+import {showMessage} from 'react-native-flash-message';
 import RNFetchBlob from 'rn-fetch-blob';
 import Button from '../../components/Button';
-import { normaliseDesigns } from '../../utils/helpers/responsiveHelpers';
-import LabeledDropdown from '../../components/LabeledDropdown';
+import {normaliseDesigns} from '../../utils/helpers/responsiveHelpers';
+//import LabeledDropdown from '../../components/LabeledDropdown';
 import DateTimePickerComponent from '../../components/DateTimePickerComponent';
-import { ItemType } from '../../config/types';
+import {ItemType} from '../../config/types';
 import Modal from '../../components/Modal';
+import Calendar from './FlowsandFormFilterList';
+import LabeledDropdown from '../../components/LabeledDropdownAnalytics';
+import endPoints from '../../config/endPoints';
+import api from '../../config/axios';
 
 type ObservationAnalyticsNavigationProp = StackNavigationProp<
   AnalyticsStackParamList,
@@ -58,11 +73,12 @@ const ObservationAnalytics: FC<ObservationAnalyticsScreenProps> = ({
   navigation,
   route,
 }) => {
-  const { observationId } = route.params;
+  const {observationId} = route.params;
   const dispatch = useAppDispatch();
-  const { observationById } = useAppSelector(state => state.observation);
-  const { observationCountAnalytics } = useAppSelector(state => state.analytics);
-  const [filterOneOpen, setFilterOneOpen] = useState(false);
+  const {observationById} = useAppSelector(state => state.observation);
+  const {observationCountAnalytics, userSearchAnalytics, search} =
+    useAppSelector(state => state.analytics);
+  //const [filterOneOpen, setFilterOneOpen] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [isSortIconClick, setIsSortIconClick] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
@@ -75,21 +91,27 @@ const ObservationAnalytics: FC<ObservationAnalyticsScreenProps> = ({
   useFocusEffect(
     React.useCallback(() => {
       dispatch(getObservationById(observationId));
-    }, [dispatch, observationId])
+    }, [dispatch, observationId]),
   );
 
   useEffect(() => {
     if (observationById?.userId) {
       dispatch(
         getObservationCountAnalytics({
-          userId: Number(observationById.userId),
+          userId: observationById?.userId,
           dateType: null,
           startDate: null,
           endDate: null,
-        })
+        }),
       );
     }
   }, [dispatch, observationById?.userId]);
+
+  console.log('observationById.userId------', observationId);
+
+  useEffect(() => {
+    dispatch(getUserSearchAnalytics());
+  }, []);
 
   const formattedObservationsAnalytics =
     observationCountAnalytics?.dataList?.observationAndAverageCount
@@ -100,13 +122,19 @@ const ObservationAnalytics: FC<ObservationAnalyticsScreenProps> = ({
         averagerating: row[2],
       })) || [];
 
-  const monthObservations = formattedObservationsAnalytics.map(item => item.month);
-  const observations = formattedObservationsAnalytics.map(item => item.observations);
-  const averagerating = formattedObservationsAnalytics.map(item => item.averagerating);
+  const monthObservations = formattedObservationsAnalytics.map(
+    item => item.month,
+  );
+  const observations = formattedObservationsAnalytics.map(
+    item => item.observations,
+  );
+  const averagerating = formattedObservationsAnalytics.map(
+    item => item.averagerating,
+  );
 
-  console.log("monthObservations:", monthObservations);
-  console.log("observations:", observations);
-  console.log("averagerating:", averagerating);
+  console.log('monthObservations:', monthObservations);
+  console.log('observations:', observations);
+  console.log('averagerating:', averagerating);
 
   // Ensure that all arrays are of the same length and contain data
   const isValidData =
@@ -114,434 +142,568 @@ const ObservationAnalytics: FC<ObservationAnalyticsScreenProps> = ({
     observations.length === averagerating.length &&
     monthObservations.length > 0;
 
+  const captureAndDownload = async (viewShotRef: React.RefObject<ViewShot>) => {
+    try {
+      if (viewShotRef.current) {
+        const uri = await viewShotRef.current.capture();
+        const {config, fs} = RNFetchBlob;
+        const downloadDir =
+          // Platform.OS === 'android'
+          //   ? RNFetchBlob.fs.dirs.PictureDir
+          //   :
+          RNFetchBlob.fs.dirs.DCIMDir;
+        console.log('downffffloadDir', uri);
+        const timestamp = new Date().getTime();
+        const uniqueFileName = `${'chart_screenshot'}_${timestamp}.jpg`;
 
-    const captureAndDownload = async (viewShotRef: React.RefObject<ViewShot>) => {
-      console.log("Starting captureAndDownload function");
-      try {
-        if (viewShotRef.current) {
-          console.log("ViewShot ref is available, capturing the view");
-          const uri = await viewShotRef.current.capture();
-          console.log("Capture URI:", uri);
-  
-          const downloadDir = Platform.OS === 'android'
-            ? RNFetchBlob.fs.dirs.DownloadDir
-            : RNFetchBlob.fs.dirs.DocumentDir;
-          const fileName = 'chart_screenshot.jpg';
-          const filePath = `${downloadDir}/${fileName}`;
-          console.log("File will be saved to:", filePath);
-  
-          const data = await RNFetchBlob.fs.readFile(uri, 'base64');
-          console.log("File data read successfully");
-  
-          await RNFetchBlob.fs.writeFile(filePath, data, 'base64');
-          console.log("File written successfully");
-  
-          showMessage({
-            message: "Success",
-            description: "File Downloaded successfully",
-            type: "success",
-          });
-          console.log("Downloaded successfully:", filePath);
-        } else {
-          console.error("ViewShot ref is not available");
-        }
-      } catch (error) {
-        console.error("Failed to capture or download:", error);
+        //const fileName = 'chart_screenshot.jpg';
+        const filePath = `${downloadDir}/${uniqueFileName}`;
+        console.log('filePathvvvvv', filePath);
+
+        const data = await RNFetchBlob.fs.readFile(uri, 'base64');
+        // console.log('hggggggg', data);
+
+        await RNFetchBlob.fs
+          .writeFile(filePath, data, 'base64')
+          .then(result => {
+            console.log('File has been saved to:' + result);
+            Alert.alert('File Downloaded successfully');
+            setIsModalVisible(false);
+            showMessage({
+              message: 'Success',
+              description: 'File Downloaded successfully',
+              type: 'success',
+            });
+          })
+          .catch(error => console.log(error));
+      } else {
+        console.error('ViewShot ref is not available');
       }
-    };
-  
-    const shareImage = async (viewShotRef: React.RefObject<ViewShot>) => {
-      console.log("Starting shareImage function");
-      try {
-        if (viewShotRef.current) {
-          const uri = await viewShotRef.current.capture();
-          console.log("Capture URI:", uri);
-  
-          const shareOptions = {
-            title: 'Share Chart Image',
-            url: uri,
-            failOnCancel: false,
-          };
-  
-          Share.share(shareOptions)
-            .then(res => console.log(res))
-            .catch(err => console.log('Error =>', err));
-        } else {
-          console.error("ViewShot ref is not available");
-        }
-      } catch (error) {
-        console.error('Failed to capture or share:', error);
+    } catch (error) {
+      console.error('Failed to capture or download:', error);
+      showMessage({
+        message: 'failure',
+        description: 'Failed to Download image',
+        type: 'warning',
+      });
+    }
+  };
+
+  const shareImage = async (viewShotRef: React.RefObject<ViewShot>) => {
+    try {
+      if (viewShotRef.current) {
+        const uri = await viewShotRef.current.capture();
+        console.log('Captured URI:', uri);
+
+        // The `uri` is already a Base64-encoded image string
+        const shareOptions = {
+          title: 'Share Chart Image',
+          message: 'Chart Image One',
+          url: uri, // The Base64 string will be shared directly
+          failOnCancel: false,
+        };
+
+        // Share the image
+        Share.open(shareOptions)
+          .then(res => console.log('Share response:', res))
+          .catch(err => console.log('Error sharing:', err));
+
+        setIsModalVisible(false);
+      } else {
+        console.error('ViewShot ref is not available');
       }
+    } catch (error) {
+      console.error('Failed to capture or share:', error);
+    }
+  };
+
+  const ModalContent: FC<{onClose: () => void}> = ({onClose}) => {
+    const handleZoomClick = () => {
+      setIsZoomButtonClicked(true);
+      setIsDownloadButtonClicked(false);
+      setIsShareButtonClicked(false);
+      setIsZoomed(true);
+      onClose();
     };
-  
-    const ModalContent: FC<{ onClose: () => void }> = ({ onClose }) => {
-      const handleZoomClick = () => {
-        setIsZoomButtonClicked(true);
-        setIsDownloadButtonClicked(false);
-        setIsShareButtonClicked(false);
-        setIsZoomed(true);
-        onClose();
-      };
-  
-      const handleDownloadClick = () => {
-        setIsZoomButtonClicked(false);
-        setIsDownloadButtonClicked(true);
-        setIsShareButtonClicked(false);
-        captureAndDownload(viewShotRef);
-      };
-  
-      const handleShareClick = () => {
-        setIsZoomButtonClicked(false);
-        setIsDownloadButtonClicked(false);
-        setIsShareButtonClicked(true);
-        shareImage(viewShotRef);
-      };
-  
-      return (
-        <View style={styles.modalContent}>
-          <TouchableOpacity
-            style={[
-              styles.modalOption,
-              isZoomButtonClicked && { backgroundColor: '#FDF0E3' },
-            ]}
-            onPress={handleZoomClick}
-          >
-            <Icon name='zoomout_icon' color={colors.darkGrey} />
-            <Text style={styles.modalOptionText}>Zoom In</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              styles.modalOption,
-              isDownloadButtonClicked && { backgroundColor: '#FDF0E3' },
-            ]}
-            onPress={handleDownloadClick}
-          >
-            <Icon name='downloads_icon' color={colors.darkGrey} />
-            <Text style={styles.modalOptionText}>Download</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              styles.modalOption,
-              isShareButtonClicked && { backgroundColor: '#FDF0E3' },
-            ]}
-            onPress={handleShareClick}
-          >
-            <Icon name='share_icon' color={colors.darkGrey} />
-            <Text style={styles.modalOptionText}>Share</Text>
-          </TouchableOpacity>
-        </View>
-      );
+
+    const handleDownloadClick = () => {
+      setIsZoomButtonClicked(false);
+      setIsDownloadButtonClicked(true);
+      setIsShareButtonClicked(false);
+      captureAndDownload(viewShotRef);
     };
-  
-    const ZoomedChartView = ({ onClose }) => (
-      <View style={styles.zoomedChartContainer}>
-        <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-          <Icon name='cross_icon' />
+
+    const handleShareClick = () => {
+      setIsZoomButtonClicked(false);
+      setIsDownloadButtonClicked(false);
+      setIsShareButtonClicked(true);
+      shareImage(viewShotRef);
+    };
+
+    return (
+      <View style={styles.modalContent}>
+        <TouchableOpacity
+          style={[
+            styles.modalOption,
+            isZoomButtonClicked && {backgroundColor: '#FDF0E3'},
+          ]}
+          onPress={handleZoomClick}>
+          <Icon name="zoomout_icon" color={colors.darkGrey} />
+          <Text style={styles.modalOptionText}>Zoom In</Text>
         </TouchableOpacity>
-        <CurvedLineChart
-            value1={observations}
-            value2={averagerating}
-            labels={monthObservations}
-            indicators={['Observations', 'Average Rating']}
-            style={{ paddingTop: 40, width: '100%', height: '100%' }}
-          />
+        <TouchableOpacity
+          style={[
+            styles.modalOption,
+            isDownloadButtonClicked && {backgroundColor: '#FDF0E3'},
+          ]}
+          onPress={handleDownloadClick}>
+          <Icon name="downloads_icon" color={colors.darkGrey} />
+          <Text style={styles.modalOptionText}>Download</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[
+            styles.modalOption,
+            isShareButtonClicked && {backgroundColor: '#FDF0E3'},
+          ]}
+          onPress={handleShareClick}>
+          <Icon name="share_icon" color={colors.darkGrey} />
+          <Text style={styles.modalOptionText}>Share</Text>
+        </TouchableOpacity>
       </View>
     );
+  };
 
-    const handleSortIconClick = () => {
-      setIsSortIconClick(true);
-      setFilterOpen(true);
+  const ZoomedChartView = ({onClose}) => (
+    <View style={styles.zoomedChartContainer}>
+      <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+        <Icon name="cross_icon" />
+      </TouchableOpacity>
+      <CurvedLineChart
+        value1={observations}
+        value2={averagerating}
+        labels={monthObservations}
+        indicators={['Observations', 'Average Rating']}
+        style={{paddingTop: 40, width: '100%', height: '100%'}}
+      />
+    </View>
+  );
+
+  const handleSortIconClick = () => {
+    setIsSortIconClick(true);
+    setFilterOpen(true);
+  };
+
+  type RenderFilterModalContentTypestwo = {
+    onPressAssign: () => void;
+  };
+
+  const RenderAssignFormModalContenttwo: FC<
+    RenderFilterModalContentTypestwo
+  > = ({onPressAssign}) => {
+    const [selectedUsers, setSelectedUsers] = useState<ItemType | undefined>(
+      undefined,
+    );
+    const [selectedUserGroups, setSelectedUserGroups] = useState<string[]>([]);
+    const [userSearch, setUserSearch] = useState<string>('');
+    const [groupSearch, setGroupSearch] = useState<string[]>([]);
+    const [isDateTimePickerVisible, setIsDateTimePickerVisible] =
+      useState<boolean>(false);
+    const [pickerMode, setPickerMode] = useState<'start' | 'end'>('start');
+    const [selectedDate, setSelectedDate] = useState<Date | undefined>(
+      undefined,
+    );
+
+    const {formAssignedUserAndUserGroups} = useAppSelector(
+      state => state.forms,
+    );
+    const [selectedIndicator, setSelectedIndicator] = useState<
+      ItemType | undefined
+    >(undefined);
+    const [selectedSchool, setSelectedSchool] = useState<ItemType | undefined>(
+      undefined,
+    );
+    const [selectedUserState, setSelectedUserState] = useState<
+      ItemType | undefined
+    >(undefined);
+    const [selectedUserDistrict, setSelectedUserDistrict] = useState<
+      ItemType | undefined
+    >(undefined);
+    const [selectedUserArea, setSelectedUserArea] = useState<
+      ItemType | undefined
+    >(undefined);
+
+    const initialUserList =
+      userSearchAnalytics?.dataList?.map(userName => ({
+        value: userName.userId,
+        label: userName.name,
+        id: userName.userId,
+      })) || [];
+    const [selectedStartDate, setSelectedStartDate] = useState<string>('');
+    const [selectedEndDate, setSelectedEndDate] = useState<string>('');
+    const [dateType, setDateType] = useState<string>('');
+    const [selectedDateType, setSelectedDateType] = useState<string>('');
+    const [id, setId] = useState<number | undefined>(undefined);
+    const [selectedDateRange, setSelectedDateRange] = useState<string>('');
+    const [isCalendarVisible, setIsCalendarVisible] = useState(false);
+    const [userList, setUserList] = useState(initialUserList);
+    const [searchText, setSearchText] = useState('');
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const dateFilterOptions = [
+      'Last week',
+      'This month',
+      'Past 3 months',
+      'Past 1 year',
+    ] as const;
+
+    const handleDateChange = (startDate: string, endDate: string) => {
+      console.log('startDate', startDate, endDate);
+      setSelectedStartDate(startDate);
+      setSelectedEndDate(endDate);
+      setSelectedDateRange(`${startDate} - ${endDate}`);
+      setDateType('selected_date');
+    };
+    const handlePressChartTwo = () => {
+      const filters = {
+        userId: selectedUsers?.value,
+        dateType: dateType || null,
+        startDate: selectedStartDate || null,
+        endDate: selectedEndDate || null,
+      };
+      onPressAssign();
+      dispatch(getObservationCountAnalytics(filters));
+      setFilterOpen(false);
     };
 
-    type RenderFilterModalContentTypestwo = {
-      onPressAssign: () => void;
+    const handleConfirm = (date: Date) => {
+      if (pickerMode === 'start') {
+        setSelectedStartDate(moment(date).format('YYYY-MM-DD'));
+      } else {
+        setSelectedEndDate(moment(date).format('YYYY-MM-DD'));
+      }
+      setIsDateTimePickerVisible(false);
+      setDateType('selected_date');
     };
-  
-    const RenderAssignFormModalContenttwo: FC<
-      RenderFilterModalContentTypestwo
-    > = ({onPressAssign}) => {
-      const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
-      const [selectedUserGroups, setSelectedUserGroups] = useState<string[]>([]);
-      const [userSearch, setUserSearch] = useState<string>('');
-      const [groupSearch, setGroupSearch] = useState<string>('');
-  
-      const {formAssignedUserAndUserGroups} = useAppSelector(
-        state => state.forms,
+
+    const handleDateTypeChange = (type: string) => {
+      setSelectedStartDate('');
+      setSelectedEndDate('');
+      setSelectedDateType(type);
+      switch (type) {
+        case 'Last week':
+          setDateType('Week');
+          break;
+        case 'This month':
+          setDateType('Month');
+          break;
+        case 'Past 3 months':
+          setDateType('past_3_months');
+          break;
+        case 'Past 1 year':
+          setDateType('Past_1_Year');
+          break;
+        default:
+          setDateType('');
+      }
+    };
+
+    const clearDate = () => {
+      setSelectedStartDate('');
+      setSelectedEndDate('');
+      setDateType('');
+      setSelectedDateType('');
+    };
+
+    const handleSearchTextChange = async text => {
+      // Fetch data from API based on the search text
+      const fetchedData = await fetchDataFromAPI(text);
+
+      // Update the options for the dropdown
+      setUserList(
+        fetchedData.map(user => ({
+          value: user.userId,
+          label: user.name,
+          id: user.userId,
+        })),
       );
-      const [selectedUserGroup, setSelectedUserGroup] = useState<
-        ItemType | undefined
-      >(undefined);
-      const [selectedUserStatus, setSelectedUserStatus] = useState<
-        ItemType | undefined
-      >(undefined);
-      const [selectedUserState, setSelectedUserState] = useState<
-        ItemType | undefined
-      >(undefined);
-      const [selectedUserDistrict, setSelectedUserDistrict] = useState<
-        ItemType | undefined
-      >(undefined);
-      const [selectedUserArea, setSelectedUserArea] = useState<
-        ItemType | undefined
-      >(undefined);
-      const [selectedUserDate, setSelectedUserDate] = useState<
-        ItemType | undefined
-      >(undefined);
-      const [selectedDate, setSelectedDate] = useState<string>('');
-      const [isCalendarOpen, setIsCalendarOpen] = useState<boolean>(false);
-  
-      //const handlePressChartOne = () => {
-      // const filters = {
-      //  ...filtersChartOne,
-      // userGroup: selectedUserGroup?.value || null,
-      // userStatus: selectedUserStatus?.value || null,
-      // stateId: selectedUserState?.value || null,
-      //districtId: selectedUserDistrict?.value || null,
-      // area: selectedUserArea?.value || null,
-      //  date: selectedDate || null,
-      // };
-      // setFiltersChartOne(filters);
-      // dispatch(getUserAndRoleCountAnalytics(filters));
-      //  setFilterOneOpen(false);
-      //};
-  
-      // const handlePressChartTwo = () => {
-      //   const filters = {
-      //     ...filtersChartTwo,
-      //     userGroup: selectedUserGroup?.value || null,
-      //     userStatus: selectedUserStatus?.value || null,
-      //     stateId: selectedUserState?.value || null,
-      //     districtId: selectedUserDistrict?.value || null,
-      //     area: selectedUserArea?.value || null,
-      //     date: selectedDate || null,
-      //   };
-      //   setFiltersChartTwo(filters);
-      //   dispatch(getUserAndRoleCountAnalytics(filters));
-      //   setFilterOpenTwo(false);
-      // };
-  
-      const handlePressChartTwo = () => {
-        const filters = {
-          // userGroup: selectedUserGroup?.value || null,
-          // userStatus: selectedUserStatus?.value || null,
-          // stateId: selectedUserState?.value || null,
-          // districtId: selectedUserDistrict?.value || null,
-          // area: selectedUserArea?.value || null,
-          // date: selectedDate || null,
 
-          userId: Number(observationById.userId),
-          dateType:  selectedDate || null,
-          startDate: null,
-          endDate: null,
-        };
-        setFiltersChartTwo(filters);
-        dispatch(getObservationCountAnalytics(filters));
-        setFilterOpen(false);
-      };
-  
-      const stateOptions = statesList?.map(state => ({
-        value: state.stateId,
-        label: state.stateName,
-      }));
-  
-      const districtOptions = selectedUserState
-        ? districtList
-            .filter(item => item.stateId === selectedUserState.value)
-            .map(district => ({
-              value: district.districtId,
-              label: district.districtName,
-            }))
-        : [];
-  
-      const areaOptions = selectedUserDistrict
-        ? areatList
-            .filter(item => item.districtId === selectedUserDistrict.value)
-            .map(area => ({
-              value: area.area,
-              label: area.area,
-            }))
-        : [];
-  
-      let userGroupsList: ItemType[] = [
-        {value: 'allUsers', label: 'All Users'},
-        {value: 'activeUsers', label: 'Active Users'},
-        {value: 'inactiveUsers', label: 'Inactive Users'},
-      ];
-  
-      let userStatusList: ItemType[] = [
-        {value: 'allUsers', label: 'All Users'},
-        {value: 'activeUsers', label: 'Active Users'},
-        {value: 'inactiveUsers', label: 'Inactive Users'},
-      ];
-  
-      const handleDateSelection = (date: string) => {
-        setIsCalendarOpen(!isCalendarOpen);
-        setSelectedDate(date);
-      };
-      const clearDate = () => {
-        setSelectedDate('');
-      };
-      const isApplyButtonActive = selectedUserStatus || selectedDate;
-  
-      return (
-        <View style={{paddingHorizontal: 10}}>
-          <DateTimePickerComponent
-            selectedDate={selectedDate}
-            onDateChange={handleDateSelection}
-            showPicker={isCalendarOpen}
-          />
-  
-          <LabeledDropdown
-            label="User Status"
+      // Maintain the dropdown open after the state update
+      setIsDropdownOpen(true);
+    };
+
+    useEffect(() => {
+      if (search?.dataList) {
+        const updatedUserList = search.dataList
+          .filter(user =>
+            user.userName.toLowerCase().includes(searchText.toLowerCase()),
+          )
+          .map(user => ({
+            value: user.userId,
+            label: user.name,
+            id: user.userId,
+          }));
+        setUserList(updatedUserList); // Set the filtered user list
+        // setIsDropdownOpen(true); // Keep the dropdown open
+      }
+    }, [search?.dataList, searchText]);
+
+    const handleItemSelected = item => {
+      console.log('itsm--', item);
+
+      setSelectedUsers(item); // Update the selected item
+      // setIsDropdownOpen(false); // Optionally close the dropdown after selection
+      console.log('Selected User:', item);
+    };
+    const closeDropdown = () => {
+      // setIsDropdownOpen(false);
+    };
+
+    const fetchDataFromAPI = async text => {
+      try {
+        // console.log(object)
+        const response = await api.get(`${endPoints.ANALYTICS_SEARCH}${text}`);
+        const data = await response.data?.payload?.dataList;
+
+        return data;
+        // Assuming the response has an `items` array
+      } catch (error) {
+        console.error('Error fetching data from API:', error);
+        return []; // Return an empty array if there's an error
+      }
+    };
+
+    const isApplyButtonActive =
+      selectedUserState ||
+      selectedUserDistrict ||
+      selectedSchool ||
+      (selectedStartDate && selectedEndDate) ||
+      dateType;
+
+    return (
+      <View style={{paddingHorizontal: 10}}>
+        {/* <DateTimePickerComponent
+            selectedDate={selectedDate || new Date()}
+            onDateChange={handleConfirm}
+            showPicker={isDateTimePickerVisible}
+          /> */}
+        {/* <LabeledDropdown
+            label="Users"
             placeHolder="Select"
-            options={userStatusList}
-            setSelectedItem={setSelectedUserStatus}
-            defaultValue={selectedUserStatus?.value || ''}
-          />
-  
-  <TouchableOpacity
-            onPress={() => {
-              setIsCalendarOpen(!isCalendarOpen);
-            }}
-            style={{}}>
-            <Text fontVariant="bold" size="body1">
-              Select date
-            </Text>
-            <View>
-              <View
+            options={userList}
+            setSelectedItem={setSelectedUsers}
+            defaultValue={selectedUsers?.value || ''}
+            searchable
+            onSearchTextChange={(text) => console.log('Search text:', text)}
+          /> */}
+        <LabeledDropdown
+          label="Users"
+          placeHolder="Select"
+          options={userList || []} // Pass the fetched options
+          setSelectedItem={handleItemSelected} // Handle item selection
+          defaultValue={selectedUsers?.value || ''} // Show the selected value
+          searchable
+          onSearchTextChange={handleSearchTextChange} // Handle search text change
+          isOpen={isDropdownOpen} // Control the dropdown visibility
+          onDropdownClose={() => setIsDropdownOpen(false)} // Optionally handle dropdown close
+        />
+
+        <View style={{marginVertical: 10}}>
+          <Text size="body1" fontVariant="bold" style={{marginBottom: 10}}>
+            By date
+          </Text>
+          <View
+            style={{
+              flexDirection: 'row',
+              flexWrap: 'wrap',
+              justifyContent: 'space-evenly',
+              width: '85%',
+              alignContent: 'flex-start',
+            }}>
+            {dateFilterOptions.map((item, index) => (
+              <TouchableOpacity
+                key={index}
                 style={{
-                  width: '100%',
+                  borderColor:
+                    selectedDateType === item ? '#F4C24A' : '#E4E7EB',
                   borderWidth: 1,
-                  borderColor: '#CBD2D9',
-                  marginTop: 10,
-                  borderRadius: 10,
-                  paddingHorizontal: 10,
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  height: normaliseDesigns(40),
+                  backgroundColor:
+                    selectedDateType === item ? '#FCEBC5' : undefined,
+                  paddingHorizontal: 20,
+                  paddingVertical: 7,
+                  borderRadius: 8,
+                  marginBottom: 10,
+                  alignContent: 'flex-start',
+                }}
+                onPress={() => {
+                  handleDateTypeChange(item);
                 }}>
-                <Text
-                  style={{color: selectedDate ? colors.blackColor : '#ABB4BD'}}
-                  size="body1">
-                  {selectedDate
-                    ? moment(selectedDate).format('DD-MM-YYYY').toString()
-                    : 'Select date'}
-                </Text>
-                <TouchableOpacity
-                  onPress={() => {
-                    selectedDate
-                      ? clearDate()
-                      : setIsCalendarOpen(!isCalendarOpen);
-                  }}
-                  style={{}}>
-                  <Icon name={selectedDate ? 'crosscircle' : 'calendar_icon'} />
-                </TouchableOpacity>
-              </View>
-            </View>
-          </TouchableOpacity>
-          <View style={{marginBottom: 0, marginTop: 50}}>
-            <Button
-              text="Apply"
-              active={isApplyButtonActive}
-              onPress={handlePressChartTwo}
-            />
+                <Text size="small3">{item}</Text>
+              </TouchableOpacity>
+            ))}
           </View>
         </View>
-      );
-    };
+
+        <TouchableOpacity
+          onPress={() => {
+            setIsCalendarVisible(true);
+          }}
+          style={{}}>
+          <Text fontVariant="bold" size="body1">
+            Date
+          </Text>
+          <View>
+            <View
+              style={{
+                width: '100%',
+                borderWidth: 1,
+                borderColor: '#CBD2D9',
+                marginTop: 10,
+                borderRadius: 10,
+                paddingHorizontal: 10,
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                height: normaliseDesigns(40),
+              }}>
+              <Text onPress={() => setIsCalendarVisible(true)}>
+                {selectedDateRange || 'Select'}
+              </Text>
+              <TouchableOpacity
+                onPress={() => {
+                  setSelectedDateRange('');
+                  setSelectedStartDate('');
+                  setSelectedEndDate('');
+                  setIsCalendarVisible(false);
+                }}
+                style={{}}>
+                <Icon
+                  name={selectedDateRange ? 'crosscircle' : 'calendar_icon'}
+                />
+              </TouchableOpacity>
+            </View>
+            {isCalendarVisible && (
+              <View style={styles.calendarContainer}>
+                <Calendar onDateChange={handleDateChange} />
+              </View>
+            )}
+          </View>
+        </TouchableOpacity>
+
+        <View style={{marginBottom: 0, marginTop: 50}}>
+          <Button
+            text="Apply"
+            active={isApplyButtonActive}
+            onPress={handlePressChartTwo}
+          />
+        </View>
+      </View>
+    );
+  };
   return (
     <KeyboardAvoidingView
-      style={{ flex: 1 }}
+      style={{flex: 1}}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <Layout
         overridePaddingHorizontal
         overridePaddingVertical
-        style={{ paddingHorizontal: 15, paddingVertical: 0 }}
+        style={{paddingHorizontal: 15, paddingVertical: 0}}
         icon="reports_icon"
-        title="Observation Report">
-          <Modal
+        title="Observations">
+        <Modal
           onProceed={() => {}}
           onClose={() => {
-            setFilterOneOpen(false);
+            setFilterOpen(false);
           }}
-          isVisible={filterOneOpen}
-          title="Chart 2 filter"
+          isVisible={filterOpen}
+          title="Chart 1 filter"
           closeButton
           contentStyle={{width: '100%'}}
           content={<RenderAssignFormModalContenttwo onPressAssign={() => {}} />}
         />
-        <View style={{ marginVertical: 20 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <View style={{marginVertical: 20}}>
+          <View style={{flexDirection: 'row', alignItems: 'center'}}>
             <RenderProfileIcon
               image={observationById?.userImage}
               name={observationById?.userName?.toString() || ''}
               size={50}
             />
-            <View style={{ flex: 1, justifyContent: 'center', marginLeft: 10 }}>
-              <View style={{ flexDirection: 'row', alignItems: 'center', width: '70%' }}>
+            <View style={{flex: 1, justifyContent: 'center', marginLeft: 10}}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  width: '70%',
+                }}>
                 <Text fontVariant="bold" size="body2">
-                  {`${observationById?.userName || ''} (${observationById?.userGroup || ''})`}
+                  {`${observationById?.userName || ''} (${
+                    observationById?.userGroup || ''
+                  })`}
                 </Text>
                 <RenderCompleteStatus
-                  style={{ marginLeft: 5 }}
+                  style={{marginLeft: 5}}
                   status={observationById?.observationStatus}
                 />
               </View>
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <RatingStars rating={Number(observationById?.observationAvgRatings?.toFixed(1))} />
-                <View
-                  style={{ height: 10, backgroundColor: '#E4E7EB', width: 1, marginHorizontal: 5 }}
+              <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                <RatingStars
+                  rating={Number(
+                    observationById?.observationAvgRatings?.toFixed(1),
+                  )}
                 />
-                <Text style={{ color: '#4E565F' }} size="small3">
-                  {Number(observationById?.observationAvgRatings?.toFixed(1) || '')}/5
+                <View
+                  style={{
+                    height: 10,
+                    backgroundColor: '#E4E7EB',
+                    width: 1,
+                    marginHorizontal: 5,
+                  }}
+                />
+                <Text style={{color: '#4E565F'}} size="small3">
+                  {Number(
+                    observationById?.observationAvgRatings?.toFixed(1) || '',
+                  )}
+                  /5
                 </Text>
               </View>
             </View>
           </View>
         </View>
         {isValidData ? (
-
-<View style={{ position: 'relative' }}>
-<View style={styles.iconContainer}>
-  <TouchableOpacity
-    onPress={handleSortIconClick}
-    style={styles.iconButton}
-  >
-    <Icon name='sorting_icon' color={colors.blackColor} />
-  </TouchableOpacity>
-  <TouchableOpacity
-    onPress={() => {
-      setIsModalVisible(true);
-      //setIsDotsClick(true);
-    }}
-    style={styles.iconButton}
-  >
-    <Icon name='three_dots' />
-  </TouchableOpacity>
-</View>
-<View style={{ marginTop: 10 }}>
-  <ViewShot
-    ref={viewShotRef}
-    options={{ format: 'jpg', quality: 0.9 }}
-  >
-   <CurvedLineChart
-            value1={observations}
-            value2={averagerating}
-            labels={monthObservations}
-            indicators={['Observations', 'Average Rating']}
-          />
-  </ViewShot>
-  {isModalVisible && (
-    <View style={styles.modalContainer}>
-      <ModalContent onClose={() => setIsModalVisible(false)} />
-    </View>
-  )}
-</View>
-</View>
-        
+          <View style={{position: 'relative'}}>
+            <View style={styles.iconContainer}>
+              <TouchableOpacity
+                onPress={handleSortIconClick}
+                style={styles.iconButton}>
+                 {filterOpen?<Icon name='dots_colred_icon'/>:<Icon name="sorting_icon" color={colors.blackColor} />}
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  setIsModalVisible(!isModalVisible);
+                  //setIsDotsClick(true);
+                }}
+                style={styles.iconButton}>
+                {isModalVisible?<Icon name='filter_colored_icon'/>: <Icon name="three_dots" />}
+              </TouchableOpacity>
+            </View>
+            <View style={{marginTop: 10}}>
+              <ViewShot
+                ref={viewShotRef}
+                options={{format: 'jpg', quality: 0.9}}>
+                <CurvedLineChart
+                  value1={observations}
+                  value2={averagerating}
+                  labels={monthObservations}
+                  indicators={['Observations', 'Average Rating']}
+                />
+              </ViewShot>
+              {isModalVisible && (
+                <View style={styles.modalContainer}>
+                  <ModalContent onClose={() => setIsModalVisible(false)} />
+                </View>
+              )}
+            </View>
+          </View>
         ) : (
-          <>
-             </>
+          <></>
         )}
       </Layout>
       {isZoomed && <ZoomedChartView onClose={() => setIsZoomed(false)} />}
@@ -570,7 +732,7 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     position: 'absolute',
-    top: 40,
+    top:normaliseDesigns(33),
     right: 2,
     backgroundColor: 'white',
     borderRadius: 8,
@@ -650,8 +812,12 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
   },
+  calendarContainer: {
+    borderWidth: 1,
+    borderColor: '#CBD2D9',
+    borderRadius: 10,
+    paddingVertical: 5,
+    top: 5,
+  },
 });
 export default ObservationAnalytics;
-
-
-

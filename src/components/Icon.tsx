@@ -26,6 +26,7 @@ import pro_pic_sample from '../assets/svg/pro_pic_sample.svg'
 import star_icon from '../assets/svg/star_icon.svg';
 import star_unfilled_icon from '../assets/svg/star_unfilled_icon.svg'
 import search_icon from '../assets/svg/search_icon.svg';
+import search_icon_light from '../assets/svg/seact_icon_light.svg';
 import filter_icon from '../assets/svg/filter_icon.svg'
 import analytics_icon from '../assets/svg/analytics_icon.svg';
 import explore_icon from '../assets/svg/explore_icon.svg';
@@ -100,9 +101,37 @@ import downloads_icon  from '../assets/svg/downloads_icon.svg'
 import share_icon from '../assets/svg/share_icon.svg'
 import three_dots_orange from '../assets/svg/three_dots_orange.svg'
 import crosscircle from '../assets/svg/crosscircle.svg'
+import calendar_meet_icon from '../assets/svg/calendar_meet_icon.svg'
+import email_icon from '../assets/svg/email_icon.svg'
+import google_meet_icon from '../assets/svg/google_meet_icon.svg'
+import person_icon from '../assets/svg/person_icon.svg'
+import google_icon2 from '../assets/svg/google_icon 2.svg'
+import calendar_color_icon from '../assets/svg/calendar_color_icon.svg'
+import calendar_icon_black from '../assets/svg/calendar_icon_black.svg'
+import filter_icon_contain from '../assets/svg/filter_icon.svg'
+import filter_icon_contain_color from '../assets/svg/filter_icon_contain_color.svg'
+import filter_icon_contain_copy from '../assets/svg/filter_icon_contain copy.svg'
+import meet from "../assets/svg/meet.svg"
+import cross_color_icon from '../assets/svg/cross_color_icon.svg'
+import create_task_icon from '../assets/svg/create_task_Icon.svg'
+import create_event_icon from '../assets/svg/create_event_icon.svg'
+import outof_office_icon from '../assets/svg/outof_office_Icon.svg'
+import down_arrow_icon from '../assets/svg/down_arrow_icon.svg'
+import refresh_icon from '../assets/svg/refresh_icon.svg'
+import users_event_icon from '../assets/svg/users_event_icon.svg'
+import event_clock_Icon from '../assets/svg/event_clock_Icon.svg'
+import bell_icon_light from '../assets/svg/bell_icon_light.svg'
+import right_icon_new from '../assets/svg/righ_icon_new.svg'
+import star_half_filed_new_icon from '../assets/svg/star_half_filed_new_icon.svg'
+import filter_colored_icon from '../assets/svg/filter_colored_icon.svg'
+import dots_colred_icon from '../assets/svg/dots_colored_icon.svg'
 
 const Icons = {
+  calendar_meet_icon,
   app_logo,
+  email_icon,
+  google_meet_icon,
+  person_icon,
   eye_off,
   checkbox,
   security_question,
@@ -200,6 +229,27 @@ const Icons = {
   downloads_icon,
   three_dots_orange,
   crosscircle,
+  search_icon_light,
+  google_icon2,
+  calendar_color_icon,
+  calendar_icon_black,
+  filter_icon_contain,
+  filter_icon_contain_color,
+  filter_icon_contain_copy,
+  meet,
+  cross_color_icon,
+  create_event_icon,
+  create_task_icon,
+  outof_office_icon,
+  down_arrow_icon,
+  refresh_icon,
+  users_event_icon,
+  event_clock_Icon,
+  bell_icon_light,
+  right_icon_new,
+  star_half_filed_new_icon ,
+  filter_colored_icon,
+  dots_colred_icon
   
 };
 

@@ -88,7 +88,7 @@ export const RenderPrintResponsesModalContent: FC<
       <LabelDropdown
         options={[
           {value: 'saveAsPDF', label: 'Save As PDF'},
-          {value: 'hpPrinter', label: 'HP Printer'},
+       
         ]}
         defaultValue={selectedDestination?.value || ''}
         setSelectedItem={setSelectedDestination}

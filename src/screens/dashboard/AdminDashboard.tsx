@@ -36,14 +36,16 @@ const AdminDashboardMenuItem: FC<AdminDashboardMenuItemTypes> = ({
   <TouchableOpacity
     style={[
       {
-        width: '47%',
-        paddingHorizontal: 12,
+        width: 170.5,
+        height:150,
+        padding: 16,
         backgroundColor: '#FEF8EC',
-        borderWidth: 1,
+        borderWidth: 0.8,
         borderColor: '#F4C24A',
-        marginVertical: 5,
+        marginVertical: 10,
         borderRadius: 8,
-        paddingVertical: 18,
+        //paddingVertical: 18,
+        gap:10
       },
     ]}
     onPress={onPress}>
@@ -57,10 +59,11 @@ const AdminDashboardMenuItem: FC<AdminDashboardMenuItemTypes> = ({
       <Text fontVariant="bold" style={{width: '85%'}}>
         {label}
       </Text>
-      <Icon name="right_icon" />
+      <Icon name="right_icon_new" style={{marginTop:"3%",alignItems:"center",justifyContent:'flex-end'}} />
     </View>
   </TouchableOpacity>
 );
+
 const AdminDashboard: FC<AdminDashboardScreenProps> = ({navigation, route}) => {
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
 

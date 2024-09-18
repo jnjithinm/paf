@@ -68,7 +68,8 @@ export const FloatingButton: FC<FloatingButtonTypes> = ({
         position: 'absolute',
         alignItems: 'center',
         justifyContent: 'space-between',
-        bottom: normaliseDesigns(75),
+        bottom: normaliseDesigns(55),
+        //normaliseDesigns(75),
         right: normaliseDesigns(20),
         flexDirection: 'row',
         backgroundColor: '#EA7804',
@@ -352,7 +353,7 @@ const ObservationReportsMainPage: FC<ObservationReportsMainPageScreenProps> = ({
         onPress={() => {
           navigation.navigate('AddNewObservation');
         }}
-        style={{bottom: 150}}
+        style={{bottom: normaliseDesigns(100)}}
         iconSize={20}
       />
     </>

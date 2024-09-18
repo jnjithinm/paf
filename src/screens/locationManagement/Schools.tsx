@@ -4,7 +4,7 @@ import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import moment from 'moment';
 
-import Layout from '../../components/Layout';
+import Layout from '../../components/LayoutNew';
 import Icon from '../../components/Icon';
 import Text from '../../components/Text';
 import {useAppDispatch, useAppSelector} from '../../redux/store';
@@ -16,6 +16,8 @@ import SearchWithFilter from '../../components/SearchWithFilter';
 import Tab from '../../components/Tab';
 import {RenderEmptyPlaceholder} from '../observation/ObservationReportsMainPage';
 import PaginationBar from '../../components/PaginationBar';
+import DrawerContent from '../../components/DrawerContent';
+import { Drawer } from 'react-native-drawer-layout';
 
 type SchoolsNavigationProp = StackNavigationProp<
   LocationManagementStackParamList,
@@ -83,94 +85,192 @@ type SchoolTileTypes = {
   selectedItem: SchoolType | undefined;
 };
 
+// const SchoolTile: FC<SchoolTileTypes> = ({
+//   school,
+//   selectedItem,
+//   onPressItem,
+// }) => (
+//   <TouchableOpacity
+//     style={{
+//       borderWidth: 1,
+//       borderColor: '#F4C24A',
+//       borderRadius: 10,
+//       marginVertical: 5,
+//       backgroundColor:
+//         school.schoolId === selectedItem?.schoolId ? '#FCEBC5' : undefined,
+//     }}
+//     onPress={() => {
+//       onPressItem(school);
+//     }}>
+//     <View
+//       style={{
+//         flexDirection: 'row',
+//         width: '100%',
+//         justifyContent: 'space-between',
+//         paddingHorizontal: 15,
+//         paddingVertical: 10,
+//       }}>
+//       <Text size="body1" fontVariant="bold" style={{width:'75%'}}>
+//         {school.schoolName}
+//       </Text>
+//       <View
+//         style={{
+//           flexDirection: 'row',
+//           justifyContent: 'space-between',
+//           alignItems: 'center',
+//           width: '23%',
+//         }}>
+//         <RenderActiveStatus isActive={school.status} />
+//         <Icon
+//           name="chevron_up_black_icon"
+//           style={{
+//             transform: [
+//               {
+//                 rotate:
+//                   school.schoolId === selectedItem?.schoolId
+//                     ? '0deg'
+//                     : '180deg',
+//               },
+//             ],
+//           }}
+//         />
+//       </View>
+//     </View>
+//     {school.schoolId === selectedItem?.schoolId && (
+//       <View
+//         style={{
+//           flexDirection: 'row',
+//           width: '100%',
+//           backgroundColor: colors.backgroundColor,
+//           paddingHorizontal: 15,
+//           paddingVertical: 10,
+//           borderBottomRightRadius: 10,
+//           borderBottomLeftRadius: 10,
+//           flexWrap: 'wrap',
+//           justifyContent: 'space-between',
+//         }}>
+//         <View>
+//           <RenderLabelAndValue label={'Area'} value={school.area} />
+//           <RenderLabelAndValue label={'Created By'} value={school.createdBy} />
+//         </View>
+//         <View>
+//           <RenderLabelAndValue label={'District'} value={school.districtName} />
+//           <RenderLabelAndValue
+//             label={'Created On'}
+//             value={moment(school.creationDate).format('DD/MM/YYY')}
+//           />
+//         </View>
+//         <View>
+//           <RenderLabelAndValue label={'State'} value={school.stateName} />
+//           <RenderLabelAndValue
+//             label={'Time'}
+//             value={moment(school.creationDate).format('hh:mm A')}
+//           />
+//         </View>
+
+//         <RenderLabelAndValue label={'Users'} value={school.users} />
+//       </View>
+//     )}
+//   </TouchableOpacity>
+// );
+
 const SchoolTile: FC<SchoolTileTypes> = ({
   school,
   selectedItem,
   onPressItem,
-}) => (
-  <TouchableOpacity
-    style={{
-      borderWidth: 1,
-      borderColor: '#F4C24A',
-      borderRadius: 10,
-      marginVertical: 5,
-      backgroundColor:
-        school.schoolId === selectedItem?.schoolId ? '#FCEBC5' : undefined,
-    }}
-    onPress={() => {
-      onPressItem(school);
-    }}>
-    <View
+}) => {
+  const isSelected = school.schoolId === selectedItem?.schoolId;
+
+  return (
+    <TouchableOpacity
       style={{
-        flexDirection: 'row',
-        width: '100%',
-        justifyContent: 'space-between',
-        paddingHorizontal: 15,
-        paddingVertical: 10,
+        borderWidth: 1,
+        borderColor: '#F4C24A',
+        borderRadius: 10,
+        marginVertical: 5,
+        backgroundColor: isSelected ? '#FCEBC5' : undefined,
+      }}
+      onPress={() => {
+        // Toggle between selecting and deselecting the item
+        onPressItem(isSelected ? null : school);
       }}>
-      <Text size="body1" fontVariant="bold" style={{width:'75%'}}>
-        {school.schoolName}
-      </Text>
-      <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          width: '23%',
-        }}>
-        <RenderActiveStatus isActive={school.status} />
-        <Icon
-          name="chevron_up_black_icon"
-          style={{
-            transform: [
-              {
-                rotate:
-                  school.schoolId === selectedItem?.schoolId
-                    ? '0deg'
-                    : '180deg',
-              },
-            ],
-          }}
-        />
-      </View>
-    </View>
-    {school.schoolId === selectedItem?.schoolId && (
       <View
         style={{
           flexDirection: 'row',
           width: '100%',
-          backgroundColor: colors.backgroundColor,
+          justifyContent: 'space-between',
           paddingHorizontal: 15,
           paddingVertical: 10,
-          borderBottomRightRadius: 10,
-          borderBottomLeftRadius: 10,
-          flexWrap: 'wrap',
-          justifyContent: 'space-between',
         }}>
-        <View>
-          <RenderLabelAndValue label={'Area'} value={school.area} />
-          <RenderLabelAndValue label={'Created By'} value={school.createdBy} />
+        <Text size="body1" fontVariant="bold" style={{ width: '75%' }}>
+          {school.schoolName}
+        </Text>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            width: '23%',
+          }}>
+          <RenderActiveStatus isActive={school.status} />
+          <TouchableOpacity
+            onPress={() => {
+              // Toggle between selecting and deselecting the item
+              onPressItem(isSelected ? null : school);
+            }}>
+            <Icon
+              name="chevron_up_black_icon"
+              style={{
+                transform: [
+                  {
+                    rotate: isSelected ? '0deg' : '180deg',
+                  },
+                ],
+              }}
+            />
+          </TouchableOpacity>
         </View>
-        <View>
-          <RenderLabelAndValue label={'District'} value={school.districtName} />
-          <RenderLabelAndValue
-            label={'Created On'}
-            value={moment(school.creationDate).format('DD/MM/YYY')}
-          />
-        </View>
-        <View>
-          <RenderLabelAndValue label={'State'} value={school.stateName} />
-          <RenderLabelAndValue
-            label={'Time'}
-            value={moment(school.creationDate).format('hh:mm A')}
-          />
-        </View>
-
-        <RenderLabelAndValue label={'Users'} value={school.users} />
       </View>
-    )}
-  </TouchableOpacity>
-);
+
+      {isSelected && (
+        <View
+          style={{
+            flexDirection: 'row',
+            width: '100%',
+            backgroundColor: colors.backgroundColor,
+            paddingHorizontal: 15,
+            paddingVertical: 10,
+            borderBottomRightRadius: 10,
+            borderBottomLeftRadius: 10,
+            flexWrap: 'wrap',
+            justifyContent: 'space-between',
+          }}>
+          <View>
+            <RenderLabelAndValue label={'Area'} value={school.area} />
+            <RenderLabelAndValue label={'Created By'} value={school.createdBy} />
+          </View>
+          <View>
+            <RenderLabelAndValue label={'District'} value={school.districtName} />
+            <RenderLabelAndValue
+              label={'Created On'}
+              value={moment(school.creationDate).format('DD/MM/YYYY')}
+            />
+          </View>
+          <View>
+            <RenderLabelAndValue label={'State'} value={school.stateName} />
+            <RenderLabelAndValue
+              label={'Time'}
+              value={moment(school.creationDate).format('hh:mm A')}
+            />
+          </View>
+
+          <RenderLabelAndValue label={'Users'} value={school.users} />
+        </View>
+      )}
+    </TouchableOpacity>
+  );
+};
+
 
 type schoolList = {
   schoolList: SchoolType[] | undefined;
@@ -191,6 +291,7 @@ const School: FC<SchoolsScreenProps> = ({navigation, route}) => {
     selectedTab: 'all',
   });
   const [search, setSearch] = useState<string>('');
+  const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
 
   const dispatch = useAppDispatch();
 
@@ -206,6 +307,16 @@ const School: FC<SchoolsScreenProps> = ({navigation, route}) => {
       value: 'inactive',
     },
   ];
+
+
+  const closeDrawer = () => {
+    setIsDrawerOpen(false);
+  };
+
+  // Ensure the drawer opens when the menu icon is clicked
+  const onPressMenuIcon = () => {
+    setIsDrawerOpen(true); // Set drawer open to true
+  };
 
   useEffect(() => {
     if (allSchools) {
@@ -303,6 +414,12 @@ const School: FC<SchoolsScreenProps> = ({navigation, route}) => {
 
 
   return (
+    <Drawer
+    open={isDrawerOpen} // Drawer open state
+    onOpen={() => setIsDrawerOpen(true)}
+    onClose={() => setIsDrawerOpen(false)} // Close drawer
+    renderDrawerContent={() => <DrawerContent closeDrawer={closeDrawer} />}
+  >
     <Layout
       overridePaddingHorizontal
       overridePaddingVertical
@@ -310,7 +427,8 @@ const School: FC<SchoolsScreenProps> = ({navigation, route}) => {
       title="Schools"
       icon="school_icon"
       focusedStack="LocationManagementStack"
-      titleTransition>
+      titleTransition
+      onPressMenuIcon={onPressMenuIcon}>
       <Text size="body3" fontVariant="bold" style={{marginVertical: 10}}>
         Schools
       </Text>
@@ -358,6 +476,7 @@ const School: FC<SchoolsScreenProps> = ({navigation, route}) => {
         )}
       </View>
     </Layout>
+    </Drawer>
   );
 };
 export default School;

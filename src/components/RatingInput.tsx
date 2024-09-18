@@ -18,7 +18,8 @@ const RatingInput: FC<RatingInputTypes> = ({
   label,
   rating,
   onChangeRating,
-  size = 22,
+  size = 19,
+  //22,
   disabled,
   showRating = true,
   style,
@@ -60,7 +61,9 @@ const RatingInput: FC<RatingInputTypes> = ({
                 disabled={disabled}>
                 <Icon
                   key={index}
-                  name='star_icon'
+                  name=
+                  'rating_star_display'
+                  //'star_icon'
                   width={size}
                   height={size}
                 />
@@ -74,7 +77,7 @@ const RatingInput: FC<RatingInputTypes> = ({
                 disabled={disabled}>
                 <Icon
                   key={index}
-                  name='star_half_filled_icon'
+                  name='star_half_filed_new_icon'
                   width={size}
                   height={size}
                 />
@@ -88,7 +91,8 @@ const RatingInput: FC<RatingInputTypes> = ({
                 disabled={disabled}>
                 <Icon
                   key={index}
-                  name='star_unfilled_icon'
+                  name='rating_deselected_icon'
+                  //'star_unfilled_icon'
                   width={size}
                   height={size}
                 />

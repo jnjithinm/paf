@@ -3,7 +3,7 @@ import {TouchableOpacity, View} from 'react-native';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 
-import Layout from '../../components/Layout';
+import Layout from '../../components/LayoutNew';
 import {UserManagementStackParamList} from '../../navigation/UserManagementStack';
 import Icon from '../../components/Icon';
 import Text from '../../components/Text';
@@ -17,6 +17,8 @@ import {RenderEmptyPlaceholder} from '../observation/ObservationReportsMainPage'
 import moment from 'moment';
 import Tab from '../../components/Tab';
 import PaginationBar from '../../components/PaginationBar';
+import { Drawer } from 'react-native-drawer-layout';
+import DrawerContent from '../../components/DrawerContent';
 
 type RolesAndAppAccessNavigationProp = StackNavigationProp<
   UserManagementStackParamList,
@@ -38,84 +40,340 @@ type RolesAndAppAccessTileTypes = {
   selectedItem: Role | undefined;
 };
 
+// const RolesAndAppAccessTile: FC<RolesAndAppAccessTileTypes> = ({
+//   role,
+//   selectedItem,
+//   onPressItem,
+// }) => (
+//   <TouchableOpacity
+//     style={{
+//       borderWidth: 1,
+//       borderColor: '#F4C24A',
+//       borderRadius: 10,
+//       marginVertical: 5,
+//       backgroundColor:
+//         role.roleName === selectedItem?.roleName ? '#FCEBC5' : undefined,
+//     }}
+//     onPress={() => {
+//       onPressItem(role);
+//     }}>
+//     <View
+//       style={{
+//         flexDirection: 'row',
+//         width: '100%',
+//         justifyContent: 'space-between',
+//         paddingHorizontal: 15,
+//         paddingVertical: 10,
+//       }}>
+//       <Text size="body1" fontVariant="bold">
+//         {role.roleName}
+//       </Text>
+//       <View
+//         style={{
+//           flexDirection: 'row',
+//           justifyContent: 'space-between',
+//           alignItems: 'center',
+//           width: '25%',
+//         }}>
+//         <RenderActiveStatus isActive={role.status} />
+//         <Icon
+//           name="chevron_up_black_icon"
+//           style={{
+//             transform: [
+//               {
+//                 rotate:
+//                   role.roleId === selectedItem?.roleId ? '0deg' : '180deg',
+//               },
+//             ],
+//           }}
+//         />
+//       </View>
+//     </View>
+//     {selectedItem?.roleId === role?.roleId && (
+//       // <View
+//       //   style={{
+//       //     flexDirection: 'row',
+//       //     width: '100%',
+//       //     backgroundColor: colors.backgroundColor,
+//       //     paddingHorizontal: 15,
+//       //     paddingVertical: 10,
+//       //     borderBottomRightRadius: 10,
+//       //     borderBottomLeftRadius: 10,
+//       //     flexWrap: 'wrap',
+//       //     justifyContent: 'space-between',
+//       //     gap:5
+//       //   }}>
+        
+//       //   <RenderLabelAndValue label={'Role Level'} value={role.roleLevel} />
+//       //   <RenderLabelAndValue label={'Parent Role'} value={role.parentRole} />
+//       //   <RenderLabelAndValue label={'Users'} value={role.users} />
+//       //   <RenderLabelAndValue label={'Created By'} value={role.createdBy} />
+//       //   <RenderLabelAndValue
+//       //     label={'Created On'}
+//       //     value={moment(role.createdDt).format('DD/MM/YYY')}
+//       //   />
+//       //   <RenderLabelAndValue
+//       //     label={'Time'}
+//       //     value={moment(role.createdDt).format('hh:mm A')}
+//       //   />
+//       // </View>
+//       <View
+//       style={{
+//            flexDirection: 'row',
+//            width: '100%',
+//            backgroundColor: colors.backgroundColor,
+//           paddingHorizontal: 15,
+//            paddingVertical: 10,
+//            borderBottomRightRadius: 10,
+//           borderBottomLeftRadius: 10,
+//            flexWrap: 'wrap',
+//            justifyContent: 'space-between',
+//       }}>
+      
+//       {/* First row with 3 items */}
+//       <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%', marginBottom: 10 }}>
+//         <View style={{ width: '40%' }}>
+//           <RenderLabelAndValue label={'Role Level'} value={role.roleLevel} />
+//         </View>
+//         <View style={{ width: '40%' }}>
+//           <RenderLabelAndValue label={'Parent Role'} value={role.parentRole} />
+//         </View>
+//         <View style={{ width: '20%' }}>
+//           <RenderLabelAndValue label={'Users'} value={role.users} />
+//         </View>
+//       </View>
+    
+//       {/* Second row with 3 items */}
+//       <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%' }}>
+//         <View style={{ width: '40%' }}>
+//           <RenderLabelAndValue label={'Created By'} value={role.createdBy} />
+//         </View>
+//         <View style={{ width: '40%' }}>
+//           <RenderLabelAndValue label={'Created On'} value={moment(role.createdDt).format('DD/MM/YYYY')} />
+//         </View>
+//         <View style={{ width: '20%' }}>
+//           <RenderLabelAndValue label={'Time'} value={moment(role.createdDt).format('hh:mm A')} />
+//         </View>
+//       </View>
+//     </View>
+    
+//     )}
+//   </TouchableOpacity>
+// );
+
+// const RolesAndAppAccessTile: FC<RolesAndAppAccessTileTypes> = ({
+//   role,
+//   selectedItem,
+//   onPressItem,
+// }) => (
+//   <TouchableOpacity
+//     style={{
+//       borderWidth: 1,
+//       borderColor: '#F4C24A', // Border color to match the design
+//       borderRadius: 10,
+//       marginVertical: 5,
+//       backgroundColor:
+//         role.roleName === selectedItem?.roleName ? '#FCEBC5' : undefined, // Highlight selected item
+//     }}
+//     onPress={() => {
+//       onPressItem(role);
+//     }}>
+//     <View
+//       style={{
+//         flexDirection: 'row',
+//         width: '100%',
+//         justifyContent: 'space-between',
+//         paddingHorizontal: 15,
+//         paddingVertical: 10,
+//       }}>
+//       <Text size="body1" fontVariant="bold">
+//         {role.roleName}
+//       </Text>
+//       <View
+//         style={{
+//           flexDirection: 'row',
+//           justifyContent: 'space-between',
+//           alignItems: 'center',
+//           width: '25%',
+//         }}>
+//         <RenderActiveStatus isActive={role.status} />
+//         <Icon
+//           name="chevron_up_black_icon"
+//           style={{
+//             transform: [
+//               {
+//                 rotate:
+//                   role.roleId === selectedItem?.roleId ? '0deg' : '180deg',
+//               },
+//             ],
+//           }}
+//         />
+//       </View>
+//     </View>
+
+//     {selectedItem?.roleId === role?.roleId && (
+//       <View
+//         style={{
+//           flexDirection: 'column',
+//           width: '100%',
+//           backgroundColor: colors.backgroundColor, // Background color for the content section
+//           paddingHorizontal: 15,
+//           paddingVertical: 10,
+//           borderBottomRightRadius: 10,
+//           borderBottomLeftRadius: 10,
+//           justifyContent: 'space-between',
+//         }}>
+        
+//         {/* First row with 3 items */}
+//         <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%', marginBottom: 10 }}>
+//           <View style={{ width: '40%' }}>
+//             <RenderLabelAndValue label={'Role Level'} value={role.roleLevel} />
+//           </View>
+//           <View style={{ width: '40%' }}>
+//             <RenderLabelAndValue label={'Parent Role'} value={role.parentRole} />
+//           </View>
+//           <View style={{ width: '20%' }}>
+//             <RenderLabelAndValue label={'Users'} value={role.users} />
+//           </View>
+//         </View>
+
+//         {/* Second row with 3 items */}
+//         <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%' }}>
+//           <View style={{ width: '40%' }}>
+//             <RenderLabelAndValue label={'Created By'} value={role.createdBy} />
+//           </View>
+//           <View style={{ width: '40%' }}>
+//             <RenderLabelAndValue label={'Created On'} value={moment(role.createdDt).format('DD/MM/YYYY')} />
+//           </View>
+//           <View style={{ width: '20%' }}>
+//             <RenderLabelAndValue label={'Time'} value={moment(role.createdDt).format('hh:mm A')} />
+//           </View>
+//         </View>
+//       </View>
+//     )}
+//   </TouchableOpacity>
+// );
+
 const RolesAndAppAccessTile: FC<RolesAndAppAccessTileTypes> = ({
   role,
   selectedItem,
   onPressItem,
-}) => (
-  <TouchableOpacity
-    style={{
-      borderWidth: 1,
-      borderColor: '#F4C24A',
-      borderRadius: 10,
-      marginVertical: 5,
-      backgroundColor:
-        role.roleName === selectedItem?.roleName ? '#FCEBC5' : undefined,
-    }}
-    onPress={() => {
-      onPressItem(role);
-    }}>
-    <View
+}) => {
+  const isSelected = role.roleId === selectedItem?.roleId;
+
+  return (
+    <TouchableOpacity
       style={{
-        flexDirection: 'row',
-        width: '100%',
-        justifyContent: 'space-between',
-        paddingHorizontal: 15,
-        paddingVertical: 10,
-      }}>
-      <Text size="body1" fontVariant="bold">
-        {role.roleName}
-      </Text>
-      <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          width: '25%',
-        }}>
-        <RenderActiveStatus isActive={role.status} />
-        <Icon
-          name="chevron_up_black_icon"
-          style={{
-            transform: [
-              {
-                rotate:
-                  role.roleId === selectedItem?.roleId ? '0deg' : '180deg',
-              },
-            ],
-          }}
-        />
-      </View>
-    </View>
-    {selectedItem?.roleId === role?.roleId && (
+        borderWidth: 1,
+        borderColor: '#F4C24A',
+        borderRadius: 10,
+        marginVertical: 5,
+        backgroundColor: isSelected ? '#FCEBC5' : undefined,
+      }}
+      onPress={() => {
+        // Toggle between selecting and deselecting the item
+        onPressItem(isSelected ? null : role);
+      }}
+      disabled={selectedItem === role}>
       <View
         style={{
           flexDirection: 'row',
           width: '100%',
-          backgroundColor: colors.backgroundColor,
+          justifyContent: 'space-between',
           paddingHorizontal: 15,
           paddingVertical: 10,
-          borderBottomRightRadius: 10,
-          borderBottomLeftRadius: 10,
-          flexWrap: 'wrap',
-          justifyContent: 'space-between',
         }}>
-        <RenderLabelAndValue label={'Role Level'} value={role.roleLevel} />
-        <RenderLabelAndValue label={'Parent Role'} value={role.parentRole} />
-        <RenderLabelAndValue label={'Users'} value={role.users} />
-        <RenderLabelAndValue label={'Created By'} value={role.createdBy} />
-        <RenderLabelAndValue
-          label={'Created On'}
-          value={moment(role.createdDt).format('DD/MM/YYY')}
-        />
-        <RenderLabelAndValue
-          label={'Time'}
-          value={moment(role.createdDt).format('hh:mm A')}
-        />
+        <Text size="body1" fontVariant="bold">
+          {role.roleName}
+        </Text>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            width: '25%',
+          }}>
+          <RenderActiveStatus isActive={role.status} />
+          <TouchableOpacity
+            onPress={() => {
+              // Toggle between selecting and deselecting the item
+              onPressItem(isSelected ? null : role);
+            }}>
+            <Icon
+              name="chevron_up_black_icon"
+              style={{
+                transform: [
+                  {
+                    rotate: isSelected ? '0deg' : '180deg',
+                  },
+                ],
+              }}
+            />
+          </TouchableOpacity>
+        </View>
       </View>
-    )}
-  </TouchableOpacity>
-);
+
+      {isSelected && (
+        <View
+          style={{
+            flexDirection: 'column',
+            width: '100%',
+            backgroundColor: colors.backgroundColor,
+            paddingHorizontal: 15,
+            paddingVertical: 10,
+            borderBottomRightRadius: 10,
+            borderBottomLeftRadius: 10,
+            justifyContent: 'space-between',
+          }}>
+          {/* First row with 3 items */}
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              width: '100%',
+              marginBottom: 10,
+            }}>
+            <View style={{ width: '40%' }}>
+              <RenderLabelAndValue label={'Role Level'} value={role.roleLevel} />
+            </View>
+            <View style={{ width: '40%' }}>
+              <RenderLabelAndValue label={'Parent Role'} value={role.parentRole} />
+            </View>
+            <View style={{ width: '20%' }}>
+              <RenderLabelAndValue label={'Users'} value={role.users} />
+            </View>
+          </View>
+
+          {/* Second row with 3 items */}
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              width: '100%',
+            }}>
+            <View style={{ width: '40%' }}>
+              <RenderLabelAndValue label={'Created By'} value={role.createdBy} />
+            </View>
+            <View style={{ width: '40%' }}>
+              <RenderLabelAndValue
+                label={'Created On'}
+                value={moment(role.createdDt).format('DD/MM/YYYY')}
+              />
+            </View>
+            <View style={{ width: '20%' }}>
+              <RenderLabelAndValue
+                label={'Time'}
+                value={moment(role.createdDt).format('hh:mm A')}
+              />
+            </View>
+          </View>
+        </View>
+      )}
+    </TouchableOpacity>
+  );
+};
+
+
 
 type RolesList = {
   roleList: Role[] | undefined;
@@ -127,6 +385,7 @@ const RolesAndAppAccess: FC<RolesAndAppAccessScreenProps> = ({
   navigation,
   route,
 }) => {
+  const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
   const [selectedItem, setSelectedItem] = useState<Role>();
   const [search, setSearch] = useState<string>('');
   const [rolesList, setRolesList] = useState<RolesList>({
@@ -237,10 +496,21 @@ const RolesAndAppAccess: FC<RolesAndAppAccessScreenProps> = ({
 
     return () => clearTimeout(delayDebounceFn);
   }, [search,rolesList.selectedTab]);
-
+  const closeDrawer = () => {
+    setIsDrawerOpen(false);
+  };
+  const onPressMenuIcon = () => {
+    setIsDrawerOpen(true); // Set drawer open to true
+  };
 
   // console.log("ACC",activeRoles?.dataList)
   return (
+    <Drawer
+    open={isDrawerOpen} // Drawer open state
+    onOpen={() => setIsDrawerOpen(true)}
+    onClose={() => setIsDrawerOpen(false)} // Close drawer
+    renderDrawerContent={() => <DrawerContent closeDrawer={closeDrawer} />}
+  >
     <Layout
       overridePaddingHorizontal
       overridePaddingVertical
@@ -248,7 +518,8 @@ const RolesAndAppAccess: FC<RolesAndAppAccessScreenProps> = ({
       title="Roles & App Access"
       icon="role_and_app_access_icon"
       focusedStack="UserManagementStack"
-      titleTransition>
+      titleTransition
+      onPressMenuIcon={onPressMenuIcon} >
       <Text size="body3" fontVariant="bold" style={{marginVertical: 10}}>
         Roles & App Access
       </Text>
@@ -297,6 +568,7 @@ const RolesAndAppAccess: FC<RolesAndAppAccessScreenProps> = ({
         )}
       </View>
     </Layout>
+    </Drawer>
   );
 };
 export default RolesAndAppAccess;

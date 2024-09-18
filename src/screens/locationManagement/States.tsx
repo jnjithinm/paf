@@ -3,7 +3,7 @@ import { View } from 'react-native';
 import { RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 
-import Layout from '../../components/Layout';
+import Layout from '../../components/LayoutNew';
 import Text from '../../components/Text';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { LocationManagementStackParamList } from '../../navigation/LocationManagementStack';
@@ -11,6 +11,8 @@ import { State, getStates } from '../../redux/features/masterSlice';
 import { RenderEmptyPlaceholder } from '../observation/ObservationReportsMainPage';
 import SearchWithFilter from '../../components/SearchWithFilter';
 import PaginationBar from '../../components/PaginationBar';
+import { Drawer } from 'react-native-drawer-layout';
+import DrawerContent from '../../components/DrawerContent';
 
 type StatesNavigationProp = StackNavigationProp<
   LocationManagementStackParamList,
@@ -49,8 +51,10 @@ const StateTile: FC<StateTileTypes> = ({ state }) => (
 );
 
 const States: FC<StatesScreenProps> = ({ navigation, route }) => {
+  const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
   const [statesList, setStatesList] = useState<State[]>();
   const [search, setSearch] = useState<string>('');
+
 
   const { states } = useAppSelector(state => state.master);
   
@@ -75,8 +79,20 @@ const States: FC<StatesScreenProps> = ({ navigation, route }) => {
   const filteredStates = statesList?.filter(item =>
     item?.stateName?.toLocaleLowerCase()?.includes(search?.toLocaleLowerCase()),
   );
+  const closeDrawer = () => {
+    setIsDrawerOpen(false);
+  };
+  const onPressMenuIcon = () => {
+    setIsDrawerOpen(true); // Set drawer open to true
+  };
 
   return (
+    <Drawer
+    open={isDrawerOpen} // Drawer open state
+    onOpen={() => setIsDrawerOpen(true)}
+    onClose={() => setIsDrawerOpen(false)} // Close drawer
+    renderDrawerContent={() => <DrawerContent closeDrawer={closeDrawer} />}
+  >
     <Layout
       overridePaddingHorizontal
       overridePaddingVertical
@@ -84,7 +100,8 @@ const States: FC<StatesScreenProps> = ({ navigation, route }) => {
       title="States"
       icon="states_icon"
       focusedStack="LocationManagementStack"
-      titleTransition>
+      titleTransition
+      onPressMenuIcon={onPressMenuIcon}>
       <Text size="body3" fontVariant="bold" style={{ marginVertical: 10 }}>
         States
       </Text>
@@ -124,6 +141,7 @@ const States: FC<StatesScreenProps> = ({ navigation, route }) => {
         )}
       </View>
     </Layout>
+    </Drawer>
   );
 };
 export default States;

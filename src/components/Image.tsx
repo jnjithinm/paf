@@ -105,8 +105,10 @@ const Image: FC<ImagePropsTypes> = ({name, size = 1, style, ...rest}) => {
         height = 60 * size;
         return {Src: search_reports_icon, StyleConst: {width, height}};
       case 'flow_icon':
-        width = 109.35 * size;
-        height = 76.8 * size;
+        width = 125.35 * size;
+        height = 68.8 * size;
+        // width = 109.35 * size;
+        // height = 76.8 * size;
         return {Src: flow_icon, StyleConst: {width, height}};
       case 'response_card_icon':
         width = 99 * size;
@@ -133,12 +135,14 @@ const Image: FC<ImagePropsTypes> = ({name, size = 1, style, ...rest}) => {
         height = 64 * size;
         return {Src: notification_icon, StyleConst: {width, height}};
       case 'users_icon':
-        width = 91.2 * size;
-        height = 64 * size;
+        width = 125.35 * size;
+        height = 68.8 * size;
+        // width = 91.2 * size;
+        // height = 64 * size;
         return {Src: users_icon, StyleConst: {width, height}};
       case 'user_groups_icon':
-        width = 91.2 * size;
-        height = 64 * size;
+         width = 91.2 * size;
+         height = 64 * size;
         return {Src: user_groups_icon, StyleConst: {width, height}};
       case 'role_and_app_access_icon':
         width = 91.2 * size;
@@ -161,19 +165,23 @@ const Image: FC<ImagePropsTypes> = ({name, size = 1, style, ...rest}) => {
         return {Src: empty_cart_icon, StyleConst: {width, height}};
       case 'school_icon':
         width = 91.2 * size;
-        height = 64 * size;
+        height = 85 * size;
+        //height = 64 * size;
         return {Src: school_icon, StyleConst: {width, height}};
       case 'states_icon':
         width = 91.2 * size;
-        height = 64 * size;
+       // height = 64 * size;
+        height = 85 * size;
         return {Src: states_icon, StyleConst: {width, height}};
       case 'areas_icon':
         width = 91.2 * size;
-        height = 64 * size;
+       // height = 64 * size;
+        height = 85 * size;
         return {Src: areas_icon, StyleConst: {width, height}};
         case 'districts_icon':
           width = 91.2 * size;
-          height = 64 * size;
+          //height = 64 * size;
+          height = 85 * size;
           return {Src: districts_icon, StyleConst: {width, height}};
           case 'profile_icon':
             width = 91.2 * size;

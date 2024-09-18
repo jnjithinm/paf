@@ -66,17 +66,20 @@ const Tabs: FC<TabsProps> = ({tabs, onClick, style,textStyle}) => {
 
 const styles = StyleSheet.create({
   container: {
-    // backgroundColor: '#f0f0f0',
+    // backgroundColor: 'red',
   },
   tabHeader: {
     flexDirection: 'row',
     borderBottomWidth: normaliseDesigns(1),
     borderBottomColor: '#ccc',
+    //backgroundColor:"pink",
+    justifyContent:'space-between'
   },
   tabHeaderItem: {
-    flex: 1,
+   // flex: 1,
     alignItems: 'center',
     paddingVertical: 10,
+    
   },
   tabHeaderText: {
     fontSize: 16,

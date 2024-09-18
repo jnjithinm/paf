@@ -1,138 +1,197 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, Button, FlatList, Modal, TouchableOpacity, StyleSheet } from 'react-native';
-import axios from 'axios';
+import React from 'react';
+import {
+  Modal,
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Linking,
+  ScrollView,
+  Clipboard,
+  ToastAndroid,
+} from 'react-native';
+import Icon from '../../components/Icon';
+import colors from '../../config/colors';
 import moment from 'moment';
-import { TOKEN_KEY } from '../utils/constants';
-import AddEditEvent from '../../components/AddEditEventModal';
-import localStorage from 'redux-persist/lib/storage';
+import { normaliseDesigns } from '../../utils/helpers/responsiveHelpers';
 
-const Events = ({ }) => {
-  const [showError, setShowError] = useState({ error: false, message: '' });
-  const [listOfEvents, setListOfEvents] = useState([]);
-  const [showEventCreationModal, setShowEventCreationModal] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [refresh, setRefresh] = useState(false);
-  const [pagination, setPagination] = useState({
-    page: 0,
-    rowsPerPage: 10,
-    totalEvents: 0,
-  });
+const EventDetailModal = ({ isVisible, onClose, event }) => {
+  if (!event) return null;
 
-  useEffect(() => {
-    setLoading(true);
-    const token = localStorage.getItem(TOKEN_KEY);
-    if (token) {
-      fetchEvents(token);
-    } else {
-      setShowError({
-        error: true,
-        message: 'Please login to google account from share calendar. ',
-      });
-      setLoading(false);
-
-      setTimeout(() => {
-        setShowError({ error: false, message: '' });
-      }, 3000);
-    }
-  }, [refresh]);
-
-  const fetchEvents = async (token) => {
-    try {
-      let minDate = '2024-06-01T00:00:00Z';
-      await axios
-        .get(
-          `https://www.googleapis.com/calendar/v3/calendars/primary/events?timeMin=${minDate}&singleEvents=true&orderBy=startTime`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        )
-        .then((res) => {
-          if (res && res.data) {
-            setListOfEvents(
-              res.data.items
-                .map((event) => ({
-                  id: event.id,
-                  title: event.summary,
-                  start: event.start.dateTime || event.start.date,
-                  end: event.end.dateTime || event.end.date,
-                  createdDate: moment(event.created).format('DD-MM-YYYY'),
-                  createdBy: event.creator ? event.creator.self : 'N/A',
-                }))
-                .sort((a, b) => new Date(b.createdDate) - new Date(a.createdDate))
-            );
-            setPagination({
-              ...pagination,
-              totalEvents: res.data.items?.length || 0,
-            });
-            setLoading(false);
-          }
-        });
-    } catch (error) {
-      console.error('Error fetching events:', error.message);
+  const handleJoinMeeting = () => {
+    if (event.hangoutLink) {
+      Linking.openURL(event.hangoutLink);
     }
   };
 
-  const renderItem = ({ item }) => (
-    <View style={styles.eventItem}>
-      <Text style={styles.eventTitle}>{item.title}</Text>
-      <Text>{moment(item.start).format('DD-MM-YYYY')} - {moment(item.end).format('DD-MM-YYYY')}</Text>
-      <Text>Created by: {item.createdBy}</Text>
-    </View>
-  );
+  const copyToClipboard = (text) => {
+    Clipboard.setString(text);
+    ToastAndroid.show('Link copied to clipboard', ToastAndroid.SHORT);
+  };
+
+  const renderGuests = () => {
+    if (event.guests && event.guests.length > 0) {
+      return event.guests.map((guest) => guest.email).join('\n');
+    }
+    return 'No participants';
+  };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.header}>Events</Text>
-      <Button
-        title="Create New Event"
-        onPress={() => setShowEventCreationModal(true)}
-      />
-      {loading && <Text>Loading...</Text>}
-      {!loading && (
-        <FlatList
-          data={listOfEvents}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.id}
-          onRefresh={() => setRefresh(!refresh)}
-          refreshing={loading}
-        />
-      )}
-      <Modal visible={showEventCreationModal} animationType="slide">
-        <AddEditEvent
-          onClose={() => setShowEventCreationModal(false)}
-          onRefresh={() => setRefresh(!refresh)}
-        />
-      </Modal>
-      {showError.error && <Text style={styles.error}>{showError.message}</Text>}
-    </View>
+    <Modal visible={isVisible} animationType="slide" transparent>
+      <View style={styles.overlay}>
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+              <Icon name="cross_icon_thin" width={20} height={20} />
+            </TouchableOpacity>
+            <View style={styles.header}>
+              <Icon name="text_icon" size={20} />
+              <Text style={styles.eventTitle}>{event.title}</Text>
+            </View>
+            <View style={styles.timeRow}>
+              <Icon name="event_clock_Icon" />
+              <Text style={styles.eventTime}>
+                {moment(event.start).format('D MMMM YYYY h:mm A')} - {moment(event.end).format('D MMMM YYYY h:mm A')}
+              </Text>
+            </View>
+            <Text style={styles.participantsTitle}>
+              {event.guests?.length || 0} participants
+            </Text>
+            <View style={styles.guestRow}>
+              <Icon name="person_icon" size={20} color={colors.blackColor} />
+              <View style={styles.guestContainer}>
+                <ScrollView>
+                  <Text style={styles.guestEmails}>
+                    {renderGuests()}
+                  </Text>
+                </ScrollView>
+              </View>
+            </View>
+            {event.hangoutLink && (
+              <View style={styles.meetingContainer}>
+                <TouchableOpacity style={styles.joinButton} onPress={handleJoinMeeting}>
+                  <Icon name='meet' size={20} style={styles.icon} />
+                  <Text style={styles.joinButtonText}>Join Meeting Link</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.copyButton} onPress={() => copyToClipboard(event.hangoutLink)}>
+                  <Icon name='copy_icon' size={20} style={styles.icon} />
+                  <Text style={styles.copyButtonText}>Copy Link</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+          </View>
+        </View>
+      </View>
+    </Modal>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  overlay: {
     flex: 1,
-    padding: 16,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center', // Centers the modal vertically
+    alignItems: 'center', // Centers the modal horizontally
+  },
+  modalContainer: {
+    width: '90%', // Adjust the width as needed
+    maxWidth: 400, // Max width for larger screens
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    padding: 20,
+    width: '100%',
+    maxWidth: 400,
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
   },
   header: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 16,
-  },
-  eventItem: {
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
   },
   eventTitle: {
     fontSize: 18,
     fontWeight: 'bold',
+    color: colors.blackColor,
+    marginLeft: 10,
   },
-  error: {
-    color: 'red',
-    marginTop: 16,
+  timeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 15,
+  },
+  eventTime: {
+    fontSize: 14,
+    color: colors.blackColor,
+    marginLeft: 10,
+  },
+  participantsTitle: {
+    fontSize: 14,
+    color: colors.blackColor,
+    marginBottom: 10,
+    fontWeight: 'bold',
+  },
+  guestRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 15,
+  },
+  guestContainer: {
+    maxHeight: 100, // Limit the height for scrolling if there are many guests
+    marginLeft: 10, // Add some space between the icon and the container
+    padding: 10,
+    borderWidth: 1,
+    borderColor: colors.primaryColor,
+    borderRadius: 5,
+    backgroundColor: 'white', // Light background similar to the design
+    flex: 1, // Make the container take up the remaining space
+  },
+  guestEmails: {
+    color: colors.blackColor,
+    textAlignVertical: 'top', // Align text at the top
+  },
+  meetingContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  joinButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderColor: colors.primaryColor,
+    borderWidth: 1,
+    padding: 10,
+    borderRadius: 5,
+    justifyContent: 'center',
+    width: '60%',
+  },
+  joinButtonText: {
+    color: colors.primaryColor,
+    fontSize: 14,
+    marginLeft: 10,
+  },
+  copyButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderColor: colors.primaryColor,
+    borderWidth: 1,
+    padding: 10,
+    borderRadius: 5,
+    justifyContent: 'center',
+    width: '35%',
+  },
+  copyButtonText: {
+    color: colors.primaryColor,
+    fontSize: 14,
+    marginLeft: 10,
   },
 });
 
-export default Events;
+export default EventDetailModal;

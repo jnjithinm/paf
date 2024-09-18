@@ -43,7 +43,7 @@ api.interceptors.request.use(
 
 api.interceptors.response.use(
   response => {
-    console.log('[API] Response:', response.data);
+   // console.log('[API] Response:', response.data);
     return response;
   },
 );

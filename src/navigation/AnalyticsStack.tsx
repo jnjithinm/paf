@@ -14,6 +14,7 @@ import FlowsListAnalytics from '../screens/analytics/FlowsListAnalytics';
 import UserAndRoleAnalyticsMainPage from '../screens/analytics/UserAndRoleAnalyticsMainPage';
 import FormResponsesAnalytics from '../screens/analytics/FormResponsesAnalytics';
 import LocationAnalytics from '../screens/analytics/LocationAnalytics';
+import UsageAnalytics from '../screens/analytics/UsageAnalytics';
 
 
 export type AnalyticsStackParamList = {
@@ -26,6 +27,7 @@ export type AnalyticsStackParamList = {
   ObservationsListAnalytics:undefined
   ObservationAnalytics:{observationId:number};
   FormResponsesAnalytics:{flowDetailItem:FlowDetailItem}
+  UsageAnalytics:undefined
 };
 
 const AnalyticsTab =
@@ -64,6 +66,7 @@ const AnalyticsStack = ({}) => {
       <AnalyticsTab.Screen name='TeacherObservationAnalytics' component={TeacherObservationAnalytics} />
       <AnalyticsTab.Screen name='ObservationsListAnalytics' component={ObservationsListAnalytics} />
       <AnalyticsTab.Screen name='ObservationAnalytics' component={ObservationAnalytics} />
+      <AnalyticsTab.Screen name='UsageAnalytics' component={UsageAnalytics} />
     </AnalyticsTab.Navigator>
   );
 };

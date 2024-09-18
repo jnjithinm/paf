@@ -139,7 +139,9 @@ const TextInput: FC<TextInputPropsTypes> = ({
     <View style={{ ...style, minHeight: 65, width: '100%' }}>
       {label && (
         <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 3 }}>
-          <Text style={{ alignSelf: 'flex-start', fontWeight: '700' }} size="small3">
+          <Text style={{ alignSelf: 'flex-start', fontFamily: FONT_VARIANT.bold,}} size='body1'
+          //style={{ alignSelf: 'flex-start', fontWeight: '700' }} size="small3"
+          >
             {label}
           </Text>
           {mandatory && <Text style={{ color:'red' }}>{'*'}</Text>}

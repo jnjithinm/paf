@@ -132,7 +132,7 @@ async ([payload, searchCriteria], {dispatch, rejectWithValue}) => {
         payload,
       );
     }
-    console.log("response======",response)
+    //console.log("response======",response)
     return response.data as GetAllUsersResponse;
   } catch (error: any) {
     return rejectWithValue(error.response.data);

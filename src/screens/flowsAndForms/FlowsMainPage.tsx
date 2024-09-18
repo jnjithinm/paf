@@ -4,7 +4,7 @@ import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import moment from 'moment';
 
-import Layout from '../../components/Layout';
+import Layout from '../../components/LayoutNew';
 import Tab from '../../components/Tab';
 import {useAppDispatch, useAppSelector} from '../../redux/store';
 import {normaliseFont} from '../../utils/helpers/responsiveHelpers';
@@ -18,6 +18,9 @@ import {styles} from '../../components/RubricListModal';
 import {FlowsAndFormsStackParamList} from '../../navigation/FlowsAndFormsStack';
 import SearchWithFilter from '../../components/SearchWithFilter';
 import {RenderEmptyPlaceholder} from '../observation/ObservationReportsMainPage';
+import { Drawer } from 'react-native-drawer-layout';
+import DrawerContent from '../../components/DrawerContent';
+import PaginationBar from '../../components/PaginationBar';
 
 type FlowsMainPageNavigationProp = StackNavigationProp<
   FlowsAndFormsStackParamList,
@@ -119,6 +122,7 @@ export const FlowsItem: React.FC<FlowsItemProps> = ({
 
 const FlowsMainPage: FC<FlowsMainPageScreenProps> = ({navigation, route}) => {
   const [search, setSearch] = useState<string>('');
+  const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
 
   const [flowsList, setFlowsList] = useState<FlowItem[]>();
 
@@ -191,9 +195,24 @@ const FlowsMainPage: FC<FlowsMainPageScreenProps> = ({navigation, route}) => {
   const filteredFlows = flowsList?.filter(item =>
     item?.flowName?.toLocaleLowerCase()?.includes(search?.toLocaleLowerCase()),
   );
+  type DrawerContentTypes = {
+    closeDrawer: () => void;
+  };
+  const closeDrawer = () => {
+    setIsDrawerOpen(false);
+  };
+  const onPressMenuIcon = () => {
+    setIsDrawerOpen(true); // Set drawer open to true
+  };
 
   return (
     <>
+      <Drawer
+      open={isDrawerOpen} // Drawer open state
+      onOpen={() => setIsDrawerOpen(true)}
+      onClose={() => setIsDrawerOpen(false)} // Close drawer
+      renderDrawerContent={() => <DrawerContent closeDrawer={closeDrawer} />}
+    >
       <Layout
         overridePaddingHorizontal
         overridePaddingVertical
@@ -201,7 +220,8 @@ const FlowsMainPage: FC<FlowsMainPageScreenProps> = ({navigation, route}) => {
         title="Flows"
         icon="flow_icon"
         focusedStack="FlowsAndFormsStack"
-        titleTransition>
+        titleTransition
+        onPressMenuIcon={onPressMenuIcon} >
         <Text size="body3" fontVariant="bold" style={{marginVertical: 10}}>
           Flows
         </Text>
@@ -218,7 +238,7 @@ const FlowsMainPage: FC<FlowsMainPageScreenProps> = ({navigation, route}) => {
                 label: `Not owned by me (${notOwnedByMeFlows?.totalCount || ''})`,
               },
             ]}
-            textStyle={{fontSize: normaliseFont(12)}}
+            textStyle={{fontSize: normaliseFont(13)}}
             onClick={title => handleTabClick(title?.value)}
           />
 
@@ -255,15 +275,40 @@ const FlowsMainPage: FC<FlowsMainPageScreenProps> = ({navigation, route}) => {
                     isAdmin={isAdmin}
                   />
                 ))
+             
             ) : (
               <RenderEmptyPlaceholder />
             )
           ) : (
             <></>
           )}
+          
+          <PaginationBar
+                count={(allFlows?.totalCount || 0) / 15}
+                onPressPageIndex={(index) => {
+                  if (allFlows) {
+                    dispatch(
+                      getAllFlows([
+                        userData.userName,
+                        userData.id,
+                        {
+                          page: index,
+                          size: 15,
+                          type: allFlows?.selectedTab || 'all',
+                        },
+                        search
+                      ]),
+                    );
+                   
+                 
+                  }
+                }}
+              />
         </View>
       </Layout>
+      </Drawer>
     </>
+    
   );
 };
 export default FlowsMainPage;

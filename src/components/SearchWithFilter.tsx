@@ -66,9 +66,11 @@ const SearchWithFilter: React.FC<RenderSearchTypes> = ({
             styles.dropdownTextInputStyle,
             {
               width: filterNotNeeded
-                ? normaliseDesigns(295)
+                ?normaliseDesigns(298)
+                // normaliseDesigns(295)
                 : normaliseDesigns(235),
             },
+            
           ]}
           clearOnFocus={false}
           closeOnBlur={true}

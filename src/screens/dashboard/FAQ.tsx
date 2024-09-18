@@ -268,10 +268,10 @@ const FAQ: FC<FAQScreenProps> = ({navigation, route}) => {
         <Text
           size="body4"
           fontVariant="bold"
-          style={{marginBottom: 10, marginTop: 30}}>
+          style={{ marginTop: 24}}>
           FAQ's
         </Text>
-        <View style={{marginVertical: 20}}>
+        <View style={{marginVertical: 24}}>
           {faqContent.map((item, index) => (
             <FAQTile
               onSelect={index => {

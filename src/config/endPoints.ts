@@ -69,7 +69,18 @@ const endPoints = {
   GET_TEACHER_OBSERVATION_COUNTS:`analytics/teacherObservation`,
   GET_STATES_ANALYTICS:`analytics/metadata/states`,
   GET_AREAS_ANALYTICS:`analytics/metadata/areas`,
+  GET_AREAS_SCHOOL:`analytics/metadata/schools`,
   GET_DISTRICS_ANALYTICS:`analytics/metadata/districts`,
+  GET_INDICATORS:`rubrics/indicatorsByNameSearch?searchCriteria=`,
+  USER_SEARCH_LIST:`analytics/metadata/search`,
+  USER_SEARCH_LIST_BY_ID:`analytics/metadata/search`,
+  ANALYTICS_DASHBOARD_FILTER: `analytics/metadata/observation/dashBoardFilter/`,
+  ANALYTICS_OBSERVATION_BY_ID:`analytics/metadata/observation/`,
+  ANALYTICS_SEARCH:`analytics/metadata/search?searchCriteria=`,
+  ALL_USER_NOTIFICATION:`notification/allUserNotification/`,
+  CREATE_NOTIFICATION:`notification/newEvent`,
+  NOTIFICATION_FLAG_UPDATE:`notification/updateUser?`,
+  COUNT_OF_STATE_DISTRICT_SCHOOL:`analytics/countOfStateAndAreaAndSchool`
   
 
 }

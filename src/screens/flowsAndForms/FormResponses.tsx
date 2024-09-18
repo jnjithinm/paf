@@ -61,9 +61,12 @@ import {
   sendReminderForm,
 } from '../../redux/features/flowsSlice';
 import {ItemType} from '../../config/types';
-import DateTimePickerComponent from '../../components/DateTimePickerComponent';
+//import DateTimePickerComponent from '../../components/DateTimePickerComponent';
 import {FlowsAndFormsStackParamList} from '../../navigation/FlowsAndFormsStack';
 import {RenderPrintResponsesModalContent} from './modalContentRenderals/printResponsesModalContent';
+import CalendarPicker from '../../components/ScheduleContaint';
+import Calendar from '../../components/ReminderCalandar';
+
 
 type FormResponsesNavigationProp = StackNavigationProp<
   FlowsAndFormsStackParamList,
@@ -492,65 +495,174 @@ const RenderSendReminderModal: FC<RenderSendReminderModalTypes> = ({
   };
 
   return (
-    <View
-      style={{
-        justifyContent: 'space-between',
-        paddingHorizontal: 10,
-        width: '100%',
-      }}>
-      <DateTimePickerComponent
-        selectedDate={selectedDate}
-        onDateChange={handleDateSelection}
-        showPicker={isPickeOpen}
-      />
-      <View style={{width: '100%'}}>
+    // <View
+    //   style={{
+    //     justifyContent: 'space-between',
+    //     paddingHorizontal: 10,
+    //     width: '100%',
+    //   }}>
+    //   {/* <DateTimePickerComponent
+    //     selectedDate={selectedDate}
+    //     onDateChange={handleDateSelection}
+    //     showPicker={isPickeOpen}
+    //   /> */}
+    //   <View style={{width: '100%'}}>
+    //     <LabeledSingleRadioButton
+    //       selectedValue={selectedRemindMethod}
+    //       value={{
+    //         value: 'To All Pending Users',
+    //         label:
+    //           '1. Send reminder to all pending users to submit their responses.',
+    //       }}
+    //       onValueChange={value => {
+    //         setSelectedRemindMethod(value);
+    //       }}
+    //     />
+    //     {selectedRemindMethod?.value === 'To All Pending Users' &&
+    //       pendingUsersListForSendReminder &&
+    //       pendingUsersListForSendReminder?.dataList?.Users?.length > 0 && (
+    //         <View
+    //           style={{
+    //             borderWidth: 1,
+    //             borderColor: '#F4C24A',
+    //             width: '80%',
+    //             borderRadius: 8,
+    //             padding: 8,
+    //           }}>
+    //           <Text size="small3" fontVariant="bold">
+    //             List of pending users
+    //           </Text>
+    //           <ScrollView
+    //             style={{marginTop: 5, maxHeight: normaliseDesigns(75)}}
+    //             showsVerticalScrollIndicator>
+    //             {pendingUsersListForSendReminder?.dataList?.Users?.map(item => (
+    //               <View
+    //                 style={{flexDirection: 'row', marginVertical: 2}}
+    //                 key={item.userId}>
+    //                 <Text size="small2" fontVariant="semiBold">
+    //                   {item.name}
+    //                 </Text>
+    //               </View>
+    //             ))}
+    //           </ScrollView>
+    //         </View>
+    //       )}
+    //     <View style={{marginVertical: 3}}>
+    //       <LabeledSingleRadioButton
+    //         selectedValue={selectedRemindMethod}
+    //         value={{value: 'By Date', label: '2. Select reminder'}}
+    //         onValueChange={value => {
+    //           setSelectedRemindMethod(value);
+    //         }}
+    //       />
+    //       <TouchableOpacity
+    //         style={{
+    //           borderWidth: 1,
+    //           borderColor: '#CBD2D9',
+    //           flexDirection: 'row',
+    //           justifyContent: 'space-between',
+    //           borderRadius: 7,
+    //           width: '80%',
+    //           paddingHorizontal: 7,
+    //           paddingVertical: 8,
+    //         }}
+    //         onPress={() => {
+    //           setIsPickerOpen(true);
+    //         }}
+    //         disabled={selectedRemindMethod?.value !== 'By Date'}>
+    //         <Text
+    //           style={{
+    //             color: selectedDate ? colors.blackColor : '#ABB4BD',
+    //           }}
+    //           size="small2">
+    //           {selectedDate
+    //             ? moment(selectedDate as string)
+    //                 ?.format('MM/DD/YYYY')
+    //                 ?.toString()
+    //             : 'Select date'}
+    //         </Text>
+    //         <Icon name="calendar_icon" />
+    //       </TouchableOpacity>
+    //       <CalendarPicker
+    //       selectedDate={selectedDate}
+    //       onDateChange={handleDateSelection}
+    //       showPicker={isPickeOpen}/>
+    //     </View>
+
+    //     <View style={{marginTop: 3}}>
+    //       <LabeledSingleRadioButton
+    //         selectedValue={selectedRemindMethod}
+    //         value={{
+    //           value: 'By User Groups',
+    //           label: '3. Form assignment reminder',
+    //         }}
+    //         onValueChange={value => {
+    //           setSelectedRemindMethod(value);
+    //         }}
+    //       />
+    //       <MultiSelectDropdown
+    //         options={
+    //           pendingUsersListForSendReminder?.dataList?.UserGroups?.map(
+    //             item => ({
+    //               value: item.userGroupId?.toString(),
+    //               label: item.groupName,
+    //             }),
+    //           ) || []
+    //         }
+    //         selectedValues={selectedUserGroups}
+    //         setSelectedValues={setSelectedUserGroups}
+    //         style={{paddingVertical: 0, width: '80%'}}
+    //         disabled={selectedRemindMethod?.value !== 'By User Groups'}
+    //         onSearch={search => {}}
+    //       />
+    //     </View>
+    //   </View>
+    //   <Button
+    //     text="Send"
+    //     style={{marginTop: normaliseDesigns(150)}}
+    //     active={Boolean(
+    //       (selectedRemindMethod?.value === 'To All Pending Users' &&
+    //         pendingUsersListForSendReminder &&
+    //         pendingUsersListForSendReminder?.dataList?.Users?.length > 0) ||
+    //         (selectedRemindMethod?.value === 'By User Groups' &&
+    //           selectedUserGroups?.length > 0) ||
+    //         (selectedRemindMethod?.value === 'By Date' && selectedDate !== ''),
+    //     )}
+    //     onPress={handleOnPressSend}
+    //   />
+    // </View>
+
+    <View style={{ justifyContent: 'space-between', paddingHorizontal: 10, width: '100%' }}>
+      <View style={{ width: '100%' }}>
         <LabeledSingleRadioButton
           selectedValue={selectedRemindMethod}
           value={{
             value: 'To All Pending Users',
-            label:
-              '1. Send reminder to all pending users to submit their responses.',
+            label: '1. Send reminder to all pending users to submit their responses.',
           }}
-          onValueChange={value => {
-            setSelectedRemindMethod(value);
-          }}
+          onValueChange={(value) => setSelectedRemindMethod(value)}
         />
+
         {selectedRemindMethod?.value === 'To All Pending Users' &&
           pendingUsersListForSendReminder &&
           pendingUsersListForSendReminder?.dataList?.Users?.length > 0 && (
-            <View
-              style={{
-                borderWidth: 1,
-                borderColor: '#F4C24A',
-                width: '80%',
-                borderRadius: 8,
-                padding: 8,
-              }}>
-              <Text size="small3" fontVariant="bold">
-                List of pending users
-              </Text>
-              <ScrollView
-                style={{marginTop: 5, maxHeight: normaliseDesigns(75)}}
-                showsVerticalScrollIndicator>
-                {pendingUsersListForSendReminder?.dataList?.Users?.map(item => (
-                  <View
-                    style={{flexDirection: 'row', marginVertical: 2}}
-                    key={item.userId}>
-                    <Text size="small2" fontVariant="semiBold">
-                      {item.name}
-                    </Text>
+            <View style={{ borderWidth: 1, borderColor: '#F4C24A', width: '80%', borderRadius: 8, padding: 8 }}>
+              <Text size="small3" fontVariant="bold">List of pending users</Text>
+              <ScrollView style={{ marginTop: 5, maxHeight: 75 }} showsVerticalScrollIndicator>
+                {pendingUsersListForSendReminder?.dataList?.Users?.map((item) => (
+                  <View style={{ flexDirection: 'row', marginVertical: 2 }} key={item.userId}>
+                    <Text size="small2" fontVariant="semiBold">{item.name}</Text>
                   </View>
                 ))}
               </ScrollView>
             </View>
           )}
-        <View style={{marginVertical: 3}}>
+
+        <View style={{ marginVertical: 3 }}>
           <LabeledSingleRadioButton
             selectedValue={selectedRemindMethod}
-            value={{value: 'By Date', label: '2. Select reminder'}}
-            onValueChange={value => {
-              setSelectedRemindMethod(value);
-            }}
+            value={{ value: 'By Date', label: '2. Select reminder' }}
+            onValueChange={(value) => setSelectedRemindMethod(value)}
           />
           <TouchableOpacity
             style={{
@@ -563,65 +675,71 @@ const RenderSendReminderModal: FC<RenderSendReminderModalTypes> = ({
               paddingHorizontal: 7,
               paddingVertical: 8,
             }}
-            onPress={() => {
-              setIsPickerOpen(true);
-            }}
-            disabled={selectedRemindMethod?.value !== 'By Date'}>
-            <Text
-              style={{
-                color: selectedDate ? colors.blackColor : '#ABB4BD',
-              }}
-              size="small2">
-              {selectedDate
-                ? moment(selectedDate as string)
-                    ?.format('MM/DD/YYYY')
-                    ?.toString()
-                : 'Select date'}
+            onPress={() => setIsPickerOpen(true)} // Open calendar picker
+            disabled={selectedRemindMethod?.value !== 'By Date'}
+          >
+            <Text style={{ color: selectedDate ? colors.blackColor : '#ABB4BD' }} size="small2">
+              {selectedDate ? moment(selectedDate).format('MM/DD/YYYY') : 'Select date'}
             </Text>
-            <Icon name="calendar_icon" />
+             <Icon name= {isPickeOpen?'calendar_color_icon':'calendar_icon'} />
           </TouchableOpacity>
+          
         </View>
-        <View style={{marginTop: 3}}>
+        {isPickeOpen && (
+  <View
+    style={{
+      borderWidth: 1,
+      borderColor: '#CBD2D9',
+      borderRadius: 10,
+      top: 5,
+      //padding: 10, // Adjust padding for proper alignment
+      width: '80%',  // Use the same width as the TouchableOpacity
+      backgroundColor: '#FFFFFF',
+      justifyContent: 'center', // Center the calendar in the parent container
+    }}
+  >
+    <Calendar
+      visible={isPickeOpen}
+      onDateChange={handleDateSelection}
+      onClose={() => setIsPickerOpen(false)} // Close the calendar when "X" is clicked
+    />
+  </View>
+)}
+
+       {!isPickeOpen && <View style={{ marginTop: 3 }}>
           <LabeledSingleRadioButton
             selectedValue={selectedRemindMethod}
-            value={{
-              value: 'By User Groups',
-              label: '3. Form assignment reminder',
-            }}
-            onValueChange={value => {
-              setSelectedRemindMethod(value);
-            }}
+            value={{ value: 'By User Groups', label: '3. Form assignment reminder' }}
+            onValueChange={(value) => setSelectedRemindMethod(value)}
           />
           <MultiSelectDropdown
-            options={
-              pendingUsersListForSendReminder?.dataList?.UserGroups?.map(
-                item => ({
-                  value: item.userGroupId?.toString(),
-                  label: item.groupName,
-                }),
-              ) || []
-            }
+            options={pendingUsersListForSendReminder?.dataList?.UserGroups?.map((item) => ({
+              value: item.userGroupId?.toString(),
+              label: item.groupName,
+            })) || []}
             selectedValues={selectedUserGroups}
             setSelectedValues={setSelectedUserGroups}
-            style={{paddingVertical: 0, width: '80%'}}
+            style={{ paddingVertical: 0, width: '80%' }}
             disabled={selectedRemindMethod?.value !== 'By User Groups'}
-            onSearch={search => {}}
           />
         </View>
+}
       </View>
+
       <Button
         text="Send"
-        style={{marginTop: normaliseDesigns(150)}}
+        style={{ marginTop: 150 }}
         active={Boolean(
           (selectedRemindMethod?.value === 'To All Pending Users' &&
-            pendingUsersListForSendReminder &&
             pendingUsersListForSendReminder?.dataList?.Users?.length > 0) ||
-            (selectedRemindMethod?.value === 'By User Groups' &&
-              selectedUserGroups?.length > 0) ||
-            (selectedRemindMethod?.value === 'By Date' && selectedDate !== ''),
+            (selectedRemindMethod?.value === 'By User Groups' && selectedUserGroups?.length > 0) ||
+            (selectedRemindMethod?.value === 'By Date' && selectedDate)
         )}
         onPress={handleOnPressSend}
       />
+
+      {/* Calendar Picker Modal */}
+     
     </View>
   );
 };
@@ -666,7 +784,7 @@ const ShowResponseCountAndActions: FC<ShowResponseCountAndActionsTypes> = ({
           Responses ({responseCount})
         </Text>
       </View>
-      <View style={{flexDirection: 'row'}}>
+      {/* <View style={{flexDirection: 'row'}}>
         <TouchableOpacity onPress={onPressReminder}>
           <Icon
             name="admin_response_clock"
@@ -678,7 +796,20 @@ const ShowResponseCountAndActions: FC<ShowResponseCountAndActionsTypes> = ({
         <TouchableOpacity onPress={onPressPrint}>
           <Icon name="print_icon" width={22} height={22} />
         </TouchableOpacity>
-      </View>
+      </View> */}
+      <View style={{ flexDirection: 'row' }}>
+  <TouchableOpacity onPress={onPressReminder}>
+    <Icon
+      name="admin_response_clock"
+      width={22}
+      height={22}
+      style={{ marginRight: 12 }} // Add marginRight to create a gap
+    />
+  </TouchableOpacity>
+  <TouchableOpacity onPress={onPressPrint}>
+    <Icon name="print_icon" width={22} height={22} />
+  </TouchableOpacity>
+</View>
     </View>
     <ResponseAccessToggle
       label={'Accepting Responses'}

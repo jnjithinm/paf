@@ -5,6 +5,7 @@ import endPoints from '../../config/endPoints';
 import {PaginationRequest} from './usersSlice';
 import {ErrorResponse, setLoading} from './authSlice';
 import {ErrorStatusObject} from '../../config/types';
+import { LogBox } from 'react-native';
 
 export interface FlowItem {
   flowId: number;
@@ -119,6 +120,9 @@ export const getAllFlows = createAsyncThunk<
         endPoints.GET_ALL_FLOWS + loggedInUserName + `&userId=${userId}`,
         payload,
       );
+      console.log("allfows---",endPoints.GET_ALL_FLOWS + loggedInUserName + `&userId=${userId}`,
+        payload);
+      
       return response.data as GetAllFlowsResponse;
     } catch (error: any) {
       return rejectWithValue(error.response.data);

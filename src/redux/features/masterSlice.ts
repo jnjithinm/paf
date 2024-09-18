@@ -160,6 +160,78 @@ interface GetSchoolResponse {
 
 type GetAllSchoolResponsePayload = GetSchoolResponse['payload'];
 
+interface AllUserNotificationRequest {
+  page: number;
+  size: string;
+  type: string;
+}
+
+interface YesterDayNotification {
+  userNotificationId: number;
+  templateId: number;
+  content: string;
+  isRead: boolean;
+  createdDate: string;
+}
+
+interface WeekNotification {
+  userNotificationId: number;
+  templateId: number;
+  content: string;
+  isRead: boolean;
+  createdDate: string;
+}
+interface MonthNotification {
+  userNotificationId: number;
+  templateId: number;
+  content: string;
+  isRead: boolean;
+  createdDate: string;
+}
+interface TodayNotification {
+  userNotificationId: number;
+  templateId: number;
+  content: string;
+  isRead: boolean;
+  createdDate: string;
+}
+
+interface AllUserNotificationResponse {
+  payload: {
+    message: string;
+    dataList: {
+      yesterday: YesterDayNotification[];
+      week: WeekNotification[];
+      month: MonthNotification[];
+      today: TodayNotification[];
+      todayCount: number;
+      yesterdayCount: number;
+      isNewNotification: boolean;
+      weekCount: number;
+      monthCount: number;
+    };
+  };
+  status: number;
+}
+
+type AllUserNotificationResponsePayload =
+  AllUserNotificationResponse['payload'];
+
+interface CreateNotificationRequest {
+  userId: number;
+  startDateTime: string;
+  endDateTime: string;
+  emailList: [];
+  title: string;
+}
+
+export interface CreateNotificationResponse {
+  payload: any;
+  message: string;
+}
+
+type CreateNotificationResponsePayload = CreateNotificationResponse[];
+
 export const setMasterShowMessage = createAction<ErrorStatusObject | null>(
   'SET_MASTER_SHOW_MESSAGE',
 );
@@ -199,22 +271,22 @@ export const getIndicatorsByDomainId = createAsyncThunk<
   },
 );
 
-export const getRoles = createAsyncThunk<GetRolesResponse,[ PaginationRequest,string?]>(
+export const getRoles = createAsyncThunk<
+  GetRolesResponse,
+  [PaginationRequest, string?]
+>(
   'master/getRoles',
-  async ([payload,searchCriteria], {dispatch, rejectWithValue}) => {
+  async ([payload, searchCriteria], {dispatch, rejectWithValue}) => {
     try {
       // dispatch(setLoading(true));
       let response;
-      if(searchCriteria){
+      if (searchCriteria) {
         response = await api.post(
           endPoints.GET_ROLES_BY_SEARCH + `searchCriteria=${searchCriteria}`,
           payload,
         );
-      }else{
-        response = await api.post(
-          endPoints.GET_ROLES ,
-          payload,
-        );
+      } else {
+        response = await api.post(endPoints.GET_ROLES, payload);
       }
       return response.data as GetRolesResponse;
     } catch (error: any) {
@@ -237,10 +309,7 @@ export const getStates = createAsyncThunk<GetStatesResponse, PaginationRequest>(
       //     payload,
       //   );
       // }else{
-        response = await api.post(
-          endPoints.GET_STATES ,
-          payload,
-        );
+      response = await api.post(endPoints.GET_STATES, payload);
       // }
       return response.data as GetStatesResponse;
     } catch (error: any) {
@@ -253,49 +322,48 @@ export const getStates = createAsyncThunk<GetStatesResponse, PaginationRequest>(
 
 export const getDistricts = createAsyncThunk<
   GetDistrictResponse,
-  [PaginationRequest,string?]
->('master/getDistricts', async ([payload,searchCriteria], {dispatch, rejectWithValue}) => {
-  try {
-    // dispatch(setLoading(true));
-    let response;
-    if(searchCriteria){
-      response = await api.post(
-        endPoints.GET_DISTRICTS_BY_SEARCH + `searchCriteria=${searchCriteria}`,
-        payload,
-      );
-    }else{
-      response = await api.post(
-        endPoints.GET_DISTRICTS ,
-        payload,
-      );
-    }
-    return response.data as GetDistrictResponse;
-  } catch (error: any) {
-    return rejectWithValue(error.response.data);
-  } finally {
-    // dispatch(setLoading(false));
-  }
-});
-
-export const getAreas = createAsyncThunk<GetAreaResponse, [PaginationRequest,string?]>(
-  'master/getAreas',
-  async ([payload,searchCriteria], {dispatch, rejectWithValue}) => {
+  [PaginationRequest, string?]
+>(
+  'master/getDistricts',
+  async ([payload, searchCriteria], {dispatch, rejectWithValue}) => {
     try {
       // dispatch(setLoading(true));
       let response;
-      if(searchCriteria){
+      if (searchCriteria) {
+        response = await api.post(
+          endPoints.GET_DISTRICTS_BY_SEARCH +
+            `searchCriteria=${searchCriteria}`,
+          payload,
+        );
+      } else {
+        response = await api.post(endPoints.GET_DISTRICTS, payload);
+      }
+      return response.data as GetDistrictResponse;
+    } catch (error: any) {
+      return rejectWithValue(error.response.data);
+    } finally {
+      // dispatch(setLoading(false));
+    }
+  },
+);
+
+export const getAreas = createAsyncThunk<
+  GetAreaResponse,
+  [PaginationRequest, string?]
+>(
+  'master/getAreas',
+  async ([payload, searchCriteria], {dispatch, rejectWithValue}) => {
+    try {
+      // dispatch(setLoading(true));
+      let response;
+      if (searchCriteria) {
         response = await api.post(
           endPoints.GET_AREAS_BY_SEARCH + `searchCriteria=${searchCriteria}`,
           payload,
         );
-      }else{
-        response = await api.post(
-          endPoints.GET_AREAS ,
-          payload,
-        );
-        console.log("hhhh",api.post(
-          endPoints.GET_AREAS ,
-          payload,))
+      } else {
+        response = await api.post(endPoints.GET_AREAS, payload);
+        //console.log('hhhh', api.post(endPoints.GET_AREAS, payload));
       }
       return response.data as GetAreaResponse;
     } catch (error: any) {
@@ -308,29 +376,106 @@ export const getAreas = createAsyncThunk<GetAreaResponse, [PaginationRequest,str
 
 export const getSchools = createAsyncThunk<
   GetSchoolResponse,
-  [PaginationRequest,string?]
->('master/getSchools', async ([payload,searchCriteria], {dispatch, rejectWithValue}) => {
-  try {
-    // dispatch(setLoading(true));
-    let response;
-    if(searchCriteria){
-      response = await api.post(
-        endPoints.GET_SCHOOLS_BY_SEARCH + `searchCriteria=${searchCriteria}`,
-        payload,
-      );
-    }else{
-      response = await api.post(
-        endPoints.GET_SCHOOLS ,
-        payload,
-      );
+  [PaginationRequest, string?]
+>(
+  'master/getSchools',
+  async ([payload, searchCriteria], {dispatch, rejectWithValue}) => {
+    try {
+      // dispatch(setLoading(true));
+      let response;
+      if (searchCriteria) {
+        response = await api.post(
+          endPoints.GET_SCHOOLS_BY_SEARCH + `searchCriteria=${searchCriteria}`,
+          payload,
+        );
+      } else {
+        response = await api.post(endPoints.GET_SCHOOLS, payload);
+      }
+      return response.data as GetSchoolResponse;
+    } catch (error: any) {
+      return rejectWithValue(error.response.data);
+    } finally {
+      // dispatch(setLoading(false));
     }
-    return response.data as GetSchoolResponse;
-  } catch (error: any) {
-    return rejectWithValue(error.response.data);
-  } finally {
-    // dispatch(setLoading(false));
+  },
+);
+
+export const allUserNotification = createAsyncThunk<
+  AllUserNotificationResponse,
+  [AllUserNotificationRequest, any?]
+>(
+  'notification/allUserNotification',
+  async ([userId, payload], {dispatch, rejectWithValue}) => {
+    try {
+      //dispatch(setLoading(true));
+      const response = await api.post(
+        endPoints.ALL_USER_NOTIFICATION + userId + `?isVisible=mobile`,
+        payload,
+      );
+    dispatch(updateFirebaseFlag())
+      //console.log(response,'<====')
+
+      return response.data as AllUserNotificationResponse;
+    } catch (error: any) {
+      return rejectWithValue(error.response.data);
+    } finally {
+      dispatch(setLoading(false));
+    }
+  },
+);
+
+export const createNotification = createAsyncThunk<
+  CreateNotificationResponse,
+  [CreateNotificationRequest, string?]
+>(
+  'notification/createNotification',
+  async ([payload], {dispatch, rejectWithValue}) => {
+    try {
+      dispatch(setLoading(true));
+      const response = await api.post(endPoints.CREATE_NOTIFICATION, payload);
+
+      return response.data as CreateNotificationResponse;
+    } catch (error: any) {
+      console.log(error, '----error');
+
+      return rejectWithValue(error.response.data);
+    } finally {
+      dispatch(setLoading(false));
+    }
+  },
+);
+
+export const readNotification = createAsyncThunk(
+  'notification/readNotification',
+  async (userNotificationId, { rejectWithValue }) => {
+    try {
+      const response = await api.get(
+        `notification/read?userNotificationId=${userNotificationId}`
+      );
+      //console.log("ll;;;=====",response.data);
+      
+      return response.data; // Ensure the correct data is returned if needed
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.error || error.message);
+    }
   }
-});
+);
+
+export const updateFirebaseFlag = createAsyncThunk(
+  'notification/updateFirebaseFlag',
+  async (_, {dispatch, rejectWithValue,getState}) => {
+    try {
+      let userId = getState().auth?.userData?.id;
+      const  response = await api.put(`notification/updateUser?userId=${userId}`);
+ 
+
+      return response.data?.payload;
+    } catch (error) {
+      return rejectWithValue(error.response.data?.error);
+    }
+  }
+);
+
 
 interface InitialState {
   allDomains: GetDomainsResponse | null;
@@ -342,13 +487,15 @@ interface InitialState {
   allDistricts: GetAllDistrictResponsePayload | null;
   activeDistricts: GetAllDistrictResponsePayload | null;
   inactiveDistricts: GetAllDistrictResponsePayload | null;
-  allAreas: GetAreaResponsePayload | null,
-  activeAreas:GetAreaResponsePayload | null,
-  inactiveAreas:GetAreaResponsePayload | null,
+  allAreas: GetAreaResponsePayload | null;
+  activeAreas: GetAreaResponsePayload | null;
+  inactiveAreas: GetAreaResponsePayload | null;
   allSchools: GetAllSchoolResponsePayload | null;
   activeSchools: GetAllSchoolResponsePayload | null;
   inactiveSchools: GetAllSchoolResponsePayload | null;
   masterShowMessage: ErrorStatusObject | null;
+  notificationResponse: AllUserNotificationResponsePayload | null;
+  createNotificationRes: CreateNotificationResponsePayload | null;
   errorMessage: string;
 }
 
@@ -363,13 +510,15 @@ const initialState: InitialState = {
   activeDistricts: null,
   inactiveDistricts: null,
   allAreas: null,
-  activeAreas:null,
-  inactiveAreas:null,
+  activeAreas: null,
+  inactiveAreas: null,
   allSchools: null,
   activeSchools: null,
   inactiveSchools: null,
   masterShowMessage: null,
+  notificationResponse: null,
   errorMessage: '',
+  createNotificationRes: null,
 };
 
 const masterSlice = createSlice({
@@ -414,6 +563,24 @@ const masterSlice = createSlice({
       })
       .addCase(getStates.fulfilled, (state, action) => {
         state.states = action.payload.payload;
+      })
+      .addCase(allUserNotification.rejected, (state, action) => {
+        state.notificationResponse = null;
+      })
+      .addCase(allUserNotification.pending, state => {
+        // state.states = null;
+      })
+      .addCase(allUserNotification.fulfilled, (state, action) => {
+        state.notificationResponse = action.payload.payload;
+      })
+      .addCase(createNotification.rejected, (state, action) => {
+        state.createNotificationRes = null;
+      })
+      .addCase(createNotification.pending, state => {
+        // state.states = null;
+      })
+      .addCase(createNotification.fulfilled, (state, action) => {
+        state.createNotificationRes = action.payload.payload;
       })
       .addCase(getDistricts.rejected, (state, action) => {
         state.allDistricts = null;

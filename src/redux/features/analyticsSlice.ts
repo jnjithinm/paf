@@ -5,7 +5,9 @@ import endPoints from '../../config/endPoints';
 import {PaginationRequest} from './usersSlice';
 import {ErrorResponse, setLoading} from './authSlice';
 import {ErrorStatusObject} from '../../config/types';
-
+import {boolean, string} from 'yup';
+import {DateFilterOption} from '../../components/Calendar';
+import {filterPayload} from '../../utils/functions/apiUtils';
 interface GetUserCountAnalyticsRequest {
   userStatusType: string;
   dateType: string;
@@ -13,19 +15,22 @@ interface GetUserCountAnalyticsRequest {
   endDate: string;
 }
 
-interface GetUserCountAnalyticsUserAndRoleResponse{
+interface GetUserCountAnalyticsUserAndRoleResponse {
   payload: {
-      message: string;
-      dataList: {
-        userCount: Array<[string, string | number]>;
-      }
-  },
-  status: number
+    message: string;
+    dataList: {
+      userCount: Array<[string, string | number]>;
+    };
+  };
+  status: number;
 }
 
+export const resetObservationById = createAction<void>(
+  'RESET_OBSERVATION_BY_ID',
+);
 type GetUserCountAnalyticsUserAndRoleResponsePayload =
-GetUserCountAnalyticsUserAndRoleResponse['payload'];
-  
+  GetUserCountAnalyticsUserAndRoleResponse['payload'];
+
 interface GetUserCountAnalyticsResponse {
   payload: {
     message: string;
@@ -143,16 +148,16 @@ interface GetTeacherObservationAnalyticsResponse {
   payload: {
     message: string;
     dataList: {
-      totalObservationAverage:number[];
-      totalIndicatorCount:number[];
-      totalObservationCount:number[];
+      totalObservationAverage: number[];
+      totalIndicatorCount: number[];
+      totalObservationCount: number[];
     };
   };
   status: number;
 }
 
 type GetTeacherObservationAnalyticsResponsePayload =
-GetTeacherObservationAnalyticsResponse['payload'];
+  GetTeacherObservationAnalyticsResponse['payload'];
 
 interface GetObservationAnalyticsRequest {
   userId: number;
@@ -224,6 +229,20 @@ interface GetStatesResponse {
 
 type GetStatesResponsePayload = GetStatesResponse['payload'];
 
+interface GetStatesDistrictSchoolResponse {
+  payload: {
+    dataList: {
+      totalSchoolCount: number[]; // Array of numbers for total school count
+      locationAnalytics: (string | number)[][]; // Array of arrays containing either string or number
+      totalAreaCount: number[]; // Array of numbers for total area count
+      totalDistrictCount: number[]; // Array of numbers for total district count
+    };
+  };
+  status: number;
+}
+
+type GetStatesDistrictSchoolResponsePayload = GetStatesDistrictSchoolResponse['payload'];
+
 export interface District {
   stateId: number;
   stateCode: string;
@@ -244,6 +263,7 @@ interface GetDistrictResponse {
     message: string;
     dataList: District[];
     totalCount: number;
+    
   };
   status: number;
 }
@@ -276,7 +296,49 @@ interface GetAreaResponse {
 }
 
 type GetAreaResponsePayload = GetAreaResponse['payload'];
+export type EvidenceResponse = {
+  evidenceId: number;
+  domainName: string;
+  domainId: number;
+  indicatorId: number;
+  indicatorName: string;
+  averageRating: number;
+  attachmentResponse: AttachmentResponse[];
+  fileCount: FileCount;
+};
 
+export type AttachmentResponse = {
+  attachmentId: number;
+  fileName: string;
+  fileType: string;
+  fileUrl: string;
+  evidenceId: number;
+};
+
+type FileCount = {
+  Video: number;
+  Audio: number;
+  Image: number;
+  Document: number;
+};
+
+type GetObservationByIdResponse = {
+  payload: {
+    observationId: number;
+    observationDate: string;
+    userId: number;
+    userGroupId: number;
+    userName: string;
+    userGroup: string;
+    feedbackDescription: string;
+    observationStatus: ObservationStatus;
+    observationAvgRatings: number;
+    userImage: string | null;
+    evidenceResponseList: EvidenceResponse[];
+  };
+  status: number;
+};
+type GetObservationByIdResponsePayload = GetObservationByIdResponse['payload'];
 export interface SchoolType {
   schoolId: number;
   schoolName: string;
@@ -323,9 +385,263 @@ export const getUserCountAnalytics = createAsyncThunk<
   }
 });
 
+export const getObservationById = createAsyncThunk<
+  GetObservationByIdResponse,
+  number,
+  {rejectValue: ErrorResponse}
+>('observation/getObservationById', async (id, {dispatch, rejectWithValue}) => {
+  try {
+    dispatch(setLoading(true));
+    const response = await api.get(endPoints.ANALYTICS_OBSERVATION_BY_ID + id);
+    console.log(
+      '[API] Success:--------',
+      endPoints.OBSERVATION_ANALYTICS_BY_USER_ID + id,
+    );
+    console.log('response===', response?.data);
+    return response.data as GetObservationByIdResponse;
+  } catch (error: any) {
+    return rejectWithValue(error.response.data);
+  } finally {
+    dispatch(setLoading(false));
+  }
+});
+
+interface Observation {
+  userAssessed: string;
+  userImage: string | null;
+  reportedBy: string;
+  reportedByImage: string | null;
+  ratings: number;
+  observationId: number;
+  createdDate: string;
+  observationStatus: ObservationStatus;
+}
+type ObservationRequest = {
+  userId?: string;
+  userGroupId?: string;
+  ratings?: number;
+  filterType: FilterType;
+  dateType?: DateFilterOption;
+  startDate?: string;
+  endDate?: string;
+  paginationRequest: PaginationRequest;
+};
+type GetAllObservationsResponse = {
+  payload: {
+    message: string;
+    dataList: {
+      averageRating: number | null;
+      byMe: number;
+      forMe: number;
+      observations: Observation[];
+      pointStatus: any | null;
+      progressPoint: any | null;
+      schoolName: string | null;
+      total: number;
+    };
+
+    totalCount: number;
+  };
+  status: number;
+};
+interface UserList {
+  userId: number;
+  userName: string;
+  name: string;
+  contactNumber: string;
+  email: string;
+  dateOfBirth: string;
+  grade: string;
+  role: string;
+  state: string;
+  district: string;
+  area: string;
+  school: string;
+  citizenship: string;
+  userType: string;
+  status: true;
+  roleId: number;
+  stateId: number;
+  districtId: number;
+  areaId: number;
+  schoolId: number;
+  createdDate: string;
+}
+
+interface GetUserSearchAnalyticsResponse {
+  payload: {
+    message: string;
+    dataList: UserList[];
+  };
+  status: number;
+}
+
+type GetUserSearchAnalyticsResponsePayload =
+  GetUserSearchAnalyticsResponse['payload'];
+
+export const getUserSearchAnalytics = createAsyncThunk<
+  GetUserSearchAnalyticsResponse,
+  void,
+  {rejectValue: ErrorResponse}
+>('analytics/search', async (_, {dispatch, rejectWithValue}) => {
+  try {
+    dispatch(setLoading(true));
+    const response = await api.get(endPoints.USER_SEARCH_LIST);
+    return response.data as GetUserSearchAnalyticsResponse;
+  } catch (error: any) {
+    return rejectWithValue(error.response.data);
+  } finally {
+    dispatch(setLoading(false));
+  }
+});
+
+export const getUserSearchAnalyticsById = createAsyncThunk<
+  GetUserSearchAnalyticsResponse,
+  void,
+  {rejectValue: ErrorResponse}
+>('analytics/search', async (_, {dispatch, rejectWithValue}) => {
+  try {
+    dispatch(setLoading(true));
+    const response = await api.get(endPoints.USER_SEARCH_LIST);
+    return response.data as GetUserSearchAnalyticsResponse;
+  } catch (error: any) {
+    return rejectWithValue(error.response.data);
+  } finally {
+    dispatch(setLoading(false));
+  }
+});
+
+interface Tags {
+  tagId: number;
+  tagName: string;
+}
+
+interface Indicatorsanalytics {
+  domainId: number;
+  domainName: string;
+  indicatorId: number;
+  indicatorName: string;
+  indicatorDescription: string;
+  tags: Tags[];
+  status: boolean;
+}
+
+interface GetIndicatorsResponse {
+  payload: {
+    message: string;
+    dataList: Indicatorsanalytics[];
+  };
+  status: number;
+}
+type GetAllObservationsResponsePayload = GetAllObservationsResponse['payload'];
+
+type GetIndicatorsResponsePayload = GetIndicatorsResponse['payload'];
+
+export const getIndicators = createAsyncThunk<
+  GetIndicatorsResponse,
+  string,
+  {rejectValue: ErrorResponse}
+>(
+  'analytics/indicatorsByNameSearch?searchCriteria',
+  async (indicatorName, {dispatch, rejectWithValue}) => {
+    try {
+      dispatch(setLoading(true));
+      const response = await api.get(endPoints.GET_INDICATORS + indicatorName);
+      console.log(
+        'endPoints.GET_INDICATORS + indicatorName================',
+        endPoints.GET_INDICATORS + indicatorName,
+      );
+
+      return response.data as GetIndicatorsResponse;
+    } catch (error: any) {
+      return rejectWithValue(error.response.data);
+    } finally {
+      dispatch(setLoading(false));
+    }
+  },
+);
+
+interface userList {
+  userId: 1;
+  userName: string;
+  name:string;
+  contactNumber: string;
+  email: string;
+  dateOfBirth: string;
+  grade: string;
+  role: string;
+  state: string;
+  district: string;
+  area: string;
+  school: string;
+  citizenship: string;
+  userType: string;
+  status: boolean;
+  roleId: number;
+  stateId: number;
+  districtId: number;
+  areaId: number;
+  schoolId: number;
+  createdDate: string;
+}
+
+interface GetSearchResponse {
+  payload: {
+    message: string;
+    dataList: userList[];
+  };
+  status: number;
+}
+
+type GetSearchResponsePayload = GetSearchResponse['payload'];
+
+export const getSearch = createAsyncThunk<
+  GetSearchResponse,
+  string,
+  {rejectValue: ErrorResponse}
+>(
+  'analytics/metadata/search?searchCriteria',
+  async (userName, {dispatch, rejectWithValue}) => {
+    try {
+      dispatch(setLoading(true));
+      const response = await api.get(endPoints.ANALYTICS_SEARCH + userName);
+      // console.log(
+      //   'endPoints.GET_INDICATORS + indicatorName================1111111',
+      //   endPoints.GET_INDICATORS + userName,
+      // );
+//console.log("res=======",response.data.dataList);
+
+      return response.data as GetSearchResponse;
+    } catch (error: any) {
+      return rejectWithValue(error.response.data);
+    } finally {
+      dispatch(setLoading(false));
+    }
+  },
+);
+// export const getIndicatorsByDomainId = createAsyncThunk<
+//   GetIndicatorsResponse,
+//   number
+// >(
+//   'master/getIndicatorsByDomainId',
+//   async (userId, {dispatch, rejectWithValue}) => {
+//     try {
+//       dispatch(setLoading(true));
+//       const response = await api.get(
+//         endPoints.GET_INDICATORS_BY_DOMAIN_ID + userId,
+//       );
+//       return response.data as GetIndicatorsResponse;
+//     } catch (error: any) {
+//       return rejectWithValue(error.response.data);
+//     } finally {
+//       dispatch(setLoading(false));
+//     }
+//   },
+// );
+
 export const getUserCountAnalyticsUserAndRole = createAsyncThunk<
-GetUserCountAnalyticsUserAndRoleResponse,
-GetUserCountAnalyticsRequest,
+  GetUserCountAnalyticsUserAndRoleResponse,
+  GetUserCountAnalyticsRequest,
   {rejectValue: ErrorResponse}
 >(
   'analytics/userCountAnalyticsUserAndRole',
@@ -380,7 +696,7 @@ export const getFormCountAnalytics = createAsyncThunk<
         endPoints.GET_FORM_COUNT_AND_RESPONSE,
         payload,
       );
-      console.log('jjjjj', endPoints.GET_FORM_COUNT_AND_RESPONSE, payload);
+      console.log('jjjjj====', endPoints.GET_FORM_COUNT_AND_RESPONSE, payload);
       return response.data as GetFormCountAnalyticsResponse;
     } catch (error: any) {
       return rejectWithValue(error.response.data);
@@ -424,7 +740,6 @@ export const getObservationCountAnalytics = createAsyncThunk<
         endPoints.OBSERVATION_ANALYTICS_BY_USER_ID,
         payload,
       );
-      console.log('iuserid---------', response.data);
       return response.data as GetObservationCountAnalyticsResponse;
     } catch (error: any) {
       return rejectWithValue(error.response.data);
@@ -457,7 +772,7 @@ export const getObservationAnalytics = createAsyncThunk<
 );
 
 export const getTeacherObservationAnalytics = createAsyncThunk<
-GetTeacherObservationAnalyticsResponse,
+  GetTeacherObservationAnalyticsResponse,
   void,
   {rejectValue: ErrorResponse}
 >('analytics/teacherObservation', async (_, {dispatch, rejectWithValue}) => {
@@ -485,6 +800,7 @@ export const getRubricWiseObservationAnalytics = createAsyncThunk<
         endPoints.RUBRIC_WIESE_OBSERVATION,
         payload,
       );
+      console.log('llllll-----', endPoints.RUBRIC_WIESE_OBSERVATION, payload);
       return response.data as GetRubricWiseObservationAnalyticsResponse;
     } catch (error: any) {
       return rejectWithValue(error.response.data);
@@ -493,6 +809,32 @@ export const getRubricWiseObservationAnalytics = createAsyncThunk<
     }
   },
 );
+
+export const getStatesDistrictSchool = createAsyncThunk<GetStatesDistrictSchoolResponse, PaginationRequest>(
+  'analytics/getStatesSchoolsDistrict',
+  async (payload, {dispatch, rejectWithValue}) => {
+    console.log('sttttttttt');
+    try {
+      // dispatch(setLoading(true));
+      let response;
+      // if(searchCriteria){
+      //   response = await api.post(
+      //     endPoints.GET_STATES_BY_SEARCH + `searchCriteria=${searchCriteria}`,
+      //     payload,
+      //   );
+      // }else{
+      response = await api.post(endPoints.COUNT_OF_STATE_DISTRICT_SCHOOL, payload);
+      // }
+      //console.log('--------', response?.data);
+      return response.data as GetStatesDistrictSchoolResponse;
+    } catch (error: any) {
+      return rejectWithValue(error.response.data);
+    } finally {
+      // dispatch(setLoading(false));
+    }
+  },
+);
+
 
 export const getStates = createAsyncThunk<GetStatesResponse, PaginationRequest>(
   'analytics/getStates',
@@ -519,6 +861,54 @@ export const getStates = createAsyncThunk<GetStatesResponse, PaginationRequest>(
   },
 );
 
+export type ObservationStatus = 'Completed' | 'Pending';
+export type FilterType = 'All' | 'byMe' | 'forMe';
+
+export const getAllObservations = createAsyncThunk<
+  GetAllObservationsResponse,
+  [number, ObservationRequest],
+  {rejectValue: ErrorResponse}
+>(
+  'analytics/getAllObservations',
+  async ([id, payload], {dispatch, rejectWithValue}) => {
+    try {
+      dispatch(setLoading(true));
+
+      const filteredPayload = filterPayload(payload);
+      console.log('filteredPayload:', filteredPayload);
+
+      console.log('payload.paginationRequest:', payload.paginationRequest);
+      console.log('payload.filterType:', payload.filterType);
+
+      const response = await api.post(
+        endPoints.ANALYTICS_DASHBOARD_FILTER + id,
+        {
+          ...filteredPayload,
+          paginationRequest: payload.paginationRequest,
+          filterType: payload.filterType,
+        },
+      );
+      //console.log('API response:------11111@@@@@@@@@@', response?.data?.payload?.dataList?.observations?.[0]);
+      console.log(
+        'API response:------11111',
+        endPoints.ANALYTICS_DASHBOARD_FILTER + id,
+        {
+          ...filteredPayload,
+          paginationRequest: payload.paginationRequest,
+          filterType: payload.filterType,
+        },
+      );
+
+      // console.log('[API] Success:', response.data?.dataList[0]);
+      return response.data as GetAllObservationsResponse;
+    } catch (error: any) {
+      //console.log('errrrrr---', error);
+      return rejectWithValue(error.response.data);
+    } finally {
+      dispatch(setLoading(false));
+    }
+  },
+);
 export const getDistricts = createAsyncThunk<
   GetDistrictResponse,
   [PaginationRequest]
@@ -586,7 +976,7 @@ export const getSchools = createAsyncThunk<
     //     payload,
     //   );
     // }else{
-    response = await api.post(endPoints.GET_SCHOOLS, payload);
+    response = await api.post(endPoints.GET_AREAS_SCHOOL, payload);
     //}
     return response.data as GetSchoolResponse;
   } catch (error: any) {
@@ -598,7 +988,7 @@ export const getSchools = createAsyncThunk<
 
 interface InitialState {
   userCountAnalytics: GetUserCountAnalyticsResponsePayload | null;
-  teacherObservationAnalytics: GetTeacherObservationAnalyticsResponsePayload|null;
+  teacherObservationAnalytics: GetTeacherObservationAnalyticsResponsePayload | null;
   userAndRoleCountAnalytics: GetUserAndRoleCountAnalyticsResponsePayload | null;
   formCountAnalytics: GetFormCountAnalyticsResponsePayload | null;
   formAnalytics: GetFormAnalyticsResponsePayload | null;
@@ -615,12 +1005,21 @@ interface InitialState {
   activeDistricts: GetAllDistrictResponsePayload | null;
   inactiveDistricts: GetAllDistrictResponsePayload | null;
   schools: GetAllSchoolResponsePayload | null;
-  userCountAnalyticsUserAndRole:GetUserCountAnalyticsUserAndRoleResponsePayload|null;
+  userCountAnalyticsUserAndRole: GetUserCountAnalyticsUserAndRoleResponsePayload | null;
+  indicatorList: GetIndicatorsResponsePayload | null;
+  userSearchAnalytics: GetUserSearchAnalyticsResponsePayload | null;
+  allObservations: GetAllObservationsResponsePayload | null;
+  observationShowMessage: ErrorStatusObject | null;
+  observationById: GetObservationByIdResponsePayload | null;
+  search:GetSearchResponsePayload |null;
+  observationId: number | null;
+  statesDistrictSchool:GetStatesDistrictSchoolResponsePayload | null;
 }
 
 const initialState: InitialState = {
   userCountAnalytics: null,
-  teacherObservationAnalytics:null,
+  observationId: null,
+  teacherObservationAnalytics: null,
   userAndRoleCountAnalytics: null,
   formCountAnalytics: null,
   formAnalytics: null,
@@ -637,7 +1036,14 @@ const initialState: InitialState = {
   activeDistricts: null,
   inactiveDistricts: null,
   schools: null,
-  userCountAnalyticsUserAndRole:null
+  userCountAnalyticsUserAndRole: null,
+  indicatorList: null,
+  userSearchAnalytics: null,
+  allObservations: null,
+  observationShowMessage: null,
+  observationById: null,
+  search:null,
+  statesDistrictSchool:null
 };
 
 const analyticsSlice = createSlice({
@@ -654,6 +1060,33 @@ const analyticsSlice = createSlice({
       })
       .addCase(getUserCountAnalyticsUserAndRole.rejected, state => {
         state.userCountAnalyticsUserAndRole = null;
+      })
+      .addCase(getUserSearchAnalytics.pending, state => {
+        state.userSearchAnalytics = null;
+      })
+      .addCase(getUserSearchAnalytics.fulfilled, (state, action) => {
+        state.userSearchAnalytics = action.payload.payload;
+      })
+      .addCase(getUserSearchAnalytics.rejected, state => {
+        state.userSearchAnalytics = null;
+      })
+      .addCase(getIndicators.pending, state => {
+        state.indicatorList = null;
+      })
+      .addCase(getIndicators.fulfilled, (state, action) => {
+        state.indicatorList = action.payload.payload;
+      })
+      .addCase(getIndicators.rejected, state => {
+        state.indicatorList = null;
+      })
+      .addCase(getSearch.pending, state => {
+        state.search = null;
+      })
+      .addCase(getSearch.fulfilled, (state, action) => {
+        state.search = action.payload.payload;
+      })
+      .addCase(getSearch.rejected, state => {
+        state.search = null;
       })
       .addCase(getUserCountAnalytics.pending, state => {
         state.userCountAnalytics = null;
@@ -728,6 +1161,15 @@ const analyticsSlice = createSlice({
       .addCase(getRubricWiseObservationAnalytics.rejected, state => {
         state.rubricWiseObservationAnalytics = null;
       })
+      .addCase(getStatesDistrictSchool.rejected, (state, action) => {
+        state.statesDistrictSchool = null;
+      })
+      .addCase(getStatesDistrictSchool.pending, state => {
+        // state.states = null;
+      })
+      .addCase(getStatesDistrictSchool.fulfilled, (state, action) => {
+        state.statesDistrictSchool = action.payload.payload;
+      })
       .addCase(getStates.rejected, (state, action) => {
         state.states = null;
       })
@@ -756,6 +1198,10 @@ const analyticsSlice = createSlice({
       .addCase(getAreas.fulfilled, (state, action) => {
         state.areas = action.payload.payload;
       })
+      .addCase(resetObservationById, (state, action) => {
+        state.observationById = null;
+        state.observationId = null;
+      })
       .addCase(getSchools.rejected, (state, action) => {
         state.schools = null;
       })
@@ -764,6 +1210,20 @@ const analyticsSlice = createSlice({
       })
       .addCase(getSchools.fulfilled, (state, action) => {
         state.schools = action.payload.payload;
+      })
+
+      .addCase(getAllObservations.pending, state => {
+        // state.isLoading = true;
+        state.allObservations = null;
+      })
+      .addCase(getAllObservations.fulfilled, (state, action) => {
+        state.allObservations = action.payload.payload;
+      })
+      .addCase(getAllObservations.rejected, (state, action) => {
+        state.observationShowMessage = {
+          status: 'Error',
+          message: action?.payload?.error?.errorMessage,
+        };
       });
   },
 });

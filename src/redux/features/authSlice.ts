@@ -140,6 +140,7 @@ export const changeBottomTabBarVisibility = createAction<boolean>(
 );
 
 export const setLoading = createAction<boolean>('SET_LOADING');
+export const mobileFlag = createAction<boolean>('MOBILE_NOTIFICATION_FLAG');
 
 export const setAuthShowMessage = createAction<ErrorStatusObject | null>(
   'SET_AUTH_SHOW_MESSAGE',
@@ -174,12 +175,12 @@ export const authenticateUser = createAsyncThunk<
   AuthenticateRequest,
   {rejectValue: ErrorResponse}
 >('auth/authenticate', async (payload, {dispatch, rejectWithValue}) => {
-  console.log("login----11111111")
+  console.log('login----11111111', endPoints.AUTHENTICATE_USER, payload);
   try {
     dispatch(setLoading(true));
     await removeToken();
     const response = await api.post(endPoints.AUTHENTICATE_USER, payload);
-    console.log("login----",endPoints.AUTHENTICATE_USER, payload)
+    console.log('login----1111', endPoints.AUTHENTICATE_USER, payload);
     await storeToken(response.data.payload.token);
     return response.data as AuthenticateResponse;
   } catch (error: any) {
@@ -237,7 +238,7 @@ export const updateUserDetails = createAsyncThunk<
   async ([userId, payload], {dispatch, rejectWithValue}) => {
     try {
       dispatch(setLoading(true));
-      const response = await api.put(endPoints.UPDATE_USER + userId, payload);
+  const response = await api.put(`${endPoints.UPDATE_USER}${userId}?myAccount=true`,payload)
       return response.data as UpdateUserDetailsResponse;
     } catch (error: any) {
       return rejectWithValue(error.response.data);
@@ -279,7 +280,7 @@ export const updateUserPhoto = createAsyncThunk<
     try {
       dispatch(setLoading(true));
       const token = await getToken();
-      const {BASE_URL}=Config;
+      const {BASE_URL} = Config;
       const formData = [
         {
           name: 'profilePhoto',
@@ -337,11 +338,13 @@ interface initialState {
   authShowMessage: ErrorStatusObject | null;
   passwordErrorMessage: string;
   usernameErrorMessage: string;
+  isNotificationRecieved: boolean;
 }
 
 const initialState: initialState = {
   isLoading: false,
   isLoggedIn: false,
+  isNotificationRecieved: false,
   userData: {
     id: 0,
     userName: '',
@@ -381,6 +384,9 @@ const authSlice = createSlice({
       })
       .addCase(setLoading, (state, action) => {
         state.isLoading = action.payload;
+      })
+      .addCase(mobileFlag, (state, action) => {
+        state.isNotificationRecieved = action.payload;
       })
       .addCase(resetPasswordResponse, state => {
         state.forgotPasswordResponse = null;

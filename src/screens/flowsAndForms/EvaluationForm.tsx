@@ -26,6 +26,7 @@ import CheckboxGroup from '../../components/CheckBoxGroup';
 import {
   FormSubmission,
   IndicatorPreviewForm,
+  LinearOptionInterface,
   QuestionOption,
   getPreviewForm,
   resetPreviewFormResponse,
@@ -36,6 +37,7 @@ import {FONT_SIZES, FONT_VARIANT} from '../../config/themes';
 import DateTimePickerComponent from '../../components/DateTimePickerComponent';
 import RatingInput from '../../components/RatingInput';
 import {FlowsAndFormsStackParamList} from '../../navigation/FlowsAndFormsStack';
+import RationRadioButtonGroup from '../../components/RatingRadioButton';
 
 type EvaluationFormNavigationProp = StackNavigationProp<
   FlowsAndFormsStackParamList,
@@ -137,7 +139,7 @@ type RenderInputAnswerTypes = {
   questionId: number;
   questionOptionId: number;
   longText?: boolean;
-  disabled?:boolean
+  disabled?: boolean;
 };
 const RenderInputAnswer: FC<RenderInputAnswerTypes> = ({
   itemAnswer,
@@ -146,7 +148,7 @@ const RenderInputAnswer: FC<RenderInputAnswerTypes> = ({
   questionId,
   questionOptionId,
   longText = false,
-  disabled
+  disabled,
 }) => (
   <TextInput
     value={itemAnswer?.answer as string}
@@ -182,7 +184,7 @@ type RenderShortAnswerWithRatingInputTypes = {
   questionId: number;
   questionOptionId: number;
   indicators?: IndicatorPreviewForm[];
-  disabled?:boolean;
+  disabled?: boolean;
 };
 const RenderShortAnswerWithRatingInput: FC<
   RenderShortAnswerWithRatingInputTypes
@@ -193,7 +195,7 @@ const RenderShortAnswerWithRatingInput: FC<
   questionId,
   questionOptionId,
   indicators,
-  disabled
+  disabled,
 }) => {
   const handleTextChange = (text: string) => {
     if (itemAnswer) {
@@ -292,7 +294,7 @@ type RenderDropdownTypes = {
   questionOptionId: number;
   options: QuestionOption[];
   placeHolder?: string;
-  disabled?:boolean
+  disabled?: boolean;
 };
 const RenderDrodpwown: FC<RenderDropdownTypes> = ({
   itemAnswer,
@@ -302,7 +304,7 @@ const RenderDrodpwown: FC<RenderDropdownTypes> = ({
   questionOptionId,
   options,
   placeHolder = 'Select an Item',
-  disabled
+  disabled,
 }) => {
   return (
     <Dropdown
@@ -378,7 +380,7 @@ type RenderDateSelectorTypes = {
   setAnswers: Dispatch<SetStateAction<AnswerObject[]>>;
   questionId: number;
   questionOptionId: number;
-  disabled?:boolean
+  disabled?: boolean;
 };
 const RenderDateSelector: FC<RenderDateSelectorTypes> = ({
   itemAnswer,
@@ -386,7 +388,7 @@ const RenderDateSelector: FC<RenderDateSelectorTypes> = ({
   setAnswers,
   questionId,
   questionOptionId,
-  disabled
+  disabled,
 }) => {
   const [isPickeOpen, setIsPickerOpen] = useState<boolean>(false);
 
@@ -421,9 +423,7 @@ const RenderDateSelector: FC<RenderDateSelectorTypes> = ({
     if (itemAnswer) {
       setAnswers(
         answers.map(item =>
-          item === itemAnswer
-            ? { ...item, answer: formattedDate }
-            : item,
+          item === itemAnswer ? {...item, answer: formattedDate} : item,
         ),
       );
     } else {
@@ -437,7 +437,6 @@ const RenderDateSelector: FC<RenderDateSelectorTypes> = ({
       ]);
     }
   };
-  
 
   return (
     <>
@@ -445,7 +444,6 @@ const RenderDateSelector: FC<RenderDateSelectorTypes> = ({
         selectedDate={itemAnswer?.answer as string}
         onDateChange={handleDateSelection}
         showPicker={isPickeOpen}
-        
       />
       <TouchableOpacity
         onPress={() => {
@@ -477,7 +475,7 @@ const RenderDateSelector: FC<RenderDateSelectorTypes> = ({
             </Text>
             <TouchableOpacity
               onPress={() => {
-                console.log("hhjjjjjj")
+                console.log('hhjjjjjj');
                 setIsPickerOpen(!isPickeOpen);
               }}
               style={{}}>
@@ -496,7 +494,7 @@ type RenderTimeSelectorTypes = {
   setAnswers: Dispatch<SetStateAction<AnswerObject[]>>;
   questionId: number;
   questionOptionId: number;
-  disabled?:boolean
+  disabled?: boolean;
 };
 const RenderTimeSelector: FC<RenderTimeSelectorTypes> = ({
   itemAnswer,
@@ -504,7 +502,7 @@ const RenderTimeSelector: FC<RenderTimeSelectorTypes> = ({
   setAnswers,
   questionId,
   questionOptionId,
-  disabled
+  disabled,
 }) => {
   const [isPickeOpen, setIsPickerOpen] = useState<boolean>(false);
 
@@ -582,6 +580,7 @@ export type ShortAnswer = {
   rating?: RatingInputType[];
 };
 export type AnswerObject = {
+  linearScaleMappingId: null;
   questionId: number;
   questionOptionId: number;
   answer: string | QuestionOption[] | QuestionOption | ShortAnswer;
@@ -594,7 +593,12 @@ type QuestionTypeSelectorTypes = {
   setAnswers: Dispatch<SetStateAction<AnswerObject[]>>;
   options?: QuestionOption[];
   indicators?: IndicatorPreviewForm[];
-  disabled?:boolean;
+  disabled?: boolean;
+  lowerLimit: number;
+  upperLimit: number;
+  lowerLimitLabel: string;
+  upperLimitLabel: string;
+  linearOptions: LinearOptionInterface[];
 };
 
 export const QuestionTypeSelector: FC<QuestionTypeSelectorTypes> = ({
@@ -604,8 +608,14 @@ export const QuestionTypeSelector: FC<QuestionTypeSelectorTypes> = ({
   setAnswers,
   options,
   indicators,
-  disabled
+  disabled,
+  lowerLimit,
+  upperLimit,
+  lowerLimitLabel,
+  upperLimitLabel,
+  linearOptions,
 }) => {
+  
   let itemAnswer = answers?.find(item => item.questionId === questionId);
   switch (questionOptionId) {
     case 1:
@@ -697,6 +707,38 @@ export const QuestionTypeSelector: FC<QuestionTypeSelectorTypes> = ({
           key={questionId}
         />
       );
+    case 8: // Handling the case for questionOptionId 8
+      return (
+        <RationRadioButtonGroup
+          lowerLimit={lowerLimit}
+          upperLimit={upperLimit}
+          lowerLimitLabel={lowerLimitLabel}
+          upperLimitLabel={upperLimitLabel}
+          itemAnswer={itemAnswer}
+          setAnswers={setAnswers}
+          questionId={questionId}
+          questionOptionId={questionOptionId}
+          answers={answers}
+          disabled={disabled}
+          key={questionId}
+          linearOptions={linearOptions}
+        />
+      );
+
+    // case 8:
+    // return (
+    //   <RationRadioButtonGroup
+    //   itemAnswer={itemAnswer}
+    //   setAnswers={setAnswers}
+    //   questionId={questionId}
+    //   questionOptionId={questionOptionId}
+    //   answers={answers}
+    //   disabled={disabled}
+    //   lowerLimitLabel={lowerLimitLabel}  // Add this prop
+    //   upperLimitLabel={upperLimitLabel}  // Add this prop
+    //   key={questionId}
+    // />
+    // );
     default:
       return <></>;
   }
@@ -716,6 +758,7 @@ const formatAnswer = (answers: AnswerObject[]): FormSubmission[] => {
           responseValue: null,
           indicatorRating: null,
           startResponseDate: currentDate,
+          linearScaleMappingId: item.linearScaleMappingId || null,
         });
         break;
       case 2:
@@ -727,6 +770,7 @@ const formatAnswer = (answers: AnswerObject[]): FormSubmission[] => {
             responseValue: null,
             indicatorRating: null,
             startResponseDate: currentDate,
+            linearScaleMappingId: item.linearScaleMappingId || null,
           });
         });
         break;
@@ -745,6 +789,7 @@ const formatAnswer = (answers: AnswerObject[]): FormSubmission[] => {
             responseValue: shortAnswer.comment,
             indicatorRating: `{[${indicatorRatingString}]}`,
             startResponseDate: currentDate,
+            linearScaleMappingId: item.linearScaleMappingId || null,
           });
         } else {
           formattedAnswer.push({
@@ -754,6 +799,7 @@ const formatAnswer = (answers: AnswerObject[]): FormSubmission[] => {
             responseValue: shortAnswer.comment,
             indicatorRating: null,
             startResponseDate: currentDate,
+            linearScaleMappingId: item.linearScaleMappingId || null,
           });
         }
         break;
@@ -767,7 +813,19 @@ const formatAnswer = (answers: AnswerObject[]): FormSubmission[] => {
           responseValue: item.answer as string,
           indicatorRating: null,
           startResponseDate: currentDate,
+          linearScaleMappingId: item.linearScaleMappingId || null,
         });
+      case 8:
+        formattedAnswer.push({
+          questionId: item.questionId,
+          questionOptionId: item.questionOptionId,
+          optionMappingId: null,
+          responseValue: item.answer as string,
+          indicatorRating: null,
+          startResponseDate: currentDate,
+          linearScaleMappingId: item.linearScaleMappingId || null,
+        });
+
         break;
 
       default:
@@ -798,6 +856,11 @@ const EvaluationForm: FC<EvaluationFormScreenProps> = ({navigation, route}) => {
   useEffect(() => {
     dispatch(getPreviewForm(flowDetailItem.formId));
   }, [flowDetailItem]);
+
+  console.log(
+    'previewForm',
+    JSON.stringify(previewForm?.dataList.sections[0]?.questions[0]),
+  );
 
   const onPressSubmit = () => {
     dispatch(
@@ -877,17 +940,21 @@ const EvaluationForm: FC<EvaluationFormScreenProps> = ({navigation, route}) => {
                 question={ele.questionText}
                 isRequired={ele.isRequired}
                 renderSelection={
-                  (
-                    <QuestionTypeSelector
-                      key={ele.questionId}
-                      questionOptionId={ele.questionOptionId}
-                      answers={answers}
-                      setAnswers={setAnswers}
-                      options={ele.questionOptions}
-                      questionId={ele.questionId}
-                      indicators={ele.indicators}
-                    />
-                  ) || <></>
+                  <QuestionTypeSelector
+                    key={ele.questionId}
+                    questionOptionId={ele.questionOptionId}
+                    answers={answers}
+                    setAnswers={setAnswers}
+                    options={ele.questionOptions}
+                    questionId={ele.questionId}
+                    indicators={ele.indicators}
+                    disabled={false} // Pass the disabled prop as needed
+                    lowerLimit={ele.lowerLimit} // Pass lowerLimit
+                    upperLimit={ele.upperLimit} // Pass upperLimit
+                    lowerLimitLabel={ele.lowerLimitLabel} // Pass lowerLimitLabel
+                    upperLimitLabel={ele.upperLimitLabel} // Pass upperLimitLabel
+                    linearOptions={ele.linerQuestionOptionList}
+                  />
                 }
               />
             ))}

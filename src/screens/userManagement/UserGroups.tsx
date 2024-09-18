@@ -4,7 +4,7 @@ import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import moment from 'moment';
 
-import Layout from '../../components/Layout';
+import Layout from '../../components/LayoutNew';
 import {UserManagementStackParamList} from '../../navigation/UserManagementStack';
 import Text from '../../components/Text';
 import {useAppDispatch, useAppSelector} from '../../redux/store';
@@ -15,6 +15,8 @@ import {ItemType} from '../../config/types';
 import Tab from '../../components/Tab';
 import {RenderEmptyPlaceholder} from '../observation/ObservationReportsMainPage';
 import PaginationBar from '../../components/PaginationBar';
+import { Drawer } from 'react-native-drawer-layout';
+import DrawerContent from '../../components/DrawerContent';
 
 type UserGroupsNavigationProp = StackNavigationProp<
   UserManagementStackParamList,
@@ -35,7 +37,7 @@ const RenderUserGroupDetails: FC<RenderUserGroupDetailsTypes> = ({
   value,
 }) => (
   <View>
-    <Text size="small2">{label}</Text>
+    <Text size="small2" style={{color:'#4E565F'}}>{label}</Text>
     <Text size="small2">{value}</Text>
   </View>
 );
@@ -74,7 +76,7 @@ const UserGroupTile: FC<UserGroupTileProps> = ({
           justifyContent: 'space-between',
           marginTop: 5,
         }}>
-        <RenderUserGroupDetails label={'Group'} value={userGroup.userGroupId} />
+        <RenderUserGroupDetails label={'Group'} value={userGroup.userGroupId}/>
         <RenderUserGroupDetails
           label={'Created By'}
           value={userGroup.createdBy}
@@ -93,7 +95,7 @@ const UserGroupTile: FC<UserGroupTileProps> = ({
 };
 
 type UserGroupsList = {
-  userGroupsList: UserGroup[]|undefined ;
+  userGroupsList: UserGroup[] | undefined;
   count: number | undefined;
   selectedTab: 'all' | boolean;
 };
@@ -104,6 +106,7 @@ interface UserGroupsScreenProps {
 }
 
 const UserGroups: FC<UserGroupsScreenProps> = ({navigation, route}) => {
+  const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
   const [selectedItem, setSelectedItem] = useState<UserGroup>();
   const [search, setSearch] = useState<string>('');
   const [userGroupList, setUserGroupList] = useState<UserGroupsList>({
@@ -127,7 +130,7 @@ const UserGroups: FC<UserGroupsScreenProps> = ({navigation, route}) => {
   ];
 
   useEffect(() => {
-    if (allUserGroups && userGroupList.selectedTab==='all') {
+    if (allUserGroups && userGroupList.selectedTab === 'all') {
       setUserGroupList({
         userGroupsList: allUserGroups?.dataList,
         count: allUserGroups.totalCount,
@@ -158,25 +161,31 @@ const UserGroups: FC<UserGroupsScreenProps> = ({navigation, route}) => {
 
   useEffect(() => {
     dispatch(
-      getAllUserGroups([{
-        page: 0,
-        size: 15,
-        type: 'all',
-      }]),
+      getAllUserGroups([
+        {
+          page: 0,
+          size: 15,
+          type: 'all',
+        },
+      ]),
     );
     dispatch(
-      getAllUserGroups([{
-        page: 0,
-        size: 15,
-        type: true,
-      }]),
+      getAllUserGroups([
+        {
+          page: 0,
+          size: 15,
+          type: true,
+        },
+      ]),
     );
     dispatch(
-      getAllUserGroups([{
-        page: 0,
-        size: 15,
-        type: false,
-      }]),
+      getAllUserGroups([
+        {
+          page: 0,
+          size: 15,
+          type: false,
+        },
+      ]),
     );
   }, []);
   const handleTabClick = useCallback(
@@ -200,24 +209,41 @@ const UserGroups: FC<UserGroupsScreenProps> = ({navigation, route}) => {
           selectedTab: false,
         });
       }
-  }, [allUserGroups, activeUserGroups, inactiveUserGroups])
-
-
-
+    },
+    [allUserGroups, activeUserGroups, inactiveUserGroups],
+  );
+  const closeDrawer = () => {
+    setIsDrawerOpen(false);
+  };
+  const onPressMenuIcon = () => {
+    setIsDrawerOpen(true); // Set drawer open to true
+  };
+  
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
-        dispatch(getAllUserGroups([{
-          page: 0,
-          size: 15,
-          type: userGroupList.selectedTab,
-        },search]));
+      dispatch(
+        getAllUserGroups([
+          {
+            page: 0,
+            size: 15,
+            type: userGroupList.selectedTab,
+          },
+          search,
+        ]),
+      );
     }, 200);
 
     return () => clearTimeout(delayDebounceFn);
-  }, [search,userGroupList.selectedTab]);
+  }, [search, userGroupList.selectedTab]);
 
   return (
+    <Drawer
+    open={isDrawerOpen} // Drawer open state
+    onOpen={() => setIsDrawerOpen(true)}
+    onClose={() => setIsDrawerOpen(false)} // Close drawer
+    renderDrawerContent={() => <DrawerContent closeDrawer={closeDrawer} />}
+  >
     <Layout
       overridePaddingHorizontal
       overridePaddingVertical
@@ -225,8 +251,18 @@ const UserGroups: FC<UserGroupsScreenProps> = ({navigation, route}) => {
       title="User Groups"
       icon="user_groups_icon"
       focusedStack="UserManagementStack"
-      titleTransition>
-      <Text size="body3" fontVariant="bold" style={{marginVertical: 10}}>
+      titleTransition
+      onPressMenuIcon={onPressMenuIcon}
+      >
+      <Text
+        style={{
+          fontFamily: 'Lato', // Ensure Lato is installed and linked correctly
+          fontWeight: '700', // Weight 700 (bold)
+          fontSize: 24, // 24px font size
+          lineHeight: 28, // Line height of 28px
+          marginVertical: 10, // Your existing vertical margin
+          //color: '#000', // Set the color if necessary
+        }}>
         User Groups
       </Text>
       <Tab tabs={tabs} onClick={title => handleTabClick(title)} />
@@ -256,11 +292,14 @@ const UserGroups: FC<UserGroupsScreenProps> = ({navigation, route}) => {
                 onPressPageIndex={index => {
                   if (userGroupList) {
                     dispatch(
-                      getAllUserGroups([{
-                        page: index,
-                        size: 15,
-                        type: userGroupList?.selectedTab || 'all',
-                      },search]),
+                      getAllUserGroups([
+                        {
+                          page: index,
+                          size: 15,
+                          type: userGroupList?.selectedTab || 'all',
+                        },
+                        search,
+                      ]),
                     );
                   }
                 }}
@@ -274,6 +313,7 @@ const UserGroups: FC<UserGroupsScreenProps> = ({navigation, route}) => {
         )}
       </View>
     </Layout>
+    </Drawer>
   );
 };
 export default UserGroups;

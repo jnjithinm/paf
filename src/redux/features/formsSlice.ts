@@ -49,6 +49,7 @@ export interface IndividualResponse {
   userId: number;
   userName: string;
   name: string;
+  userImageUrl:string;
   questionAvgRating: number;
   responses: {
     questionId: number;
@@ -138,7 +139,12 @@ interface QuestionPreviewForm {
   questionDescription: QuestionTypes;
   isRequired: boolean;
   questionOptions: QuestionOption[];
+  lowerLimit: number;
+  upperLimit: number;
+  lowerLimitLabel: string;
+  upperLimitLabel: string;
   indicators: IndicatorPreviewForm[];
+  linerQuestionOptionList: LinearOptionInterface[];
 }
 
 interface Section {
@@ -175,8 +181,9 @@ export type FormSubmission = {
   questionOptionId: number;
   optionMappingId: number | null;
   responseValue: string | null;
+  linearScaleMappingId: string | null;
   indicatorRating: string | null;
-  startResponseDate:string
+  startResponseDate: string;
 };
 
 type SubmitPreviewFormRequest = {
@@ -257,6 +264,10 @@ export interface QuestionRatingQuestionWiseResponse {
   questionAvgRating: number;
   userWiseResponses: UserWiseResponse[];
 }
+export interface LinearOptionInterface {
+  linerMappingId: number;
+  numberLimit: number;
+}
 
 interface GetQuestionRatingByIndicatorIdResponse {
   payload: {
@@ -272,49 +283,46 @@ interface GetQuestionRatingByIndicatorIdResponse {
   status: number;
 }
 
-
 type GetQuestionRatingByIndicatorIdResponsePayload =
   GetQuestionRatingByIndicatorIdResponse['payload'];
 
+export interface PrintFormResponsesRequest {
+  flowId: number;
+  formId: number;
+  ids: number[];
+}
 
- export interface PrintFormResponsesRequest {
-    flowId: number;
-    formId: number;
-    ids: number[];
-  }
-
-  interface PrintFormResponseResponse{
-    payload:{
-      id:number;
-      message:string
-    },
-    status:number
-  }
-
-
-type PrintFormResponseResponsePayload = PrintFormResponseResponse['payload'];
-
-
-interface AssignFormToUsersAndGroupsResponse {
+interface PrintFormResponseResponse {
   payload: {
-      id: number;
-      message: string;
-      dataList: {
-          Users: Array<{
-              userId: number;
-              userName: string;
-              name: string;
-          }>;
-          UserGroups: Array<{
-              userGroupId: number;
-              groupName: string;
-          }>;
-      };
+    id: number;
+    message: string;
   };
   status: number;
 }
 
-type AssignFormToUsersAndGroupsResponsePayload = AssignFormToUsersAndGroupsResponse['payload'];
+type PrintFormResponseResponsePayload = PrintFormResponseResponse['payload'];
+
+interface AssignFormToUsersAndGroupsResponse {
+  payload: {
+    id: number;
+    message: string;
+    dataList: {
+      Users: Array<{
+        userId: number;
+        userName: string;
+        name: string;
+      }>;
+      UserGroups: Array<{
+        userGroupId: number;
+        groupName: string;
+      }>;
+    };
+  };
+  status: number;
+}
+
+type AssignFormToUsersAndGroupsResponsePayload =
+  AssignFormToUsersAndGroupsResponse['payload'];
 
 export const setFormsShowMessage = createAction<ErrorStatusObject | null>(
   'SET_FORMS_SHOW_MESSAGE',
@@ -384,6 +392,7 @@ export const getPreviewForm = createAsyncThunk<
   try {
     dispatch(setLoading(true));
     const response = await api.get(endPoints.GET_PREVIEW_FORM + formId);
+    //console.log('bbbbb---', response?.data?.dataList?.sections);
 
     return response.data as GetPreviewFormResponse;
   } catch (error: any) {
@@ -401,6 +410,8 @@ export const submitPreviewForm = createAsyncThunk<
   try {
     dispatch(setLoading(true));
     const response = await api.put(endPoints.SUBMIT_FORM_RESPONSE, payload);
+    //console.log('lllll-----', api.put(endPoints.SUBMIT_FORM_RESPONSE, payload));
+
     return response.data as SubmitPreviewFormResponse;
   } catch (error: any) {
     return rejectWithValue(error.response.data);
@@ -451,16 +462,18 @@ export const assignFormToUsersAndGroups = createAsyncThunk<
 );
 
 export const getFormAssignedUserAndUserGroups = createAsyncThunk<
-AssignFormToUsersAndGroupsResponse,
-  [number,number],
+  AssignFormToUsersAndGroupsResponse,
+  [number, number],
   {rejectValue: ErrorResponse}
 >(
   'forms/getFormAssignedUserAndUserGroups',
-  async ([formId,flowId], {dispatch, rejectWithValue}) => {
+  async ([formId, flowId], {dispatch, rejectWithValue}) => {
     try {
       // dispatch(setLoading(true));
       const response = await api.get(
-        endPoints.GET_FORM_ASSIGNED_USER_AND_USER_GROUPS+formId+`?flowId=${flowId}`
+        endPoints.GET_FORM_ASSIGNED_USER_AND_USER_GROUPS +
+          formId +
+          `?flowId=${flowId}`,
       );
       return response.data as AssignFormToUsersAndGroupsResponse;
     } catch (error: any) {
@@ -493,29 +506,22 @@ export const deleteForm = createAsyncThunk<
   },
 );
 
-
-
 export const printFormResponses = createAsyncThunk<
   PrintFormResponseResponse,
   PrintFormResponsesRequest,
   {rejectValue: ErrorResponse}
->(
-  'forms/printFormResponse',
-  async (payload, {dispatch, rejectWithValue}) => {
-    try {
-      dispatch(setLoading(true));
-      const response = await api.post(
-        endPoints.PRINT_FORM_RESPONSES ,payload
-      );
-      
-      return response.data as PrintFormResponseResponse;
-    } catch (error: any) {
-      return rejectWithValue(error.response.data);
-    } finally {
-      dispatch(setLoading(false));
-    }
-  },
-);
+>('forms/printFormResponse', async (payload, {dispatch, rejectWithValue}) => {
+  try {
+    dispatch(setLoading(true));
+    const response = await api.post(endPoints.PRINT_FORM_RESPONSES, payload);
+
+    return response.data as PrintFormResponseResponse;
+  } catch (error: any) {
+    return rejectWithValue(error.response.data);
+  } finally {
+    dispatch(setLoading(false));
+  }
+});
 
 interface InitialState {
   formById: GetAllFlowsResponsePayload | null;
@@ -523,10 +529,10 @@ interface InitialState {
   submitPreviewFormResponse: SubmitPreviewFormResponsePayload | null;
   acceptingFormResponses: AcceptingFormResponsesResponsePayload | null;
   assignFormResponse: AssignFormResponsePayload | null;
-  formAssignedUserAndUserGroups:AssignFormToUsersAndGroupsResponsePayload|null;
+  formAssignedUserAndUserGroups: AssignFormToUsersAndGroupsResponsePayload | null;
   questionRatingByIndicatorId: GetQuestionRatingByIndicatorIdResponsePayload | null;
   deleteFormResponse: DeleteFormResponse | null;
-  printResponsesResponse:PrintFormResponseResponsePayload|null;
+  printResponsesResponse: PrintFormResponseResponsePayload | null;
   formsShowMessage: ErrorStatusObject | null;
   errorMessage: string;
 }
@@ -538,9 +544,9 @@ const initialState: InitialState = {
   acceptingFormResponses: null,
   deleteFormResponse: null,
   assignFormResponse: null,
-  formAssignedUserAndUserGroups:null,
+  formAssignedUserAndUserGroups: null,
   questionRatingByIndicatorId: null,
-  printResponsesResponse:null,
+  printResponsesResponse: null,
   formsShowMessage: null,
   errorMessage: '',
 };
@@ -637,13 +643,13 @@ const formsSlice = createSlice({
         };
       })
       .addCase(assignFormToUsersAndGroups.pending, state => {
-        state.acceptingFormResponses=null
+        state.acceptingFormResponses = null;
       })
       .addCase(assignFormToUsersAndGroups.fulfilled, (state, action) => {
         state.assignFormResponse = action.payload.payload;
       })
       .addCase(assignFormToUsersAndGroups.rejected, (state, action) => {
-        state.acceptingFormResponses=null
+        state.acceptingFormResponses = null;
         state.formsShowMessage = {
           status: 'Error',
           message: action?.payload?.error?.errorMessage?.toString(),
@@ -654,7 +660,6 @@ const formsSlice = createSlice({
       })
       .addCase(getFormAssignedUserAndUserGroups.fulfilled, (state, action) => {
         state.formAssignedUserAndUserGroups = action.payload.payload;
-
       })
       .addCase(getFormAssignedUserAndUserGroups.rejected, (state, action) => {
         state.formsShowMessage = {
@@ -678,7 +683,7 @@ const formsSlice = createSlice({
           message: action?.payload?.error?.errorMessage?.toString(),
         };
       })
-      
+
       .addCase(printFormResponses.pending, state => {
         state.deleteFormResponse = null;
       })
@@ -693,7 +698,7 @@ const formsSlice = createSlice({
           status: 'Error',
           message: action?.payload?.error?.errorMessage?.toString(),
         };
-      })
+      });
   },
 });
 

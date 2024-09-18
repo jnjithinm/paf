@@ -1,5 +1,5 @@
 import React, {Dispatch, FC, SetStateAction, useEffect, useState} from 'react';
-import {View, StyleSheet, FlatList} from 'react-native';
+import {View, StyleSheet, FlatList, Dimensions} from 'react-native';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import Layout from '../../components/Layout';
@@ -10,24 +10,23 @@ import {getFormAnalytics} from '../../redux/features/analyticsSlice';
 import Icon from '../../components/Icon';
 import colors from '../../config/colors';
 import Text from '../../components/Text';
-//import { BarChart } from 'react-native-svg-charts';
+//import {PieChart} from 'react-native-chart-kit';
+import {BarChart, PieChart} from 'react-native-gifted-charts';
 import {
   normaliseDesigns,
   normaliseFont,
 } from '../../utils/helpers/responsiveHelpers';
 import TextInput from '../../components/TextInput';
-import { Dimensions } from "react-native";
-const screenWidth = Dimensions.get("window").width;
-import {PieChart} from 'react-native-chart-kit';
-
-import {Svg, Rect, G, Text as SvgText} from 'react-native-svg';
-//import {PieChart} from 'react-native-gifted-charts/src/PieChart';
 import HorizontalBarChart from '../../components/BarChart';
-//import { PieChart } from 'react-native-gifted-charts';
+import WebView from 'react-native-webview';
+
+const screenWidth = Dimensions.get('window').width;
+
 type FormResponsesAnalyticsNavigationProp = StackNavigationProp<
   AnalyticsStackParamList,
   'FormResponsesAnalytics'
 >;
+
 type FormResponsesAnalyticsRouteProp = RouteProp<
   AnalyticsStackParamList,
   'FormResponsesAnalytics'
@@ -58,11 +57,6 @@ const FormResponsesAnalytics: FC<FormResponsesAnalyticsScreenProps> = ({
     dispatch(getFormAnalytics([flowDetailItem.formId, flowDetailItem.flowId]));
   }, []);
 
-  console.log(
-    'formAnalytics==',
-    formAnalytics?.map(item => item),
-  );
-
   const formatDataForBarChart = (data: any[]) => {
     if (!data || !Array.isArray(data) || data.length < 2) return [];
 
@@ -85,6 +79,7 @@ const FormResponsesAnalytics: FC<FormResponsesAnalyticsScreenProps> = ({
     longText?: boolean;
     disabled?: boolean;
   };
+
   const RenderInputAnswer: FC<RenderInputAnswerTypes> = ({
     itemAnswer,
     answers,
@@ -93,36 +88,67 @@ const FormResponsesAnalytics: FC<FormResponsesAnalyticsScreenProps> = ({
     questionOptionId,
     longText = false,
     disabled,
-  }) => (
-    <TextInput
-      value={itemAnswer?.answer as string}
-      editable={!disabled}
-      onChangeText={(text: string) => {
-        if (itemAnswer) {
-          setAnswers(
-            answers.map(item =>
-              item === itemAnswer ? {...item, answer: text} : item,
-            ),
-          );
-        } else {
-          setAnswers([
-            ...answers,
-            {questionId, questionOptionId, answer: text},
-          ]);
-        }
-      }}
-      placeholderTextColor={'#ABB4BD'}
-      placeholder="Type your answer here"
-      style={{
-        borderBottomColor: '#E4E7EB',
-        borderBottomWidth: 1,
-        paddingBottom: 0,
-        fontSize: normaliseFont(11),
-        color: colors.blackColor,
-        minHeight: normaliseDesigns(25),
-      }}
-    />
-  );
+  }) => {
+    // Check if the answer is a date string
+    const isDateAnswer = (answer: any) => {
+      const date = new Date(answer);
+      return !isNaN(date.getTime());
+    };
+
+    if (itemAnswer && isDateAnswer(itemAnswer.answer)) {
+      // If the answer is a date, display it as plain text
+      return (
+        <View
+          style={{
+            borderBottomColor: '#E4E7EB',
+            borderBottomWidth: 1,
+            paddingBottom: 0,
+            minHeight: normaliseDesigns(25),
+            justifyContent: 'center',
+          }}>
+          <Text
+            style={{
+              fontSize: normaliseFont(11),
+              color: colors.blackColor,
+            }}>
+            {new Date(itemAnswer.answer as string).toLocaleString()}
+          </Text>
+        </View>
+      );
+    }
+
+    // Otherwise, render the TextInput as before
+    // return (
+    //   <TextInput
+    //     value={itemAnswer?.answer as string}
+    //     editable={!disabled}
+    //     onChangeText={(text: string) => {
+    //       if (itemAnswer) {
+    //         setAnswers(
+    //           answers.map(item =>
+    //             item === itemAnswer ? { ...item, answer: text } : item,
+    //           ),
+    //         );
+    //       } else {
+    //         setAnswers([
+    //           ...answers,
+    //           { questionId, questionOptionId, answer: text },
+    //         ]);
+    //       }
+    //     }}
+    //     placeholderTextColor={'#ABB4BD'}
+    //     placeholder="Type your answer here"
+    //     style={{
+    //       borderBottomColor: '#E4E7EB',
+    //       borderBottomWidth: 1,
+    //       paddingBottom: 0,
+    //       fontSize: normaliseFont(11),
+    //       color: colors.blackColor,
+    //       minHeight: normaliseDesigns(25),
+    //     }}
+    //   />
+    // );
+  };
 
   type QuestionTypeSelectorTypes = {
     questionOptionId: number;
@@ -179,22 +205,128 @@ const FormResponsesAnalytics: FC<FormResponsesAnalyticsScreenProps> = ({
     questionOptionId,
     responseCount,
   }) => {
-    // Format data for the bar chart
     const chartData =
       responseValue && responseValue.analyticsData
         ? formatDataForBarChart(responseValue.analyticsData)
         : [];
+    const [first, setfirst] = useState('');
+    //Prepare data for PieChart
+    //  const pieData = responseValue && responseValue.analyticsData
+    //      ? responseValue.analyticsData.slice(1).map((item, idx) => ({
+    //   value: item[1],
+    //   text: `${item[2]}%`,
+    //   label: item[0],
+    //   color: '#2F68C4' // Adjust color based on index if needed
+    // })):[];
 
-    console.log('chartData==', chartData);
+    function convertBarChartData(data) {
+      if (data && data.length > 0) {
+        const headers = data[0];
+        const rows = data.slice(1);
+        const output = [
+          [
+            'Selected Option',
+            'Option Count',
+            {role: 'style'},
+            {role: 'annotation'},
+          ],
+        ];
+        rows.forEach(row => {
+          const [option, count, percentage] = row;
+          output.push([
+            option,
+            count,
+            `color:#F4C24A;`,
+            `${count} (${percentage}%)`,
+          ]);
+        });
+        return output;
+      }
+    }
+    useEffect(() => {
+      if (responseValue && responseValue.analyticsData) {
+        let htmlContent = `
+        <html>
+      <head>
+        <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+        <script type="text/javascript">
+          google.charts.load('current', {'packages':['corechart']});
+          google.charts.setOnLoadCallback(drawChart);
+    
+          function drawChart() {
+            var data = google.visualization.arrayToDataTable(${JSON.stringify(
+              convertBarChartData(responseValue.analyticsData),
+            )});
+    
+           var options = {
+                chartArea: {width: '80%'}, // Adjust chart area width
+                hAxis: {
+                  minValue: 0,
+              
+                },
+                vAxis: {
+                 
+                },
+                legend: { position: 'none' },
+                annotations: {
+                  alwaysOutside: true,
+                  textStyle: {
+                    fontSize: 22,
+                    auraColor: 'none', // Remove the background color (aura) from annotations
+                    color: 'red' // Annotation text color
+                  }
+                }
+              };
+    
+            var chart = new google.visualization.BarChart(document.getElementById('barchart'));
+    
+            chart.draw(data, options);
+          }
+        </script>
+      </head>
+      <body>
+        <div id="barchart" style="width: 100%; height: 100%;"></div>
+      </body>
+    </html>
+      `;
 
-    // Prepare data for PieChart
-    const pieData = chartData.map((item, idx) => ({
-      value: item.count,
-      svg: {fill: colors[`pieColor${idx + 1}`]},
-      key: `pie-${idx}`,
-      label: item.label,
-      percentage: item.percentage,
-    }));
+        console.log(htmlContent, responseValue.analyticsData, 'htmlContent');
+
+        setfirst(htmlContent);
+      }
+    }, [responseValue && responseValue.analyticsData]);
+
+    const pieData =
+      responseValue && responseValue.analyticsData
+        ? responseValue.analyticsData.slice(1).map((item, idx) => {
+            let color;
+            if (idx === 0) {
+              color = colors.secondaryColor;
+              // "#F4C24A"; // Primary color for the first item
+            } else if (idx === 1) {
+              color = '#F4C24A';
+              // colors.secondaryColor; // Secondary color for the second item
+            } else if (idx === 2) {
+              color = '#749E35'; // Specific color for the third item
+            } else {
+              do {
+                color = `#${Math.floor(Math.random() * 16777215).toString(16)}`; // Random hex color
+              } while (
+                [
+                  colors.primaryColor,
+                  colors.secondaryColor,
+                  '#749E35',
+                ].includes(color)
+              );
+            }
+
+            return {
+              value: item[1],
+              label: item[0],
+              color: color, // Use the determined color
+            };
+          })
+        : [];
 
     // Background color for response values
     const getBackgroundColor = () => '#F5F7FA';
@@ -224,17 +356,18 @@ const FormResponsesAnalytics: FC<FormResponsesAnalyticsScreenProps> = ({
       }
       return null;
     };
-    const config ={backgroundGradientFrom: "#1E2923",
-    backgroundGradientFromOpacity: 0,
-    backgroundGradientTo: "#08130D",
-    backgroundGradientToOpacity: 0.5,
-    color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
-    strokeWidth: 2, // optional, default 3
-    barPercentage: 0.5,
-    useShadowColorFromDataset: false // optional
-    }
-    console.log('chartData:', chartData);
-    console.log('data passed to HorizontalBarChart:', chartData);
+
+    const config = {
+      backgroundGradientFrom: '#1E2923',
+      backgroundGradientFromOpacity: 0,
+      backgroundGradientTo: '#08130D',
+      backgroundGradientToOpacity: 0.5,
+      color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
+      strokeWidth: 2, // optional, default 3
+      barPercentage: 0.5,
+      useShadowColorFromDataset: false, // optional
+    };
+
     return (
       <View style={styles.container}>
         <View style={styles.header}>
@@ -258,72 +391,117 @@ const FormResponsesAnalytics: FC<FormResponsesAnalyticsScreenProps> = ({
             </Text>
           )}
           {questionOptionId === 2 || questionOptionId === 3 ? (
-            <View style={styles.chartContainer}>
-              <View style={styles.chartContent}>
-                {chartData.length > 0 ? (
-                  //   <HorizontalBarChart
-                  //   horizontal={true}
-                  //   style={styles.barChart}
-                  //   data={chartData}
-                  //   yAccessor={({ item }) => item.count}
-                  //   svg={{ fill: colors.primaryColor }}
-                  //   spacingInner={0.2}
-                  //   contentInset={{ top: 10, bottom: 10 }}
-
-                  // />
-                  <HorizontalBarChart
-                    data={chartData}
-                    yAccessor={({item}) => item.count}
-                    svg={{fill: colors.primaryColor}}
-                    spacingInner={0.2}
-                    contentInset={{top: 10, bottom: 10}}
-                    style={styles.barChart}
-                  />
-                ) : (
-                  <Text>No data available</Text>
-                )}
-                {/* <View style={styles.barChartLabels}>
-                  {chartData.map((item, idx) => (
-                    <View key={idx} style={styles.barChartLabelRow}>
-                      <Text style={styles.barChartLabel}>{item.label}</Text>
-                      <Text style={styles.barChartLabel}>{item.count}</Text>
-                      <Text style={styles.barChartLabel}>{item.percentage}%</Text>
-                    </View>
-                  ))}
-                </View> */}
+            <View
+              style={{
+                backgroundColor: 'red',
+                paddingHorizontal: 'auto',
+                overflow: 'scroll',
+                height: 300,
+              }}>
+              <View style={{flex: 1}}>
+                <WebView
+                  originWhitelist={['*']}
+                  source={{html: first}}
+                  style={{flex: 1}}
+                />
               </View>
+              {/* <View style={styles.chartContainer}>
+                <View style={{...styles.chartContent}}>
+                  {chartData.length > 0 ? (
+                    <HorizontalBarChart
+                      data={chartData}
+                      // yAccessor={({item}) => item.count}
+                      // svg={{fill: colors.primaryColor}}
+                      // spacingInner={0.2}
+                      // contentInset={{top: 10, bottom: 10}}
+                      // style={styles.barChart}
+                    />
+                  ) : (
+                    <Text>No data available</Text>
+                  )}
+                </View>
+              </View> */}
+              {/* {chartData.length > 0 ? (
+                <BarChart
+                  data={chartData.map(item => ({
+                    value: item.count,
+                    label: item.label,
+                    frontColor: '#F4C24A',
+                    topLabelComponent: () => (
+                      <View style={{width: 250}}>
+                        <Text
+                          style={{
+                            fontSize: 12,
+                            color: colors.blackColor, // Adjust color as needed
+                            textAlign: 'center',
+                            width: 'auto',
+                          }}>
+                          {`${item.count} (${(item.percentage * 100) / 2}%)`}
+                        </Text>
+                      </View>
+                    ),
+                    labelComponent: () => (
+                      <View style={{width: 'auto'}}>
+                        <Text
+                          style={{color: colors.blackColor, fontSize: 14}}
+                          numberOfLines={1}
+                          ellipsizeMode="tail">
+                          {item.label}
+                        </Text>
+                      </View>
+                    ),
+                  }))}
+                  noOfSections={Math.max(...chartData.map(item => item.count))}
+                  maxValue={Math.max(...chartData.map(item => item.count))}
+                  isAnimated
+                  hideRules
+                  horizontal
+                  yAxisThickness={0}
+                  spacing={20}
+                  backgroundColor={'yellow'}
+                  width={250}
+                  height={200}
+                />
+              ) : (
+                <Text>No data available</Text>
+              )} */}
             </View>
           ) : questionOptionId === 1 ? (
-            <View style={styles.chartContainer}>
-              {/* <PieChart
-                style={{height: 200, width: '90%'}}
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}>
+              <PieChart
                 data={pieData}
-                innerRadius={50}
-                outerRadius="80%"
-              /> */}
-              {/* <PieChart
-                data={pieData}
-                width={screenWidth}
-                height={220}
-                chartConfig={config}
-                accessor={'population'}
-                backgroundColor={'transparent'}
-                paddingLeft={'15'}
-                center={[10, 50]}
-                absolute
-              /> */}
-
+                //donut
+                //showText
+                textColor="white"
+                textSize={20}
+                showValuesAsLabels
+                radius={90}
+              />
               <View style={styles.pieChartLabels}>
-                {pieData.map((item, idx) => (
-                  <View key={idx} style={styles.pieChartLabelRow}>
+                {pieData.map((data, index) => (
+                  <View
+                    key={index}
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      bottom: 50,
+                      left: 15,
+                    }}>
                     <View
-                      style={[
-                        styles.pieChartColorBox,
-                        {backgroundColor: item.svg.fill},
-                      ]}
+                      style={{
+                        width: 10,
+                        height: 10,
+                        backgroundColor: data.color,
+                        marginRight: 9,
+                      }}
                     />
-                    <Text style={styles.pieChartLabel}>
-                      {item.label}: {item.percentage}%
+                    <Text style={{color: '#000', fontSize: 12, bottom: 2}}>
+                      {data.label}
                     </Text>
                   </View>
                 ))}
@@ -357,15 +535,14 @@ const FormResponsesAnalytics: FC<FormResponsesAnalyticsScreenProps> = ({
             questionOptionId={item.questionOptionId}
             responseCount={item.responseCount}
             renderSelection={
-              // <QuestionTypeSelector
-              //   key={item.questionId}
-              //   questionOptionId={item.questionOptionId}
-              //   answers={answers}
-              //   setAnswers={setAnswers}
-              //   options={item.questionOptions}
-              //   questionId={item.questionId}
-              // /> ||
-              <></>
+              <QuestionTypeSelector
+                key={item.questionId}
+                questionOptionId={item.questionOptionId}
+                answers={answers}
+                setAnswers={setAnswers}
+                options={item.questionOptions}
+                questionId={item.questionId}
+              />
             }
           />
         )}
@@ -403,31 +580,23 @@ const styles = StyleSheet.create({
     color: 'red',
   },
   chartContainer: {
-    marginVertical: 10,
+    // marginVertical: 10,
+    // marginHorizontal: 20,
+    // backgroundColor: 'red',
+    width: '100%',
   },
   chartContent: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    // flexDirection: 'row',
+    // alignItems: 'center',
+    width: '100%',
   },
   barChart: {
     height: 200,
-    width: '80%', // Adjust width as needed
-  },
-  barChartLabels: {
-    position: 'absolute',
-    left: '80%', // Align labels to the right of the chart
-    top: 10,
-    width: '20%', // Adjust width based on chart width
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-  },
-  barChartLabelRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  barChartLabel: {
-    fontSize: 12,
+    width: '100%', // Adjust width as needed
+    backgroundColor: '#fff',
+    marginHorizontal: 5,
+    justifyContent: 'center',
+    right: 40,
   },
   pieChartLabels: {
     marginTop: 10,

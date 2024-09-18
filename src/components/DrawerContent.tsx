@@ -1,5 +1,539 @@
-import {TouchableOpacity, View, ViewStyle} from 'react-native';
+// import { TouchableOpacity, View, ViewStyle, ScrollView } from 'react-native';
+// import colors from '../config/colors';
+// import Icon, { IconTypes } from './Icon';
+// import Text from './Text';
+// import { FC, useState } from 'react';
+// import { normaliseDesigns } from '../utils/helpers/responsiveHelpers';
+// import { logoutAndclearToken } from '../redux/features/authSlice';
+// import { useAppDispatch, useAppSelector } from '../redux/store';
+// import { navigate } from '../utils/helpers/navigationHelpers';
+// import { RenderProfileIcon } from '../screens/dashboard/TeacherDashboard';
+// import { ParentRoles, UserTypes, roleLevels } from '../config/constants';
 
+// type RenderItemTypes = {
+//   icon?: IconTypes;
+//   itemName: string;
+//   expandItem?: RenderItemTypes[];
+//   onPressItem: () => void;
+//   subMenuLevel?: 'one' | 'two';
+//   style?: ViewStyle;
+// };
+
+// const RenderItem: FC<RenderItemTypes> = ({
+//   icon,
+//   itemName,
+//   onPressItem,
+//   expandItem,
+//   subMenuLevel,
+//   style,
+// }) => {
+//   const [isExpanded, setIsExpanded] = useState<boolean>(false);
+
+//   const onPress = () => {
+//     if (expandItem) {
+//       setIsExpanded(!isExpanded);
+//     } else {
+//       onPressItem();
+//     }
+//   };
+
+//   return (
+//     <>
+//       <View
+//         style={{
+//           flexDirection: 'row',
+//           marginVertical:
+//             subMenuLevel === 'one' ? -13 : subMenuLevel === 'two' ? -9 : 7,
+//           alignItems: 'center',
+//           justifyContent: 'space-between',
+//           ...style,
+//         }}>
+//         {icon ? (
+//           subMenuLevel ? (
+//             <View
+//               style={{
+//                 flexDirection: 'row',
+//                 alignItems: 'center', // Align items inline horizontally
+//                 marginLeft: subMenuLevel === 'one' ? '2%' : '10%',
+//               }}>
+//               <Icon
+//                 name={icon}
+//                 width={subMenuLevel === 'one' ? 45 : 40}
+//                 height={subMenuLevel === 'one' ? 45 : 40}
+//               />
+//               <TouchableOpacity onPress={onPress} style={{ marginLeft: 7 }}>
+//                 <Text
+//                   size={subMenuLevel === 'one' ? 'body1' : 'small3'}
+//                   style={{ letterSpacing: -0.27 }}>
+//                   {itemName}
+//                 </Text>
+//               </TouchableOpacity>
+//             </View>
+//           ) : (
+//             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+//               <View
+//                 style={{
+//                   backgroundColor: '#F4C24A',
+//                   aspectRatio: 1,
+//                   height: normaliseDesigns(22),
+//                   alignItems: 'center',
+//                   justifyContent: 'center',
+//                   borderRadius: 10,
+//                 }}>
+//                 <Icon name={icon} />
+//               </View>
+//               <TouchableOpacity onPress={onPress} style={{ marginLeft: 7 }}>
+//                 <Text fontVariant="bold" size="body1">
+//                   {itemName}
+//                 </Text>
+//               </TouchableOpacity>
+//             </View>
+//           )
+//         ) : null}
+//         {expandItem && (
+//           <TouchableOpacity onPress={onPress}>
+//             <Icon
+//               name="chevron_up_black_icon"
+//               style={{
+//                 transform: [{ rotate: isExpanded ? '0deg' : '180deg' }],
+//                 alignSelf: subMenuLevel ? 'flex-end' : undefined,
+//               }}
+//             />
+//           </TouchableOpacity>
+//         )}
+//       </View>
+//       {isExpanded &&
+//         expandItem?.map((item, index) => (
+//           <RenderItem
+//             itemName={item.itemName}
+//             expandItem={item.expandItem}
+//             onPressItem={item.onPressItem}
+//             key={item.itemName}
+//             icon={item.icon}
+//             subMenuLevel={item.subMenuLevel}
+//             style={{ marginBottom: index === expandItem.length - 1 ? 4 : 0 }}
+//           />
+//         ))}
+//     </>
+//   );
+// };
+
+// export const getRoleLevel = (
+//   role: ParentRoles | null,
+// ): UserTypes | undefined => {
+//   if (role) {
+//     for (const level of roleLevels) {
+//       if (level.roles.includes(role)) {
+//         return level.userType;
+//       }
+//     }
+//   }
+//   return undefined;
+// };
+
+// type DrawerContentTypes = {
+//   closeDrawer: () => void;
+// };
+
+// const DrawerContent: FC<DrawerContentTypes> = ({ closeDrawer }) => {
+//   const dispatch = useAppDispatch();
+
+//   const { userData, isAdmin } = useAppSelector(state => state.auth);
+//   const { dashboardDetails } = useAppSelector(state => state.observation);
+
+//   const itemsArrayRegisteredUser: RenderItemTypes[] = [
+//     {
+//       icon: 'drawer_icon_home',
+//       itemName: 'Dashboard',
+//       onPressItem: () => {
+//         closeDrawer();
+//         isAdmin ? navigate('AdminDashboard') : navigate('TeacherDashboard');
+//       },
+//     },
+//     {
+//       icon: 'drawer_icon_observation_reports',
+//       itemName: 'Observation Reports',
+//       onPressItem: () => {
+//         closeDrawer();
+//         navigate('ObservationStack');
+//       },
+//     },
+//     {
+//       icon: 'drawer_icon_teaching_aids',
+//       itemName: 'Teaching Aids',
+//       onPressItem: () => { },
+//       expandItem: [
+//         {
+//           itemName: 'Resources',
+//           onPressItem: () => { },
+//           icon: 'extend_item_level_1_icon',
+//           subMenuLevel: 'one',
+//         },
+//       ],
+//     },
+//     {
+//       icon: 'drawer_icon_teacher_evaluation',
+//       itemName: 'Teacher Evaluation',
+//       onPressItem: () => { },
+//       expandItem: [
+//         {
+//           itemName: 'Evaluation Flows',
+//           onPressItem: () => {
+//             navigate('FlowsAndFormsStack');
+//           },
+//           icon: 'extend_item_level_1_icon',
+//           subMenuLevel: 'one',
+//         },
+//       ],
+//     },
+//     {
+//       icon: 'drawer_icon_session_schedules',
+//       itemName: 'Session Schedules',
+//       onPressItem: () => { },
+//     },
+//     {
+//       icon: 'drawer_icon_analytics',
+//       itemName: 'Analytics',
+//       onPressItem: () => { },
+//     },
+//   ];
+
+//   const itemsArrayAdmin: RenderItemTypes[] = [
+//     {
+//       icon: 'drawer_icon_home',
+//       itemName: 'Dashboard',
+//       onPressItem: () => {
+//         closeDrawer();
+//         isAdmin ? navigate('AdminDashboard') : navigate('TeacherDashboard');
+//       },
+//     },
+//     {
+//       icon: 'drawer_icon_user_management',
+//       itemName: 'User Management',
+//       onPressItem: () => { },
+//       expandItem: [
+//         {
+//           itemName: 'Users',
+//           onPressItem: () => {
+//             closeDrawer();
+//             navigate('UserManagementStack', { screen: 'UsersMainPage' });
+//           },
+//           icon: 'extend_item_level_1_icon',
+//           subMenuLevel: 'one',
+//         },
+//         {
+//           itemName: 'User Groups',
+//           onPressItem: () => {
+//             closeDrawer();
+//             navigate('UserManagementStack', { screen: 'UserGroups' });
+//           },
+//           icon: 'extend_item_level_1_icon',
+//           subMenuLevel: 'one',
+//         },
+//         {
+//           itemName: 'Roles & App Access',
+//           onPressItem: () => {
+//             closeDrawer();
+//             navigate('UserManagementStack', { screen: 'RolesAndAppAccess' });
+//           },
+//           icon: 'extend_item_level_1_icon',
+//           subMenuLevel: 'one',
+//         },
+//       ],
+//     },
+//     {
+//       icon: 'drawer_icon_observation_reports',
+//       itemName: 'Location Management',
+//       onPressItem: () => { },
+//       expandItem: [
+//         {
+//           itemName: 'States',
+//           onPressItem: () => {
+//             closeDrawer();
+//             navigate('LocationManagementStack', { screen: 'States' });
+//           },
+//           icon: 'extend_item_level_1_icon',
+//           subMenuLevel: 'one',
+//         },
+//         {
+//           itemName: 'Districts',
+//           onPressItem: () => {
+//             closeDrawer();
+//             navigate('LocationManagementStack', { screen: 'Districts' });
+//           },
+//           icon: 'extend_item_level_1_icon',
+//           subMenuLevel: 'one',
+//         },
+//         {
+//           itemName: 'Areas',
+//           onPressItem: () => {
+//             closeDrawer();
+//             navigate('LocationManagementStack', { screen: 'Areas' });
+//           },
+//           icon: 'extend_item_level_1_icon',
+//           subMenuLevel: 'one',
+//         },
+//         {
+//           itemName: 'Schools',
+//           onPressItem: () => {
+//             closeDrawer();
+//             navigate('LocationManagementStack', { screen: 'Schools' });
+//           },
+//           icon: 'extend_item_level_1_icon',
+//           subMenuLevel: 'one',
+//         },
+//       ],
+//     },
+//     {
+//       icon: 'drawer_icon_teacher_evaluation',
+//       itemName: 'Teacher Evaluation',
+//       onPressItem: () => { },
+//       expandItem: [
+//         {
+//           itemName: 'Evaluation Flows',
+//           onPressItem: () => {
+//             navigate('FlowsAndFormsStack');
+//           },
+//           icon: 'extend_item_level_1_icon',
+//           subMenuLevel: 'one',
+//         },
+//         {
+//           itemName: 'Evaluation Rubrics',
+//           onPressItem: () => {
+//             navigate('RubricStack');
+//           },
+//           icon: 'extend_item_level_1_icon',
+//           subMenuLevel: 'one',
+//         },
+//       ],
+//     },
+//     {
+//       icon: 'drawer_icon_session_schedules',
+//       itemName: 'Schedules',
+//       onPressItem: () => {
+//         navigate('Schedules')
+//       },
+//     },
+//     {
+//       icon: 'drawer_icon_analytics',
+//       itemName: 'Analytics',
+//       onPressItem: () => { },
+//       expandItem: [
+//         {
+//           itemName: 'Usage',
+//           onPressItem: () => { },
+//           icon: 'extend_item_level_1_icon',
+//           subMenuLevel: 'one',
+//         },
+//         {
+//           itemName: 'Product',
+//           onPressItem: () => { },
+//           icon: 'extend_item_level_1_icon',
+//           subMenuLevel: 'one',
+//           expandItem: [
+//             {
+//               itemName: 'User & Role Analytics',
+//               onPressItem: () => {
+//                 navigate('AnalyticsStack', {
+//                   screen: 'UserAndRoleAnalyticsMainPage',
+//                 });
+//               },
+//               icon: 'extend_item_level_2_icon',
+//               subMenuLevel: 'two',
+//             },
+//             {
+//               itemName: 'Location Analytics',
+//               onPressItem: () => { navigate('AnalyticsStack', { screen: 'LocationAnalytics' }) },
+//               icon: 'extend_item_level_2_icon',
+//               subMenuLevel: 'two',
+//             },
+//             {
+//               itemName: 'Teacher & Observation Analytics',
+//               onPressItem: () => {
+//                 navigate('AnalyticsStack', { screen: 'TeacherObservationAnalytics' })
+//               },
+//               icon: 'extend_item_level_2_icon',
+//               subMenuLevel: 'two',
+//             },
+//             {
+//               itemName: 'Flows & Forms Analytics',
+//               onPressItem: () => {
+//                 navigate('AnalyticsStack', { screen: 'FlowsAndFormAnalytics' })
+//               },
+//               icon: 'extend_item_level_2_icon',
+//               subMenuLevel: 'two',
+//             },
+//           ],
+//         },
+//       ],
+//     },
+//   ];
+
+//   const settingsItemsUser: RenderItemTypes[] = [
+//     {
+//       icon: 'drawer_icon_give_feedback',
+//       itemName: 'Give Feedback',
+//       onPressItem: () => { },
+//     },
+//     {
+//       icon: 'logout_icon',
+//       itemName: 'Logout',
+//       onPressItem: () => {
+//         dispatch(logoutAndclearToken());
+//       },
+//     },
+//   ];
+
+//   const settingsItemsAdmin: RenderItemTypes[] = [
+//     {
+//       icon: 'logout_icon',
+//       itemName: 'Logout',
+//       onPressItem: () => {
+//         dispatch(logoutAndclearToken());
+//       },
+//     },
+//   ];
+
+//   const settingsItems = isAdmin ? settingsItemsAdmin : settingsItemsUser;
+
+//   const itemsArray = isAdmin ? itemsArrayAdmin : itemsArrayRegisteredUser;
+
+//   return (
+//     <View style={{ height: '100%' }}>
+//       <View
+//         style={{
+//           backgroundColor: colors.backgroundColor,
+//           paddingHorizontal: 20,
+//         }}>
+//         <TouchableOpacity
+//           style={{
+//             height: 30,
+//             aspectRatio: 1,
+//             alignItems: 'center',
+//             justifyContent: 'center',
+//             backgroundColor: '#FDF0E3',
+//             borderRadius: 7,
+//             alignSelf: 'flex-end',
+//             marginTop: 20,
+//           }}
+//           onPress={() => {
+//             closeDrawer();
+//           }}>
+//           <Icon name="left_arrow_orange_icon" />
+//         </TouchableOpacity>
+//         <View
+//           style={{
+//             flexDirection: 'row',
+//             justifyContent: 'flex-start',
+//             marginTop: 30,
+//             alignItems: 'center',
+//             alignContent: 'center',
+//           }}>
+//           <RenderProfileIcon
+//             image={userData?.userImageUrl || userData.userImage}
+//             name={userData?.name}
+//             size={40}
+//           />
+//           <View style={{ marginLeft: 10 }}>
+//             <Text fontVariant="bold" size="body2">
+//               Hi, {isAdmin ? 'Admin' : userData.name}
+//             </Text>
+//             <Text size="small1">{dashboardDetails?.schoolName}</Text>
+//           </View>
+//         </View>
+//         <View
+//           style={{ height: 1, backgroundColor: '#E4E7EB', marginVertical: 15 }}
+//         />
+//         <ScrollView style={{ paddingVertical: 15 }}>
+//           {itemsArray.map(item => (
+//             <RenderItem
+//               icon={item.icon}
+//               itemName={item.itemName}
+//               onPressItem={item.onPressItem}
+//               key={item.itemName}
+//               expandItem={item.expandItem}
+//             />
+//           ))}
+//           <View
+//             style={{
+//               width: '100%',
+//               backgroundColor: '#CBD2D9',
+//               height: 1.5,
+//               marginVertical: 5,
+//             }}
+//           />
+//           {settingsItems.map(item => (
+//             <RenderItem
+//               icon={item.icon}
+//               itemName={item.itemName}
+//               onPressItem={item.onPressItem}
+//               key={item.itemName}
+//               expandItem={item.expandItem}
+//             />
+//           ))}
+//         </ScrollView>
+//       </View>
+//       <View
+//         style={{
+//           backgroundColor: '#FEF8EC',
+//           width: '100%',
+//           alignItems: 'center',
+//           justifyContent: 'center',
+//           paddingVertical: 15,
+//           bottom: 20,
+//           position: 'absolute',
+//         }}>
+//         <TouchableOpacity
+//           style={{
+//             backgroundColor: '#EA7804',
+//             width: '40%',
+//             alignItems: 'center',
+//             justifyContent: 'center',
+//             padding: 10,
+//             borderRadius: 10,
+//           }}
+//           onPress={() => {
+//             navigate('FAQ');
+//           }}>
+//           <Text color="backgroundColor" size="small1">
+//             Help Centre
+//           </Text>
+//         </TouchableOpacity>
+//         <View
+//           style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
+//           <TouchableOpacity>
+//             <Text
+//               style={{ color: '#ABB4BD' }}
+//               fontVariant="bold"
+//               size="verysmall1">
+//               Terms & Conditions
+//             </Text>
+//           </TouchableOpacity>
+//           <View
+//             style={{
+//               height: 10,
+//               backgroundColor: '#ABB4BD',
+//               marginHorizontal: 10,
+//               width: 1,
+//             }}
+//           />
+//           <TouchableOpacity>
+//             <Text
+//               style={{ color: '#ABB4BD' }}
+//               fontVariant="bold"
+//               size="verysmall1">
+//               Privacy Policy
+//             </Text>
+//           </TouchableOpacity>
+//         </View>
+//       </View>
+//     </View>
+//   );
+// };
+
+// export default DrawerContent;
+
+import {TouchableOpacity, View, ViewStyle, ScrollView} from 'react-native';
 import colors from '../config/colors';
 import Icon, {IconTypes} from './Icon';
 import Text from './Text';
@@ -10,6 +544,9 @@ import {useAppDispatch, useAppSelector} from '../redux/store';
 import {navigate} from '../utils/helpers/navigationHelpers';
 import {RenderProfileIcon} from '../screens/dashboard/TeacherDashboard';
 import {ParentRoles, UserTypes, roleLevels} from '../config/constants';
+import { useFocusEffect } from '@react-navigation/native';
+import React from 'react';
+import { getDashboardDetailsAndObservationList } from '../redux/features/observationSlice';
 
 type RenderItemTypes = {
   icon?: IconTypes;
@@ -18,7 +555,10 @@ type RenderItemTypes = {
   onPressItem: () => void;
   subMenuLevel?: 'one' | 'two';
   style?: ViewStyle;
+  isExpanded?: boolean;
+  onExpandChange?: (itemName: string) => void;
 };
+
 const RenderItem: FC<RenderItemTypes> = ({
   icon,
   itemName,
@@ -26,16 +566,19 @@ const RenderItem: FC<RenderItemTypes> = ({
   expandItem,
   subMenuLevel,
   style,
+  isExpanded,
+  onExpandChange,
 }) => {
-  const [isExpanded, setIsExpanded] = useState<boolean>(false);
-
   const onPress = () => {
     if (expandItem) {
-      setIsExpanded(!isExpanded);
+      onExpandChange && onExpandChange(itemName);
     } else {
       onPressItem();
     }
   };
+
+
+  
   return (
     <>
       <View
@@ -52,7 +595,7 @@ const RenderItem: FC<RenderItemTypes> = ({
             <View
               style={{
                 flexDirection: 'row',
-                alignItems: 'flex-end',
+                alignItems: 'center',
                 marginLeft: subMenuLevel === 'one' ? '2%' : '10%',
               }}>
               <Icon
@@ -60,10 +603,15 @@ const RenderItem: FC<RenderItemTypes> = ({
                 width={subMenuLevel === 'one' ? 45 : 40}
                 height={subMenuLevel === 'one' ? 45 : 40}
               />
-              <TouchableOpacity onPress={onPress}>
+              <TouchableOpacity onPress={onPress} style={{marginLeft: 7}}>
                 <Text
                   size={subMenuLevel === 'one' ? 'body1' : 'small3'}
-                  style={{letterSpacing: -0.27}}>
+                  style={{
+                    letterSpacing: -0.27,
+                    alignSelf: 'center',
+                    justifyContent: 'center',
+                    top: normaliseDesigns(7),
+                  }}>
                   {itemName}
                 </Text>
               </TouchableOpacity>
@@ -81,16 +629,14 @@ const RenderItem: FC<RenderItemTypes> = ({
                 }}>
                 <Icon name={icon} />
               </View>
-              <TouchableOpacity onPress={onPress}>
-                <Text fontVariant="bold" style={{marginLeft: 7}} size="body1">
+              <TouchableOpacity onPress={onPress} style={{marginLeft: 7}}>
+                <Text fontVariant="bold" size="body1">
                   {itemName}
                 </Text>
               </TouchableOpacity>
             </View>
           )
-        ) : (
-          <></>
-        )}
+        ) : null}
         {expandItem && (
           <TouchableOpacity onPress={onPress}>
             <Icon
@@ -113,6 +659,8 @@ const RenderItem: FC<RenderItemTypes> = ({
             icon={item.icon}
             subMenuLevel={item.subMenuLevel}
             style={{marginBottom: index === expandItem.length - 1 ? 4 : 0}}
+            isExpanded={isExpanded}
+            onExpandChange={onExpandChange}
           />
         ))}
     </>
@@ -138,10 +686,24 @@ type DrawerContentTypes = {
 
 const DrawerContent: FC<DrawerContentTypes> = ({closeDrawer}) => {
   const dispatch = useAppDispatch();
-
   const {userData, isAdmin} = useAppSelector(state => state.auth);
   const {dashboardDetails} = useAppSelector(state => state.observation);
 
+  const [expandedItem, setExpandedItem] = useState<string | null>(null);
+
+  const handleExpandChange = (itemName: string) => {
+    setExpandedItem(prev => (prev === itemName ? null : itemName));
+  };
+
+  console.log('ll0---', dashboardDetails);
+
+
+  useFocusEffect(
+    React.useCallback(() => {
+      dispatch(getDashboardDetailsAndObservationList(userData?.id));
+      closeDrawer();
+    }, [dispatch, userData?.id]),
+  );
   const itemsArrayRegisteredUser: RenderItemTypes[] = [
     {
       icon: 'drawer_icon_home',
@@ -189,8 +751,10 @@ const DrawerContent: FC<DrawerContentTypes> = ({closeDrawer}) => {
     },
     {
       icon: 'drawer_icon_session_schedules',
-      itemName: 'Session Schedules',
-      onPressItem: () => {},
+      itemName: 'Schedules',
+      onPressItem: () => {
+        navigate('Schedules');
+      },
     },
     {
       icon: 'drawer_icon_analytics',
@@ -250,7 +814,7 @@ const DrawerContent: FC<DrawerContentTypes> = ({closeDrawer}) => {
         {
           itemName: 'States',
           onPressItem: () => {
-            closeDrawer();
+            //closeDrawer();
             navigate('LocationManagementStack', {screen: 'States'});
           },
           icon: 'extend_item_level_1_icon',
@@ -259,7 +823,7 @@ const DrawerContent: FC<DrawerContentTypes> = ({closeDrawer}) => {
         {
           itemName: 'Districts',
           onPressItem: () => {
-            closeDrawer();
+            //closeDrawer();
             navigate('LocationManagementStack', {screen: 'Districts'});
           },
           icon: 'extend_item_level_1_icon',
@@ -268,7 +832,7 @@ const DrawerContent: FC<DrawerContentTypes> = ({closeDrawer}) => {
         {
           itemName: 'Areas',
           onPressItem: () => {
-            closeDrawer();
+            //closeDrawer();
             navigate('LocationManagementStack', {screen: 'Areas'});
           },
           icon: 'extend_item_level_1_icon',
@@ -277,7 +841,7 @@ const DrawerContent: FC<DrawerContentTypes> = ({closeDrawer}) => {
         {
           itemName: 'Schools',
           onPressItem: () => {
-            closeDrawer();
+            //closeDrawer();
             navigate('LocationManagementStack', {screen: 'Schools'});
           },
           icon: 'extend_item_level_1_icon',
@@ -312,7 +876,7 @@ const DrawerContent: FC<DrawerContentTypes> = ({closeDrawer}) => {
       icon: 'drawer_icon_session_schedules',
       itemName: 'Schedules',
       onPressItem: () => {
-        navigate('Schedules')
+        navigate('Schedules');
       },
     },
     {
@@ -322,10 +886,15 @@ const DrawerContent: FC<DrawerContentTypes> = ({closeDrawer}) => {
       expandItem: [
         {
           itemName: 'Usage',
-          onPressItem: () => {},
+          onPressItem: () => {
+            navigate('AnalyticsStack', {
+              screen: 'UsageAnalytics',
+            });
+          },
           icon: 'extend_item_level_1_icon',
           subMenuLevel: 'one',
         },
+
         {
           itemName: 'Product',
           onPressItem: () => {},
@@ -344,14 +913,18 @@ const DrawerContent: FC<DrawerContentTypes> = ({closeDrawer}) => {
             },
             {
               itemName: 'Location Analytics',
-              onPressItem: () => {navigate('AnalyticsStack',{screen:'LocationAnalytics'})},
+              onPressItem: () => {
+                navigate('AnalyticsStack', {screen: 'LocationAnalytics'});
+              },
               icon: 'extend_item_level_2_icon',
               subMenuLevel: 'two',
             },
             {
-              itemName: 'Teacher & Observation Analytics',
+              itemName: 'Teacher Observation Analytics',
               onPressItem: () => {
-                navigate('AnalyticsStack',{screen:'TeacherObservationAnalytics'})
+                navigate('AnalyticsStack', {
+                  screen: 'TeacherObservationAnalytics',
+                });
               },
               icon: 'extend_item_level_2_icon',
               subMenuLevel: 'two',
@@ -359,7 +932,7 @@ const DrawerContent: FC<DrawerContentTypes> = ({closeDrawer}) => {
             {
               itemName: 'Flows & Forms Analytics',
               onPressItem: () => {
-                navigate('AnalyticsStack',{screen:'FlowsAndFormAnalytics'})
+                navigate('AnalyticsStack', {screen: 'FlowsAndFormAnalytics'});
               },
               icon: 'extend_item_level_2_icon',
               subMenuLevel: 'two',
@@ -445,7 +1018,7 @@ const DrawerContent: FC<DrawerContentTypes> = ({closeDrawer}) => {
         <View
           style={{height: 1, backgroundColor: '#E4E7EB', marginVertical: 15}}
         />
-        <View style={{paddingVertical: 15}}>
+        <ScrollView style={{paddingVertical: 15}}>
           {itemsArray.map(item => (
             <RenderItem
               icon={item.icon}
@@ -453,18 +1026,18 @@ const DrawerContent: FC<DrawerContentTypes> = ({closeDrawer}) => {
               onPressItem={item.onPressItem}
               key={item.itemName}
               expandItem={item.expandItem}
+              isExpanded={expandedItem === item.itemName}
+              onExpandChange={handleExpandChange}
             />
           ))}
-        </View>
-        <View
-          style={{
-            width: '100%',
-            backgroundColor: '#CBD2D9',
-            height: 1.5,
-            marginVertical: 5,
-          }}
-        />
-        <View>
+          <View
+            style={{
+              width: '100%',
+              backgroundColor: '#CBD2D9',
+              height: 1.5,
+              marginVertical: 16,
+            }}
+          />
           {settingsItems.map(item => (
             <RenderItem
               icon={item.icon}
@@ -474,7 +1047,7 @@ const DrawerContent: FC<DrawerContentTypes> = ({closeDrawer}) => {
               expandItem={item.expandItem}
             />
           ))}
-        </View>
+        </ScrollView>
       </View>
       <View
         style={{

@@ -3,7 +3,7 @@ import {TouchableOpacity, View, ViewStyle} from 'react-native';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 
-import Layout from '../../components/Layout';
+import Layout from '../../components/LayoutNew';
 import Text from '../../components/Text';
 import {useAppDispatch, useAppSelector} from '../../redux/store';
 import {LocationManagementStackParamList} from '../../navigation/LocationManagementStack';
@@ -14,6 +14,8 @@ import SearchWithFilter from '../../components/SearchWithFilter';
 import Tab from '../../components/Tab';
 import {ItemType} from '../../config/types';
 import PaginationBar from '../../components/PaginationBar';
+import { Drawer } from 'react-native-drawer-layout';
+import DrawerContent from '../../components/DrawerContent';
 
 type DistrictsNavigationProp = StackNavigationProp<
   LocationManagementStackParamList,
@@ -97,6 +99,7 @@ interface DistrictsScreenProps {
 
 
 const Districts: FC<DistrictsScreenProps> = ({navigation, route}) => {
+  const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false); 
   const [selectedItem, setSelectedItem] = useState<District>();
   const [districtList, setDistrictList] = useState<DistrictsList>({
     districtsList: [],
@@ -118,7 +121,14 @@ const Districts: FC<DistrictsScreenProps> = ({navigation, route}) => {
       value: 'inactive',
     },
   ];
+  const closeDrawer = () => {
+    setIsDrawerOpen(false);
+  };
 
+  // Ensure the drawer opens when the menu icon is clicked
+  const onPressMenuIcon = () => {
+    setIsDrawerOpen(true); // Set drawer open to true
+  };
   useEffect(() => {
     if (allDistricts) {
       setDistrictList((prev) => ({
@@ -223,6 +233,12 @@ const Districts: FC<DistrictsScreenProps> = ({navigation, route}) => {
   }, [search, districtList.selectedTab]);
 
   return (
+    <Drawer
+    open={isDrawerOpen} // Drawer open state
+    onOpen={() => setIsDrawerOpen(true)}
+    onClose={() => setIsDrawerOpen(false)} // Close drawer
+    renderDrawerContent={() => <DrawerContent closeDrawer={closeDrawer} />}
+  >
     <Layout
       overridePaddingHorizontal
       overridePaddingVertical
@@ -230,7 +246,8 @@ const Districts: FC<DistrictsScreenProps> = ({navigation, route}) => {
       title="Districts"
       icon="districts_icon"
       focusedStack="LocationManagementStack"
-      titleTransition>
+      titleTransition
+      onPressMenuIcon={onPressMenuIcon} >
       <Text size="body3" fontVariant="bold" style={{marginVertical: 10}}>
         Districts
       </Text>
@@ -279,6 +296,7 @@ const Districts: FC<DistrictsScreenProps> = ({navigation, route}) => {
         )}
       </View>
     </Layout>
+    </Drawer>
   );
 };
 export default Districts;
