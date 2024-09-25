@@ -112,7 +112,7 @@ const Header: FC<HeaderPropsTypes> = ({
             </TouchableOpacity>
             <TouchableOpacity
               onPress={onPressProfileIcon}
-              style={{width: '30%'}}>
+              style={{width: '50%'}}>
               <Icon name="profile_icon" />
             </TouchableOpacity>
           </View>
@@ -182,7 +182,6 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
     width: '100%',
     height: '100%',
-    paddingLeft:2 
   },
   iconRow: {
     flexDirection: 'row',

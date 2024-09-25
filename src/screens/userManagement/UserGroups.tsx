@@ -260,7 +260,7 @@ const UserGroups: FC<UserGroupsScreenProps> = ({navigation, route}) => {
           fontWeight: '700', // Weight 700 (bold)
           fontSize: 24, // 24px font size
           lineHeight: 28, // Line height of 28px
-          marginVertical: 16, // Your existing vertical margin
+          marginVertical: 10, // Your existing vertical margin
           //color: '#000', // Set the color if necessary
         }}>
         User Groups

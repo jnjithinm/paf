@@ -14,7 +14,6 @@ import {Drawer} from 'react-native-drawer-layout';
 import DrawerContent from '../../components/DrawerContent';
 import {useAppSelector} from '../../redux/store';
 import {sendEmail} from '../../utils/functions/linkingUtils';
-import {navigate} from '../../utils/helpers/navigationHelpers';
 
 type FAQNavigationProp = StackNavigationProp<MainStackParamList, 'FAQ'>;
 type FAQRouteProp = RouteProp<MainStackParamList, 'FAQ'>;
@@ -60,36 +59,19 @@ const faqContent: FAQContent[] = [
     content: (
       <View>
         <Text style={styles.faqText}>
-           Step 1: Click Forgot Password on the login page.
-        </Text>
-        <Text style={styles.faqText}>
-           Step 2: You will be redirected to the Password Recovery page.
-        </Text>
-        <Text style={styles.faqText}>
-           Step 3: Enter username in the placeholder/textbox that says ‘Enter
-          your Username’.
-        </Text>
-        <Text style={styles.faqText}>
-           Step 4: Press Continue.
-        </Text>
-        <Text style={styles.faqText}>
-           Step 5: You will receive a reset password link on your registered
-          email id. Click the link and it will redirect to the Reset Password page.
-        </Text>
-        <Text style={styles.faqText}>
-           Step 6: Enter your new password in the Password placeholder/textbox
-          that says ‘Enter your Password’.
-        </Text>
-        <Text style={styles.faqText}>
-           Step 7: Re-type the password in the Confirm Password
-          placeholder/textbox and ensure that both the passwords are the same.
-        </Text>
-        <Text style={styles.faqText}>
-           Step 8: Press Continue.
+          Step 1: Click Forgot Password on the login page. Step 2: You will be
+          redirected to the Password Recovery page. Step 3: Enter username in
+          the placeholder/textbox that says ‘Enter your Username’. Step 4: Press
+          Continue. Step 5: You will receive a reset password link on your
+          registered email id. Click the link and it will redirect to the Reset
+          Password page. Step 6: Enter your new password in the Password
+          placeholder/textbox that says ‘Enter your Password’. Step 7: Re-type
+          the password in the Confirm Password placeholder/textbox and ensure
+          that both the passwords are the same. Step 8: Press Continue.
         </Text>
       </View>
     ),
-  },,
+  },
   {
     title:
       'Q. Why does the web browser show a white screen or fail to load the page?',
@@ -172,31 +154,28 @@ const faqContent: FAQContent[] = [
     content: (
       <View>
         <Text style={styles.faqText}>
-           Step 1: Click the profile drop-down arrow on the right corner of the
-          Dashboard screen.
+          Step 1: Click the profile drop-down arrow on the right corner of the
+          Dashboard screen. Step 2: Click the My Account option. You will see an
+          upload button on the My Account screen.
         </Text>
         <Text style={styles.faqText}>
-           Step 2: Click the My Account option. You will see an upload button
-          on the My Account screen.
-        </Text>
-        <Text style={styles.faqText}>
-           Step 3: Click the Upload button and choose a picture of your choice
+          Step 3: Click the Upload button and choose a picture of your choice
           from the computer.
         </Text>
         <Text style={styles.faqText}>
-           Step 4: A dialog box screen for choosing a picture will appear.
-          Choose a picture and click the Open button.
+          Step 4: A dialog box screen for choosing a picture will appear. Choose
+          a picture and click the Open button.
         </Text>
         <Text style={styles.faqText}>
-           Step 5: Crop the selected picture and click the Upload button.
+          Step 5: Crop the selected picture and click the Upload button.
         </Text>
         <Text style={styles.faqText}>
-           Step 6: Click the Save button to set your profile picture in your
+          Step 6: Click the Save button to set your profile picture in your
           login.
         </Text>
       </View>
     ),
-  },,
+  },
   {
     title: 'Q. How to Logout from your account?',
     content: (
@@ -278,20 +257,21 @@ const FAQ: FC<FAQScreenProps> = ({navigation, route}) => {
         overridePaddingHorizontal
         overridePaddingVertical
         style={{paddingHorizontal: 15}}
+        onPressBackArrow={() => {
+          navigation.goBack();
+        }}
         onPressMenuIcon={() => {
           setIsDrawerOpen(true);
         }}
-        onPressBellIcon={() => {
-          navigate('Notifications');
-        }}
-        onPressProfileIcon={() => {}}
-        dashboard
-        focusedStack={isDrawerOpen ? undefined : 'AdminDashboard'}
-        avoidBackButton>
-        <Text size="body4" fontVariant="bold" style={{marginTop: 24}}>
+        dashboard={isLoggedIn}
+        avoidBackButton={isLoggedIn}>
+        <Text
+          size="body4"
+          fontVariant="bold"
+          style={{ marginTop: 24}}>
           FAQ's
         </Text>
-        <View style={{marginVertical: 20}}>
+        <View style={{marginVertical: 24}}>
           {faqContent.map((item, index) => (
             <FAQTile
               onSelect={index => {

@@ -429,7 +429,7 @@ const School: FC<SchoolsScreenProps> = ({navigation, route}) => {
       focusedStack="LocationManagementStack"
       titleTransition
       onPressMenuIcon={onPressMenuIcon}>
-      <Text size="body3" fontVariant="bold" style={{marginVertical: 16}}>
+      <Text size="body3" fontVariant="bold" style={{marginVertical: 10}}>
         Schools
       </Text>
       <Tab tabs={tabs} onClick={title => handleTabClick(title)} />
