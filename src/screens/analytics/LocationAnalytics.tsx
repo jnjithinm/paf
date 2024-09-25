@@ -353,13 +353,13 @@ const LocationAnalytics: React.FC<LocationAnalyticsScreenProps> = ({
             onPress={() => {}}
           />
         </View>
-        <View
+        {/* <View
             style={{ height:normaliseDesigns(350), width: '100%', backgroundColor: 'pink',borderWidth:1}}>
             <WebView
               originWhitelist={['*']}
               source={{html: first}}
             />
-          </View>
+          </View> */}
         <View style={styles.container}>
         
           <Modal
