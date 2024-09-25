@@ -131,8 +131,8 @@ const Image: FC<ImagePropsTypes> = ({name, size = 1, style, ...rest}) => {
         height = 64 * size;
         return {Src: email_icon, StyleConst: {width, height}};
       case 'notification_icon':
-        width = 120.125 * size;
-        height = 75 * size;
+        width = 91.125 * size;
+        height = 64 * size;
         return {Src: notification_icon, StyleConst: {width, height}};
       case 'users_icon':
         width = 125.35 * size;
@@ -141,12 +141,12 @@ const Image: FC<ImagePropsTypes> = ({name, size = 1, style, ...rest}) => {
         // height = 64 * size;
         return {Src: users_icon, StyleConst: {width, height}};
       case 'user_groups_icon':
-        width = 125.35 * size;
-        height = 68.8 * size;
+         width = 91.2 * size;
+         height = 64 * size;
         return {Src: user_groups_icon, StyleConst: {width, height}};
       case 'role_and_app_access_icon':
-        width = 125.35 * size;
-        height = 68.8 * size;
+        width = 91.2 * size;
+        height = 64 * size;
         return {Src: role_and_app_access_icon, StyleConst: {width, height}};
       case 'location_icon':
         width = 91.2 * size;
@@ -164,10 +164,8 @@ const Image: FC<ImagePropsTypes> = ({name, size = 1, style, ...rest}) => {
         height = 25 * size;
         return {Src: empty_cart_icon, StyleConst: {width, height}};
       case 'school_icon':
-        width = 125.35 * size;
-        height = 68.8 * size;
-        // width = 91.2 * size;
-        // height = 85 * size;
+        width = 91.2 * size;
+        height = 85 * size;
         //height = 64 * size;
         return {Src: school_icon, StyleConst: {width, height}};
       case 'states_icon':

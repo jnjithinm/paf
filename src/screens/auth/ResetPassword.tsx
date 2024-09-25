@@ -150,11 +150,9 @@ const ResetPassword: FC<ResetPasswordScreenProps> = ({navigation, route}) => {
         value={username}
         setValue={setUsername}
         errorMessage={usernameErrorMessage}
-        
-        
         placeholder="Enter your username"
         autoCapitalize="none"
-        style={{marginVertical: '10%',alignSelf:"center",justifyContent:"center"}}
+        style={{marginVertical: '10%'}}
       />
       <Button
         style={{width: '100%'}}

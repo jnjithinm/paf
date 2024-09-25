@@ -222,7 +222,7 @@ const FlowsMainPage: FC<FlowsMainPageScreenProps> = ({navigation, route}) => {
         focusedStack="FlowsAndFormsStack"
         titleTransition
         onPressMenuIcon={onPressMenuIcon} >
-        <Text size="body3" fontVariant="bold" style={{marginVertical: 16}}>
+        <Text size="body3" fontVariant="bold" style={{marginVertical: 10}}>
           Flows
         </Text>
         <View style={{marginVertical: 10}}>

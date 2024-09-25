@@ -761,7 +761,7 @@ const ShowResponseCountAndActions: FC<ShowResponseCountAndActionsTypes> = ({
   setIsAcceptingResponses,
   flowDetailItem,
 }) => (
-  <View style={{marginTop: 16}}>
+  <View style={{marginTop: 10}}>
     <View
       style={{
         flexDirection: 'row',

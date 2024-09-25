@@ -160,7 +160,6 @@ const TextInput: FC<TextInputPropsTypes> = ({
           ...textInputStyle,
           paddingHorizontal: icon ? 5 : 10,
           width: '100%',
-          
         }}
       >
         {icon && (
