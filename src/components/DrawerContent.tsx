@@ -1008,11 +1008,11 @@ const DrawerContent: FC<DrawerContentTypes> = ({closeDrawer}) => {
             name={userData?.name}
             size={40}
           />
-          <View style={{marginLeft: 10}}>
-            <Text fontVariant="bold" size="body2">
+          <View style={{marginLeft: 10,gap:5}}>
+            <Text fontVariant="bold" size="body2" style={{gap:2}}>
               Hi, {isAdmin ? 'Admin' : userData.name}
             </Text>
-            <Text size="small1">{dashboardDetails?.schoolName}</Text>
+            <Text size="small1" style={{gap:2}}>{dashboardDetails?.schoolName}</Text>
           </View>
         </View>
         <View

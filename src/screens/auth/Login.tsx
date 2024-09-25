@@ -447,9 +447,10 @@ const Login: FC<LoginScreenProps> = ({navigation, route}) => {
         />
 
         {/* Or sign in with social account */}
+        <View style={{gap:8,alignItems:"center"}}>
         <Text
           style={{
-            marginVertical: 15,
+            marginVertical: 16,
             fontWeight: '600',
             color: '#ABB4BD',
             textAlign: 'center',
@@ -457,15 +458,15 @@ const Login: FC<LoginScreenProps> = ({navigation, route}) => {
           size="body1">
           Or sign in with social account
         </Text>
-
+      
         {/* Social Media Icons */}
         <View
           style={{
             flexDirection: 'row',
             justifyContent: 'center',
             alignItems: 'center',
-            marginTop: 15,
-            gap: 10, // For gap between the icons
+            //marginTop: 15,
+            gap: 16, // For gap between the icons
           }}>
           <TouchableOpacity
             style={{
@@ -496,67 +497,70 @@ const Login: FC<LoginScreenProps> = ({navigation, route}) => {
             <Icon name="facebook_icon" />
           </TouchableOpacity>
         </View>
-
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            marginTop: 30,
-          }}>
-          <Text style={{color: '#ABB4BD'}} size="body1">
-            Don't have an account ?
-          </Text>
-          <TouchableOpacity
-            onPress={() => {
-              navigation.navigate('SignUp');
-            }}>
-            <View>
-              <Text
-                style={{
-                  fontWeight: '600',
-                  color: '#1F2933',
-                  left: 5,
-                }}>
-                Sign up
-              </Text>
-              <View
-                style={{
-                  height: 1,
-                  backgroundColor: '#1F2933',
-                  marginTop: 2, // Adjust the space between text and underline
-                  left: 5,
-                }}
-              />
-            </View>
-          </TouchableOpacity>
         </View>
 
-        <View
-          style={{flexDirection: 'row', alignItems: 'center', marginTop: 5}}>
-          <Text style={{color: '#ABB4BD'}} size="body1">
-            Can't access your account ?
-          </Text>
-          <TouchableOpacity onPress={() => navigation.navigate('FAQ')}>
-            <View>
-              <Text
-                style={{
-                  fontWeight: '600',
-                  color: '#1F2933',
-                  left: 5,
-                }}
-                size="body1">
-                Click here for help
-              </Text>
-              <View
-                style={{
-                  height: 1,
-                  backgroundColor: '#1F2933',
-                  marginTop: 2,
-                  left: 5, // Adjust the space between text and underline
-                }}
-              />
-            </View>
-          </TouchableOpacity>
+        <View style={{gap: 16, alignItems: 'center'}}>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              marginTop: 30,
+            }}>
+            <Text style={{color: '#ABB4BD'}} size="body1">
+              Don't have an account ?
+            </Text>
+            <TouchableOpacity
+              onPress={() => {
+                navigation.navigate('SignUp');
+              }}>
+              <View>
+                <Text
+                  style={{
+                    fontWeight: '600',
+                    color: '#1F2933',
+                    left: 5,
+                  }}>
+                  Sign up
+                </Text>
+                <View
+                  style={{
+                    height: 1,
+                    backgroundColor: '#1F2933',
+                    marginTop: 2, // Adjust the space between text and underline
+                    left: 5,
+                  }}
+                />
+              </View>
+            </TouchableOpacity>
+          </View>
+
+          <View
+            style={{flexDirection: 'row', alignItems: 'center', marginTop: 5}}>
+            <Text style={{color: '#ABB4BD'}} size="body1">
+              Can't access your account ?
+            </Text>
+            <TouchableOpacity onPress={() => navigation.navigate('FAQ')}>
+              <View>
+                <Text
+                  style={{
+                    fontWeight: '600',
+                    color: '#1F2933',
+                    left: 5,
+                  }}
+                  size="body1">
+                  Click here for help
+                </Text>
+                <View
+                  style={{
+                    height: 1,
+                    backgroundColor: '#1F2933',
+                    marginTop: 2,
+                    left: 5, // Adjust the space between text and underline
+                  }}
+                />
+              </View>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
     </Layout>
@@ -564,4 +568,3 @@ const Login: FC<LoginScreenProps> = ({navigation, route}) => {
 };
 
 export default Login;
-

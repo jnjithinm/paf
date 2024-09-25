@@ -98,9 +98,9 @@ const BottomTab: FC<BottomTabTypes> = ({focusedStack}) => {
           },
           android:{
             elevation: 20,
-            shadowColor: 'rgba(0, 0, 5, 5)',  // Dark black color with 80% opacity
+            shadowColor: 'rgba(0, 0, 10, 10)',  // Dark black color with 80% opacity
             shadowOpacity: 10,  // Increase shadow opacity (1 is the maximum)
-            shadowOffset: { width: 10, height: 20 },  // Offset for the shadow
+            shadowOffset: { width: 10, height: 50 },  // Offset for the shadow
           }
         }),
       }}>

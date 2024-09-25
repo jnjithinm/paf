@@ -617,7 +617,7 @@ const UsersMainPage: FC<UsersMainPageScreenProps> = ({ navigation, route }) => {
             fontWeight: '700',
             fontSize: 24,
             lineHeight: 28,
-            marginVertical: 10,
+            marginVertical: 16,
           }}
         >
           Users

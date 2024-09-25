@@ -386,7 +386,7 @@ const Notifications: FC<NotificationsScreenProps> = ({navigation, route}) => {
         </View>
 
         {/* Yesterday Section */}
-        <View style={styles.sectionContainer}>
+        {/* <View style={styles.sectionContainer}>
           <View style={styles.sectionHeader}>
             <Text size="body1" fontVariant="bold">
               Yesterday
@@ -403,7 +403,7 @@ const Notifications: FC<NotificationsScreenProps> = ({navigation, route}) => {
             renderItem={renderNotificationItem}
             keyExtractor={item => item.userNotificationId.toString()}
           />
-        </View>
+        </View> */}
 
         {/* This Week Section */}
         <View style={styles.sectionContainer}>
