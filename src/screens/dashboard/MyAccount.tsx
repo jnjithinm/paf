@@ -722,7 +722,7 @@ const MyAccount: FC<MyAccountScreenProps> = ({navigation, route}) => {
               }}>
               <Icon name="edit_icon_red" />
               <Text style={{marginLeft: 5}} size="small1">
-                Edit Photo
+                Edit photo
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -740,7 +740,7 @@ const MyAccount: FC<MyAccountScreenProps> = ({navigation, route}) => {
               }}>
               <Icon name="trash_icon_red" />
               <Text style={{marginLeft: 5}} color="dangerColor" size="small1">
-                Delete Photo
+                Delete photo
               </Text>
             </TouchableOpacity>
           </View>
@@ -879,7 +879,7 @@ const MyAccount: FC<MyAccountScreenProps> = ({navigation, route}) => {
             placeholder="Enter Role"
             autoCapitalize="none"
             editable={false}
-            style={{marginBottom: 12}} // Add spacing below this input
+            style={{marginBottom: 10}} // Add spacing below this input
           />
 
           <View style={{marginVertical: 4}}>
@@ -900,7 +900,7 @@ const MyAccount: FC<MyAccountScreenProps> = ({navigation, route}) => {
                 borderRadius: 8,
                 padding: 10,
                 marginTop: 3,
-                marginBottom: 12, // Add spacing below module text
+                marginBottom: 10, // Add spacing below module text
               }}
               size="small3">
               {modules}
