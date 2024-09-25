@@ -1788,8 +1788,7 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     position: 'absolute',
-    top: normaliseDesigns(187),
-    //normaliseDesigns(180),
+    top: normaliseDesigns(180),
     right: 16,
     backgroundColor: 'white',
     borderRadius: 8,
